@@ -13,6 +13,7 @@ import 'package:xhalona_pos/models/dao/user.dart';
 import 'package:xhalona_pos/repositories/employee/employee_repository.dart';
 import 'package:xhalona_pos/repositories/structure/structure_repository.dart';
 import 'package:xhalona_pos/repositories/user/user_repository.dart';
+import 'package:xhalona_pos/views/home/fragment/dashboard/dashboard_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
 import 'package:xhalona_pos/views/home/home_controller.dart';
 import 'package:xhalona_pos/widgets/app_button.dart';
@@ -21,6 +22,17 @@ import 'package:xhalona_pos/widgets/app_text_field.dart';
 
 class HomeScreen extends StatelessWidget {
   final HomeController controller = Get.put(HomeController());
+
+  Widget menuScreen(String menuName){
+    switch(menuName.toLowerCase()){
+      case "pos":
+        return PosScreen();
+      case "dashboard":
+        return DashboardScreen();
+      default:
+        return SizedBox();
+    }    
+  }
 
   Widget menuComponent(String menuName) {
     menuName = menuName.toLowerCase();
@@ -149,7 +161,7 @@ class HomeScreen extends StatelessWidget {
             body: Column(
               children: [
                 // profileInfo(),
-                Expanded(child: PosScreen()), // Replace with PosScreen
+                Expanded(child:  menuScreen(controller.selectedMenuName.value)), // Replace with PosScreen
               ],
             ),
             floatingActionButtonLocation:
