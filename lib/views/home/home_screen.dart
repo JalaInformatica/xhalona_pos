@@ -1,17 +1,43 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:xhalona_pos/models/dao/user.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_button.dart';
+import 'package:xhalona_pos/models/dao/employee.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:xhalona_pos/models/dao/employee.dart';
+import 'package:xhalona_pos/models/dao/structure.dart';
 import 'package:xhalona_pos/widgets/app_text_field.dart';
 import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:xhalona_pos/views/home/home_controller.dart';
+import 'package:xhalona_pos/views/home/home_controller.dart';
+import 'package:xhalona_pos/repositories/user/user_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
+import 'package:xhalona_pos/repositories/employee/employee_repository.dart';
+import 'package:xhalona_pos/views/home/fragment/finance/finance_screen.dart';
+import 'package:xhalona_pos/repositories/structure/structure_repository.dart';
+import 'package:xhalona_pos/views/home/fragment/dashboard/dashboard_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/transaction/transaction_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final HomeController controller = Get.put(HomeController());
+
+  Widget menuScreen(String menuName) {
+    switch (menuName.toLowerCase()) {
+      case "pos":
+        return PosScreen();
+      case "dashboard":
+        return DashboardScreen();
+      case "transaksi":
+        return TransactionScreen();
+      case "finance":
+        return FinanceScreen();
+      default:
+        return TransactionScreen();
+    }
+  }
 
   Widget menuComponent(String menuName) {
     menuName = menuName.toLowerCase();
