@@ -1,0 +1,37 @@
+import 'package:xhalona_pos/models/dao/product.dart';
+import 'package:xhalona_pos/repositories/app_repository.dart';
+import 'package:xhalona_pos/services/product/product_service.dart';
+
+class ProductRepository extends AppRepository{
+  ProductService _productService = ProductService();
+
+  Future<List<ProductDAO>> getProducts({
+    int? pageNo,
+    int? pageRow,
+    int? isActive,
+    int? isStock,
+    int? isPacket,
+    int? isFixQty,
+    int? isNonSales,
+    int? isPromo,
+    String? analisaIdGlobal,
+    String? analisaId,
+    String? partId,
+  }) async {
+    var result = await _productService.getProducts(
+      pageNo: pageNo,
+      pageRow: pageRow,
+      isActive: isActive,
+      isStock: isStock,
+      isPacket: isPacket,
+      isFixQty: isFixQty,
+      isNonSales: isNonSales,
+      isPromo: isPromo,
+      analisaId: analisaId,
+      analisaIdGlobal: analisaIdGlobal,
+      partId: partId
+    );
+    List data = getResponseListData(result);
+    return data.map((product)=>ProductDAO.fromJson(product)).toList();
+  }
+}
