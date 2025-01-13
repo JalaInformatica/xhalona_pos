@@ -14,7 +14,9 @@ import 'package:xhalona_pos/repositories/employee/employee_repository.dart';
 import 'package:xhalona_pos/repositories/structure/structure_repository.dart';
 import 'package:xhalona_pos/repositories/user/user_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/dashboard/dashboard_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/finance/finance_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/transaction/transaction_screen.dart';
 import 'package:xhalona_pos/views/home/home_controller.dart';
 import 'package:xhalona_pos/widgets/app_button.dart';
 import 'package:xhalona_pos/widgets/app_icon_button.dart';
@@ -29,8 +31,12 @@ class HomeScreen extends StatelessWidget {
         return PosScreen();
       case "dashboard":
         return DashboardScreen();
+      case "transaksi":
+        return TransactionScreen();
+      case "finance":
+        return FinanceScreen();
       default:
-        return SizedBox();
+        return TransactionScreen();
     }    
   }
 
