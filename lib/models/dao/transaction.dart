@@ -16,9 +16,9 @@ class TransactionHeaderDAO {
   String telp;
   String guestName;
   String guestPhone;
-  String? bookingType;
-  String? bookingDate;
-  String? bookingDateBefore;
+  String bookingType;
+  String bookingDate;
+  String bookingDateBefore;
   int addCostPct;
   int addCostVal;
   int discPct;
@@ -33,7 +33,7 @@ class TransactionHeaderDAO {
   String statusId;
   String statusIdDesc;
   String statusCategory;
-  String? statusLastDate;
+  String statusLastDate;
   String settlePaymentMethod;
   int settlePaymentVal;
   String settleDate;
@@ -43,17 +43,17 @@ class TransactionHeaderDAO {
   String paymentId;
   int paymentVal;
   int paymentBillVal;
-  String? orderAddress;
-  String? orderKelurahanId;
-  String? orderPoint;
-  String? orderDistance;
+  String orderAddress;
+  String orderKelurahanId;
+  String orderPoint;
+  String orderDistance;
   String sourceId;
   bool storeIsHomeVisit;
   String storeMapLocation;
   String storeOperationalDay;
   String storeOperationalHour;
   String storeKecamatanId;
-  String? promoDescription;
+  String promoDescription;
   String shiftId;
   int totalCash;
   int totalNonCash;
@@ -90,9 +90,9 @@ class TransactionHeaderDAO {
     this.telp = "",
     this.guestName = "",
     this.guestPhone = "",
-    this.bookingType,
-    this.bookingDate,
-    this.bookingDateBefore,
+    this.bookingType = "",
+    this.bookingDate = "",
+    this.bookingDateBefore = "",
     this.addCostPct = 0,
     this.addCostVal = 0,
     this.discPct = 0,
@@ -107,7 +107,7 @@ class TransactionHeaderDAO {
     this.statusId = "",
     this.statusIdDesc = "",
     this.statusCategory = "",
-    this.statusLastDate,
+    this.statusLastDate = "",
     this.settlePaymentMethod = "",
     this.settlePaymentVal = 0,
     this.settleDate = "",
@@ -117,17 +117,17 @@ class TransactionHeaderDAO {
     this.paymentId = "",
     this.paymentVal = 0,
     this.paymentBillVal = 0,
-    this.orderAddress,
-    this.orderKelurahanId,
-    this.orderPoint,
-    this.orderDistance,
+    this.orderAddress = "",
+    this.orderKelurahanId = "",
+    this.orderPoint = "",
+    this.orderDistance = "",
     this.sourceId = "",
     this.storeIsHomeVisit = false,
     this.storeMapLocation = "",
     this.storeOperationalDay = "",
     this.storeOperationalHour = "",
     this.storeKecamatanId = "",
-    this.promoDescription,
+    this.promoDescription = "",
     this.shiftId = "",
     this.totalCash = 0,
     this.totalNonCash = 0,
@@ -147,7 +147,6 @@ class TransactionHeaderDAO {
     this.paymentList = const [],
   });
 
-  // From JSON factory constructor
   TransactionHeaderDAO.fromJson(Map<String, dynamic> json)
       : rowNumber = json['ROW_NUMBER'] ?? 0,
         companyId = json['COMPANY_ID'] ?? "",
@@ -166,9 +165,9 @@ class TransactionHeaderDAO {
         telp = json['TELP'] ?? "",
         guestName = json['GUEST_NAME'] ?? "",
         guestPhone = json['GUEST_PHONE'] ?? "",
-        bookingType = json['BOOKING_TYPE'],
-        bookingDate = json['BOOKING_DATE'],
-        bookingDateBefore = json['BOOKING_DATE_BEFORE'],
+        bookingType = json['BOOKING_TYPE'] ?? "",
+        bookingDate = json['BOOKING_DATE'] ?? "",
+        bookingDateBefore = json['BOOKING_DATE_BEFORE'] ?? "",
         addCostPct = json['ADD_COST_PCT'] ?? 0,
         addCostVal = json['ADD_COST_VAL'] ?? 0,
         discPct = json['DISC_PCT'] ?? 0,
@@ -183,7 +182,7 @@ class TransactionHeaderDAO {
         statusId = json['STATUS_ID'] ?? "",
         statusIdDesc = json['STATUS_ID_DESC'] ?? "",
         statusCategory = json['STATUS_CATEGORY'] ?? "",
-        statusLastDate = json['STATUS_LAST_DATE'],
+        statusLastDate = json['STATUS_LAST_DATE'] ?? "",
         settlePaymentMethod = json['SETTLE_PAYMENT_METHOD'] ?? "",
         settlePaymentVal = json['SETTLE_PAYMENT_VAL'] ?? 0,
         settleDate = json['SETTLE_DATE'] ?? "",
@@ -193,17 +192,17 @@ class TransactionHeaderDAO {
         paymentId = json['PAYMENT_ID'] ?? "",
         paymentVal = json['PAYMENT_VAL'] ?? 0,
         paymentBillVal = json['PAYMENT_BILL_VAL'] ?? 0,
-        orderAddress = json['ORDER_ADDRESS'],
-        orderKelurahanId = json['ORDER_KELURAHAN_ID'],
-        orderPoint = json['ORDER_POINT'],
-        orderDistance = json['ORDER_DISTANCE'],
+        orderAddress = json['ORDER_ADDRESS'] ?? "",
+        orderKelurahanId = json['ORDER_KELURAHAN_ID'] ?? "",
+        orderPoint = json['ORDER_POINT'] ?? "",
+        orderDistance = json['ORDER_DISTANCE'] ?? "",
         sourceId = json['SOURCE_ID'] ?? "",
         storeIsHomeVisit = json['STORE_IS_HOME_VISIT'] ?? false,
         storeMapLocation = json['STORE_MAP_LOCATION'] ?? "",
         storeOperationalDay = json['STORE_OPERATIONAL_DAY'] ?? "",
         storeOperationalHour = json['STORE_OPERATIONAL_HOUR'] ?? "",
         storeKecamatanId = json['STORE_KECAMATAN_ID'] ?? "",
-        promoDescription = json['PROMO_DESCRIPTION'],
+        promoDescription = json['PROMO_DESCRIPTION'] ?? "",
         shiftId = json['SHIFT_ID'] ?? "",
         totalCash = json['TOTAL_CASH'] ?? 0,
         totalNonCash = json['TOTAL_NON_CASH'] ?? 0,

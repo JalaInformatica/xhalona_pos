@@ -260,26 +260,56 @@ class HomeScreen extends StatelessWidget {
                                           )
                                         ),
                                         Expanded(
-                                          child: DropdownSearch<EmployeeDAO>(
+                                          child: SizedBox(
+                                            height: 30.h,
+                                            child: DropdownSearch<EmployeeDAO>(
                                             selectedItem: null,
                                             mode: Mode.form,  
+                                            suffixProps: DropdownSuffixProps(
+                                              dropdownButtonProps: DropdownButtonProps(
+                                                iconOpened: Icon(Icons.arrow_drop_down),
+                                                iconClosed: Icon(Icons.arrow_drop_down),
+                                                iconSize: 24,
+                                                style: IconButton.styleFrom(
+                                                  visualDensity: VisualDensity.compact,
+                                                  padding: EdgeInsets.zero,
+                                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap
+                                                )
+                                              )
+                                            ),
                                             onChanged: (EmployeeDAO? selectedEmployee) {
                                               if (selectedEmployee != null) {
                                                 print("Selected Employee: ${selectedEmployee.fullName}");
                                               }
                                             },
                                             items: controller.getEmployees,  
-                                            decoratorProps: DropDownDecoratorProps(
-                                              decoration: InputDecoration(
-                                                contentPadding: EdgeInsets.zero,
-                                              )
-                                            ),
+                                            // decoratorProps: DropDownDecoratorProps(
+                                            //   decoration: InputDecoration(
+                                            //     contentPadding: EdgeInsets.zero,
+                                            //   )
+                                            // ),
                                              dropdownBuilder: (BuildContext context, EmployeeDAO? selectedItem) {
                                                 return Text(
                                                   selectedItem?.fullName ?? "Terapis",
                                                   style: AppTextStyle.textBodyStyle(),
                                                 );
                                               },
+                                              decoratorProps: DropDownDecoratorProps(
+                                                decoration: InputDecoration(
+                                                  isDense: true,
+                                                  contentPadding: EdgeInsets.zero,
+                                                  border: OutlineInputBorder(
+                                                    gapPadding: 0,
+                                                    borderSide: BorderSide(color: AppColor.grey300),
+                                                    borderRadius: BorderRadius.circular(5)
+                                                  ),
+                                                  enabledBorder: OutlineInputBorder(
+                                                    gapPadding: 0,
+                                                    borderSide: BorderSide(color: AppColor.grey300),
+                                                    borderRadius: BorderRadius.circular(5)
+                                                  )
+                                                )
+                                              ),
                                             itemAsString: (EmployeeDAO? employee) => employee?.fullName ?? '',
                                             compareFn: (EmployeeDAO a, EmployeeDAO b) => a.empId == b.empId,  
                                             popupProps: PopupProps.menu(
@@ -303,10 +333,11 @@ class HomeScreen extends StatelessWidget {
                                                 autofocus: true,  // Make the search field auto-focused
                                               ),
                                             ),
+                                            
                                             validator: (EmployeeDAO? employee) =>
                                                 employee == null ? "Please select an employee" : null,  // Validation for selection
                                           ),
-                                        ),
+                                        )),
                                         AppIconButton(
                                           onPressed: (){
 
