@@ -519,7 +519,7 @@ class HomeScreen extends StatelessWidget {
                       }),
                       // profileInfo()
                       ]
-                    ),
+                    ))),
                   ],
                 ),
               ));
