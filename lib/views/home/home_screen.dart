@@ -1,32 +1,31 @@
-import 'package:dropdown_search/dropdown_search.dart';
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:xhalona_pos/models/dao/user.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/widgets/app_button.dart';
+import 'package:xhalona_pos/models/dao/employee.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:xhalona_pos/models/dao/employee.dart';
 import 'package:xhalona_pos/models/dao/structure.dart';
-import 'package:xhalona_pos/models/dao/user.dart';
-import 'package:xhalona_pos/repositories/employee/employee_repository.dart';
-import 'package:xhalona_pos/repositories/structure/structure_repository.dart';
-import 'package:xhalona_pos/repositories/user/user_repository.dart';
-import 'package:xhalona_pos/views/home/fragment/dashboard/dashboard_screen.dart';
-import 'package:xhalona_pos/views/home/fragment/finance/finance_screen.dart';
-import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
-import 'package:xhalona_pos/views/home/fragment/transaction/transaction_screen.dart';
-import 'package:xhalona_pos/views/home/home_controller.dart';
-import 'package:xhalona_pos/widgets/app_button.dart';
-import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:xhalona_pos/widgets/app_text_field.dart';
+import 'package:xhalona_pos/widgets/app_icon_button.dart';
+import 'package:xhalona_pos/views/home/home_controller.dart';
+import 'package:xhalona_pos/views/home/home_controller.dart';
+import 'package:xhalona_pos/repositories/user/user_repository.dart';
+import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
+import 'package:xhalona_pos/repositories/employee/employee_repository.dart';
+import 'package:xhalona_pos/views/home/fragment/finance/finance_screen.dart';
+import 'package:xhalona_pos/repositories/structure/structure_repository.dart';
+import 'package:xhalona_pos/views/home/fragment/dashboard/dashboard_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/transaction/transaction_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final HomeController controller = Get.put(HomeController());
 
-  Widget menuScreen(String menuName){
-    switch(menuName.toLowerCase()){
+  Widget menuScreen(String menuName) {
+    switch (menuName.toLowerCase()) {
       case "pos":
         return PosScreen();
       case "dashboard":
@@ -37,7 +36,7 @@ class HomeScreen extends StatelessWidget {
         return FinanceScreen();
       default:
         return TransactionScreen();
-    }    
+    }
   }
 
   Widget menuComponent(String menuName) {
@@ -47,110 +46,110 @@ class HomeScreen extends StatelessWidget {
     switch (menuName) {
       case "pos":
         iconPath += "cashier.png";
-        iconColor = menuName != controller.selectedMenuName.value? Colors.green.shade100 : AppColor.whiteColor;
+        iconColor = menuName != controller.selectedMenuName.value
+            ? Colors.green.shade100
+            : AppColor.whiteColor;
         break;
       case "dashboard":
         iconPath += "report_data.png";
-        iconColor = menuName != controller.selectedMenuName.value? Colors.blue.shade100 : AppColor.whiteColor;
+        iconColor = menuName != controller.selectedMenuName.value
+            ? Colors.blue.shade100
+            : AppColor.whiteColor;
         break;
       case "transaksi":
         iconPath += "shopping_bag.png";
-        iconColor = menuName != controller.selectedMenuName.value?Colors.orange.shade100 : AppColor.whiteColor;
+        iconColor = menuName != controller.selectedMenuName.value
+            ? Colors.orange.shade100
+            : AppColor.whiteColor;
         break;
       case "finance":
         iconPath += "coin_dollar.png";
-        iconColor = menuName != controller.selectedMenuName.value?Colors.orange.shade100 : AppColor.whiteColor;
+        iconColor = menuName != controller.selectedMenuName.value
+            ? Colors.orange.shade100
+            : AppColor.whiteColor;
         break;
       case "master":
         iconPath += "documentation.png";
-        iconColor = menuName != controller.selectedMenuName.value? Colors.blueGrey.shade100 : AppColor.whiteColor;
+        iconColor = menuName != controller.selectedMenuName.value
+            ? Colors.blueGrey.shade100
+            : AppColor.whiteColor;
         break;
       case "laporan":
         iconPath += "task_document.png";
-        iconColor = menuName != controller.selectedMenuName.value? Colors.blue.shade100 : AppColor.whiteColor;
+        iconColor = menuName != controller.selectedMenuName.value
+            ? Colors.blue.shade100
+            : AppColor.whiteColor;
         break;
     }
-    return Obx(()=> GestureDetector(
-      onTap: () {
-        controller.selectedMenuName.value = menuName;
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-        decoration: BoxDecoration(
-          color: AppColor.whiteColor,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min, 
-          children: [
-          Container(
-            padding: EdgeInsets.only(top: 5, left: 5),
+    return Obx(() => GestureDetector(
+        onTap: () {
+          controller.selectedMenuName.value = menuName;
+        },
+        child: Container(
+            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
-              color: iconColor,
-              border: menuName == controller.selectedMenuName.value? 
-                      Border(
-                        top: BorderSide(
-                          width: 2,
-                          color: AppColor.secondaryColor
-                        ),
-                        left: BorderSide(
-                          width: 2,
-                          color: AppColor.secondaryColor
-                        )
-                      ) : null
+              color: AppColor.whiteColor,
             ),
-            child: Image.asset(
-              iconPath,
-              width: 28,
-              height: 28,
-            ),
-          ),
-          Text(
-            menuName[0].toUpperCase()+menuName.substring(1),
-            style: AppTextStyle.textCaptionStyle(
-              color: menuName != controller.selectedMenuName.value?
-                AppColor.blackColor :
-                AppColor.primaryColor,
-              fontWeight: menuName != controller.selectedMenuName.value?
-                FontWeight.normal :
-                FontWeight.bold
-            ),
-          )
-        ]))));
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              Container(
+                padding: EdgeInsets.only(top: 5, left: 5),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: iconColor,
+                    border: menuName == controller.selectedMenuName.value
+                        ? Border(
+                            top: BorderSide(
+                                width: 2, color: AppColor.secondaryColor),
+                            left: BorderSide(
+                                width: 2, color: AppColor.secondaryColor))
+                        : null),
+                child: Image.asset(
+                  iconPath,
+                  width: 28,
+                  height: 28,
+                ),
+              ),
+              Text(
+                menuName[0].toUpperCase() + menuName.substring(1),
+                style: AppTextStyle.textCaptionStyle(
+                    color: menuName != controller.selectedMenuName.value
+                        ? AppColor.blackColor
+                        : AppColor.primaryColor,
+                    fontWeight: menuName != controller.selectedMenuName.value
+                        ? FontWeight.normal
+                        : FontWeight.bold),
+              )
+            ]))));
   }
 
   Widget profileInfo() {
-    return Obx(()=> GestureDetector(
-      onTap: () {
-        
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-        decoration: BoxDecoration(
-          color: AppColor.whiteColor,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min, 
-          children: [
-          Container(
+    return Obx(() => GestureDetector(
+        onTap: () {},
+        child: Container(
             padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
               color: AppColor.whiteColor,
             ),
-            child: Icon(
-              Icons.person,
-              size: 28,
-            ),
-          ),
-          Text(
-            controller.profileData.value.userName,
-            style: AppTextStyle.textCaptionStyle(
-              color:AppColor.blackColor,
-              fontWeight: FontWeight.normal,              
-            ),
-          )
-        ]))));
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  color: AppColor.whiteColor,
+                ),
+                child: Icon(
+                  Icons.person,
+                  size: 28,
+                ),
+              ),
+              Text(
+                controller.profileData.value.userName,
+                style: AppTextStyle.textCaptionStyle(
+                  color: AppColor.blackColor,
+                  fontWeight: FontWeight.normal,
+                ),
+              )
+            ]))));
   }
 
   @override
@@ -521,11 +520,9 @@ class HomeScreen extends StatelessWidget {
                       // profileInfo()
                       ]
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
-          ));
+              ));
         }
       }),
     );
