@@ -616,36 +616,6 @@ class HomeScreen extends StatelessWidget {
                           ]),
                     ),
                   ),
-                  Column(mainAxisSize: MainAxisSize.min, children: [
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Wrap(
-                            alignment: WrapAlignment.center,
-                            runAlignment: WrapAlignment.center,
-                            direction: Axis.horizontal,
-                            spacing: 10,
-                            children: [
-                              ...controller.menuData.map((menuItem) {
-                                if (menuItem.menuId == "NONMENU") {
-                                  return Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children:
-                                        menuItem.dataSubMenu.map((subMenu) {
-                                      return menuComponent(subMenu.subMenuDesc);
-                                    }).toList(),
-                                  );
-                                }
-                                return menuComponent(menuItem.menuDesc);
-                              }),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ])
                 ]),
               ));
         }

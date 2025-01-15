@@ -1,14 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
-import 'package:table_calendar/table_calendar.dart';
-import 'package:xhalona_pos/core/constant/transaction.dart';
+import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/views/home/fragment/transaction/transaction_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/transaction/transaction_widget.dart';
-import 'package:xhalona_pos/widgets/app_calendar.dart';
-import 'package:xhalona_pos/widgets/app_normal_button.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
+import 'package:xhalona_pos/widgets/app_calendar.dart';
+import 'package:xhalona_pos/core/constant/transaction.dart';
+import 'package:xhalona_pos/widgets/app_normal_button.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:xhalona_pos/views/home/fragment/transaction/transaction_widget.dart';
+import 'package:xhalona_pos/views/home/fragment/transaction/transaction_controller.dart';
 
 class TransactionScreen extends StatelessWidget {
   TransactionScreen({super.key});
@@ -47,25 +46,27 @@ class TransactionScreen extends StatelessWidget {
                                 return AlertDialog(
                                     backgroundColor: AppColor.whiteColor,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5)
-                                    ),
+                                        borderRadius: BorderRadius.circular(5)),
                                     content: SizedBox(
-                                      width: double.maxFinite,
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          AppCalendar(
-                                            focusedDay: DateTime(
-                                              controller.filterYear.value,
-                                              controller.filterMonth.value,
-                                              controller.filterDay.value
-                                            ),
-                                            onDaySelected: (selectedDay, _){
-                                              controller.updateFilterTrxDate(selectedDay);
-                                              SmartDialog.dismiss();
-                                            },
-                                          ),
-                                      ])));
+                                        width: double.maxFinite,
+                                        child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              AppCalendar(
+                                                focusedDay: DateTime(
+                                                    controller.filterYear.value,
+                                                    controller
+                                                        .filterMonth.value,
+                                                    controller.filterDay.value),
+                                                onDaySelected:
+                                                    (selectedDay, _) {
+                                                  controller
+                                                      .updateFilterTrxDate(
+                                                          selectedDay);
+                                                  SmartDialog.dismiss();
+                                                },
+                                              ),
+                                            ])));
                               });
                             },
                             borderColor: AppColor.grey300,
@@ -141,12 +142,17 @@ class TransactionScreen extends StatelessWidget {
                         ],
                       ),
                     )),
-                  SizedBox(height: 5.h,),
-                  Obx(() => Expanded(
-                    child: AppTable(
-                      onSearch: (filterValue)=>controller.updateFilterValue(filterValue),
-                      onChangePageNo: (pageNo)=>controller.updatePageNo(pageNo),
-                      onChangePageRow: (pageRow)=>controller.updatePageRow(pageRow),
+                SizedBox(
+                  height: 5.h,
+                ),
+                Obx(() => Expanded(
+                        child: AppTable(
+                      onSearch: (filterValue) =>
+                          controller.updateFilterValue(filterValue),
+                      onChangePageNo: (pageNo) =>
+                          controller.updatePageNo(pageNo),
+                      onChangePageRow: (pageRow) =>
+                          controller.updatePageRow(pageRow),
                       pageNo: controller.pageNo.value,
                       pageRow: controller.pageRow.value,
                       titles: [
@@ -167,18 +173,33 @@ class TransactionScreen extends StatelessWidget {
                           (int i) {
                         var transaction = controller.transactionHeader[i];
                         return [
-                          AppTableCell(value: transaction.salesId.substring(transaction.salesId.length-4), index: i),
-                          AppTableCell(value: transaction.salesDate.split("T")[0], index: i),
+                          AppTableCell(
+                              value: transaction.salesId
+                                  .substring(transaction.salesId.length - 4),
+                              index: i),
+                          AppTableCell(
+                              value: transaction.salesDate.split("T")[0],
+                              index: i),
                           AppTableCell(value: transaction.cashierBy, index: i),
-                          AppTableCell(value: transaction.supplierName, index: i),
-                          AppTableCell(value: transaction.queueNumber.toString(), index: i),
+                          AppTableCell(
+                              value: transaction.supplierName, index: i),
+                          AppTableCell(
+                              value: transaction.queueNumber.toString(),
+                              index: i),
                           AppTableCell(value: transaction.sourceId, index: i),
                           AppTableCell(value: transaction.statusDesc, index: i),
-                          AppTableCell(value: transaction.bookingType, index: i),
-                          AppTableCell(value: transaction.nettoVal.toString(), index: i),
-                          AppTableCell(value: transaction.settlePaymentMethod, index: i),
-                          AppTableCell(value: transaction.paymentVal.toString(), index: i),
-                          AppTableCell(value: transaction.totalHutang.toString(), index: i),
+                          AppTableCell(
+                              value: transaction.bookingType, index: i),
+                          AppTableCell(
+                              value: transaction.nettoVal.toString(), index: i),
+                          AppTableCell(
+                              value: transaction.settlePaymentMethod, index: i),
+                          AppTableCell(
+                              value: transaction.paymentVal.toString(),
+                              index: i),
+                          AppTableCell(
+                              value: transaction.totalHutang.toString(),
+                              index: i),
                         ];
                       }),
                       onRefresh: () => controller.fetchTransactions(),

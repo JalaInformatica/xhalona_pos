@@ -1,10 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:xhalona_pos/core/helper/global_helper.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/core/helper/global_helper.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_controller.dart';
-import 'package:xhalona_pos/widgets/app_image.dart';
 
 class PosScreen extends StatelessWidget {
   final PosController controller = Get.put(PosController());
@@ -58,7 +57,8 @@ class PosScreen extends StatelessWidget {
                                   Image.network(
                                     "https://dreadnought.core-erp.com/XHALONA/${product.mainImage}",
                                     fit: BoxFit.cover,
-                                    errorBuilder: (context, object, stackTrace) {
+                                    errorBuilder:
+                                        (context, object, stackTrace) {
                                       return SvgPicture.asset(
                                         'assets/logo-only-pink.svg',
                                         color: AppColor.grey300,
@@ -68,7 +68,8 @@ class PosScreen extends StatelessWidget {
                                   ),
                                   Column(
                                     mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         product.partName,
