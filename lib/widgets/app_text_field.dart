@@ -8,17 +8,17 @@ class AppTextField extends TextField{
     String? hintText,
     String? labelText,
     Color? fillColor,
-    Widget? icon,
-    bool isScurePass = false,
+    Widget? prefixIcon,
+    Widget? suffixIcon,
     TextInputAction? inputAction = TextInputAction.done,
     required TextEditingController textEditingController,
     EdgeInsets? contentPadding,
+    super.onChanged,
   }) : super(
-    onTapOutside: (_) {
+      onTapOutside: (_) {
         FocusScope.of(context).unfocus();
       },
       controller: textEditingController,
-      obscureText: isScurePass,
       style: style ?? AppTextStyle.textBodyStyle(),
       cursorColor: AppColor.primaryColor,
       textInputAction: inputAction,
@@ -37,7 +37,10 @@ class AppTextField extends TextField{
           style ?? AppTextStyle.textBodyStyle()).copyWith(
           color: AppColor.grey500,
         ),
-        suffixIcon: icon,
+        prefixIcon: prefixIcon,
+        prefixIconColor: AppColor.grey500,
+        suffixIcon: suffixIcon,
+        suffixIconColor: AppColor.grey500,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(5),
           borderSide: BorderSide(color: AppColor.grey100),

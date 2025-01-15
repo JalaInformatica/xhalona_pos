@@ -46,7 +46,7 @@ class TransactionHeaderDAO {
   String orderAddress;
   String orderKelurahanId;
   String orderPoint;
-  String orderDistance;
+  int orderDistance;
   String sourceId;
   bool storeIsHomeVisit;
   String storeMapLocation;
@@ -120,7 +120,7 @@ class TransactionHeaderDAO {
     this.orderAddress = "",
     this.orderKelurahanId = "",
     this.orderPoint = "",
-    this.orderDistance = "",
+    this.orderDistance = 0,
     this.sourceId = "",
     this.storeIsHomeVisit = false,
     this.storeMapLocation = "",
@@ -195,7 +195,7 @@ class TransactionHeaderDAO {
         orderAddress = json['ORDER_ADDRESS'] ?? "",
         orderKelurahanId = json['ORDER_KELURAHAN_ID'] ?? "",
         orderPoint = json['ORDER_POINT'] ?? "",
-        orderDistance = json['ORDER_DISTANCE'] ?? "",
+        orderDistance = json['ORDER_DISTANCE'] ?? 0,
         sourceId = json['SOURCE_ID'] ?? "",
         storeIsHomeVisit = json['STORE_IS_HOME_VISIT'] ?? false,
         storeMapLocation = json['STORE_MAP_LOCATION'] ?? "",

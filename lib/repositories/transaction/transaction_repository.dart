@@ -10,12 +10,22 @@ class TransactionRepository extends AppRepository {
     int? pageRow,
     String? filterField,
     String? filterValue,
+    int? filterDay,
+    int? filterMonth,
+    int? filterYear,
+    String? statusCategory,
+    String? sourceId
   }) async {
     var result = await _transactionService.getTransactions(
       pageNo: pageNo,
       pageRow: pageRow,
       filterField: filterField,
-      filterValue: filterValue   
+      filterValue: filterValue,
+      filterDay: filterDay,
+      filterMonth: filterMonth,
+      filterYear: filterYear,
+      statusCategory: statusCategory,
+      sourceId: sourceId
     );
 
     List data = getResponseListData(result);

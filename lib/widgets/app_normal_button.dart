@@ -1,39 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 
-enum AppElevatedButtonSize {
+enum AppTextButtonSize {
   small,
   big
 }
 
-class AppElevatedButton extends ElevatedButton {
-  AppElevatedButton({
+class AppTextButton extends TextButton {
+  AppTextButton({
     super.key, 
     required VoidCallback? onPressed,
-    required Widget text, 
+    required Widget child, 
     Color? backgroundColor,
     Color? borderColor,
     Color? foregroundColor,
     bool isLoading = false, 
     bool disabled = false,
     EdgeInsets? padding, 
-    AppElevatedButtonSize size = AppElevatedButtonSize.small,
-    double? elevation,
+    AppTextButtonSize size = AppTextButtonSize.small,
   }) : super(
         onPressed: !disabled? onPressed : null,
-        child: text,
+        child: child,
         style: TextButton.styleFrom(
           foregroundColor: foregroundColor ?? AppColor.primaryColor,
           backgroundColor: backgroundColor ?? Colors.white,
-          visualDensity: size==AppElevatedButtonSize.small? VisualDensity.compact : VisualDensity.standard,
+          visualDensity: size == AppTextButtonSize.small? VisualDensity.compact : VisualDensity.standard,
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           padding: padding,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5),
             side: BorderSide(color: disabled? AppColor.grey500 : borderColor ?? AppColor.primaryColor),
           ),
-          elevation: elevation
         ),
       );
 }
-
