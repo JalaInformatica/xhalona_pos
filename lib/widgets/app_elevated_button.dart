@@ -19,6 +19,7 @@ class AppElevatedButton extends ElevatedButton {
     EdgeInsets? padding, 
     AppElevatedButtonSize size = AppElevatedButtonSize.small,
     double? elevation,
+    BorderRadius? borderRadius
   }) : super(
         onPressed: !disabled? onPressed : null,
         child: text,
@@ -29,7 +30,7 @@ class AppElevatedButton extends ElevatedButton {
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           padding: padding,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: borderRadius ?? BorderRadius.circular(5),
             side: BorderSide(color: disabled? AppColor.grey500 : borderColor ?? AppColor.primaryColor),
           ),
           elevation: elevation
