@@ -3,6 +3,7 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 
 class AppDialog extends AlertDialog {
   AppDialog({
+    super.key, 
     super.content,
     super.contentPadding,
     super.contentTextStyle,
