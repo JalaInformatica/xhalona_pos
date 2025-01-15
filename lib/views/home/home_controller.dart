@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
-import 'package:xhalona_pos/models/dao/structure.dart';
 import 'package:xhalona_pos/models/dao/user.dart';
-import 'package:xhalona_pos/repositories/structure/structure_repository.dart';
+import 'package:xhalona_pos/models/dao/structure.dart';
 import 'package:xhalona_pos/repositories/user/user_repository.dart';
+import 'package:xhalona_pos/repositories/structure/structure_repository.dart';
 
 class HomeController extends GetxController {
   final StructureRepository _structureRepository = StructureRepository();
@@ -12,6 +12,7 @@ class HomeController extends GetxController {
   var menuData = <MenuDAO>[].obs;
   var profileData = UserDAO().obs;
   var selectedMenuName = "pos".obs;
+  var isOpenMaster = false.obs;
 
   @override
   void onInit() {

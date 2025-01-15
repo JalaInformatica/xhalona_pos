@@ -3,29 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
-import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/master/karyawan/karyawan_controller.dart';
 
-class MasterProductScreen extends StatelessWidget {
-  MasterProductScreen({super.key});
+class MasterKaryawanScreen extends StatelessWidget {
+  MasterKaryawanScreen({super.key});
 
-  final ProductController controller = Get.put(ProductController());
-
-  Widget checkboxItem(String title, bool value, ValueChanged<bool?> onChanged) {
-    return Row(
-      children: [
-        Checkbox(
-          value: value,
-          onChanged: onChanged,
-          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          visualDensity: VisualDensity.compact,
-        ),
-        Text(
-          title,
-          style: AppTextStyle.textBodyStyle(),
-        ),
-      ],
-    );
-  }
+  final KaryawanController controller = Get.put(KaryawanController());
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +21,7 @@ class MasterProductScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Master Produk"),
+          title: Text("Master Karyawan"),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
@@ -57,25 +40,6 @@ class MasterProductScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Obx(
-                () => Row(
-                  children: [
-                    checkboxItem("Jasa", controller.isJasa.value,
-                        (_) => controller.updateFilterJasa()),
-                    checkboxItem("Stock", controller.isStock.value,
-                        (_) => controller.updateFilterStock()),
-                    checkboxItem("Paket", controller.isPaket.value,
-                        (_) => controller.updateFilterPaket()),
-                    checkboxItem("Promo", controller.isPromo.value,
-                        (_) => controller.updateFilterPromo()),
-                    checkboxItem("Bahan", controller.isBahan.value,
-                        (_) => controller.updateFilterBahan()),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 5.h,
-              ),
               // SingleChildScrollView(
               //     scrollDirection: Axis.horizontal,
               //     child: Obx(
@@ -127,55 +91,59 @@ class MasterProductScreen extends StatelessWidget {
                     pageNo: controller.pageNo.value,
                     pageRow: controller.pageRow.value,
                     titles: [
-                      AppTableTitle(value: "ID"),
-                      AppTableTitle(value: "Image"),
-                      AppTableTitle(value: "Produk"),
-                      AppTableTitle(value: "Kategori"),
-                      AppTableTitle(value: "Ket."),
-                      AppTableTitle(value: "Satuan"),
-                      AppTableTitle(value: "Qty"),
-                      AppTableTitle(value: "Harga"),
-                      AppTableTitle(value: "Disc %"),
-                      AppTableTitle(value: "Disc (Rp)"),
-                      AppTableTitle(value: "Tetap"),
-                      AppTableTitle(value: "Terjual Fee %"),
-                      AppTableTitle(value: "Fee (Rp)"),
-                      AppTableTitle(value: "Ubah Harga"),
-                      AppTableTitle(value: "Free"),
+                      AppTableTitle(value: "NIK"),
+                      AppTableTitle(value: "Nama"),
+                      AppTableTitle(value: "Tgl Masuk"),
+                      AppTableTitle(value: "BPJS Kes"),
+                      AppTableTitle(value: "BPJS Ket."),
+                      AppTableTitle(value: "JK"),
+                      AppTableTitle(value: "Tgl Lahir"),
+                      AppTableTitle(value: "Alamat"),
+                      AppTableTitle(value: "Bagian"),
+                      AppTableTitle(value: "Bonus"),
+                      AppTableTitle(value: "Target"),
+                      AppTableTitle(value: "Aksi"),
                     ],
-                    data:
-                        List.generate(controller.productHeader.length, (int i) {
-                      var product = controller.productHeader[i];
+                    data: List.generate(controller.karyawanHeader.length,
+                        (int i) {
+                      var karyawan = controller.karyawanHeader[i];
                       return [
-                        AppTableCell(value: product.partId, index: i),
+                        AppTableCell(value: karyawan.empId, index: i),
+                        AppTableCell(value: karyawan.fullName, index: i),
                         AppTableCell(
-                          value: product.mainImage,
+                            value: karyawan.dateIn.split("T").first, index: i),
+                        AppTableCell(value: karyawan.bpjsNo, index: i),
+                        AppTableCell(value: '${karyawan.bpjsTk}', index: i),
+                        AppTableCell(
+                            value:
+                                '${karyawan.gender == 1 ? 'Laki-laki' : 'Perempuan'}',
+                            index: i),
+                        AppTableCell(
+                            value: karyawan.birthDate!.split("T").first,
+                            index: i),
+                        AppTableCell(value: '${karyawan.alamat}', index: i),
+                        AppTableCell(value: '${karyawan.kd_dept}', index: i),
+                        AppTableCell(
+                            value: formatCurrency(karyawan.bonusAmount),
+                            index: i),
+                        AppTableCell(
+                            value: formatCurrency(karyawan.bonusAmount),
+                            index: i),
+                        AppTableCell(
                           index: i,
-                          imageUrl:
-                              'https://dreadnought.core-erp.com/XHALONA/${product.mainImage}',
+                          value: "", // Ganti dengan URL gambar jika ada
+                          isEdit: true,
+                          isDelete: true,
+                          onEdit: () {
+                            print("Edit tapped");
+                          },
+                          onDelete: () {
+                            print("Delete tapped");
+                          },
+                          onAdd: () {
+                            print("Add tapped");
+                          },
                         ),
-                        AppTableCell(value: product.partName, index: i),
-                        AppTableCell(value: product.analisaId, index: i),
-                        AppTableCell(value: product.ketAnalisa, index: i),
-                        AppTableCell(value: product.unit1, index: i),
-                        AppTableCell(value: '${product.qtyPerUnit1}', index: i),
-                        AppTableCell(
-                            value: '${product.unitPriceNet}', index: i),
-                        AppTableCell(value: '${product.discountPct}', index: i),
-                        AppTableCell(value: '${product.discountVal}', index: i),
-                        AppTableCell(value: '${product.unitPrice}', index: i),
-                        AppTableCell(
-                            value: '${product.employeeFeePct}', index: i),
-                        AppTableCell(
-                            value: '${product.employeeFeeVal}', index: i),
-                        AppTableCell(
-                            value:
-                                '${product.isFixPrice == 'true' ? 'Iya' : 'Tidak'}',
-                            index: i),
-                        AppTableCell(
-                            value:
-                                '${product.isFree == 'true' ? 'Iya' : 'Tidak'}',
-                            index: i),
                       ];
                     }),
                     onRefresh: () => controller.fetchProducts(),

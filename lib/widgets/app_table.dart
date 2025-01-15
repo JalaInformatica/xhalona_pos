@@ -1,11 +1,12 @@
 import 'dart:async';
-
-import 'package:flutter/material.dart';
-import 'package:horizontal_data_table/horizontal_data_table.dart';
+import 'package:intl/intl.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:xhalona_pos/widgets/app_text_field.dart';
+import 'package:xhalona_pos/widgets/app_icon_button.dart';
+import 'package:horizontal_data_table/horizontal_data_table.dart';
 
 // ignore: must_be_immutable
 class AppTable extends StatefulWidget {
@@ -52,11 +53,11 @@ class _AppTableState extends State<AppTable> {
       widget.onSearch(query);
     });
   }
-  
+
   @override
   void dispose() {
     searchController.dispose();
-    _debounce?.cancel(); 
+    _debounce?.cancel();
     super.dispose();
   }
 
@@ -69,113 +70,120 @@ class _AppTableState extends State<AppTable> {
           children: [
             Expanded(
               child: SizedBox(
-                height: 42.h,
-                child: AppTextField(
-                  context: context,
-                  textEditingController: searchController,
-                  hintText: "Cari",
-                  onChanged: _onChanged,
-                  prefixIcon: Icon(Icons.search),
-                  contentPadding: EdgeInsets.all(0),
-                )
-              ),
+                  height: 42.h,
+                  child: AppTextField(
+                    context: context,
+                    textEditingController: searchController,
+                    hintText: "Cari",
+                    onChanged: _onChanged,
+                    prefixIcon: Icon(Icons.search),
+                    contentPadding: EdgeInsets.all(0),
+                  )),
             ),
-            !widget.isRefreshing? 
-              AppIconButton(
-                backgroundColor: AppColor.doneColor,
-                foregroundColor: AppColor.whiteColor,
-                shape: CircleBorder(),
-                onPressed: widget.onRefresh,
-                icon: Icon(Icons.refresh)
-              )
-            : Padding(
-                padding: EdgeInsets.all(8),
-                  child: SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    color: AppColor.doneColor,
-                    strokeWidth: 4,
-                  )
-              )),
+            !widget.isRefreshing
+                ? AppIconButton(
+                    backgroundColor: AppColor.doneColor,
+                    foregroundColor: AppColor.whiteColor,
+                    shape: CircleBorder(),
+                    onPressed: widget.onRefresh,
+                    icon: Icon(Icons.refresh))
+                : Padding(
+                    padding: EdgeInsets.all(8),
+                    child: SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          color: AppColor.doneColor,
+                          strokeWidth: 4,
+                        ))),
           ],
         ),
-        SizedBox(height: 5.h,),
+        SizedBox(
+          height: 5.h,
+        ),
         !widget.isRefreshing
-          ? Flexible(
-              child: HorizontalDataTable(
-              leftHandSideColumnWidth: 100,
-              rightHandSideColumnWidth: (100*(widget.titles.length-1)).toDouble(),
-              isFixedHeader: true,
-              headerWidgets: widget.titles,
-              leftSideItemBuilder: (context, index) {
-                return widget.data[index][0];
-              },
-              rightSideItemBuilder: (context, index) {
-                return Row(
-                  children: widget.data[index].map<Widget>((cell) => cell).skip(1).toList(),
-                );
-              },
-              itemCount: widget.data.length,
-            ))
-          : Flexible(child: _buildShimmerTable()),
-        SizedBox(height: 5.h,),
+            ? Flexible(
+                child: HorizontalDataTable(
+                leftHandSideColumnWidth: 100,
+                rightHandSideColumnWidth:
+                    (100 * (widget.titles.length - 1)).toDouble(),
+                isFixedHeader: true,
+                headerWidgets: widget.titles,
+                leftSideItemBuilder: (context, index) {
+                  return widget.data[index][0];
+                },
+                rightSideItemBuilder: (context, index) {
+                  return Row(
+                    children: widget.data[index]
+                        .map<Widget>((cell) => cell)
+                        .skip(1)
+                        .toList(),
+                  );
+                },
+                itemCount: widget.data.length,
+              ))
+            : Flexible(child: _buildShimmerTable()),
+        SizedBox(
+          height: 5.h,
+        ),
         Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             AppIconButton(
-              onPressed: (){
-                widget.onChangePageNo(widget.pageNo-1);
-              }, 
+              onPressed: () {
+                widget.onChangePageNo(widget.pageNo - 1);
+              },
               icon: Icon(Icons.arrow_back_ios_rounded),
               // padding: EdgeInsets.zero,
             ),
             Container(
               width: 25.w,
               decoration: BoxDecoration(
-                border: Border.all(),
-                borderRadius: BorderRadius.circular(5)
-              ),
+                  border: Border.all(), borderRadius: BorderRadius.circular(5)),
               child: Text(
-                "${widget.pageNo}", 
+                "${widget.pageNo}",
                 style: AppTextStyle.textBodyStyle(),
                 textAlign: TextAlign.center,
-                ),
+              ),
             ),
             AppIconButton(
-              onPressed: (){
-                widget.onChangePageNo(widget.pageNo+1);
-              }, 
+              onPressed: () {
+                widget.onChangePageNo(widget.pageNo + 1);
+              },
               icon: Icon(Icons.arrow_forward_ios_rounded),
               // padding: EdgeInsets.zero,
             ),
             Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: AppColor.grey500),
-                borderRadius: BorderRadius.circular(5)
-              ),
-              child: DropdownButton<String>(
-                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-                  value: "${widget.pageRow}/page", // Set the currently selected value
+                decoration: BoxDecoration(
+                    border: Border.all(color: AppColor.grey500),
+                    borderRadius: BorderRadius.circular(5)),
+                child: DropdownButton<String>(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+                  value:
+                      "${widget.pageRow}/page", // Set the currently selected value
                   onChanged: (String? newValue) {
-                    widget.onChangePageRow(int.parse((newValue ?? "10/page").split("/")[0]));
+                    widget.onChangePageRow(
+                        int.parse((newValue ?? "10/page").split("/")[0]));
                   },
                   icon: Icon(Icons.arrow_drop_down),
                   isDense: true,
                   dropdownColor: AppColor.whiteColor,
-                  items: dropdownItems.map<DropdownMenuItem<String>>((String value) {
+                  items: dropdownItems
+                      .map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
-                      child: Text(value, style: AppTextStyle.textBodyStyle(),),
+                      child: Text(
+                        value,
+                        style: AppTextStyle.textBodyStyle(),
+                      ),
                     );
                   }).toList(),
                   elevation: 8,
-              )  
-            ),
+                )),
           ],
         )
-        
       ],
     );
   }
@@ -198,12 +206,10 @@ class _AppTableState extends State<AppTable> {
               baseColor: Colors.grey[300]!,
               highlightColor: Colors.grey[100]!,
               child: Row(
-                children: widget.titles.map((title){
-                  return Padding(
-                    padding: EdgeInsets.only(bottom: 5.w),
-                    child: title);
-                }).toList()
-              ),
+                  children: widget.titles.map((title) {
+                return Padding(
+                    padding: EdgeInsets.only(bottom: 5.w), child: title);
+              }).toList()),
             );
           },
         ),
@@ -212,35 +218,144 @@ class _AppTableState extends State<AppTable> {
   }
 }
 
-class AppTableCell extends Container {
+String formatCurrency(num? amount,
+    {String locale = 'id_ID', String symbol = 'Rp'}) {
+  final format =
+      NumberFormat.currency(locale: locale, symbol: symbol, decimalDigits: 0);
+  return format.format(amount ?? 0); // Gunakan 0 jika amount bernilai null
+}
+
+class AppTableCell extends StatelessWidget {
+  final int index;
+  final String value;
+  final String? imageUrl;
+  final double width;
+  final double height;
+  final bool isEdit;
+  final bool isDelete;
+  final bool isAdd;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
+  final VoidCallback? onAdd;
+
   AppTableCell({
-    super.key,
-    required int index,
-    required String value,
-    double? width,
-    double? height})
-    : super(
-        width: width ?? 100,
-        height: height ?? 56,
-        alignment: Alignment.center,
-        color: index % 2 == 0 ? AppColor.whiteColor : AppColor.tertiaryColor,
-        child: Text(
-          value,
-          style: AppTextStyle.textBodyStyle(),
-        ),
-      );
+    Key? key,
+    required this.index,
+    required this.value,
+    this.imageUrl,
+    this.width = 100,
+    this.height = 56,
+    this.isEdit = false,
+    this.isDelete = false,
+    this.isAdd = false,
+    this.onEdit,
+    this.onDelete,
+    this.onAdd,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final backgroundColor =
+        index % 2 == 0 ? Colors.white : AppColor.secondaryColor;
+
+    return Container(
+      width: width,
+      height: height,
+      alignment: Alignment.center,
+      color: backgroundColor,
+      child: Stack(
+        children: [
+          if (imageUrl != null)
+            Image.network(
+              imageUrl!,
+              fit: BoxFit.cover,
+              width: width * 0.8,
+              height: height * 0.8,
+              errorBuilder: (context, object, stackTrace) {
+                return SvgPicture.asset(
+                  'assets/logo-only-pink.svg',
+                  color: Colors.grey,
+                  fit: BoxFit.cover,
+                );
+              },
+            )
+          else
+            Center(
+              child: Text(
+                value,
+                style: TextStyle(fontSize: 14, color: Colors.black),
+              ),
+            ),
+          if (isEdit || isDelete || isAdd)
+            Positioned(
+              right: 0,
+              top: 0,
+              child: Row(
+                children: [
+                  if (isEdit)
+                    _buildIconContainer(
+                      icon: Icons.edit,
+                      color: Colors.blue,
+                      tooltip: 'Edit',
+                      onPressed: onEdit,
+                      backgroundColor: Colors.blue.withOpacity(0.1),
+                    ),
+                  if (isDelete)
+                    _buildIconContainer(
+                      icon: Icons.delete,
+                      color: Colors.red,
+                      tooltip: 'Delete',
+                      onPressed: onDelete,
+                      backgroundColor: Colors.red.withOpacity(0.1),
+                    ),
+                  if (isAdd)
+                    _buildIconContainer(
+                      icon: Icons.add,
+                      color: Colors.green,
+                      tooltip: 'Add',
+                      onPressed: onAdd,
+                      backgroundColor: Colors.green.withOpacity(0.1),
+                    ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildIconContainer({
+    required IconData icon,
+    required Color color,
+    required String tooltip,
+    required VoidCallback? onPressed,
+    required Color backgroundColor,
+  }) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 2),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        shape: BoxShape.circle,
+      ),
+      child: IconButton(
+        icon: Icon(icon, color: color, size: 16),
+        onPressed: onPressed,
+        tooltip: tooltip,
+      ),
+    );
+  }
 }
 
 class AppTableTitle extends Container {
   AppTableTitle({super.key, required value, double? width, double? height})
-    : super(
-        width: width ?? 100,
-        height: height ?? 56,
-        alignment: Alignment.center,
-        color: AppColor.secondaryColor,
-        child: Text(
-          value,
-          style: AppTextStyle.textSubtitleStyle(color: AppColor.whiteColor),
-        ),
-      );
+      : super(
+          width: width ?? 100,
+          height: height ?? 56,
+          alignment: Alignment.center,
+          color: AppColor.secondaryColor,
+          child: Text(
+            value,
+            style: AppTextStyle.textSubtitleStyle(color: AppColor.whiteColor),
+          ),
+        );
 }

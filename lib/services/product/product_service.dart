@@ -1,22 +1,23 @@
 import 'dart:convert';
-import 'package:xhalona_pos/services/api_service.dart' as api;
 import 'package:xhalona_pos/services/response_handler.dart';
+import 'package:xhalona_pos/services/api_service.dart' as api;
 
 class ProductService {
   Future<String> getProducts({
     int? pageNo,
     int? pageRow,
-    int? isActive,
-    int? isStock,
-    int? isPacket,
-    int? isFixQty,
-    int? isNonSales,
-    int? isPromo,
+    String? isActive,
+    String? isStock,
+    String? isPacket,
+    String? isFixQty,
+    String? isNonSales,
+    String? isPromo,
     String? analisaIdGlobal,
     String? analisaId,
     String? partId,
     String? filterField,
     String? filterValue
+    String? filterValue,
   }) async {
     await api.fetchUserSessionInfo();
     var url = '/SALES/m_produk';
@@ -28,7 +29,7 @@ class ProductService {
         "USER_ID": api.userId,
         "SESSION_LOGIN_ID": api.sessionId,
         "FILTER_FIELD": filterField ?? "",
-        "FILTER_VALUE": filterValue ?? "",
+        "FILTER_VALUE": filterValue ?? filterValue ?? '',
         "PAGE_NO": pageNo ?? 1,
         "PAGE_ROW": pageRow ?? 10,
         "SORT_ORDER_BY": "ROW_ID",
@@ -44,11 +45,10 @@ class ProductService {
         "IS_NON_SALES": isNonSales ?? "",
       }
     });
-    var response = await api.post(
-      url,
-      headers: await api.requestHeaders(),
-      body: body
-    );
+
+    print('object: $body');
+    var response =
+        await api.post(url, headers: await api.requestHeaders(), body: body);
 
     return ResponseHandler.handle(response);
   }
