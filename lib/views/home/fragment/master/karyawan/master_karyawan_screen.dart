@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
 
-class MasterProductScreen extends StatefulWidget {
-  const MasterProductScreen({super.key});
+class MasterKaryawanScreen extends StatefulWidget {
+  const MasterKaryawanScreen({super.key});
 
   @override
   // ignore: library_private_types_in_public_api
   _TablePageState createState() => _TablePageState();
 }
 
-class _TablePageState extends State<MasterProductScreen> {
+class _TablePageState extends State<MasterKaryawanScreen> {
   TextEditingController _searchController = TextEditingController();
   List<Map<String, String>> _data = [];
   List<Map<String, String>> _filteredData = [];
@@ -63,7 +63,7 @@ class _TablePageState extends State<MasterProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Master Produk"),
+        title: Text("Master Karywan"),
       ),
       body: Column(
         children: [

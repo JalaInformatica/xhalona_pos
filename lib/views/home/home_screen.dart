@@ -20,6 +20,8 @@ import 'package:xhalona_pos/views/home/fragment/finance/finance_screen.dart';
 import 'package:xhalona_pos/repositories/structure/structure_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/dashboard/dashboard_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/transaction/transaction_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/master_product_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/master/karyawan/master_karyawan_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final HomeController controller = Get.put(HomeController());
@@ -150,6 +152,27 @@ class HomeScreen extends StatelessWidget {
                 ),
               )
             ]))));
+  }
+
+  Widget masterButton(Function() menu, String title, Widget icon) {
+    return ElevatedButton(
+        onPressed: menu,
+        style: TextButton.styleFrom(
+          backgroundColor: AppColor.primaryColor,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            icon,
+            SizedBox(
+              width: 5.w,
+            ),
+            Text(
+              title,
+              style: AppTextStyle.textSubtitleStyle(color: AppColor.whiteColor),
+            ),
+          ],
+        ));
   }
 
   @override
@@ -520,6 +543,59 @@ class HomeScreen extends StatelessWidget {
                                   ],
                                 ),
                               )
+                        : SizedBox.shrink(),
+                    controller.selectedMenuName.value.toLowerCase() == "master"
+                        ? !controller.isOpenMaster.value
+                            ? Container(
+                                height: 50,
+                                width: double.infinity,
+                                padding: EdgeInsets.all(5),
+                                child: ListView(
+                                  scrollDirection: Axis.horizontal,
+                                  children: [
+                                    masterButton(() {
+                                      Navigator.of(context).pushAndRemoveUntil(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  MasterProductScreen()),
+                                          (route) => false);
+                                    },
+                                        "Master Produk",
+                                        Icon(Icons.shopping_bag,
+                                            color: Colors.white)),
+                                    SizedBox(width: 5.w),
+                                    masterButton(() {
+                                      Navigator.of(context).pushAndRemoveUntil(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  MasterKaryawanScreen()),
+                                          (route) => false);
+                                    },
+                                        "Master Karyawan",
+                                        Icon(Icons.account_circle,
+                                            color: Colors.white)),
+                                    SizedBox(width: 5.w),
+                                    masterButton(
+                                        () {},
+                                        "Master Coa",
+                                        Icon(Icons.account_balance,
+                                            color: Colors.white)),
+                                    SizedBox(width: 5.w),
+                                    masterButton(
+                                        () {},
+                                        "Master Pengguna",
+                                        Icon(Icons.shopping_bag,
+                                            color: Colors.white)),
+                                    SizedBox(width: 5.w),
+                                    masterButton(
+                                        () {},
+                                        "Master Terapis",
+                                        Icon(Icons.shopping_bag,
+                                            color: Colors.white)),
+                                  ],
+                                ),
+                              )
+                            : SizedBox.shrink()
                         : SizedBox.shrink(),
                     SizedBox(height: 5),
                     Container(

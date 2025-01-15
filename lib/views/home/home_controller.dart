@@ -1,11 +1,11 @@
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:get/get.dart';
+import 'package:xhalona_pos/models/dao/user.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:xhalona_pos/models/dao/employee.dart';
 import 'package:xhalona_pos/models/dao/structure.dart';
-import 'package:xhalona_pos/models/dao/user.dart';
+import 'package:xhalona_pos/repositories/user/user_repository.dart';
 import 'package:xhalona_pos/repositories/employee/employee_repository.dart';
 import 'package:xhalona_pos/repositories/structure/structure_repository.dart';
-import 'package:xhalona_pos/repositories/user/user_repository.dart';
 
 class HomeController extends GetxController {
   final StructureRepository _structureRepository = StructureRepository();
@@ -18,6 +18,7 @@ class HomeController extends GetxController {
   var selectedMenuName = "pos".obs;
 
   var isOpenTransaksi = false.obs;
+  var isOpenMaster = false.obs;
 
   @override
   void onInit() {
@@ -31,7 +32,8 @@ class HomeController extends GetxController {
     isMenuLoading.value = false;
   }
 
-  Future<List<EmployeeDAO>> getEmployees(String filter, [LoadProps? props])async{
+  Future<List<EmployeeDAO>> getEmployees(String filter,
+      [LoadProps? props]) async {
     return await _employeeRepository.getEmployees(filterField: filter);
   }
 }
