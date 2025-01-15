@@ -1,163 +1,190 @@
 import 'package:flutter/material.dart';
-import 'package:horizontal_data_table/horizontal_data_table.dart';
-import 'package:xhalona_pos/models/dao/transaction.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:get/get.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:xhalona_pos/core/constant/transaction.dart';
+import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/views/home/fragment/transaction/transaction_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/transaction/transaction_widget.dart';
+import 'package:xhalona_pos/widgets/app_calendar.dart';
+import 'package:xhalona_pos/widgets/app_normal_button.dart';
+import 'package:xhalona_pos/widgets/app_table.dart';
 
 class TransactionScreen extends StatelessWidget {
+  TransactionScreen({super.key});
+
+  final TransactionController controller = Get.put(TransactionController());
+
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
+    return Scaffold(
+        backgroundColor: AppColor.whiteColor,
+        body: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: 10.w,
+              vertical: 10.h,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Obx(() => Row(
+                      children: [
+                        Checkbox(
+                          value: controller.isOnline.value,
+                          onChanged: (_) => controller.updateFilterTrxOnline(),
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          visualDensity: VisualDensity.compact,
+                        ),
+                        Text(
+                          "Online",
+                          style: AppTextStyle.textBodyStyle(),
+                        ),
+                        Spacer(),
+                        AppTextButton(
+                            onPressed: () {
+                              SmartDialog.show(builder: (context) {
+                                return AlertDialog(
+                                    backgroundColor: AppColor.whiteColor,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5)
+                                    ),
+                                    content: SizedBox(
+                                      width: double.maxFinite,
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          AppCalendar(
+                                            focusedDay: DateTime(
+                                              controller.filterYear.value,
+                                              controller.filterMonth.value,
+                                              controller.filterDay.value
+                                            ),
+                                            onDaySelected: (selectedDay, _){
+                                              controller.updateFilterTrxDate(selectedDay);
+                                              SmartDialog.dismiss();
+                                            },
+                                          ),
+                                      ])));
+                              });
+                            },
+                            borderColor: AppColor.grey300,
+                            foregroundColor: AppColor.blackColor,
+                            child:
+                                Row(mainAxisSize: MainAxisSize.min, children: [
+                              Text(
+                                "${controller.filterDay ?? "--"}/${controller.filterMonth ?? "--"}/${controller.filterYear ?? "--"}",
+                                style: AppTextStyle.textBodyStyle(),
+                              ),
+                              SizedBox(
+                                width: 5.w,
+                              ),
+                              Icon(
+                                Icons.calendar_month,
+                                color: AppColor.grey500,
+                              )
+                            ]))
+                      ],
+                    )),
+                SizedBox(
+                  height: 5.h,
+                ),
+                SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Obx(
+                      () => Wrap(
+                        spacing: 5.w,
+                        children: [
+                          transactionFilterButton(
+                            text: "Berjalan",
+                            onPressed: () =>
+                                controller.updateFilterTrxStatusCategory(
+                                    TransactionStatusCategory.progress),
+                            isSelected: controller.trxStatusCategory.value ==
+                                TransactionStatusCategory.progress,
+                          ),
+                          transactionFilterButton(
+                              text: "Berhasil",
+                              onPressed: () =>
+                                  controller.updateFilterTrxStatusCategory(
+                                      TransactionStatusCategory.done),
+                              isSelected: controller.trxStatusCategory.value ==
+                                  TransactionStatusCategory.done),
+                          transactionFilterButton(
+                              text: "Tertunda",
+                              onPressed: () =>
+                                  controller.updateFilterTrxStatusCategory(
+                                      TransactionStatusCategory.late),
+                              isSelected: controller.trxStatusCategory.value ==
+                                  TransactionStatusCategory.late),
+                          transactionFilterButton(
+                              text: "Batal",
+                              onPressed: () =>
+                                  controller.updateFilterTrxStatusCategory(
+                                      TransactionStatusCategory.cancel),
+                              isSelected: controller.trxStatusCategory.value ==
+                                  TransactionStatusCategory.cancel),
+                          transactionFilterButton(
+                              text: "Semua",
+                              onPressed: () =>
+                                  controller.updateFilterTrxStatusCategory(
+                                      TransactionStatusCategory.all),
+                              isSelected: controller.trxStatusCategory.value ==
+                                  TransactionStatusCategory.all),
+                          transactionFilterButton(
+                              text: "Penjadwalan Ulang",
+                              onPressed: () =>
+                                  controller.updateFilterTrxStatusCategory(
+                                      TransactionStatusCategory.reschedule),
+                              isSelected: controller.trxStatusCategory.value ==
+                                  TransactionStatusCategory.reschedule),
+                        ],
+                      ),
+                    )),
+                  SizedBox(height: 5.h,),
+                  Obx(() => Expanded(
+                    child: AppTable(
+                      onSearch: (filterValue)=>controller.updateFilterValue(filterValue),
+                      onChangePageNo: (pageNo)=>controller.updatePageNo(pageNo),
+                      onChangePageRow: (pageRow)=>controller.updatePageRow(pageRow),
+                      pageNo: controller.pageNo.value,
+                      pageRow: controller.pageRow.value,
+                      titles: [
+                        AppTableTitle(value: "Trx"),
+                        AppTableTitle(value: "Tanggal"),
+                        AppTableTitle(value: "Kasir"),
+                        AppTableTitle(value: "Nama"),
+                        AppTableTitle(value: "Antrian"),
+                        AppTableTitle(value: "Status"),
+                        AppTableTitle(value: "Keterangan"),
+                        AppTableTitle(value: "Pemesanan"),
+                        AppTableTitle(value: "Total"),
+                        AppTableTitle(value: "Pembayaran"),
+                        AppTableTitle(value: "Total Bayar"),
+                        AppTableTitle(value: "Hutang")
+                      ],
+                      data: List.generate(controller.transactionHeader.length,
+                          (int i) {
+                        var transaction = controller.transactionHeader[i];
+                        return [
+                          AppTableCell(value: transaction.salesId.substring(transaction.salesId.length-4), index: i),
+                          AppTableCell(value: transaction.salesDate.split("T")[0], index: i),
+                          AppTableCell(value: transaction.cashierBy, index: i),
+                          AppTableCell(value: transaction.supplierName, index: i),
+                          AppTableCell(value: transaction.queueNumber.toString(), index: i),
+                          AppTableCell(value: transaction.sourceId, index: i),
+                          AppTableCell(value: transaction.statusDesc, index: i),
+                          AppTableCell(value: transaction.bookingType, index: i),
+                          AppTableCell(value: transaction.nettoVal.toString(), index: i),
+                          AppTableCell(value: transaction.settlePaymentMethod, index: i),
+                          AppTableCell(value: transaction.paymentVal.toString(), index: i),
+                          AppTableCell(value: transaction.totalHutang.toString(), index: i),
+                        ];
+                      }),
+                      onRefresh: () => controller.fetchTransactions(),
+                      isRefreshing: controller.isLoading.value,
+                    )))
+              ],
+            )));
   }
-//   final List<Transaction> transactions = [
-//     Transaction(
-//       transaksi: 'T001',
-//       tanggal: '2025-01-13',
-//       kasir: 'Kasir 1',
-//       nama: 'John Doe',
-//       antrian: 'A001',
-//       status: 'Selesai',
-//       keterangan: 'Transaksi selesai',
-//       pemesanan: 'P001',
-//       total: 100000,
-//       pembayaran: 120000,
-//       totalBayar: 120000,
-//       hutang: 0,
-//     ),
-//     Transaction(
-//       transaksi: 'T002',
-//       tanggal: '2025-01-12',
-//       kasir: 'Kasir 2',
-//       nama: 'Jane Doe',
-//       antrian: 'A002',
-//       status: 'Menunggu',
-//       keterangan: 'Menunggu pembayaran',
-//       pemesanan: 'P002',
-//       total: 150000,
-//       pembayaran: 0,
-//       totalBayar: 0,
-//       hutang: 150000,
-//     ),
-//     // Add more transactions as needed
-//   ];
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return HorizontalDataTable(
-//   leftHandSideColumnWidth: 100, // Set width for the left column
-//   rightHandSideColumnWidth: 1200, // Set width for the right columns
-//   isFixedHeader: true, // Enable fixed header
-//   headerWidgets: [
-//     _getTitle('Transaksi'),
-//     _getTitle('Tanggal'),
-//     _getTitle('Kasir'),
-//     _getTitle('Nama'),
-//     _getTitle('Antrian'),
-//     _getTitle('Status'),
-//     _getTitle('Keterangan'),
-//     _getTitle('Pemesanan'),
-//     _getTitle('Total'),
-//     _getTitle('Pembayaran'),
-//     _getTitle('Total Bayar'),
-//     _getTitle('Hutang'),
-//   ],
-//   isFixedFooter: true, // Enable fixed footer
-//   footerWidgets: [
-//     _getTitle('Footer1'),
-//     _getTitle('Footer2'),
-//     _getTitle('Footer3'),
-//   ],
-//   leftSideItemBuilder: (context, index) {
-//     return Row(
-//       children: _getRow(
-//         transactions[index].transaksi, // Left column data
-//         '', // Empty for right-side columns
-//         '', // Empty for right-side columns
-//         '', // Empty for right-side columns
-//         '', // Empty for right-side columns
-//         '', // Empty for right-side columns
-//         '', // Empty for right-side columns
-//         '', // Empty for right-side columns
-//         '', // Empty for right-side columns
-//         '', // Empty for right-side columns
-//         '', // Empty for right-side columns
-//         '', // Empty for right-side columns
-//       ),
-//     );
-//   },
-//   rightSideItemBuilder: (context, index) {
-//     return Row(
-//       children: _getRow(
-//         null,
-//         transactions[index].tanggal,
-//         transactions[index].kasir,
-//         transactions[index].nama,
-//         transactions[index].antrian,
-//         transactions[index].status,
-//         transactions[index].keterangan,
-//         transactions[index].pemesanan,
-//         'Rp ${transactions[index].total.toStringAsFixed(0)}',
-//         'Rp ${transactions[index].pembayaran.toStringAsFixed(0)}',
-//         'Rp ${transactions[index].totalBayar.toStringAsFixed(0)}',
-//         'Rp ${transactions[index].hutang.toStringAsFixed(0)}',
-//       ),
-//     );
-//   },
-//   itemCount: transactions.length, // The number of items
-// );
-// }
-
-
-//   // Helper function to build a title widget
-//   Widget _getTitle(String title) {
-//     return Container(
-//       width: 100,
-//       height: 56,
-//       alignment: Alignment.center,
-//       color: Colors.grey[200],
-//       child: Text(
-//         title,
-//         style: TextStyle(fontWeight: FontWeight.bold),
-//       ),
-//     );
-//   }
-
-//   // Helper function to build a row widget (returns a list of Widgets)
-//   List<Widget> _getRow(
-//       String? transaksi,
-//       String tanggal,
-//       String kasir,
-//       String nama,
-//       String antrian,
-//       String status,
-//       String keterangan,
-//       String pemesanan,
-//       String total,
-//       String pembayaran,
-//       String totalBayar,
-//       String hutang) {
-//     return [
-//       transaksi!=null?_getCell(transaksi):SizedBox.shrink(),
-//       _getCell(tanggal),
-//       _getCell(kasir),
-//       _getCell(nama),
-//       _getCell(antrian),
-//       _getCell(status),
-//       _getCell(keterangan),
-//       _getCell(pemesanan),
-//       _getCell(total),
-//       _getCell(pembayaran),
-//       _getCell(totalBayar),
-//       _getCell(hutang),
-//     ];
-//   }
-
-//   // Helper function to build a cell widget
-//   Widget _getCell(String value) {
-//     return Container(
-//       width: 100,
-//       height: 56,
-//       alignment: Alignment.center,
-//       child: Text(value),
-//     );
-//   }
 }
