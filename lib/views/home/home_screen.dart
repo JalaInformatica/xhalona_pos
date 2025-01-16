@@ -154,29 +154,43 @@ class HomeScreen extends StatelessWidget {
             ]))));
   }
 
-  Widget masterButton(Function() menu, String title, Widget icon) {
-    return ElevatedButton(
-        onPressed: menu,
-        style: TextButton.styleFrom(
-          backgroundColor: AppColor.primaryColor,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            icon,
-            SizedBox(
-              width: 5.w,
-            ),
-            Text(
-              title,
-              style: AppTextStyle.textSubtitleStyle(color: AppColor.whiteColor),
+  Widget masterButton(VoidCallback onPressed, String label, IconData icon) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        decoration: BoxDecoration(
+          color: AppColor.secondaryColor, // Background color
+          borderRadius: BorderRadius.circular(8), // Rounded corners
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 4,
+              offset: Offset(0, 2), // Shadow position
             ),
           ],
-        ));
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: Colors.white),
+            SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Obx(() {
         if (controller.isMenuLoading.value) {
@@ -533,53 +547,70 @@ class HomeScreen extends StatelessWidget {
                       : SizedBox.shrink(),
                   controller.selectedMenuName.value.toLowerCase() == "master"
                       ? !controller.isOpenMaster.value
-                          ? Container(
-                              height: 50,
-                              width: double.infinity,
-                              padding: EdgeInsets.all(5),
-                              child: ListView(
-                                scrollDirection: Axis.horizontal,
-                                children: [
-                                  masterButton(() {
-                                    Navigator.of(context).pushAndRemoveUntil(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                MasterProductScreen()),
-                                        (route) => false);
-                                  },
-                                      "Master Produk",
-                                      Icon(Icons.shopping_bag,
-                                          color: Colors.white)),
-                                  SizedBox(width: 5.w),
-                                  masterButton(() {
-                                    Navigator.of(context).pushAndRemoveUntil(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                MasterKaryawanScreen()),
-                                        (route) => false);
-                                  },
-                                      "Master Karyawan",
-                                      Icon(Icons.account_circle,
-                                          color: Colors.white)),
-                                  SizedBox(width: 5.w),
-                                  masterButton(
-                                      () {},
-                                      "Master Coa",
-                                      Icon(Icons.account_balance,
-                                          color: Colors.white)),
-                                  SizedBox(width: 5.w),
-                                  masterButton(
-                                      () {},
-                                      "Master Pengguna",
-                                      Icon(Icons.shopping_bag,
-                                          color: Colors.white)),
-                                  SizedBox(width: 5.w),
-                                  masterButton(
-                                      () {},
-                                      "Master Terapis",
-                                      Icon(Icons.shopping_bag,
-                                          color: Colors.white)),
-                                ],
+                          ? Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Container(
+                                height: 60,
+                                width: double.infinity,
+                                color: Colors.yellow,
+                                padding: EdgeInsets.symmetric(vertical: 5),
+                                child: Scrollbar(
+                                  child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: [
+                                      SizedBox(width: screenWidth * 0.02),
+                                      masterButton(
+                                        () {
+                                          Navigator.of(context)
+                                              .pushAndRemoveUntil(
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  MasterProductScreen(),
+                                            ),
+                                            (route) => false,
+                                          );
+                                        },
+                                        "Master Produk",
+                                        Icons.shopping_bag,
+                                      ),
+                                      SizedBox(
+                                          width: screenWidth *
+                                              0.02), // Responsive spacing
+                                      masterButton(
+                                        () {
+                                          Navigator.of(context)
+                                              .pushAndRemoveUntil(
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  MasterKaryawanScreen(),
+                                            ),
+                                            (route) => false,
+                                          );
+                                        },
+                                        "Master Karyawan",
+                                        Icons.account_circle,
+                                      ),
+                                      SizedBox(width: screenWidth * 0.02),
+                                      masterButton(
+                                        () {},
+                                        "Master Coa",
+                                        Icons.account_balance,
+                                      ),
+                                      SizedBox(width: screenWidth * 0.02),
+                                      masterButton(
+                                        () {},
+                                        "Master Pengguna",
+                                        Icons.person,
+                                      ),
+                                      SizedBox(width: screenWidth * 0.02),
+                                      masterButton(
+                                        () {},
+                                        "Master Terapis",
+                                        Icons.healing,
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             )
                           : SizedBox.shrink()
