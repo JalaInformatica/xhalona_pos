@@ -15,7 +15,8 @@ class ProductService {
     String? analisaIdGlobal,
     String? analisaId,
     String? partId,
-    String? filterValue,
+    String? filterField,
+    String? filterValue
   }) async {
     await api.fetchUserSessionInfo();
     var url = '/SALES/m_produk';
@@ -26,8 +27,8 @@ class ProductService {
         "COMPANY_ID": api.companyId,
         "USER_ID": api.userId,
         "SESSION_LOGIN_ID": api.sessionId,
-        "FILTER_FIELD": "",
-        "FILTER_VALUE": filterValue ?? '',
+        "FILTER_FIELD": filterField ?? "",
+        "FILTER_VALUE": filterValue ?? filterValue ?? '',
         "PAGE_NO": pageNo ?? 1,
         "PAGE_ROW": pageRow ?? 10,
         "SORT_ORDER_BY": "ROW_ID",

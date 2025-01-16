@@ -1,4 +1,5 @@
 import 'package:xhalona_pos/models/dao/transaction.dart';
+import 'package:xhalona_pos/models/dto/transaction.dart';
 import 'package:xhalona_pos/repositories/app_repository.dart';
 import 'package:xhalona_pos/services/transaction/transaction_service.dart';
 
@@ -14,7 +15,8 @@ class TransactionRepository extends AppRepository {
     int? filterMonth,
     int? filterYear,
     String? statusCategory,
-    String? sourceId
+    String? sourceId,
+    String? transactionId,
   }) async {
     var result = await _transactionService.getTransactions(
       pageNo: pageNo,
@@ -25,10 +27,28 @@ class TransactionRepository extends AppRepository {
       filterMonth: filterMonth,
       filterYear: filterYear,
       statusCategory: statusCategory,
-      sourceId: sourceId
+      sourceId: sourceId,
+      transactionId: transactionId
     );
 
     List data = getResponseListData(result);
     return data.map((transactionHeader)=>TransactionHeaderDAO.fromJson(transactionHeader)).toList();
   }
+
+  Future<String> addTransactionHeader(TransactionDTO transaction) async {
+    var result = await _transactionService.addTransaction(transaction);
+    return getResponseTrxData(result)[0]["NO_TRX"];
+  }
+
+  Future<List<TransactionDetailDAO>> getTransactionDetail({required String transactionId}) async {
+    var result = await _transactionService.getTransactionDetail(transactionId: transactionId);
+    List data = getResponseListData(result);
+    return data.map((transactionDetail)=>TransactionDetailDAO.fromJson(transactionDetail)).toList();
+  }
+
+  Future<void> addTransactionDetail(List<TransactionDetailDTO> transaction) async {
+    var result = await _transactionService.addDetailTransaction(transaction);
+    getResponseTrxData(result);
+  }
+
 }

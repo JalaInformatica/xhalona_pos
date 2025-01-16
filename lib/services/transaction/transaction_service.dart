@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:xhalona_pos/models/dto/transaction.dart';
 import 'package:xhalona_pos/services/api_service.dart' as api;
 import 'package:xhalona_pos/services/response_handler.dart';
 
@@ -39,13 +40,83 @@ class TransactionService {
         "STATUS_ID": statusId ?? "",
         "SOURCE_ID": sourceId ?? "",
         "STATUS_CATEGORY": statusCategory ?? ""
-        }});
+      }
+    });
     var response = await api.post(
       url,
       headers: await api.requestHeaders(),
       body: body
     );
 
+    return ResponseHandler.handle(response);
+  }
+
+  Future<String> addTransaction(TransactionDTO transaction) async {
+    await api.fetchUserSessionInfo();
+    var url = '/SALES/order';
+    var body = jsonEncode({
+      "rq": {
+          "IP": "103.78.114.49",
+          "DEF_COMPANY_ID": api.companyId,
+          "USER_ID": api.userId,
+          "SESSION_LOGIN_ID": api.sessionId,
+          "ACTION_ID": "ADD_H",
+          "COMPANY_ID": api.companyId,
+          ...transaction.toJson()
+      }
+    });
+    var response = await api.post(
+      url,
+      headers: await api.requestHeaders(),
+      body: body
+    );
+
+    return ResponseHandler.handle(response);
+
+  }
+
+  Future<String> getTransactionDetail({required String transactionId}) async {
+    await api.fetchUserSessionInfo();
+    var url = '/SALES/order_detail';
+    var body = jsonEncode({
+      "rq": {
+          "ACTION_ID": "LIST_D",
+          "IP": api.ip,
+          "COMPANY_ID": api.companyId,
+          "SITE_ID": "",
+          "USER_ID": api.userId,
+          "SESSION_LOGIN_ID": api.sessionId,
+          "SALES_ID": transactionId
+      }
+    });
+    var response = await api.post(
+      url,
+      headers: await api.requestHeaders(),
+      body: body
+    );
+
+    return ResponseHandler.handle(response);
+  }
+
+  Future<String> addDetailTransaction(List<TransactionDetailDTO> transactionDetails) async {
+    await api.fetchUserSessionInfo();
+    var url = '/SALES/order_detail';
+    var body = jsonEncode({
+      "rq": {
+        "ACTION_ID": "ADD_D",
+        "IP": api.ip,
+        "COMPANY_ID": api.companyId,
+        "SITE_ID": "",
+        "USER_ID": api.userId,
+        "SESSION_LOGIN_ID": api.sessionId,
+        "DATA": transactionDetails.map((transactionDetail)=> transactionDetail.toJson()).toList()
+        }
+    });
+    var response = await api.post(
+      url,
+      headers: await api.requestHeaders(),
+      body: body
+    );
     return ResponseHandler.handle(response);
   }
 }

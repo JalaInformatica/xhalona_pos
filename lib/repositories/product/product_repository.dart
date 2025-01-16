@@ -17,7 +17,8 @@ class ProductRepository extends AppRepository {
     String? analisaIdGlobal,
     String? analisaId,
     String? partId,
-    String? filterValue,
+    String? filterField,
+    String? filterValue
   }) async {
     var result = await _productService.getProducts(
         pageNo: pageNo,
@@ -31,7 +32,8 @@ class ProductRepository extends AppRepository {
         analisaId: analisaId,
         analisaIdGlobal: analisaIdGlobal,
         partId: partId,
-        filterValue: filterValue);
+      filterField: filterField,
+      filterValue: filterValue,);
     List data = getResponseListData(result);
     return data.map((product) => ProductDAO.fromJson(product)).toList();
   }

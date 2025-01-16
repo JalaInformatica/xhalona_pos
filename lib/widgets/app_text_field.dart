@@ -11,9 +11,11 @@ class AppTextField extends TextField{
     Widget? prefixIcon,
     Widget? suffixIcon,
     TextInputAction? inputAction = TextInputAction.done,
-    required TextEditingController textEditingController,
+    TextEditingController? textEditingController,
     EdgeInsets? contentPadding,
     super.onChanged,
+    super.autofocus,
+    super.readOnly
   }) : super(
       onTapOutside: (_) {
         FocusScope.of(context).unfocus();
