@@ -229,7 +229,7 @@ class _AddEditKaryawanState extends State<AddEditKaryawan> {
                                     builder: (context) =>
                                         MasterKaryawanScreen()),
                                 (route) => false);
-                          }, "Batal", Icons.arrow_back),
+                          }, "Batal", Icons.refresh),
                         ],
                       ),
                     ],

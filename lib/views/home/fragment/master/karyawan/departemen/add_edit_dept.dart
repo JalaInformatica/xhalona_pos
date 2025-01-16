@@ -132,7 +132,7 @@ class _AddEditDeptState extends State<AddEditDept> {
                                     builder: (context) =>
                                         MasterDepartemenScreen()),
                                 (route) => false);
-                          }, "Batal", Icons.arrow_back),
+                          }, "Batal", Icons.refresh),
                         ],
                       ),
                     ],
