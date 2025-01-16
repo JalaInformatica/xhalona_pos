@@ -17,7 +17,6 @@ class ProductService {
     String? partId,
     String? filterField,
     String? filterValue
-    String? filterValue,
   }) async {
     await api.fetchUserSessionInfo();
     var url = '/SALES/m_produk';

@@ -197,340 +197,6 @@ class HomeScreen extends StatelessWidget {
                   FloatingActionButtonLocation.centerFloat,
               floatingActionButton: Obx(
                 () => Column(mainAxisSize: MainAxisSize.min, children: [
-                  controller.selectedMenuName.value.toLowerCase() == "pos"
-                      ? !controller.isOpenTransaksi.value
-                          ? ElevatedButton(
-                              onPressed: () {
-                                controller.isOpenTransaksi.value = true;
-                              },
-                              style: TextButton.styleFrom(
-                                backgroundColor: AppColor.primaryColor,
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.shopping_bag,
-                                    color: AppColor.whiteColor,
-                                  ),
-                                  SizedBox(
-                                    width: 5.w,
-                                  ),
-                                  Text(
-                                    "Transaksi",
-                                    style: AppTextStyle.textSubtitleStyle(
-                                        color: AppColor.whiteColor),
-                                  ),
-                                ],
-                              ))
-                          : Container(
-                              margin: EdgeInsets.symmetric(horizontal: 10.w),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5),
-                                  color: AppColor.whiteColor,
-                                  boxShadow: [
-                                    BoxShadow(
-                                        blurRadius: 1,
-                                        spreadRadius: 1,
-                                        color: AppColor.grey500)
-                                  ]),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Column(
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 10.w, vertical: 10.w),
-                                        decoration: BoxDecoration(
-                                          color: AppColor.primaryColor,
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Text("Transaksi",
-                                                style: AppTextStyle
-                                                    .textSubtitleStyle(
-                                                        color: AppColor
-                                                            .whiteColor)),
-                                            Spacer(),
-                                            AppIconButton(
-                                                onPressed: () {},
-                                                foregroundColor:
-                                                    AppColor.whiteColor,
-                                                padding: EdgeInsets.zero,
-                                                icon: Icon(Icons.shopping_bag))
-                                          ],
-                                        ),
-                                      ),
-                                      Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 10.w, vertical: 10.w),
-                                        child: Column(
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Expanded(
-                                                    child:
-                                                        Text("Potong Biasa")),
-                                                Expanded(
-                                                  child: DropdownSearch<
-                                                      EmployeeDAO>(
-                                                    selectedItem: null,
-                                                    mode: Mode.form,
-                                                    onChanged: (EmployeeDAO?
-                                                        selectedEmployee) {
-                                                      if (selectedEmployee !=
-                                                          null) {
-                                                        print(
-                                                            "Selected Employee: ${selectedEmployee.fullName}");
-                                                      }
-                                                    },
-                                                    items:
-                                                        controller.getEmployees,
-                                                    decoratorProps:
-                                                        DropDownDecoratorProps(
-                                                            decoration:
-                                                                InputDecoration(
-                                                      contentPadding:
-                                                          EdgeInsets.zero,
-                                                    )),
-                                                    dropdownBuilder:
-                                                        (BuildContext context,
-                                                            EmployeeDAO?
-                                                                selectedItem) {
-                                                      return Text(
-                                                        selectedItem
-                                                                ?.fullName ??
-                                                            "Terapis",
-                                                        style: AppTextStyle
-                                                            .textBodyStyle(),
-                                                      );
-                                                    },
-                                                    itemAsString: (EmployeeDAO?
-                                                            employee) =>
-                                                        employee?.fullName ??
-                                                        '',
-                                                    compareFn: (EmployeeDAO a,
-                                                            EmployeeDAO b) =>
-                                                        a.empId == b.empId,
-                                                    popupProps: PopupProps.menu(
-                                                      showSearchBox: true,
-                                                      searchDelay: Duration(
-                                                          milliseconds: 1000),
-                                                      constraints:
-                                                          BoxConstraints(
-                                                              maxHeight: 300),
-                                                      itemBuilder: (context,
-                                                          item,
-                                                          isSelected,
-                                                          isFocused) {
-                                                        return ListTile(
-                                                          title: Text(
-                                                              item.fullName),
-                                                          selected: isSelected,
-                                                          tileColor: isFocused
-                                                              ? Colors
-                                                                  .grey.shade200
-                                                              : null,
-                                                        );
-                                                      },
-                                                      searchFieldProps:
-                                                          TextFieldProps(
-                                                        decoration:
-                                                            InputDecoration(
-                                                          hintText:
-                                                              "Cari Terapis", // Placeholder text in the search box
-                                                          border:
-                                                              OutlineInputBorder(), // Border for search box
-                                                          contentPadding:
-                                                              EdgeInsets.symmetric(
-                                                                  vertical: 8.0,
-                                                                  horizontal:
-                                                                      12.0), // Padding inside the search box
-                                                        ),
-                                                        style: TextStyle(
-                                                            fontSize: 16,
-                                                            color: Colors
-                                                                .black), // Customize the text style
-                                                        autofocus:
-                                                            true, // Make the search field auto-focused
-                                                      ),
-                                                    ),
-                                                    validator: (EmployeeDAO?
-                                                            employee) =>
-                                                        employee == null
-                                                            ? "Please select an employee"
-                                                            : null, // Validation for selection
-                                                  ),
-                                                ),
-                                                AppIconButton(
-                                                    onPressed: () {},
-                                                    icon: Icon(Icons.add)),
-                                                AppIconButton(
-                                                    backgroundColor: AppColor
-                                                        .dangerColor,
-                                                    foregroundColor: AppColor
-                                                        .whiteColor,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        5)),
-                                                    onPressed: () {},
-                                                    icon: Icon(Icons.delete))
-                                              ],
-                                            ),
-                                            Row(
-                                              children: [
-                                                Expanded(
-                                                  child: AppTextField(
-                                                    context: context,
-                                                    textEditingController:
-                                                        TextEditingController(),
-                                                    labelText: "Note",
-                                                    contentPadding:
-                                                        EdgeInsets.symmetric(
-                                                            horizontal: 5.w,
-                                                            vertical: 5.h),
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  width: 5.w,
-                                                ),
-                                                Expanded(
-                                                    child: AppTextField(
-                                                  context: context,
-                                                  textEditingController:
-                                                      TextEditingController(),
-                                                  labelText: "Harga",
-                                                  contentPadding:
-                                                      EdgeInsets.symmetric(
-                                                          horizontal: 5.w,
-                                                          vertical: 5.h),
-                                                )),
-                                                SizedBox(
-                                                  width: 5.w,
-                                                ),
-                                                Expanded(
-                                                    child: AppTextField(
-                                                  context: context,
-                                                  textEditingController:
-                                                      TextEditingController(),
-                                                  labelText: "Diskon",
-                                                  contentPadding:
-                                                      EdgeInsets.symmetric(
-                                                          horizontal: 5.w,
-                                                          vertical: 5.h),
-                                                )),
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Wrap(
-                                        spacing: 5.w,
-                                        direction: Axis.horizontal,
-                                        children: [
-                                          AppElevatedButton(
-                                              backgroundColor:
-                                                  AppColor.primaryColor,
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 5.w),
-                                              onPressed: () {},
-                                              text: Text(
-                                                "Transaksi Baru",
-                                                style:
-                                                    AppTextStyle.textBodyStyle(
-                                                        color: AppColor
-                                                            .whiteColor),
-                                              )),
-                                          ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                  backgroundColor:
-                                                      AppColor.primaryColor,
-                                                  visualDensity:
-                                                      VisualDensity.compact,
-                                                  tapTargetSize:
-                                                      MaterialTapTargetSize
-                                                          .shrinkWrap,
-                                                  padding: EdgeInsets.zero,
-                                                  shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              5))),
-                                              onPressed: () {},
-                                              child: Text(
-                                                "Member",
-                                                style:
-                                                    AppTextStyle.textBodyStyle(
-                                                        color: AppColor
-                                                            .whiteColor),
-                                              )),
-                                          ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                  backgroundColor:
-                                                      AppColor.primaryColor,
-                                                  visualDensity:
-                                                      VisualDensity.compact,
-                                                  tapTargetSize:
-                                                      MaterialTapTargetSize
-                                                          .shrinkWrap,
-                                                  padding: EdgeInsets.zero,
-                                                  shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              5))),
-                                              onPressed: () {},
-                                              child: Text(
-                                                "Tamu",
-                                                style:
-                                                    AppTextStyle.textBodyStyle(
-                                                        color: AppColor
-                                                            .whiteColor),
-                                              )),
-                                          ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                  backgroundColor:
-                                                      AppColor.primaryColor,
-                                                  visualDensity:
-                                                      VisualDensity.compact,
-                                                  tapTargetSize:
-                                                      MaterialTapTargetSize
-                                                          .shrinkWrap,
-                                                  padding: EdgeInsets.zero,
-                                                  shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              5))),
-                                              onPressed: () {},
-                                              child: Text(
-                                                "Diskon",
-                                                style:
-                                                    AppTextStyle.textBodyStyle(
-                                                        color: AppColor
-                                                            .whiteColor),
-                                              )),
-                                        ],
-                                      ),
-                                      IconButton(
-                                          onPressed: () {
-                                            controller.isOpenTransaksi.value =
-                                                false;
-                                          },
-                                          icon: Icon(Icons.arrow_drop_down))
-                                    ],
-                                  )
-                                ],
-                              ),
-                            )
-                      : SizedBox.shrink(),
                   controller.selectedMenuName.value.toLowerCase() == "master"
                       ? !controller.isOpenMaster.value
                           ? Container(
@@ -584,40 +250,58 @@ class HomeScreen extends StatelessWidget {
                             )
                           : SizedBox.shrink()
                       : SizedBox.shrink(),
-                  SizedBox(height: 5),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 5),
-                    decoration: BoxDecoration(
-                        color: AppColor.whiteColor,
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColor.grey500,
-                            blurRadius: 1,
-                          )
-                        ]),
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Wrap(
-                          direction: Axis.horizontal,
-                          spacing: 10,
-                          children: [
-                            ...controller.menuData.map((menuItem) {
-                              if (menuItem.menuId == "NONMENU") {
-                                return Row(
-                                  children: menuItem.dataSubMenu.map((subMenu) {
-                                    return menuComponent(subMenu.subMenuDesc);
-                                  }).toList(),
-                                );
-                              }
-                              return menuComponent(menuItem.menuDesc);
-                            }),
-                            // profileInfo()
-                          ]),
-                    ),
-                  ),
+            
                 ]),
-              ));
+              ),
+        bottomNavigationBar: Obx(
+                () => Container(
+                    decoration: BoxDecoration(
+                      color: AppColor.whiteColor,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColor.grey500,
+                          blurRadius: 1,
+                          offset: Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min, 
+                      children: [
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Wrap(
+                                alignment: WrapAlignment.center,
+                                runAlignment: WrapAlignment.center,
+                                direction: Axis.horizontal,
+                                spacing: 10,
+                                children: [
+                                  ...controller.menuData.map((menuItem) {
+                                    if (menuItem.menuId == "NONMENU") {
+                                      return Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children:
+                                            menuItem.dataSubMenu.map((subMenu) {
+                                          return menuComponent(
+                                              subMenu.subMenuDesc);
+                                        }).toList(),
+                                      );
+                                    }
+                                    return menuComponent(menuItem.menuDesc);
+                                  }),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                  ])
+                ),
+              ),      
+        );
         }
       }),
     );

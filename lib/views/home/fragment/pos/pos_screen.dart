@@ -378,7 +378,7 @@ class PosScreen extends StatelessWidget {
             ),
             Row(
   mainAxisAlignment: MainAxisAlignment.start,
-  crossAxisAlignment: CrossAxisAlignment.stretch,
+  // crossAxisAlignment: CrossAxisAlignment.stretch,
   spacing: 5.w,
   children: [
     // Wrap the Column with IntrinsicWidth for uniform width
@@ -412,9 +412,10 @@ class PosScreen extends StatelessWidget {
       ),
     ),
     Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-    SizedBox(
-        child: AppElevatedButton(
+        Text("Tagihan: ${formatToRupiah(controller.currentTransaction.isNotEmpty? controller.currentTransaction[0].nettoVal : 0)}"),
+        AppElevatedButton(
           size: AppElevatedButtonSize.big,
           backgroundColor: AppColor.primaryColor,
           foregroundColor: AppColor.whiteColor,
@@ -427,8 +428,6 @@ class PosScreen extends StatelessWidget {
             ],
           ),
         ),
-    ),
-
       ],
     ),
   ],

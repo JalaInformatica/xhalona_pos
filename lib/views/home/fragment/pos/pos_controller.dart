@@ -50,7 +50,7 @@ class PosController extends GetxController {
       isLoading.value = true;
       final result = await _productRepository.getProducts(
         pageRow: 24,
-        isActive: 1,
+        isActive: "1",
         filterValue: productFilterValue.value
       );
       products.value = result;
