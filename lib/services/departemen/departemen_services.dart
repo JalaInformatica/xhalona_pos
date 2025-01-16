@@ -2,81 +2,56 @@ import 'dart:convert';
 import 'package:xhalona_pos/services/response_handler.dart';
 import 'package:xhalona_pos/services/api_service.dart' as api;
 
-class KaryawanServices {
-  Future<String> getKaryawan({
+class DepartemenServices {
+  Future<String> getDepartemen({
     int? pageNo,
     int? pageRow,
-    String? isActive,
     String? filterValue,
   }) async {
     await api.fetchUserSessionInfo();
-    var url = '/SALES/m_employee_pos';
+    var url = '/SALES/m_bagian';
     var body = jsonEncode({
       "rq": {
         "ACTION_ID": "LIST_H",
         "IP": api.ip,
         "COMPANY_ID": api.companyId,
-        "SITE_ID": "",
         "USER_ID": api.userId,
         "SESSION_LOGIN_ID": api.sessionId,
         "FILTER_FIELD": "",
         "FILTER_VALUE": filterValue ?? '',
         "PAGE_NO": pageNo ?? 1,
         "PAGE_ROW": pageRow ?? 10,
-        "SORT_ORDER_BY": "EMP_ID",
-        "SORT_ORDER_TYPE": "DESC",
-        "IS_ACTIVE": isActive ?? "",
+        "SORT_ORDER_BY": "NAMADEPARTMENT",
+        "SORT_ORDER_TYPE": "ASC",
       }
     });
-
-    print('object: $body');
     var response =
         await api.post(url, headers: await api.requestHeaders(), body: body);
 
     return ResponseHandler.handle(response);
   }
 
-  Future<String> addEditKaryawan({
-    String? empId,
-    String? fullName,
-    String? dateIn,
-    String? isActive,
-    String? bpjsNo,
-    String? bpjsTk,
-    String? gender,
-    String? birthDate,
-    String? birthPlace,
-    String? alamat,
+  Future<String> addEditDept({
     String? kdDept,
-    String? bonusAmount,
-    String? bonusTarget,
+    String? nmDept,
     String? actionId,
   }) async {
     await api.fetchUserSessionInfo();
-    var url = '/SALES/m_employee_pos';
+    var url = '/SALES/m_bagian';
     var body = jsonEncode({
       "rq": {
         "ACTION_ID": actionId == '1' ? "EDIT_H" : "ADD_H",
         "IP": api.ip,
         "COMPANY_ID": api.companyId,
-        "SITE_ID": "",
         "USER_ID": api.userId,
         "SESSION_LOGIN_ID": api.sessionId,
-        "EMP_ID": empId,
-        "FULL_NAME": fullName,
-        "DATE_IN": dateIn,
-        "IS_ACTIVE": isActive,
-        "BPJS_NO": bpjsNo,
-        "BPJS_TK": bpjsTk,
-        "GENDER": gender == "Laki-laki" ? "1" : "0",
-        "BIRTHDATE": birthDate,
-        "BIRTHPLACE": birthPlace,
-        "ALAMAT": alamat,
-        "KD_DEPT": kdDept,
-        "BONUS_AMOUNT": bonusAmount,
-        "BONUS_TARGET": bonusTarget
+        "NAMADEPARTMENT": nmDept,
+        "SORT_ORDER": "1",
+        if (actionId == '1') "KD_DEPT": kdDept,
       }
     });
+
+    print('dept: $body');
 
     var response =
         await api.post(url, headers: await api.requestHeaders(), body: body);
@@ -84,11 +59,11 @@ class KaryawanServices {
     return ResponseHandler.handle(response);
   }
 
-  Future<String> deleteKaryawan({
-    String? empId,
+  Future<String> deleteDept({
+    String? kdDept,
   }) async {
     await api.fetchUserSessionInfo();
-    var url = '/SALES/m_employee_pos';
+    var url = '/SALES/m_bagian';
     var body = jsonEncode({
       "rq": {
         "ACTION_ID": "DELETE_H",
@@ -98,7 +73,7 @@ class KaryawanServices {
         "USER_ID": api.userId,
         "SESSION_LOGIN_ID": api.sessionId,
         "DATA": [
-          {"EMP_ID": empId}
+          {"KD_DEPT": kdDept}
         ]
       }
     });

@@ -4,16 +4,16 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:xhalona_pos/repositories/karyawan/karyawan_repository.dart';
-import 'package:xhalona_pos/views/home/fragment/master/karyawan/add_edit_karyawan.dart';
-import 'package:xhalona_pos/views/home/fragment/master/karyawan/karyawan_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/master_departemen_screen.dart';
+import 'package:xhalona_pos/repositories/departemen/depertemen_repository.dart';
+import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/add_edit_dept.dart';
+import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/departemen_controller.dart';
 
-class MasterKaryawanScreen extends StatelessWidget {
-  MasterKaryawanScreen({super.key});
+// ignore: must_be_immutable
+class MasterDepartemenScreen extends StatelessWidget {
+  MasterDepartemenScreen({super.key});
 
-  final KaryawanController controller = Get.put(KaryawanController());
-  KaryawanRepository _karyawanRepository = KaryawanRepository();
+  final DepartemenController controller = Get.put(DepartemenController());
+  DepartemenRepository _deptRepository = DepartemenRepository();
 
   Widget mButton(VoidCallback onTap, IconData icon, String label) {
     return GestureDetector(
@@ -54,7 +54,7 @@ class MasterKaryawanScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Master Karyawan"),
+          title: Text("Master Departement"),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
@@ -75,18 +75,9 @@ class MasterKaryawanScreen extends StatelessWidget {
             children: [
               mButton(() {
                 Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(
-                        builder: (context) => MasterDepartemenScreen()),
+                    MaterialPageRoute(builder: (context) => AddEditDept()),
                     (route) => false);
-              }, Icons.add_home_work, "Departement"),
-              SizedBox(
-                height: 5.h,
-              ),
-              mButton(() {
-                Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => AddEditKaryawan()),
-                    (route) => false);
-              }, Icons.add, "Add Karyawan"),
+              }, Icons.add, "Add Departement"),
               SizedBox(
                 height: 5.h,
               ),
@@ -100,44 +91,16 @@ class MasterKaryawanScreen extends StatelessWidget {
                     pageNo: controller.pageNo.value,
                     pageRow: controller.pageRow.value,
                     titles: [
-                      AppTableTitle(value: "NIK"),
-                      AppTableTitle(value: "Nama"),
-                      AppTableTitle(value: "Tgl Masuk"),
-                      AppTableTitle(value: "BPJS Kes"),
-                      AppTableTitle(value: "BPJS Ket."),
-                      AppTableTitle(value: "JK"),
-                      AppTableTitle(value: "Tgl Lahir"),
-                      AppTableTitle(value: "Alamat"),
-                      AppTableTitle(value: "Bagian"),
-                      AppTableTitle(value: "Bonus"),
-                      AppTableTitle(value: "Target"),
+                      AppTableTitle(value: "Kode Departement"),
+                      AppTableTitle(value: "Nama Departement"),
                       AppTableTitle(value: "Aksi"),
                     ],
-                    data: List.generate(controller.karyawanHeader.length,
+                    data: List.generate(controller.departemenHeader.length,
                         (int i) {
-                      var karyawan = controller.karyawanHeader[i];
+                      var dept = controller.departemenHeader[i];
                       return [
-                        AppTableCell(value: karyawan.empId, index: i),
-                        AppTableCell(value: karyawan.fullName, index: i),
-                        AppTableCell(
-                            value: karyawan.dateIn.split("T").first, index: i),
-                        AppTableCell(value: karyawan.bpjsNo, index: i),
-                        AppTableCell(value: '${karyawan.bpjsTk}', index: i),
-                        AppTableCell(
-                            value:
-                                '${karyawan.gender == 1 ? 'Laki-laki' : 'Perempuan'}',
-                            index: i),
-                        AppTableCell(
-                            value: karyawan.birthDate!.split("T").first,
-                            index: i),
-                        AppTableCell(value: '${karyawan.alamat}', index: i),
-                        AppTableCell(value: '${karyawan.kd_dept}', index: i),
-                        AppTableCell(
-                            value: formatCurrency(karyawan.bonusAmount),
-                            index: i),
-                        AppTableCell(
-                            value: formatCurrency(karyawan.bonusAmount),
-                            index: i),
+                        AppTableCell(value: dept.kdDept, index: i),
+                        AppTableCell(value: dept.namaDept, index: i),
                         AppTableCell(
                           index: i,
                           value: "", // Ganti dengan URL gambar jika ada
@@ -146,8 +109,8 @@ class MasterKaryawanScreen extends StatelessWidget {
                           onEdit: () {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (context) => AddEditKaryawan(
-                                          karyawan: karyawan,
+                                    builder: (context) => AddEditDept(
+                                          dept: dept,
                                         )),
                                 (route) => false);
                           },
@@ -169,7 +132,7 @@ class MasterKaryawanScreen extends StatelessWidget {
                                     textAlign: TextAlign.center,
                                   ),
                                   content: Text(
-                                    "Apakah Anda yakin ingin menghapus data '${karyawan.fullName}'?",
+                                    "Apakah Anda yakin ingin menghapus data '${dept.namaDept}'?",
                                     maxLines: 2,
                                     style: AppTextStyle.textSubtitleStyle(),
                                     textAlign: TextAlign.center,
@@ -187,10 +150,9 @@ class MasterKaryawanScreen extends StatelessWidget {
                                     ),
                                     TextButton(
                                       onPressed: () async {
-                                        String result =
-                                            await _karyawanRepository
-                                                .deleteKaryawan(
-                                                    empId: karyawan.empId);
+                                        String result = await _deptRepository
+                                            .deleteKaryawan(
+                                                kdDept: dept.kdDept);
 
                                         bool isSuccess = result == "1";
                                         if (isSuccess) {

@@ -1,23 +1,10 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:xhalona_pos/models/dao/user.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/models/dao/employee.dart';
-import 'package:dropdown_search/dropdown_search.dart';
-import 'package:xhalona_pos/models/dao/employee.dart';
-import 'package:xhalona_pos/models/dao/structure.dart';
-import 'package:xhalona_pos/widgets/app_text_field.dart';
-import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:xhalona_pos/views/home/home_controller.dart';
-import 'package:xhalona_pos/views/home/home_controller.dart';
-import 'package:xhalona_pos/widgets/app_elevated_button.dart';
-import 'package:xhalona_pos/repositories/user/user_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
-import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
-import 'package:xhalona_pos/repositories/employee/employee_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/finance/finance_screen.dart';
-import 'package:xhalona_pos/repositories/structure/structure_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/dashboard/dashboard_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/transaction/transaction_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/master_product_screen.dart';
@@ -199,143 +186,135 @@ class HomeScreen extends StatelessWidget {
               body: Center(child: CircularProgressIndicator()));
         } else {
           return Scaffold(
-              backgroundColor: AppColor.whiteColor,
-              body: Column(
-                children: [
-                  // profileInfo(),
-                  Expanded(
-                      child: menuScreen(controller.selectedMenuName.value)),
-                ],
-              ),
-              floatingActionButtonLocation:
-                  FloatingActionButtonLocation.centerFloat,
-              floatingActionButton: Obx(
-                () => Column(mainAxisSize: MainAxisSize.min, children: [
-                  controller.selectedMenuName.value.toLowerCase() == "master"
-                      ? !controller.isOpenMaster.value
-                          ? Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Container(
-                                height: 60,
-                                width: double.infinity,
-                                color: Colors.yellow,
-                                padding: EdgeInsets.symmetric(vertical: 5),
-                                child: Scrollbar(
-                                  child: ListView(
-                                    scrollDirection: Axis.horizontal,
-                                    children: [
-                                      SizedBox(width: screenWidth * 0.02),
-                                      masterButton(
-                                        () {
-                                          Navigator.of(context)
-                                              .pushAndRemoveUntil(
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  MasterProductScreen(),
-                                            ),
-                                            (route) => false,
-                                          );
-                                        },
-                                        "Master Produk",
-                                        Icons.shopping_bag,
-                                      ),
-                                      SizedBox(
-                                          width: screenWidth *
-                                              0.02), // Responsive spacing
-                                      masterButton(
-                                        () {
-                                          Navigator.of(context)
-                                              .pushAndRemoveUntil(
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  MasterKaryawanScreen(),
-                                            ),
-                                            (route) => false,
-                                          );
-                                        },
-                                        "Master Karyawan",
-                                        Icons.account_circle,
-                                      ),
-                                      SizedBox(width: screenWidth * 0.02),
-                                      masterButton(
-                                        () {},
-                                        "Master Coa",
-                                        Icons.account_balance,
-                                      ),
-                                      SizedBox(width: screenWidth * 0.02),
-                                      masterButton(
-                                        () {},
-                                        "Master Pengguna",
-                                        Icons.person,
-                                      ),
-                                      SizedBox(width: screenWidth * 0.02),
-                                      masterButton(
-                                        () {},
-                                        "Master Terapis",
-                                        Icons.healing,
-                                      ),
-                                    ],
-                                  ),
+            backgroundColor: AppColor.whiteColor,
+            body: Column(
+              children: [
+                // profileInfo(),
+                Expanded(child: menuScreen(controller.selectedMenuName.value)),
+              ],
+            ),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+            floatingActionButton: Obx(
+              () => Column(mainAxisSize: MainAxisSize.min, children: [
+                controller.selectedMenuName.value.toLowerCase() == "master"
+                    ? !controller.isOpenMaster.value
+                        ? Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Container(
+                              height: 60,
+                              width: double.infinity,
+                              color: Colors.yellow,
+                              padding: EdgeInsets.symmetric(vertical: 5),
+                              child: Scrollbar(
+                                child: ListView(
+                                  scrollDirection: Axis.horizontal,
+                                  children: [
+                                    SizedBox(width: screenWidth * 0.02),
+                                    masterButton(
+                                      () {
+                                        Navigator.of(context)
+                                            .pushAndRemoveUntil(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                MasterProductScreen(),
+                                          ),
+                                          (route) => false,
+                                        );
+                                      },
+                                      "Master Produk",
+                                      Icons.shopping_bag,
+                                    ),
+                                    SizedBox(
+                                        width: screenWidth *
+                                            0.02), // Responsive spacing
+                                    masterButton(
+                                      () {
+                                        Navigator.of(context)
+                                            .pushAndRemoveUntil(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                MasterKaryawanScreen(),
+                                          ),
+                                          (route) => false,
+                                        );
+                                      },
+                                      "Master Karyawan",
+                                      Icons.account_circle,
+                                    ),
+                                    SizedBox(width: screenWidth * 0.02),
+                                    masterButton(
+                                      () {},
+                                      "Master Coa",
+                                      Icons.account_balance,
+                                    ),
+                                    SizedBox(width: screenWidth * 0.02),
+                                    masterButton(
+                                      () {},
+                                      "Master Pengguna",
+                                      Icons.person,
+                                    ),
+                                    SizedBox(width: screenWidth * 0.02),
+                                    masterButton(
+                                      () {},
+                                      "Master Terapis",
+                                      Icons.healing,
+                                    ),
+                                  ],
                                 ),
                               ),
-                            )
-                          : SizedBox.shrink()
-                      : SizedBox.shrink(),
-            
-                ]),
-              ),
-        bottomNavigationBar: Obx(
-                () => Container(
-                    decoration: BoxDecoration(
-                      color: AppColor.whiteColor,
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColor.grey500,
-                          blurRadius: 1,
-                          offset: Offset(0, 1),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min, 
-                      children: [
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            ),
+                          )
+                        : SizedBox.shrink()
+                    : SizedBox.shrink(),
+              ]),
+            ),
+            bottomNavigationBar: Obx(
+              () => Container(
+                  decoration: BoxDecoration(
+                    color: AppColor.whiteColor,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColor.grey500,
+                        blurRadius: 1,
+                        offset: Offset(0, 1),
+                      ),
+                    ],
+                  ),
+                  child: Column(mainAxisSize: MainAxisSize.min, children: [
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Wrap(
+                            alignment: WrapAlignment.center,
+                            runAlignment: WrapAlignment.center,
+                            direction: Axis.horizontal,
+                            spacing: 10,
                             children: [
-                              Wrap(
-                                alignment: WrapAlignment.center,
-                                runAlignment: WrapAlignment.center,
-                                direction: Axis.horizontal,
-                                spacing: 10,
-                                children: [
-                                  ...controller.menuData.map((menuItem) {
-                                    if (menuItem.menuId == "NONMENU") {
-                                      return Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children:
-                                            menuItem.dataSubMenu.map((subMenu) {
-                                          return menuComponent(
-                                              subMenu.subMenuDesc);
-                                        }).toList(),
-                                      );
-                                    }
-                                    return menuComponent(menuItem.menuDesc);
-                                  }),
-                                ],
-                              ),
+                              ...controller.menuData.map((menuItem) {
+                                if (menuItem.menuId == "NONMENU") {
+                                  return Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children:
+                                        menuItem.dataSubMenu.map((subMenu) {
+                                      return menuComponent(subMenu.subMenuDesc);
+                                    }).toList(),
+                                  );
+                                }
+                                return menuComponent(menuItem.menuDesc);
+                              }),
                             ],
                           ),
-                        ),
-                  ])
-                ),
-              ),      
-        );
+                        ],
+                      ),
+                    ),
+                  ])),
+            ),
+          );
         }
       }),
     );
   }
 }
-
