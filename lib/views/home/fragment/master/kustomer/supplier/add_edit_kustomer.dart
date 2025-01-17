@@ -2,28 +2,33 @@ import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/models/dao/departemen.dart';
-import 'package:xhalona_pos/repositories/departemen/depertemen_repository.dart';
-import 'package:xhalona_pos/views/home/fragment/master/karyawan/master_karyawan_screen.dart';
-import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/departemen_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/master_departemen_screen.dart';
+import 'package:xhalona_pos/models/dao/kustomer.dart';
+import 'package:xhalona_pos/repositories/kustomer/kustomer_repository.dart';
+import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplier_kustomer_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/master_kustomer_supplier_screen.dart';
 
 // ignore: must_be_immutable
-class AddEditDept extends StatefulWidget {
-  DepartemenDAO? dept;
-  AddEditDept({super.key, this.dept});
+class AddEditKustomer extends StatefulWidget {
+  KustomerDAO? kustomer;
+  String? islabel;
+  String? isSuplier;
+  AddEditKustomer({super.key, this.kustomer, this.islabel, this.isSuplier});
 
   @override
-  _AddEditDeptState createState() => _AddEditDeptState();
+  _AddEditKustomerState createState() => _AddEditKustomerState();
 }
 
-class _AddEditDeptState extends State<AddEditDept> {
-  DepartemenRepository _deptRepository = DepartemenRepository();
-  final DepartemenController controller = Get.put(DepartemenController());
+class _AddEditKustomerState extends State<AddEditKustomer> {
+  KustomerRepository _kustomerRepository = KustomerRepository();
+  final KustomerController controller = Get.put(KustomerController());
 
   final _formKey = GlobalKey<FormState>();
-  final _kdDeptController = TextEditingController();
-  final _nameDeptController = TextEditingController();
+  final _kdKustomerController = TextEditingController();
+  final _nameKustomerController = TextEditingController();
+  final _telpKustomerController = TextEditingController();
+  final _emailKustomerController = TextEditingController();
+  final _address1KustomerController = TextEditingController();
+  final _address2KustomerController = TextEditingController();
   bool _isLoading = true;
 
   final List<String> genders = ['Laki-laki', 'Perempuan'];
@@ -32,10 +37,14 @@ class _AddEditDeptState extends State<AddEditDept> {
   void initState() {
     super.initState();
     Inisialisasi();
-    if (widget.dept != null) {
+    if (widget.kustomer != null) {
       // Inisialisasi data dari karyawan jika tersedia
-      _kdDeptController.text = widget.dept!.kdDept ?? '';
-      _nameDeptController.text = widget.dept!.namaDept ?? '';
+      _kdKustomerController.text = widget.kustomer!.suplierId ?? '';
+      _nameKustomerController.text = widget.kustomer!.suplierName ?? '';
+      _telpKustomerController.text = widget.kustomer!.telp ?? '';
+      _emailKustomerController.text = widget.kustomer!.emailAdress ?? '';
+      _address1KustomerController.text = widget.kustomer!.address1 ?? '';
+      _address2KustomerController.text = widget.kustomer!.address2 ?? '';
     }
   }
 
@@ -47,12 +56,17 @@ class _AddEditDeptState extends State<AddEditDept> {
 
   @override
   Widget build(BuildContext context) {
-    void handleAddEditDept() async {
+    void handleAddEditKustomer() async {
       if (_formKey.currentState!.validate()) {
-        String result = await _deptRepository.addEditDepartemen(
-            kdDept: _kdDeptController.text,
-            nmDept: _nameDeptController.text,
-            actionId: widget.dept == null ? '0' : '1');
+        String result = await _kustomerRepository.addEditKustomer(
+            suplierId: _kdKustomerController.text,
+            suplierName: _nameKustomerController.text,
+            telp: _telpKustomerController.text,
+            emailAdress: _emailKustomerController.text,
+            adress1: _address1KustomerController.text,
+            adress2: _address2KustomerController.text,
+            isSuplier: widget.isSuplier,
+            actionId: widget.kustomer == null ? '0' : '1');
 
         bool isSuccess = result == "1";
         if (isSuccess) {
@@ -62,7 +76,11 @@ class _AddEditDeptState extends State<AddEditDept> {
           setState(() {});
         } else {
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => MasterDepartemenScreen()),
+            MaterialPageRoute(
+                builder: (context) => MasterKustomerScreen(
+                      islabel: widget.islabel,
+                      isSuplier: widget.isSuplier,
+                    )),
             (route) => false,
           );
           controller.fetchProducts();
@@ -76,14 +94,18 @@ class _AddEditDeptState extends State<AddEditDept> {
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => MasterDepartemenScreen()),
+            MaterialPageRoute(
+                builder: (context) => MasterKustomerScreen(
+                      islabel: widget.islabel,
+                      isSuplier: widget.isSuplier,
+                    )),
             (route) => false); // Navigasi kembali ke halaman sebelumnya
         return false; // Mencegah navigasi bawaan
       },
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            "Tambah/Edit Data Departement",
+            "Tambah/Edit Data ${widget.islabel} ${widget.isSuplier}",
             style: TextStyle(color: Colors.white),
           ),
           backgroundColor: AppColor.secondaryColor,
@@ -98,39 +120,47 @@ class _AddEditDeptState extends State<AddEditDept> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Field NIK
-                      Container(
-                        height: 60,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(
-                              color: Colors.grey.shade600,
-                            )),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                            _kdDeptController.text ?? 'Tidak perlu diisi',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ),
-                      ),
+                      buildTextField(
+                          "Kode ${widget.islabel}",
+                          "Masukkan kode ${widget.islabel}",
+                          _kdKustomerController),
                       SizedBox(height: 16),
 
                       // Field Nama
-                      buildTextField("Nama Departement",
-                          "Masukkan nama departement", _nameDeptController),
+                      buildTextField(
+                          "Nama ${widget.islabel}",
+                          "Masukkan nama ${widget.islabel}",
+                          _nameKustomerController),
+                      SizedBox(height: 16),
+
+                      buildTextField(
+                          "Telp ", "Masukkan Telp ", _telpKustomerController),
+                      SizedBox(height: 16),
+                      buildTextField("Email ", "Masukkan Email ",
+                          _emailKustomerController),
+                      SizedBox(height: 16),
+
+                      buildTextField("Alamat ", "Masukkan Alamat ",
+                          _address1KustomerController),
+                      SizedBox(height: 16),
+
+                      buildTextField("Alamat lain", "Masukkan Alamat ",
+                          _address2KustomerController),
                       SizedBox(height: 32),
 
                       // Action Buttons
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          masterButton(handleAddEditDept, "Simpan", Icons.add),
+                          masterButton(
+                              handleAddEditKustomer, "Simpan", Icons.add),
                           masterButton(() {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        MasterDepartemenScreen()),
+                                    builder: (context) => MasterKustomerScreen(
+                                          islabel: widget.islabel,
+                                          isSuplier: widget.islabel,
+                                        )),
                                 (route) => false);
                           }, "Batal", Icons.refresh),
                         ],

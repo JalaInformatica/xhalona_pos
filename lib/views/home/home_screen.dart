@@ -6,9 +6,13 @@ import 'package:xhalona_pos/views/home/home_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/finance/finance_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/dashboard/dashboard_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/master/coa/master_coa_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/transaction/transaction_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/master_product_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/master/rekening/master_rekening_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/master_karyawan_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/master/pekerjaan/master_pekerjaan_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/master_kustomer_supplier_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final HomeController controller = Get.put(HomeController());
@@ -244,21 +248,97 @@ class HomeScreen extends StatelessWidget {
                                     ),
                                     SizedBox(width: screenWidth * 0.02),
                                     masterButton(
-                                      () {},
+                                      () {
+                                        Navigator.of(context)
+                                            .pushAndRemoveUntil(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                MasterCoaScreen(),
+                                          ),
+                                          (route) => false,
+                                        );
+                                      },
                                       "Master Coa",
                                       Icons.account_balance,
                                     ),
                                     SizedBox(width: screenWidth * 0.02),
                                     masterButton(
-                                      () {},
+                                      () {
+                                        // Navigator.of(context)
+                                        //     .pushAndRemoveUntil(
+                                        //   MaterialPageRoute(
+                                        //     builder: (context) =>
+                                        //         MasterPenggunaScreen(),
+                                        //   ),
+                                        //   (route) => false,
+                                        // );
+                                      },
                                       "Master Pengguna",
                                       Icons.person,
                                     ),
                                     SizedBox(width: screenWidth * 0.02),
                                     masterButton(
-                                      () {},
-                                      "Master Terapis",
-                                      Icons.healing,
+                                      () {
+                                        Navigator.of(context)
+                                            .pushAndRemoveUntil(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                MasterPekerjaanScreen(),
+                                          ),
+                                          (route) => false,
+                                        );
+                                      },
+                                      "Master Pekerjaan",
+                                      Icons.work,
+                                    ),
+                                    SizedBox(width: screenWidth * 0.02),
+                                    masterButton(
+                                      () {
+                                        Navigator.of(context)
+                                            .pushAndRemoveUntil(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                MasterRekeningScreen(),
+                                          ),
+                                          (route) => false,
+                                        );
+                                      },
+                                      "Master Rekening",
+                                      Icons.account_balance_wallet,
+                                    ),
+                                    SizedBox(width: screenWidth * 0.02),
+                                    masterButton(
+                                      () {
+                                        Navigator.of(context)
+                                            .pushAndRemoveUntil(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                MasterKustomerScreen(
+                                                    isSuplier: '0',
+                                                    islabel: "Kustomer"),
+                                          ),
+                                          (route) => false,
+                                        );
+                                      },
+                                      "Master Kustomer",
+                                      Icons.people,
+                                    ),
+                                    SizedBox(width: screenWidth * 0.02),
+                                    masterButton(
+                                      () {
+                                        Navigator.of(context)
+                                            .pushAndRemoveUntil(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                MasterKustomerScreen(
+                                                    isSuplier: '1',
+                                                    islabel: "Supplier"),
+                                          ),
+                                          (route) => false,
+                                        );
+                                      },
+                                      "Master Supplier",
+                                      Icons.store,
                                     ),
                                   ],
                                 ),

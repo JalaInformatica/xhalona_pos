@@ -4,16 +4,16 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:xhalona_pos/repositories/departemen/depertemen_repository.dart';
-import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/add_edit_dept.dart';
-import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/departemen_controller.dart';
+import 'package:xhalona_pos/repositories/coa/coa_repository.dart';
+import 'package:xhalona_pos/views/home/fragment/master/coa/add_edit_coa.dart';
+import 'package:xhalona_pos/views/home/fragment/master/coa/coa_controller.dart';
 
 // ignore: must_be_immutable
-class MasterDepartemenScreen extends StatelessWidget {
-  MasterDepartemenScreen({super.key});
+class MasterCoaScreen extends StatelessWidget {
+  MasterCoaScreen({super.key});
 
-  final DepartemenController controller = Get.put(DepartemenController());
-  DepartemenRepository _deptRepository = DepartemenRepository();
+  final CoaController controller = Get.put(CoaController());
+  CoaRepository _coaRepository = CoaRepository();
 
   Widget mButton(VoidCallback onTap, IconData icon, String label) {
     return GestureDetector(
@@ -54,7 +54,7 @@ class MasterDepartemenScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Master Departement"),
+          title: Text("Master Coa"),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
@@ -75,9 +75,9 @@ class MasterDepartemenScreen extends StatelessWidget {
             children: [
               mButton(() {
                 Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => AddEditDept()),
+                    MaterialPageRoute(builder: (context) => AddEditCoa()),
                     (route) => false);
-              }, Icons.add, "Add Departement"),
+              }, Icons.add, "Add Coa"),
               SizedBox(
                 height: 5.h,
               ),
@@ -91,16 +91,21 @@ class MasterDepartemenScreen extends StatelessWidget {
                     pageNo: controller.pageNo.value,
                     pageRow: controller.pageRow.value,
                     titles: [
-                      AppTableTitle(value: "Kode Departement"),
-                      AppTableTitle(value: "Nama Departement"),
+                      AppTableTitle(value: "Kode "),
+                      AppTableTitle(value: "Nama "),
+                      AppTableTitle(value: "jenis"),
+                      AppTableTitle(value: "D/K"),
+                      AppTableTitle(value: "TM"),
                       AppTableTitle(value: "Aksi"),
                     ],
-                    data: List.generate(controller.departemenHeader.length,
-                        (int i) {
-                      var dept = controller.departemenHeader[i];
+                    data: List.generate(controller.coaHeader.length, (int i) {
+                      var coa = controller.coaHeader[i];
                       return [
-                        AppTableCell(value: dept.kdDept, index: i),
-                        AppTableCell(value: dept.namaDept, index: i),
+                        AppTableCell(value: coa.acId, index: i),
+                        AppTableCell(value: coa.namaRekening, index: i),
+                        AppTableCell(value: coa.jenisRek, index: i),
+                        AppTableCell(value: coa.flagDk, index: i),
+                        AppTableCell(value: coa.flagTm!, index: i),
                         AppTableCell(
                           index: i,
                           value: "", // Ganti dengan URL gambar jika ada
@@ -109,8 +114,8 @@ class MasterDepartemenScreen extends StatelessWidget {
                           onEdit: () {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (context) => AddEditDept(
-                                          dept: dept,
+                                    builder: (context) => AddEditCoa(
+                                          coa: coa,
                                         )),
                                 (route) => false);
                           },
@@ -132,7 +137,7 @@ class MasterDepartemenScreen extends StatelessWidget {
                                     textAlign: TextAlign.center,
                                   ),
                                   content: Text(
-                                    "Apakah Anda yakin ingin menghapus data '${dept.namaDept}'?",
+                                    "Apakah Anda yakin ingin menghapus data '${coa.namaRekening}'?",
                                     maxLines: 2,
                                     style: AppTextStyle.textSubtitleStyle(),
                                     textAlign: TextAlign.center,
@@ -150,9 +155,8 @@ class MasterDepartemenScreen extends StatelessWidget {
                                     ),
                                     TextButton(
                                       onPressed: () async {
-                                        String result = await _deptRepository
-                                            .deleteDepartemen(
-                                                kdDept: dept.kdDept);
+                                        String result = await _coaRepository
+                                            .deleteCoa(accId: coa.acId);
 
                                         bool isSuccess = result == "1";
                                         if (isSuccess) {

@@ -4,16 +4,16 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:xhalona_pos/repositories/departemen/depertemen_repository.dart';
-import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/add_edit_dept.dart';
-import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/departemen_controller.dart';
+import 'package:xhalona_pos/repositories/pekerjaan/pekerjaan_repository.dart';
+import 'package:xhalona_pos/views/home/fragment/master/pekerjaan/add_edit_pekerjaan.dart';
+import 'package:xhalona_pos/views/home/fragment/master/pekerjaan/pekerjaan_controller.dart';
 
 // ignore: must_be_immutable
-class MasterDepartemenScreen extends StatelessWidget {
-  MasterDepartemenScreen({super.key});
+class MasterPekerjaanScreen extends StatelessWidget {
+  MasterPekerjaanScreen({super.key});
 
-  final DepartemenController controller = Get.put(DepartemenController());
-  DepartemenRepository _deptRepository = DepartemenRepository();
+  final PekerjaanController controller = Get.put(PekerjaanController());
+  PekerjaanRepository _pekerjaanRepository = PekerjaanRepository();
 
   Widget mButton(VoidCallback onTap, IconData icon, String label) {
     return GestureDetector(
@@ -54,7 +54,7 @@ class MasterDepartemenScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Master Departement"),
+          title: Text("Master Pekerjaant"),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
@@ -75,9 +75,9 @@ class MasterDepartemenScreen extends StatelessWidget {
             children: [
               mButton(() {
                 Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => AddEditDept()),
+                    MaterialPageRoute(builder: (context) => AddEditPekerjaan()),
                     (route) => false);
-              }, Icons.add, "Add Departement"),
+              }, Icons.add, "Add Pekerjaant"),
               SizedBox(
                 height: 5.h,
               ),
@@ -91,16 +91,16 @@ class MasterDepartemenScreen extends StatelessWidget {
                     pageNo: controller.pageNo.value,
                     pageRow: controller.pageRow.value,
                     titles: [
-                      AppTableTitle(value: "Kode Departement"),
-                      AppTableTitle(value: "Nama Departement"),
+                      AppTableTitle(value: "Kode Pekerjaant"),
+                      AppTableTitle(value: "Nama Pekerjaant"),
                       AppTableTitle(value: "Aksi"),
                     ],
-                    data: List.generate(controller.departemenHeader.length,
+                    data: List.generate(controller.pekerjaanHeader.length,
                         (int i) {
-                      var dept = controller.departemenHeader[i];
+                      var pekerjaan = controller.pekerjaanHeader[i];
                       return [
-                        AppTableCell(value: dept.kdDept, index: i),
-                        AppTableCell(value: dept.namaDept, index: i),
+                        AppTableCell(value: pekerjaan.jobId, index: i),
+                        AppTableCell(value: pekerjaan.jobDesc, index: i),
                         AppTableCell(
                           index: i,
                           value: "", // Ganti dengan URL gambar jika ada
@@ -109,8 +109,8 @@ class MasterDepartemenScreen extends StatelessWidget {
                           onEdit: () {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (context) => AddEditDept(
-                                          dept: dept,
+                                    builder: (context) => AddEditPekerjaan(
+                                          pekerjaan: pekerjaan,
                                         )),
                                 (route) => false);
                           },
@@ -132,7 +132,7 @@ class MasterDepartemenScreen extends StatelessWidget {
                                     textAlign: TextAlign.center,
                                   ),
                                   content: Text(
-                                    "Apakah Anda yakin ingin menghapus data '${dept.namaDept}'?",
+                                    "Apakah Anda yakin ingin menghapus data '${pekerjaan.jobDesc}'?",
                                     maxLines: 2,
                                     style: AppTextStyle.textSubtitleStyle(),
                                     textAlign: TextAlign.center,
@@ -150,9 +150,10 @@ class MasterDepartemenScreen extends StatelessWidget {
                                     ),
                                     TextButton(
                                       onPressed: () async {
-                                        String result = await _deptRepository
-                                            .deleteDepartemen(
-                                                kdDept: dept.kdDept);
+                                        String result =
+                                            await _pekerjaanRepository
+                                                .deletePekerjaan(
+                                                    jobId: pekerjaan.jobId);
 
                                         bool isSuccess = result == "1";
                                         if (isSuccess) {

@@ -4,16 +4,16 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:xhalona_pos/repositories/departemen/depertemen_repository.dart';
-import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/add_edit_dept.dart';
-import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/departemen_controller.dart';
+import 'package:xhalona_pos/repositories/rekening/rekening_repository.dart';
+import 'package:xhalona_pos/views/home/fragment/master/rekening/add_edit_rekening.dart';
+import 'package:xhalona_pos/views/home/fragment/master/rekening/rekening_controller.dart';
 
 // ignore: must_be_immutable
-class MasterDepartemenScreen extends StatelessWidget {
-  MasterDepartemenScreen({super.key});
+class MasterRekeningScreen extends StatelessWidget {
+  MasterRekeningScreen({super.key});
 
-  final DepartemenController controller = Get.put(DepartemenController());
-  DepartemenRepository _deptRepository = DepartemenRepository();
+  final RekeningController controller = Get.put(RekeningController());
+  RekeningRepository _rekeningRepository = RekeningRepository();
 
   Widget mButton(VoidCallback onTap, IconData icon, String label) {
     return GestureDetector(
@@ -54,7 +54,7 @@ class MasterDepartemenScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Master Departement"),
+          title: Text("Master Rekening"),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
@@ -75,9 +75,9 @@ class MasterDepartemenScreen extends StatelessWidget {
             children: [
               mButton(() {
                 Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => AddEditDept()),
+                    MaterialPageRoute(builder: (context) => AddEditRekening()),
                     (route) => false);
-              }, Icons.add, "Add Departement"),
+              }, Icons.add, "Add Rekeningt"),
               SizedBox(
                 height: 5.h,
               ),
@@ -91,16 +91,26 @@ class MasterDepartemenScreen extends StatelessWidget {
                     pageNo: controller.pageNo.value,
                     pageRow: controller.pageRow.value,
                     titles: [
-                      AppTableTitle(value: "Kode Departement"),
-                      AppTableTitle(value: "Nama Departement"),
+                      AppTableTitle(value: "No Rek."),
+                      AppTableTitle(value: "Nama Rek."),
+                      AppTableTitle(value: "Nama Bank."),
+                      AppTableTitle(value: "Coa."),
+                      AppTableTitle(value: "Atas Nama."),
+                      AppTableTitle(value: "J Rek."),
+                      AppTableTitle(value: "Group"),
                       AppTableTitle(value: "Aksi"),
                     ],
-                    data: List.generate(controller.departemenHeader.length,
+                    data: List.generate(controller.rekeningHeader.length,
                         (int i) {
-                      var dept = controller.departemenHeader[i];
+                      var rekening = controller.rekeningHeader[i];
                       return [
-                        AppTableCell(value: dept.kdDept, index: i),
-                        AppTableCell(value: dept.namaDept, index: i),
+                        AppTableCell(value: rekening.acNoReff!, index: i),
+                        AppTableCell(value: rekening.namaAc, index: i),
+                        AppTableCell(value: rekening.bankName!, index: i),
+                        AppTableCell(value: rekening.acGL!, index: i),
+                        AppTableCell(value: rekening.bankAcName!, index: i),
+                        AppTableCell(value: rekening.jenisAc, index: i),
+                        AppTableCell(value: rekening.acGroupId!, index: i),
                         AppTableCell(
                           index: i,
                           value: "", // Ganti dengan URL gambar jika ada
@@ -109,8 +119,8 @@ class MasterDepartemenScreen extends StatelessWidget {
                           onEdit: () {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (context) => AddEditDept(
-                                          dept: dept,
+                                    builder: (context) => AddEditRekening(
+                                          rekening: rekening,
                                         )),
                                 (route) => false);
                           },
@@ -132,7 +142,7 @@ class MasterDepartemenScreen extends StatelessWidget {
                                     textAlign: TextAlign.center,
                                   ),
                                   content: Text(
-                                    "Apakah Anda yakin ingin menghapus data '${dept.namaDept}'?",
+                                    "Apakah Anda yakin ingin menghapus data '${rekening.namaAc}'?",
                                     maxLines: 2,
                                     style: AppTextStyle.textSubtitleStyle(),
                                     textAlign: TextAlign.center,
@@ -150,9 +160,10 @@ class MasterDepartemenScreen extends StatelessWidget {
                                     ),
                                     TextButton(
                                       onPressed: () async {
-                                        String result = await _deptRepository
-                                            .deleteDepartemen(
-                                                kdDept: dept.kdDept);
+                                        String result =
+                                            await _rekeningRepository
+                                                .deleteKaryawan(
+                                                    acId: rekening.acId);
 
                                         bool isSuccess = result == "1";
                                         if (isSuccess) {

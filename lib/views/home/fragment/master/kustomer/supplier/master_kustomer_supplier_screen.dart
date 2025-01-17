@@ -4,16 +4,18 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:xhalona_pos/repositories/departemen/depertemen_repository.dart';
-import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/add_edit_dept.dart';
-import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/departemen_controller.dart';
+import 'package:xhalona_pos/repositories/kustomer/kustomer_repository.dart';
+import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/add_edit_kustomer.dart';
+import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplier_kustomer_controller.dart';
 
 // ignore: must_be_immutable
-class MasterDepartemenScreen extends StatelessWidget {
-  MasterDepartemenScreen({super.key});
+class MasterKustomerScreen extends StatelessWidget {
+  String? isSuplier;
+  String? islabel;
+  MasterKustomerScreen({super.key, this.isSuplier, this.islabel});
 
-  final DepartemenController controller = Get.put(DepartemenController());
-  DepartemenRepository _deptRepository = DepartemenRepository();
+  final KustomerController controller = Get.put(KustomerController());
+  KustomerRepository _kustomerRepository = KustomerRepository();
 
   Widget mButton(VoidCallback onTap, IconData icon, String label) {
     return GestureDetector(
@@ -54,7 +56,7 @@ class MasterDepartemenScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Master Departement"),
+          title: Text("Master $islabel"),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
@@ -75,9 +77,13 @@ class MasterDepartemenScreen extends StatelessWidget {
             children: [
               mButton(() {
                 Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => AddEditDept()),
+                    MaterialPageRoute(
+                        builder: (context) => AddEditKustomer(
+                              islabel: islabel,
+                              isSuplier: isSuplier,
+                            )),
                     (route) => false);
-              }, Icons.add, "Add Departement"),
+              }, Icons.add, "Add $islabel"),
               SizedBox(
                 height: 5.h,
               ),
@@ -91,16 +97,23 @@ class MasterDepartemenScreen extends StatelessWidget {
                     pageNo: controller.pageNo.value,
                     pageRow: controller.pageRow.value,
                     titles: [
-                      AppTableTitle(value: "Kode Departement"),
-                      AppTableTitle(value: "Nama Departement"),
+                      AppTableTitle(value: "Kode $islabel"),
+                      AppTableTitle(value: "Nama $islabel"),
+                      AppTableTitle(value: "Telp"),
+                      AppTableTitle(value: "Alamat"),
+                      AppTableTitle(value: "Email"),
                       AppTableTitle(value: "Aksi"),
                     ],
-                    data: List.generate(controller.departemenHeader.length,
+                    data: List.generate(controller.kustomerHeader.length,
                         (int i) {
-                      var dept = controller.departemenHeader[i];
+                      var kustomer = controller.kustomerHeader[i];
+                      controller.isSuplier.value = isSuplier!;
                       return [
-                        AppTableCell(value: dept.kdDept, index: i),
-                        AppTableCell(value: dept.namaDept, index: i),
+                        AppTableCell(value: kustomer.suplierId, index: i),
+                        AppTableCell(value: kustomer.suplierName, index: i),
+                        AppTableCell(value: kustomer.telp, index: i),
+                        AppTableCell(value: kustomer.address1, index: i),
+                        AppTableCell(value: kustomer.emailAdress, index: i),
                         AppTableCell(
                           index: i,
                           value: "", // Ganti dengan URL gambar jika ada
@@ -109,8 +122,10 @@ class MasterDepartemenScreen extends StatelessWidget {
                           onEdit: () {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (context) => AddEditDept(
-                                          dept: dept,
+                                    builder: (context) => AddEditKustomer(
+                                          kustomer: kustomer,
+                                          islabel: islabel,
+                                          isSuplier: isSuplier,
                                         )),
                                 (route) => false);
                           },
@@ -132,7 +147,7 @@ class MasterDepartemenScreen extends StatelessWidget {
                                     textAlign: TextAlign.center,
                                   ),
                                   content: Text(
-                                    "Apakah Anda yakin ingin menghapus data '${dept.namaDept}'?",
+                                    "Apakah Anda yakin ingin menghapus data '${kustomer.suplierName}'?",
                                     maxLines: 2,
                                     style: AppTextStyle.textSubtitleStyle(),
                                     textAlign: TextAlign.center,
@@ -150,9 +165,11 @@ class MasterDepartemenScreen extends StatelessWidget {
                                     ),
                                     TextButton(
                                       onPressed: () async {
-                                        String result = await _deptRepository
-                                            .deleteDepartemen(
-                                                kdDept: dept.kdDept);
+                                        String result =
+                                            await _kustomerRepository
+                                                .deleteKustomer(
+                                                    suplierId:
+                                                        kustomer.suplierId);
 
                                         bool isSuccess = result == "1";
                                         if (isSuccess) {

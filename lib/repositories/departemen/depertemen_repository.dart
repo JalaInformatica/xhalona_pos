@@ -19,7 +19,7 @@ class DepartemenRepository extends AppRepository {
         .toList();
   }
 
-  Future<String> addEditKaryawan({
+  Future<String> addEditDepartemen({
     String? kdDept,
     String? nmDept,
     String? actionId,
@@ -33,7 +33,7 @@ class DepartemenRepository extends AppRepository {
     return data.map((dept) => DepartemenDAO.fromJson(dept)).first.kdDept;
   }
 
-  Future<String> deleteKaryawan({
+  Future<String> deleteDepartemen({
     String? kdDept,
   }) async {
     var result = await _DepartemenService.deleteDept(
