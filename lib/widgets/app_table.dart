@@ -256,7 +256,7 @@ class AppTableCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final backgroundColor =
-        index % 2 == 0 ? Colors.white : AppColor.secondaryColor;
+        index % 2 == 0 ? Colors.white : AppColor.tertiaryColor;
 
     return Container(
       width: width,
