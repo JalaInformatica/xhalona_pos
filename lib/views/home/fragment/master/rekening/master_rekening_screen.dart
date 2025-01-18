@@ -4,16 +4,16 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:xhalona_pos/repositories/karyawan/karyawan_repository.dart';
-import 'package:xhalona_pos/views/home/fragment/master/karyawan/add_edit_karyawan.dart';
-import 'package:xhalona_pos/views/home/fragment/master/karyawan/karyawan_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/master_departemen_screen.dart';
+import 'package:xhalona_pos/repositories/rekening/rekening_repository.dart';
+import 'package:xhalona_pos/views/home/fragment/master/rekening/add_edit_rekening.dart';
+import 'package:xhalona_pos/views/home/fragment/master/rekening/rekening_controller.dart';
 
-class MasterKaryawanScreen extends StatelessWidget {
-  MasterKaryawanScreen({super.key});
+// ignore: must_be_immutable
+class MasterRekeningScreen extends StatelessWidget {
+  MasterRekeningScreen({super.key});
 
-  final KaryawanController controller = Get.put(KaryawanController());
-  KaryawanRepository _karyawanRepository = KaryawanRepository();
+  final RekeningController controller = Get.put(RekeningController());
+  RekeningRepository _rekeningRepository = RekeningRepository();
 
   Widget mButton(VoidCallback onTap, IconData icon, String label) {
     return GestureDetector(
@@ -54,7 +54,7 @@ class MasterKaryawanScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Master Karyawan"),
+          title: Text("Master Rekening"),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
@@ -75,18 +75,9 @@ class MasterKaryawanScreen extends StatelessWidget {
             children: [
               mButton(() {
                 Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(
-                        builder: (context) => MasterDepartemenScreen()),
+                    MaterialPageRoute(builder: (context) => AddEditRekening()),
                     (route) => false);
-              }, Icons.add_home_work, "Departement"),
-              SizedBox(
-                height: 5.h,
-              ),
-              mButton(() {
-                Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => AddEditKaryawan()),
-                    (route) => false);
-              }, Icons.add, "Add Karyawan"),
+              }, Icons.add, "Add Rekeningt"),
               SizedBox(
                 height: 5.h,
               ),
@@ -100,44 +91,26 @@ class MasterKaryawanScreen extends StatelessWidget {
                     pageNo: controller.pageNo.value,
                     pageRow: controller.pageRow.value,
                     titles: [
-                      AppTableTitle(value: "NIK"),
-                      AppTableTitle(value: "Nama"),
-                      AppTableTitle(value: "Tgl Masuk"),
-                      AppTableTitle(value: "BPJS Kes"),
-                      AppTableTitle(value: "BPJS Ket."),
-                      AppTableTitle(value: "JK"),
-                      AppTableTitle(value: "Tgl Lahir"),
-                      AppTableTitle(value: "Alamat"),
-                      AppTableTitle(value: "Bagian"),
-                      AppTableTitle(value: "Bonus"),
-                      AppTableTitle(value: "Target"),
+                      AppTableTitle(value: "No Rek."),
+                      AppTableTitle(value: "Nama Rek."),
+                      AppTableTitle(value: "Nama Bank."),
+                      AppTableTitle(value: "Coa."),
+                      AppTableTitle(value: "Atas Nama."),
+                      AppTableTitle(value: "J Rek."),
+                      AppTableTitle(value: "Group"),
                       AppTableTitle(value: "Aksi"),
                     ],
-                    data: List.generate(controller.karyawanHeader.length,
+                    data: List.generate(controller.rekeningHeader.length,
                         (int i) {
-                      var karyawan = controller.karyawanHeader[i];
+                      var rekening = controller.rekeningHeader[i];
                       return [
-                        AppTableCell(value: karyawan.empId, index: i),
-                        AppTableCell(value: karyawan.fullName, index: i),
-                        AppTableCell(
-                            value: karyawan.dateIn.split("T").first, index: i),
-                        AppTableCell(value: karyawan.bpjsNo, index: i),
-                        AppTableCell(value: '${karyawan.bpjsTk}', index: i),
-                        AppTableCell(
-                            value:
-                                '${karyawan.gender == 1 ? 'Laki-laki' : 'Perempuan'}',
-                            index: i),
-                        AppTableCell(
-                            value: karyawan.birthDate!.split("T").first,
-                            index: i),
-                        AppTableCell(value: '${karyawan.alamat}', index: i),
-                        AppTableCell(value: '${karyawan.kd_dept}', index: i),
-                        AppTableCell(
-                            value: formatCurrency(karyawan.bonusAmount),
-                            index: i),
-                        AppTableCell(
-                            value: formatCurrency(karyawan.bonusAmount),
-                            index: i),
+                        AppTableCell(value: rekening.acNoReff!, index: i),
+                        AppTableCell(value: rekening.namaAc, index: i),
+                        AppTableCell(value: rekening.bankName!, index: i),
+                        AppTableCell(value: rekening.acGL!, index: i),
+                        AppTableCell(value: rekening.bankAcName!, index: i),
+                        AppTableCell(value: rekening.jenisAc, index: i),
+                        AppTableCell(value: rekening.acGroupId!, index: i),
                         AppTableCell(
                           index: i,
                           value: "", // Ganti dengan URL gambar jika ada
@@ -146,8 +119,8 @@ class MasterKaryawanScreen extends StatelessWidget {
                           onEdit: () {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (context) => AddEditKaryawan(
-                                          karyawan: karyawan,
+                                    builder: (context) => AddEditRekening(
+                                          rekening: rekening,
                                         )),
                                 (route) => false);
                           },
@@ -169,7 +142,7 @@ class MasterKaryawanScreen extends StatelessWidget {
                                     textAlign: TextAlign.center,
                                   ),
                                   content: Text(
-                                    "Apakah Anda yakin ingin menghapus data '${karyawan.fullName}'?",
+                                    "Apakah Anda yakin ingin menghapus data '${rekening.namaAc}'?",
                                     maxLines: 2,
                                     style: AppTextStyle.textSubtitleStyle(),
                                     textAlign: TextAlign.center,
@@ -188,9 +161,9 @@ class MasterKaryawanScreen extends StatelessWidget {
                                     TextButton(
                                       onPressed: () async {
                                         String result =
-                                            await _karyawanRepository
+                                            await _rekeningRepository
                                                 .deleteKaryawan(
-                                                    empId: karyawan.empId);
+                                                    acId: rekening.acId);
 
                                         bool isSuccess = result == "1";
                                         if (isSuccess) {

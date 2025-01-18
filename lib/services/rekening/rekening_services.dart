@@ -2,81 +2,86 @@ import 'dart:convert';
 import 'package:xhalona_pos/services/response_handler.dart';
 import 'package:xhalona_pos/services/api_service.dart' as api;
 
-class KaryawanServices {
-  Future<String> getKaryawan({
+class RekeningServices {
+  Future<String> getRekening({
     int? pageNo,
     int? pageRow,
-    String? isActive,
     String? filterValue,
   }) async {
     await api.fetchUserSessionInfo();
-    var url = '/SALES/m_employee_pos';
+    var url = '/SALES/m_akun_bank';
     var body = jsonEncode({
       "rq": {
         "ACTION_ID": "LIST_H",
         "IP": api.ip,
         "COMPANY_ID": api.companyId,
-        "SITE_ID": "",
         "USER_ID": api.userId,
         "SESSION_LOGIN_ID": api.sessionId,
         "FILTER_FIELD": "",
         "FILTER_VALUE": filterValue ?? '',
         "PAGE_NO": pageNo ?? 1,
         "PAGE_ROW": pageRow ?? 10,
-        "SORT_ORDER_BY": "EMP_ID",
-        "SORT_ORDER_TYPE": "DESC",
-        "IS_ACTIVE": isActive ?? "",
+        "SORT_ORDER_BY": "AC_ID",
+        "SORT_ORDER_TYPE": "ASC",
+        "SITE_ID": "",
+        "IS_SHOW_POS": "",
+        "IS_CASH": "",
+        "IS_INSURANCE": "",
+        "IS_DEBET": "",
+        "IS_OTHER": "1",
+        "IS_SHOW_FINANCE": "1",
+        "JENIS_AC": "",
+        "USER_AUTORITY": "1",
       }
     });
-
-    print('object: $body');
     var response =
         await api.post(url, headers: await api.requestHeaders(), body: body);
 
     return ResponseHandler.handle(response);
   }
 
-  Future<String> addEditKaryawan({
-    String? empId,
-    String? fullName,
-    String? dateIn,
+  Future<String> addEditRekening({
+    String? acId,
+    String? jenisAc,
+    String? namaAc,
+    String? acNoReff,
+    String? acGL,
+    String? acGroupId,
+    String? nCodeIn,
+    String? nCodeOut,
+    String? bankName,
+    String? bankAcName,
+    String? acsUserId,
     String? isActive,
-    String? bpjsNo,
-    String? bpjsTk,
-    String? gender,
-    String? birthDate,
-    String? birthPlace,
-    String? alamat,
-    String? kdDept,
-    String? bonusAmount,
-    String? bonusTarget,
     String? actionId,
   }) async {
     await api.fetchUserSessionInfo();
-    var url = '/SALES/m_employee_pos';
+    var url = '/SALES/m_akun_bank';
     var body = jsonEncode({
       "rq": {
         "ACTION_ID": actionId == '1' ? "EDIT_H" : "ADD_H",
         "IP": api.ip,
         "COMPANY_ID": api.companyId,
-        "SITE_ID": "",
         "USER_ID": api.userId,
         "SESSION_LOGIN_ID": api.sessionId,
-        "EMP_ID": empId,
-        "FULL_NAME": fullName,
-        "DATE_IN": dateIn,
-        "IS_ACTIVE": isActive,
-        "BPJS_NO": bpjsNo,
-        "BPJS_TK": bpjsTk,
-        "GENDER": gender == "Laki-laki" ? "1" : "0",
-        "BIRTHDATE": birthDate,
-        "BIRTHPLACE": birthPlace,
-        "ALAMAT": alamat,
-        "KD_DEPT": kdDept,
-        "BONUS_AMOUNT": bonusAmount,
-        "BONUS_TARGET": bonusTarget
+        "SITE_ID": "",
+        "AC_CURRENCY_ID": "RP",
+        "JENIS_AC": jenisAc,
+        "AC_ID": acId,
+        "NAMA_AC": namaAc,
+        "AC_NO_REFF": acNoReff,
+        "ACCOUNT_GL": acGL,
+        "AC_GROUP_ID": acGroupId,
+        "NUMBERING_CODE_IN": nCodeIn,
+        "NUMBERING_CODE_OUT": nCodeOut,
+        "BANK_NAME": bankName,
+        "BANK_ACCOUNT_NAME": bankAcName,
+        "ACCESS_TO_USER_ID": acsUserId,
+        "ISACTIVE": isActive ?? 1
       }
     });
+
+    print('dept: $body');
 
     var response =
         await api.post(url, headers: await api.requestHeaders(), body: body);
@@ -84,11 +89,11 @@ class KaryawanServices {
     return ResponseHandler.handle(response);
   }
 
-  Future<String> deleteKaryawan({
-    String? empId,
+  Future<String> deleteRekening({
+    String? acId,
   }) async {
     await api.fetchUserSessionInfo();
-    var url = '/SALES/m_employee_pos';
+    var url = '/SALES/m_akun_bank';
     var body = jsonEncode({
       "rq": {
         "ACTION_ID": "DELETE_H",
@@ -98,7 +103,7 @@ class KaryawanServices {
         "USER_ID": api.userId,
         "SESSION_LOGIN_ID": api.sessionId,
         "DATA": [
-          {"EMP_ID": empId}
+          {"AC_ID": acId}
         ]
       }
     });

@@ -8,7 +8,6 @@ import 'package:xhalona_pos/widgets/app_text_field.dart';
 import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
 
-// ignore: must_be_immutable
 class AppTable extends StatefulWidget {
   final List<AppTableTitle> titles;
   final List<List<AppTableCell>> data;
@@ -63,6 +62,12 @@ class _AppTableState extends State<AppTable> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double totalColumnWidth = widget.titles.length * 100;
+    double columnWidth = totalColumnWidth < screenWidth
+        ? screenWidth / widget.titles.length
+        : 100;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -70,7 +75,7 @@ class _AppTableState extends State<AppTable> {
           children: [
             Expanded(
               child: SizedBox(
-                  height: 42.h,
+                  height: 42,
                   child: AppTextField(
                     context: context,
                     textEditingController: searchController,
@@ -98,34 +103,35 @@ class _AppTableState extends State<AppTable> {
                         ))),
           ],
         ),
-        SizedBox(
-          height: 5.h,
-        ),
+        SizedBox(height: 5),
         !widget.isRefreshing
             ? Flexible(
                 child: HorizontalDataTable(
-                leftHandSideColumnWidth: 100,
-                rightHandSideColumnWidth:
-                    (100 * (widget.titles.length - 1)).toDouble(),
-                isFixedHeader: true,
-                headerWidgets: widget.titles,
-                leftSideItemBuilder: (context, index) {
-                  return widget.data[index][0];
-                },
-                rightSideItemBuilder: (context, index) {
-                  return Row(
-                    children: widget.data[index]
-                        .map<Widget>((cell) => cell)
-                        .skip(1)
-                        .toList(),
-                  );
-                },
-                itemCount: widget.data.length,
-              ))
-            : Flexible(child: _buildShimmerTable()),
-        SizedBox(
-          height: 5.h,
-        ),
+                  leftHandSideColumnWidth: columnWidth,
+                  rightHandSideColumnWidth:
+                      columnWidth * (widget.titles.length - 1),
+                  isFixedHeader: true,
+                  headerWidgets: widget.titles
+                      .map((title) => title.copyWithWidth(columnWidth))
+                      .toList(),
+                  leftSideItemBuilder: (context, index) {
+                    return widget.data[index][0].copyWithWidth(columnWidth);
+                  },
+                  rightSideItemBuilder: (context, index) {
+                    return Row(
+                      children: widget.data[index]
+                          .map<Widget>(
+                            (cell) => cell.copyWithWidth(columnWidth),
+                          )
+                          .skip(1)
+                          .toList(),
+                    );
+                  },
+                  itemCount: widget.data.length,
+                ),
+              )
+            : Flexible(child: _buildShimmerTable(columnWidth)),
+        SizedBox(height: 5),
         Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -135,10 +141,9 @@ class _AppTableState extends State<AppTable> {
                 widget.onChangePageNo(widget.pageNo - 1);
               },
               icon: Icon(Icons.arrow_back_ios_rounded),
-              // padding: EdgeInsets.zero,
             ),
             Container(
-              width: 25.w,
+              width: 25,
               decoration: BoxDecoration(
                   border: Border.all(), borderRadius: BorderRadius.circular(5)),
               child: Text(
@@ -152,15 +157,13 @@ class _AppTableState extends State<AppTable> {
                 widget.onChangePageNo(widget.pageNo + 1);
               },
               icon: Icon(Icons.arrow_forward_ios_rounded),
-              // padding: EdgeInsets.zero,
             ),
             Container(
                 decoration: BoxDecoration(
                     border: Border.all(color: AppColor.grey500),
                     borderRadius: BorderRadius.circular(5)),
                 child: DropdownButton<String>(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   value:
                       "${widget.pageRow}/page", // Set the currently selected value
                   onChanged: (String? newValue) {
@@ -188,17 +191,12 @@ class _AppTableState extends State<AppTable> {
     );
   }
 
-  Widget _buildShimmerTable() {
+  Widget _buildShimmerTable(double columnWidth) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        // Row for titles
-        Row(
-          children: widget.titles,
-        ),
-        SizedBox(
-          height: 5.h,
-        ),
+        Row(children: widget.titles.map((title) => title).toList()),
+        SizedBox(height: 5),
         ...List.generate(
           2,
           (index) {
@@ -208,7 +206,8 @@ class _AppTableState extends State<AppTable> {
               child: Row(
                   children: widget.titles.map((title) {
                 return Padding(
-                    padding: EdgeInsets.only(bottom: 5.w), child: title);
+                    padding: EdgeInsets.only(bottom: 5),
+                    child: title.copyWithWidth(columnWidth));
               }).toList()),
             );
           },
@@ -216,13 +215,6 @@ class _AppTableState extends State<AppTable> {
       ]),
     );
   }
-}
-
-String formatCurrency(num? amount,
-    {String locale = 'id_ID', String symbol = 'Rp'}) {
-  final format =
-      NumberFormat.currency(locale: locale, symbol: symbol, decimalDigits: 0);
-  return format.format(amount ?? 0); // Gunakan 0 jika amount bernilai null
 }
 
 class AppTableCell extends StatelessWidget {
@@ -253,6 +245,22 @@ class AppTableCell extends StatelessWidget {
     this.onAdd,
   }) : super(key: key);
 
+  AppTableCell copyWithWidth(double newWidth) {
+    return AppTableCell(
+      index: index,
+      value: value,
+      imageUrl: imageUrl,
+      width: newWidth,
+      height: height,
+      isEdit: isEdit,
+      isDelete: isDelete,
+      isAdd: isAdd,
+      onEdit: onEdit,
+      onDelete: onDelete,
+      onAdd: onAdd,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final backgroundColor =
@@ -271,12 +279,8 @@ class AppTableCell extends StatelessWidget {
               fit: BoxFit.cover,
               width: width * 0.8,
               height: height * 0.8,
-              errorBuilder: (context, object, stackTrace) {
-                return SvgPicture.asset(
-                  'assets/logo-only-pink.svg',
-                  color: Colors.grey,
-                  fit: BoxFit.cover,
-                );
+              errorBuilder: (context, error, stackTrace) {
+                return Icon(Icons.broken_image, color: Colors.grey, size: 24);
               },
             )
           else
@@ -346,16 +350,37 @@ class AppTableCell extends StatelessWidget {
   }
 }
 
-class AppTableTitle extends Container {
-  AppTableTitle({super.key, required value, double? width, double? height})
-      : super(
-          width: width ?? 100,
-          height: height ?? 56,
-          alignment: Alignment.center,
-          color: AppColor.secondaryColor,
-          child: Text(
-            value,
-            style: AppTextStyle.textSubtitleStyle(color: AppColor.whiteColor),
-          ),
-        );
+class AppTableTitle extends StatelessWidget {
+  final String value;
+  final double width;
+  final double height;
+
+  AppTableTitle(
+      {Key? key, required this.value, this.width = 100, this.height = 56})
+      : super(key: key);
+
+  AppTableTitle copyWithWidth(double newWidth) {
+    return AppTableTitle(value: value, width: newWidth, height: height);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      alignment: Alignment.center,
+      color: AppColor.secondaryColor,
+      child: Text(
+        value,
+        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+}
+
+String formatCurrency(num? amount,
+    {String locale = 'id_ID', String symbol = 'Rp'}) {
+  final format =
+      NumberFormat.currency(locale: locale, symbol: symbol, decimalDigits: 0);
+  return format.format(amount ?? 0); // Gunakan 0 jika amount bernilai null
 }
