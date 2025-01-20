@@ -2,13 +2,16 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'fragment/laporan/monitor/monitor_screen.dart';
 import 'package:xhalona_pos/views/home/home_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
-import 'package:xhalona_pos/views/home/fragment/finance/finance_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/dashboard/dashboard_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/coa/master_coa_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/transaction/transaction_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/laporan/finance/lap_finance_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/master_product_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/master/pengguna/master_pengguna_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/rekening/master_rekening_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/master_karyawan_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/pekerjaan/master_pekerjaan_screen.dart';
@@ -25,8 +28,6 @@ class HomeScreen extends StatelessWidget {
         return DashboardScreen();
       case "transaksi":
         return TransactionScreen();
-      case "finance":
-        return FinanceScreen();
       default:
         return TransactionScreen();
     }
@@ -208,7 +209,7 @@ class HomeScreen extends StatelessWidget {
                             child: Container(
                               height: 60,
                               width: double.infinity,
-                              color: Colors.yellow,
+                              color: Colors.white,
                               padding: EdgeInsets.symmetric(vertical: 5),
                               child: Scrollbar(
                                 child: ListView(
@@ -264,14 +265,14 @@ class HomeScreen extends StatelessWidget {
                                     SizedBox(width: screenWidth * 0.02),
                                     masterButton(
                                       () {
-                                        // Navigator.of(context)
-                                        //     .pushAndRemoveUntil(
-                                        //   MaterialPageRoute(
-                                        //     builder: (context) =>
-                                        //         MasterPenggunaScreen(),
-                                        //   ),
-                                        //   (route) => false,
-                                        // );
+                                        Navigator.of(context)
+                                            .pushAndRemoveUntil(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                MasterPenggunaScreen(),
+                                          ),
+                                          (route) => false,
+                                        );
                                       },
                                       "Master Pengguna",
                                       Icons.person,
@@ -339,6 +340,77 @@ class HomeScreen extends StatelessWidget {
                                       },
                                       "Master Supplier",
                                       Icons.store,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          )
+                        : SizedBox.shrink()
+                    : SizedBox.shrink(),
+                controller.selectedMenuName.value.toLowerCase() == "laporan"
+                    ? !controller.isOpenLaporan.value
+                        ? Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Container(
+                              height: 60,
+                              width: double.infinity,
+                              color: Colors.white,
+                              padding: EdgeInsets.symmetric(vertical: 5),
+                              child: Scrollbar(
+                                child: ListView(
+                                  scrollDirection: Axis.horizontal,
+                                  children: [
+                                    SizedBox(width: screenWidth * 0.02),
+                                    masterButton(
+                                      () {
+                                        Navigator.of(context)
+                                            .pushAndRemoveUntil(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                LapPenjualanScreen(),
+                                          ),
+                                          (route) => false,
+                                        );
+                                      },
+                                      "Lap. Penjualan",
+                                      Icons.graphic_eq_sharp,
+                                    ),
+                                    SizedBox(width: screenWidth * 0.02),
+                                    masterButton(
+                                      () {
+                                        Navigator.of(context)
+                                            .pushAndRemoveUntil(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                MonitorScreen(),
+                                          ),
+                                          (route) => false,
+                                        );
+                                      },
+                                      "Monitor Penjualan",
+                                      Icons.monitor,
+                                    ),
+                                    SizedBox(width: screenWidth * 0.02),
+                                    masterButton(
+                                      () {},
+                                      "Lap. Stock",
+                                      Icons.inventory,
+                                    ),
+                                    SizedBox(width: screenWidth * 0.02),
+                                    masterButton(
+                                      () {
+                                        Navigator.of(context)
+                                            .pushAndRemoveUntil(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                LapFinanceScreen(),
+                                          ),
+                                          (route) => false,
+                                        );
+                                      },
+                                      "Lap. Finance",
+                                      Icons.monetization_on,
                                     ),
                                   ],
                                 ),
