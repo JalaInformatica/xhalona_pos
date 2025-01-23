@@ -10,9 +10,8 @@ import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplie
 
 // ignore: must_be_immutable
 class MasterKustomerScreen extends StatelessWidget {
-  String? isSuplier;
   String? islabel;
-  MasterKustomerScreen({super.key, this.isSuplier, this.islabel});
+  MasterKustomerScreen({super.key, this.islabel});
 
   final KustomerController controller = Get.put(KustomerController());
   KustomerRepository _kustomerRepository = KustomerRepository();
@@ -80,7 +79,7 @@ class MasterKustomerScreen extends StatelessWidget {
                     MaterialPageRoute(
                         builder: (context) => AddEditKustomer(
                               islabel: islabel,
-                              isSuplier: isSuplier,
+                              isSuplier: controller.isSuplier.value,
                             )),
                     (route) => false);
               }, Icons.add, "Add $islabel"),
@@ -107,7 +106,6 @@ class MasterKustomerScreen extends StatelessWidget {
                     data: List.generate(controller.kustomerHeader.length,
                         (int i) {
                       var kustomer = controller.kustomerHeader[i];
-                      controller.isSuplier.value = isSuplier!;
                       return [
                         AppTableCell(value: kustomer.suplierId, index: i),
                         AppTableCell(value: kustomer.suplierName, index: i),
@@ -125,7 +123,7 @@ class MasterKustomerScreen extends StatelessWidget {
                                     builder: (context) => AddEditKustomer(
                                           kustomer: kustomer,
                                           islabel: islabel,
-                                          isSuplier: isSuplier,
+                                          isSuplier: controller.isSuplier.value,
                                         )),
                                 (route) => false);
                           },

@@ -1,8 +1,8 @@
 class VarianDAO {
   String partId;
   String varId;
-  int varName;
-  int varGroupId;
+  String varName;
+  String varGroupId;
   String varGroupName;
   String? partName;
   String? companyId;
@@ -10,8 +10,8 @@ class VarianDAO {
   VarianDAO({
     this.partId = "",
     this.varId = "",
-    this.varName = 0,
-    this.varGroupId = 0,
+    this.varName = "",
+    this.varGroupId = "",
     this.varGroupName = "",
     this.partName,
     this.companyId,
@@ -20,8 +20,8 @@ class VarianDAO {
   VarianDAO.fromJson(Map<String, dynamic> json)
       : partId = json['PART_ID'] ?? "",
         varId = json['VARIAN_ID'] ?? "",
-        varName = json['VARIAN_NAME'] ?? 0,
-        varGroupId = json['VARIAN_GROUP_ID'] ?? 0,
+        varName = json['VARIAN_NAME'] ?? "",
+        varGroupId = json['VARIAN_GROUP_ID'] ?? "",
         varGroupName = json['VARIAN_GROUP_NAME'] ?? "",
         partName = json['PART_NAME'],
         companyId = json['COMPANY_ID'];

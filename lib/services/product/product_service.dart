@@ -95,7 +95,7 @@ class ProductService {
         "DISCOUNT_PCT": discPct,
         "DISCOUNT_VAL": discVal,
         "UNIT_PRICE": unitPrice,
-        "IS_ACTIVE": isActive,
+        "IS_ACTIVE": "1",
         "IS_PROMO": isPromo,
         "THUMB_IMAGE": thumbImage,
         "MAIN_IMAGE": mainImage,

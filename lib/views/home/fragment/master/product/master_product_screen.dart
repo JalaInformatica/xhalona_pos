@@ -5,7 +5,6 @@ import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/repositories/product/product_repository.dart';
-import 'package:xhalona_pos/views/home/fragment/transaction/transaction_widget.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/add_edit_product.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/bahan/bahan_controller.dart';
@@ -14,6 +13,7 @@ import 'package:xhalona_pos/views/home/fragment/master/product/m_all/master_mAll
 import 'package:xhalona_pos/views/home/fragment/master/product/paket/master_paket_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/bahan/master_bahan_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/kategori/master_kategori_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/varian/varian_group/master_varian_group_screen.dart';
 
 // ignore: must_be_immutable
 class MasterProductScreen extends StatelessWidget {
@@ -113,7 +113,12 @@ class MasterProductScreen extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                       children: [
                         mButton(() {
-                          // Aksi kosong atau bisa diaktifkan jika diperlukan
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (context) => MasterVarianGroupScreen(),
+                            ),
+                            (route) => false,
+                          );
                         }, Icons.layers, "Master Varian",
                             170), // Ikon untuk varian
                         SizedBox(width: screenWidth * 0.02),
@@ -231,7 +236,7 @@ class MasterProductScreen extends StatelessWidget {
                             index: i),
                         AppTableCell(
                             value:
-                                '${product.isFree == true ? 'Iya' : 'Tidak'}',
+                                '${product.isFree == true ? 'Iya' : 'Tidak ${product.partId}'}',
                             index: i),
                         AppTableCell(
                           index: i,
@@ -319,28 +324,26 @@ class MasterProductScreen extends StatelessWidget {
                         AppTableCell(
                           index: i,
                           value: "",
-                          isBahan: product.isNonSales == true ? true : false,
+                          isBahan: product.isFixQty == true ? true : false,
                           isPaket: product.isPacket == true ? true : false,
                           onPaket: () {
                             Navigator.of(context).pushAndRemoveUntil(
                               MaterialPageRoute(
-                                builder: (context) => MasterPaketScreen(
-                                  partId: product.partId,
-                                ),
+                                builder: (context) => MasterPaketScreen(),
                               ),
                               (route) => false,
                             );
+                            controllerPaket.filterPartId.value = product.partId;
                             controllerPaket.fetchProducts();
                           },
                           onBahan: () {
                             Navigator.of(context).pushAndRemoveUntil(
                               MaterialPageRoute(
-                                builder: (context) => MasterBahanScreen(
-                                  partId: product.partId,
-                                ),
+                                builder: (context) => MasterBahanScreen(),
                               ),
                               (route) => false,
                             );
+                            controllerBahan.filterPartId.value = product.partId;
                             controllerBahan.fetchProducts();
                           },
                         )

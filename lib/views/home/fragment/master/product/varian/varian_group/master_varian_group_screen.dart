@@ -2,20 +2,23 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
-import 'package:xhalona_pos/repositories/paket_repository.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:xhalona_pos/repositories/varian/varianGroup_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/master/product/paket/add_edit_paket.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/master_product_screen.dart';
-import 'package:xhalona_pos/views/home/fragment/master/product/paket/paket_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/varian/varian_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/varian/master_varian_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/varian/varian_group/add_edit_varian_group.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/varian/varian_group/varianGroup_controller.dart';
 
 // ignore: must_be_immutable
-class MasterPaketScreen extends StatelessWidget {
-  MasterPaketScreen({super.key});
+class MasterVarianGroupScreen extends StatelessWidget {
+  MasterVarianGroupScreen({super.key});
 
-  final PaketController controller = Get.put(PaketController());
+  final VarianGroupController controller = Get.put(VarianGroupController());
+  final VarianController controllerVar = Get.put(VarianController());
   final ProductController controllerPro = Get.put(ProductController());
-  PaketRepository _paketRepository = PaketRepository();
+  VarianGroupRepository _kategoriRepository = VarianGroupRepository();
 
   Widget mButton(VoidCallback onTap, IconData icon, String label) {
     return GestureDetector(
@@ -57,7 +60,7 @@ class MasterPaketScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Master Paket"),
+          title: Text("Master VarianGroup"),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
@@ -81,11 +84,9 @@ class MasterPaketScreen extends StatelessWidget {
               mButton(() {
                 Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(
-                        builder: (context) => AddEditPaket(
-                              partId: controller.filterPartId.value,
-                            )),
+                        builder: (context) => AddEditVarianGroup()),
                     (route) => false);
-              }, Icons.add, "Add Paket"),
+              }, Icons.add, "Add VarianGroup"),
               SizedBox(
                 height: 5.h,
               ),
@@ -99,34 +100,19 @@ class MasterPaketScreen extends StatelessWidget {
                     pageNo: controller.pageNo.value,
                     pageRow: controller.pageRow.value,
                     titles: [
-                      AppTableTitle(value: "Nama Produk"),
-                      AppTableTitle(value: "Qty"),
-                      AppTableTitle(value: "Harga"),
+                      AppTableTitle(value: "Group Varian"),
                       AppTableTitle(value: "Aksi"),
                     ],
-                    data: List.generate(controller.paketHeader.length, (int i) {
-                      var paket = controller.paketHeader[i];
+                    data: List.generate(controller.kategoriHeader.length,
+                        (int i) {
+                      var kategori = controller.kategoriHeader[i];
                       return [
-                        AppTableCell(value: paket.cpartName ?? '', index: i),
-                        AppTableCell(
-                            value: paket.comValue.toString() ?? '', index: i),
-                        AppTableCell(
-                            value: paket.comUnitPrice.toString() ?? '',
-                            index: i),
+                        AppTableCell(value: kategori.varGroupName, index: i),
                         AppTableCell(
                           index: i,
-                          value: "", // Ganti dengan URL gambar jika ada
-                          isEdit: true,
+                          value: "",
                           isDelete: true,
-                          onEdit: () {
-                            Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(
-                                    builder: (context) => AddEditPaket(
-                                          paket: paket,
-                                          partId: controller.filterPartId.value,
-                                        )),
-                                (route) => false);
-                          },
+                          isVarian: true,
                           onDelete: () async {
                             await SmartDialog.show(builder: (context) {
                               return AlertDialog(
@@ -145,7 +131,7 @@ class MasterPaketScreen extends StatelessWidget {
                                     textAlign: TextAlign.center,
                                   ),
                                   content: Text(
-                                    "Apakah Anda yakin ingin menghapus data '${paket.cpartName}'?",
+                                    "Apakah Anda yakin ingin menghapus data '${kategori.varGroupName}'?",
                                     maxLines: 2,
                                     style: AppTextStyle.textSubtitleStyle(),
                                     textAlign: TextAlign.center,
@@ -164,8 +150,11 @@ class MasterPaketScreen extends StatelessWidget {
                                     TextButton(
                                       onPressed: () async {
                                         String result =
-                                            await _paketRepository.deletePaket(
-                                                rowId: paket.rowId.toString());
+                                            await _kategoriRepository
+                                                .deleteVarianGroup(
+                                                    varGroupId: kategori
+                                                        .varGroupId
+                                                        .toString());
 
                                         bool isSuccess = result == "1";
                                         if (isSuccess) {
@@ -195,6 +184,17 @@ class MasterPaketScreen extends StatelessWidget {
                                     )
                                   ]);
                             });
+                          },
+                          onVarian: () {
+                            Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                    builder: (context) => MasterVarianScreen()),
+                                (route) =>
+                                    false); // Navigasi kembali ke halaman sebelumnya
+                            controllerVar.varGroupId.value =
+                                kategori.varGroupId.toString();
+
+                            controllerVar.fetchProducts();
                           },
                         ),
                       ];

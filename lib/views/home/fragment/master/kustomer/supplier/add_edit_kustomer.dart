@@ -79,7 +79,6 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
             MaterialPageRoute(
                 builder: (context) => MasterKustomerScreen(
                       islabel: widget.islabel,
-                      isSuplier: widget.isSuplier,
                     )),
             (route) => false,
           );
@@ -97,7 +96,6 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
             MaterialPageRoute(
                 builder: (context) => MasterKustomerScreen(
                       islabel: widget.islabel,
-                      isSuplier: widget.isSuplier,
                     )),
             (route) => false); // Navigasi kembali ke halaman sebelumnya
         return false; // Mencegah navigasi bawaan
@@ -159,7 +157,6 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
                                 MaterialPageRoute(
                                     builder: (context) => MasterKustomerScreen(
                                           islabel: widget.islabel,
-                                          isSuplier: widget.islabel,
                                         )),
                                 (route) => false);
                           }, "Batal", Icons.refresh),

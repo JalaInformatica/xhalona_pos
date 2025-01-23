@@ -15,10 +15,12 @@ import 'package:xhalona_pos/views/home/fragment/master/pengguna/master_pengguna_
 import 'package:xhalona_pos/views/home/fragment/master/rekening/master_rekening_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/master_karyawan_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/pekerjaan/master_pekerjaan_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplier_kustomer_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/master_kustomer_supplier_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final HomeController controller = Get.put(HomeController());
+  final KustomerController controllerKus = Get.put(KustomerController());
 
   Widget menuScreen(String menuName) {
     switch (menuName.toLowerCase()) {
@@ -315,11 +317,12 @@ class HomeScreen extends StatelessWidget {
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 MasterKustomerScreen(
-                                                    isSuplier: '0',
                                                     islabel: "Kustomer"),
                                           ),
                                           (route) => false,
                                         );
+                                        controllerKus.isSuplier.value = "0";
+                                        controllerKus.fetchProducts();
                                       },
                                       "Master Kustomer",
                                       Icons.people,
@@ -332,11 +335,12 @@ class HomeScreen extends StatelessWidget {
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 MasterKustomerScreen(
-                                                    isSuplier: '1',
                                                     islabel: "Supplier"),
                                           ),
                                           (route) => false,
                                         );
+                                        controllerKus.isSuplier.value = "1";
+                                        controllerKus.fetchProducts();
                                       },
                                       "Master Supplier",
                                       Icons.store,

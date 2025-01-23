@@ -2,29 +2,31 @@ import 'dart:convert';
 import 'package:xhalona_pos/services/response_handler.dart';
 import 'package:xhalona_pos/services/api_service.dart' as api;
 
-class PaketServices {
-  Future<String> getPaket({
+class VarianServices {
+  Future<String> getVarian({
     int? pageNo,
     int? pageRow,
     String? filterValue,
-    String? filterPartId,
+    String? varGroupId,
   }) async {
     await api.fetchUserSessionInfo();
-    var url = '/SALES/m_produk_paket';
+    var url = '/SALES/m_varian';
     var body = jsonEncode({
       "rq": {
-        "ACTION_ID": "LIST_C",
+        "ACTION_ID": "LIST_H",
         "IP": api.ip,
         "COMPANY_ID": api.companyId,
         "USER_ID": api.userId,
         "SESSION_LOGIN_ID": api.sessionId,
         "FILTER_FIELD": "",
-        "FILTER_VALUE":
-            filterValue == '' ? filterPartId ?? filterValue : filterValue,
+        "FILTER_VALUE": filterValue ?? '',
         "PAGE_NO": pageNo ?? 1,
         "PAGE_ROW": pageRow ?? 10,
-        "SORT_ORDER_BY": "PART_ID",
+        "SORT_ORDER_BY": "VARIAN_ID",
         "SORT_ORDER_TYPE": "DESC",
+        "VARIAN_NAME": "",
+        "VARIAN_GROUP_ID": varGroupId,
+        "IS_ACTIVE": "1",
       }
     });
     var response =
@@ -33,32 +35,27 @@ class PaketServices {
     return ResponseHandler.handle(response);
   }
 
-  Future<String> addEditPaket({
-    String? rowId,
-    String? partId,
-    String? comPartId,
-    String? comValue,
-    String? comUnitPrice,
+  Future<String> addEditVarian({
+    String? varId,
+    String? varName,
+    String? varGroupId,
     String? actionId,
   }) async {
     await api.fetchUserSessionInfo();
-    var url = '/SALES/m_produk_paket';
+    var url = '/SALES/m_varian';
     var body = jsonEncode({
       "rq": {
-        "ACTION_ID": actionId == '1' ? "EDIT_C" : "ADD_C",
+        "ACTION_ID": actionId == '1' ? "EDIT_H" : "ADD_H",
         "IP": api.ip,
         "COMPANY_ID": api.companyId,
         "USER_ID": api.userId,
         "SESSION_LOGIN_ID": api.sessionId,
-        "ROW_ID": rowId ?? '',
-        "PART_ID": partId,
-        "COMPONENT_PART_ID": comPartId,
-        "COMPONENT_VALUE": comValue,
-        "COMPONENT_UNIT_PRICE": comUnitPrice
+        "VARIAN_ID": varId ?? '',
+        "VARIAN_NAME": varName,
+        "VARIAN_GROUP_ID": varGroupId,
+        "IS_ACTIVE": "1",
       }
     });
-
-    print('dept: $body');
 
     var response =
         await api.post(url, headers: await api.requestHeaders(), body: body);
@@ -66,21 +63,22 @@ class PaketServices {
     return ResponseHandler.handle(response);
   }
 
-  Future<String> deletePaket({
-    String? rowId,
+  Future<String> deleteVarian({
+    String? varGroupId,
+    String? varId,
   }) async {
     await api.fetchUserSessionInfo();
-    var url = '/SALES/m_produk_paket';
+    var url = '/SALES/m_varian';
     var body = jsonEncode({
       "rq": {
-        "ACTION_ID": "DELETE_C",
+        "ACTION_ID": "DELETE_H",
         "IP": api.ip,
         "COMPANY_ID": api.companyId,
         "SITE_ID": "",
         "USER_ID": api.userId,
         "SESSION_LOGIN_ID": api.sessionId,
         "DATA": [
-          {"ROW_ID": rowId}
+          {"VARIAN_GROUP_ID": varGroupId, "VARIAN_ID": varId}
         ]
       }
     });

@@ -2,43 +2,37 @@ import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/models/dao/paket.dart';
-import 'package:xhalona_pos/models/dao/product.dart';
-import 'package:xhalona_pos/repositories/paket_repository.dart';
+import 'package:xhalona_pos/models/dao/varian.dart';
+import 'package:xhalona_pos/repositories/varian/varianGroup_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/master/product/paket/paket_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/master/product/paket/master_paket_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/m_all/mAll_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/varian/varian_group/varianGroup_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/varian/varian_group/master_varian_group_screen.dart';
 
 // ignore: must_be_immutable
-class AddEditPaket extends StatefulWidget {
-  PaketDAO? paket;
-  String? partId;
-  AddEditPaket({super.key, this.paket, this.partId});
+class AddEditVarianGroup extends StatefulWidget {
+  VarianDAO? kategori;
+  String? varGroupId;
+  AddEditVarianGroup({super.key, this.kategori, this.varGroupId});
 
   @override
-  _AddEditPaketState createState() => _AddEditPaketState();
+  _AddEditVarianGroupState createState() => _AddEditVarianGroupState();
 }
 
-class _AddEditPaketState extends State<AddEditPaket> {
-  PaketRepository _paketRepository = PaketRepository();
-  final PaketController controller = Get.put(PaketController());
+class _AddEditVarianGroupState extends State<AddEditVarianGroup> {
+  VarianGroupRepository _kategoriRepository = VarianGroupRepository();
+  final VarianGroupController controller = Get.put(VarianGroupController());
   final ProductController controllerPro = Get.put(ProductController());
+  final MasAllController controllerMas = Get.put(MasAllController());
 
   final _formKey = GlobalKey<FormState>();
-  final _hargaController = TextEditingController();
-  final _qtyController = TextEditingController();
+  final _nameVarianGroupController = TextEditingController();
   bool _isLoading = true;
-  String? _product;
 
   @override
   void initState() {
     super.initState();
     Inisialisasi();
-    if (widget.paket != null) {
-      // Inisialisasi data dari karyawan jika tersedia
-      _hargaController.text = widget.paket!.comUnitPrice.toString() ?? '';
-      _qtyController.text = widget.paket!.comValue.toString() ?? '';
-    }
   }
 
   Future<void> Inisialisasi() async {
@@ -47,36 +41,13 @@ class _AddEditPaketState extends State<AddEditPaket> {
     });
   }
 
-  Widget buildDropdownFieldProduct(
-      String label, List<ProductDAO> items, ValueChanged<String?> onChanged) {
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(),
-      ),
-      items: items.map((item) {
-        return DropdownMenuItem(value: item.partId, child: Text(item.partName));
-      }).toList(),
-      onChanged: onChanged,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return '$label tidak boleh kosong';
-        }
-        return null;
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    void handleAddEditPaket() async {
+    void handleAddEditVarianGroup() async {
       if (_formKey.currentState!.validate()) {
-        String result = await _paketRepository.addEditPaket(
-            comUnitPrice: _hargaController.text,
-            comValue: _qtyController.text,
-            comPartId: _product,
-            partId: widget.partId,
-            actionId: widget.paket == null ? '0' : '1');
+        String result = await _kategoriRepository.addEditVarianGroup(
+            varName: _nameVarianGroupController.text,
+            actionId: widget.kategori == null ? '0' : '1');
 
         bool isSuccess = result == "1";
         if (isSuccess) {
@@ -86,7 +57,7 @@ class _AddEditPaketState extends State<AddEditPaket> {
           setState(() {});
         } else {
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => MasterPaketScreen()),
+            MaterialPageRoute(builder: (context) => MasterVarianGroupScreen()),
             (route) => false,
           );
           controller.fetchProducts();
@@ -100,14 +71,14 @@ class _AddEditPaketState extends State<AddEditPaket> {
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => MasterPaketScreen()),
+            MaterialPageRoute(builder: (context) => MasterVarianGroupScreen()),
             (route) => false); // Navigasi kembali ke halaman sebelumnya
         return false; // Mencegah navigasi bawaan
       },
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            "Tambah/Edit Data Paket",
+            "Tambah/Edit Data VarianGroup",
             style: TextStyle(color: Colors.white),
           ),
           backgroundColor: AppColor.secondaryColor,
@@ -121,37 +92,24 @@ class _AddEditPaketState extends State<AddEditPaket> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Field NIK
-                      Obx(() {
-                        return buildDropdownFieldProduct(
-                          "Kode Produk/Nama Produk",
-                          controllerPro.productHeader,
-                          (value) {
-                            setState(() {
-                              _product = value;
-                            });
-                          },
-                        );
-                      }),
-                      SizedBox(height: 16),
-
                       // Field Nama
-                      buildTextField("Qty", "Masukkan Qty", _qtyController),
-                      SizedBox(height: 16),
-
                       buildTextField(
-                          "Harga", "Masukkan Harga", _hargaController),
+                          "Group VarianGroup",
+                          "Masukkan Group VarianGroup",
+                          _nameVarianGroupController),
                       SizedBox(height: 32),
 
                       // Action Buttons
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          masterButton(handleAddEditPaket, "Simpan", Icons.add),
+                          masterButton(
+                              handleAddEditVarianGroup, "Simpan", Icons.add),
                           masterButton(() {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (context) => MasterPaketScreen()),
+                                    builder: (context) =>
+                                        MasterVarianGroupScreen()),
                                 (route) => false);
                           }, "Batal", Icons.refresh),
                         ],
@@ -161,6 +119,26 @@ class _AddEditPaketState extends State<AddEditPaket> {
                 ),
               ),
       ),
+    );
+  }
+
+  Widget buildTextField(
+      String label, String hint, TextEditingController controller,
+      {TextInputType keyboardType = TextInputType.text}) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        border: OutlineInputBorder(),
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return '$label tidak boleh kosong';
+        }
+        return null;
+      },
     );
   }
 
@@ -195,26 +173,6 @@ class _AddEditPaketState extends State<AddEditPaket> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget buildTextField(
-      String label, String hint, TextEditingController controller,
-      {TextInputType keyboardType = TextInputType.text}) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        border: OutlineInputBorder(),
-      ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return '$label tidak boleh kosong';
-        }
-        return null;
-      },
     );
   }
 

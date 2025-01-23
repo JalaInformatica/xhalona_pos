@@ -13,10 +13,11 @@ class PaketRepository extends AppRepository {
     String? filterPartId,
   }) async {
     var result = await _PaketService.getPaket(
-        pageNo: pageNo,
-        pageRow: pageRow,
-        filterValue: filterValue,
-        filterPartId: filterPartId);
+      pageNo: pageNo,
+      pageRow: pageRow,
+      filterPartId: filterPartId,
+      filterValue: filterValue ?? filterPartId,
+    );
     List data = getResponseListData(result);
     return data.map((Paket) => PaketDAO.fromJson(Paket)).toList();
   }

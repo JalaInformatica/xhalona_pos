@@ -227,7 +227,9 @@ class AppTableCell extends StatelessWidget {
   final bool isDelete;
   final bool isPaket;
   final bool isBahan;
+  final bool isVarian;
   final VoidCallback? onBahan;
+  final VoidCallback? onVarian;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
   final VoidCallback? onPaket;
@@ -243,6 +245,8 @@ class AppTableCell extends StatelessWidget {
     this.isDelete = false,
     this.isPaket = false,
     this.isBahan = false,
+    this.isVarian = false,
+    this.onVarian,
     this.onBahan,
     this.onEdit,
     this.onDelete,
@@ -260,7 +264,9 @@ class AppTableCell extends StatelessWidget {
       isDelete: isDelete,
       isPaket: isPaket,
       isBahan: isBahan,
+      isVarian: isVarian,
       onBahan: onBahan,
+      onVarian: onVarian,
       onEdit: onEdit,
       onDelete: onDelete,
       onPaket: onPaket,
@@ -296,7 +302,7 @@ class AppTableCell extends StatelessWidget {
                 style: TextStyle(fontSize: 14, color: Colors.black),
               ),
             ),
-          if (isEdit || isDelete || isPaket || isBahan)
+          if (isEdit || isDelete || isPaket || isBahan || isVarian)
             Positioned(
               right: 0,
               top: 0,
@@ -332,6 +338,14 @@ class AppTableCell extends StatelessWidget {
                       color: Colors.green,
                       tooltip: 'Bahan',
                       onPressed: onBahan,
+                      backgroundColor: Colors.green.withOpacity(0.1),
+                    ),
+                  if (isVarian)
+                    _buildIconContainer(
+                      icon: Icons.arrow_circle_right_outlined,
+                      color: Colors.green,
+                      tooltip: 'Varian',
+                      onPressed: onVarian,
                       backgroundColor: Colors.green.withOpacity(0.1),
                     ),
                 ],
