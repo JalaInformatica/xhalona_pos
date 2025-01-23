@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xhalona_pos/core/constant/local_storage.dart';
+import 'package:xhalona_pos/widgets/app_dialog.dart';
 
 
 Future<String?> getBaseUrl() async {
@@ -48,27 +50,45 @@ Future<http.Response> post(String url,
   logger.i(body);
 
   var baseUrl = await getBaseUrl();
+
   try {
     var response = await http.Client()
         .post(Uri.parse(baseUrl! + url), headers: headers, body: body);
     return response;
   } on SocketException {
-    SmartDialog.show(
-        builder: (context) {
-          return AlertDialog(
-            title: Text("Masalah Jaringan"),
-            content: Text("Please check your connection and try again."),
-            actions: [
-              TextButton(
-                onPressed: () => SmartDialog.dismiss(),
-                child: Text("OK"),
-              ),
-            ],
-          );
-        },
-      );
-      throw Exception("Network Error");
+    return await showRetryDialog(url, headers: headers, body: body);
   }
+}
+
+Future<http.Response> showRetryDialog(String url,
+    {Map<String, String>? headers, Object? body}) async {
+  // Completer to control when the retry finishes
+  final completer = Completer<http.Response>();
+
+  await SmartDialog.show(
+    builder: (context) {
+      return AppDialog(
+        title: Text("Masalah Jaringan"),
+        content: const Text("Please check your connection and try again."),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              SmartDialog.dismiss(); // Close the dialog
+              try {
+                var retryResponse = await post(url, headers: headers, body: body);
+                completer.complete(retryResponse); // Complete with retry response
+              } catch (e) {
+                completer.completeError(e); // Complete with error if retry fails
+              }
+            },
+            child: const Text("OK"),
+          ),
+        ],
+      );
+    },
+  );
+
+  return completer.future; // Wait for the retry result
 }
 
 var ip;

@@ -9,13 +9,13 @@ class AppDialog extends AlertDialog {
     super.contentTextStyle,
     super.title,
     super.titlePadding,
-    super.titleTextStyle,
     super.actions,
     super.actionsPadding,
   }) : super(
     backgroundColor: AppColor.whiteColor,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(5)
-    )
+    ),
+    titleTextStyle: AppTextStyle.textSubtitleStyle(),
   );
 }

@@ -20,9 +20,9 @@ class TransactionService {
     await api.fetchUserSessionInfo();
     var url = '/SALES/order';
     var body = jsonEncode({
-      "rq":{
-        "IP":api.ip,
-        "DEF_COMPANY_ID":api.companyId,
+      "rq": {
+        "IP": api.ip,
+        "DEF_COMPANY_ID": api.companyId,
         "USER_ID": api.userId,
         "SESSION_LOGIN_ID": api.sessionId,
         "ACTION_ID": "LIST_H",
@@ -35,18 +35,15 @@ class TransactionService {
         "PAGE_NO": pageNo ?? "1",
         "PAGE_ROW": pageRow ?? "10",
         "SORT_ORDER_BY": "SALES_ID",
-        "SORT_ORDER_TYPE":"DESC",
+        "SORT_ORDER_TYPE": "DESC",
         "TRANSACTION_ID": transactionId ?? "",
         "STATUS_ID": statusId ?? "",
         "SOURCE_ID": sourceId ?? "",
         "STATUS_CATEGORY": statusCategory ?? ""
       }
     });
-    var response = await api.post(
-      url,
-      headers: await api.requestHeaders(),
-      body: body
-    );
+    var response =
+        await api.post(url, headers: await api.requestHeaders(), body: body);
 
     return ResponseHandler.handle(response);
   }
@@ -56,23 +53,19 @@ class TransactionService {
     var url = '/SALES/order';
     var body = jsonEncode({
       "rq": {
-          "IP": "103.78.114.49",
-          "DEF_COMPANY_ID": api.companyId,
-          "USER_ID": api.userId,
-          "SESSION_LOGIN_ID": api.sessionId,
-          "ACTION_ID": "ADD_H",
-          "COMPANY_ID": api.companyId,
-          ...transaction.toJson()
+        "IP": "103.78.114.49",
+        "DEF_COMPANY_ID": api.companyId,
+        "USER_ID": api.userId,
+        "SESSION_LOGIN_ID": api.sessionId,
+        "ACTION_ID": "ADD_H",
+        "COMPANY_ID": api.companyId,
+        ...transaction.toJson()
       }
     });
-    var response = await api.post(
-      url,
-      headers: await api.requestHeaders(),
-      body: body
-    );
+    var response =
+        await api.post(url, headers: await api.requestHeaders(), body: body);
 
     return ResponseHandler.handle(response);
-
   }
 
   Future<String> getTransactionDetail({required String transactionId}) async {
@@ -80,25 +73,23 @@ class TransactionService {
     var url = '/SALES/order_detail';
     var body = jsonEncode({
       "rq": {
-          "ACTION_ID": "LIST_D",
-          "IP": api.ip,
-          "COMPANY_ID": api.companyId,
-          "SITE_ID": "",
-          "USER_ID": api.userId,
-          "SESSION_LOGIN_ID": api.sessionId,
-          "SALES_ID": transactionId
+        "ACTION_ID": "LIST_D",
+        "IP": api.ip,
+        "COMPANY_ID": api.companyId,
+        "SITE_ID": "",
+        "USER_ID": api.userId,
+        "SESSION_LOGIN_ID": api.sessionId,
+        "SALES_ID": transactionId
       }
     });
-    var response = await api.post(
-      url,
-      headers: await api.requestHeaders(),
-      body: body
-    );
+    var response =
+        await api.post(url, headers: await api.requestHeaders(), body: body);
 
     return ResponseHandler.handle(response);
   }
 
-  Future<String> addDetailTransaction(List<TransactionDetailDTO> transactionDetails) async {
+  Future<String> addDetailTransaction(
+      List<TransactionDetailDTO> transactionDetails) async {
     await api.fetchUserSessionInfo();
     var url = '/SALES/order_detail';
     var body = jsonEncode({
@@ -109,14 +100,62 @@ class TransactionService {
         "SITE_ID": "",
         "USER_ID": api.userId,
         "SESSION_LOGIN_ID": api.sessionId,
-        "DATA": transactionDetails.map((transactionDetail)=> transactionDetail.toJson()).toList()
-        }
+        "DATA": transactionDetails
+            .map((transactionDetail) => transactionDetail.toJson())
+            .toList()
+      }
     });
-    var response = await api.post(
-      url,
-      headers: await api.requestHeaders(),
-      body: body
-    );
+    var response =
+        await api.post(url, headers: await api.requestHeaders(), body: body);
+    return ResponseHandler.handle(response);
+  }
+
+  Future<String> deleteTransactionDetail(String salesId, String rowId) async {
+    await api.fetchUserSessionInfo();
+    var url = '/SALES/order_detail';
+    var body = jsonEncode({
+      "rq": {
+        "ACTION_ID": "DELETE_D",
+        "IP": api.ip,
+        "COMPANY_ID": api.companyId,
+        "SITE_ID": "",
+        "USER_ID": api.userId,
+        "SESSION_LOGIN_ID": api.sessionId,
+        "DATA": [
+          {
+            "SALES_ID": salesId,
+            "ROW_ID": rowId
+          }
+        ]
+      }
+    });
+    var response =
+        await api.post(url, headers: await api.requestHeaders(), body: body);
+    return ResponseHandler.handle(response);
+  }
+
+  Future<String> editEmployeeTransactionDetail(String salesId, String rowId, String employeeId) async {
+    await api.fetchUserSessionInfo();
+    var url = '/SALES/order_detail';
+    var body = jsonEncode({
+      "rq": {
+        "ACTION_ID": "EDIT_D_EMPLOYEE",
+        "IP": api.ip,
+        "COMPANY_ID": api.companyId,
+        "SITE_ID": "",
+        "USER_ID": api.userId,
+        "SESSION_LOGIN_ID": api.sessionId,
+        "DATA": [
+          {
+            "SALES_ID": salesId,
+            "ROW_ID": rowId,
+            "EMPLOYEE_ID": employeeId,
+          }
+        ]
+      }
+    });
+    var response =
+        await api.post(url, headers: await api.requestHeaders(), body: body);
     return ResponseHandler.handle(response);
   }
 }

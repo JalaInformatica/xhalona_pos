@@ -30,7 +30,7 @@ class AppRepository {
         print(dataApplication);
         var dataModule = dataApplication['DATA_MODULE'][0];
         print(dataModule);
-        List dataMenu = dataModule["DATA_MENU"]; 
+        List dataMenu = dataModule["DATA_MENU"];
         print(dataMenu);
         return dataMenu;
       } catch (e) {
@@ -116,5 +116,18 @@ class AppRepository {
       }
     }
     return sendData;
+  }
+
+  String getResponseURLData(String response) {
+    var result = jsonDecode(response)["rs"];
+    if (result['RESULT_CODE'].toString().contains("01")) {
+      return result['URL'];
+    } else {
+      SmartDialog.showToast(
+        result['RESULT_MESSAGE'] ??
+            'Gagal, silahkan coba kembali setelah beberapa saat',
+        displayTime: Duration(seconds: 5));
+      throw Exception();
+    }
   }
 }

@@ -49,6 +49,10 @@ dependencies:
   alice: ^1.0.0-dev.12
   table_calendar: ^3.1.2
   multi_split_view: ^3.6.0
+  resizable_widget: ^1.0.5
+  esc_pos_printer: ^4.1.0
+  esc_pos_utils: ^1.1.0
+  flutter_pdfview: ^1.4.0
 
 
 dev_dependencies:

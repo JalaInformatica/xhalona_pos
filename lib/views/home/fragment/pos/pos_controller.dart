@@ -6,6 +6,7 @@ import 'package:xhalona_pos/models/dao/employee.dart';
 import 'package:xhalona_pos/models/dao/product.dart';
 import 'package:xhalona_pos/models/dao/transaction.dart';
 import 'package:xhalona_pos/models/dto/transaction.dart';
+import 'package:xhalona_pos/repositories/crystal_report/transaction_crystal_report_repository.dart';
 import 'package:xhalona_pos/repositories/product/product_repository.dart';
 import 'package:xhalona_pos/repositories/employee/employee_repository.dart';
 import 'package:xhalona_pos/repositories/transaction/transaction_repository.dart';
@@ -26,7 +27,9 @@ class PosController extends GetxController {
   var currentTransaction = <TransactionHeaderDAO>[].obs;
   var currentTransactionDetail = <TransactionDetailDAO>[].obs;
   var selectedProductPartIdToTrx = "".obs;
+
   var isAddingProductToTrx= false.obs;
+  var isDeletingProductFromTrx = false.obs;
   
   Timer? _debounce;
 
@@ -82,11 +85,24 @@ class PosController extends GetxController {
     selectedProductPartIdToTrx.value = "";
   }
 
-  // Future<List<EmployeeDAO>> fetchEmployees({required String filter}) async{
-  //   return await _employeeRepository.getEmployees(filterField: filter);
-  // }
+  Future<void> deleteProductFromTrx(String rowId) async {
+    isDeletingProductFromTrx.value = true;
+    await _transactionRepository.deleteTransactionDetail(salesId: currentTransactionId.value, rowId: rowId);
+    currentTransaction.value = await _transactionRepository.getTransactionHeader(transactionId: currentTransactionId.value);
+    currentTransactionDetail.value = await _transactionRepository.getTransactionDetail(transactionId: currentTransactionId.value);
+    isDeletingProductFromTrx.value = false;
+  }
 
-  // Future<List<EmployeeDAO>> getEmployees(String filter, [LoadProps? props]) async{
-  //   return await _employeeRepository.getEmployees(filterField: filter);
-  // }
+  Future<void> editTerapisOfTrx(String rowId, String employeeId) async {
+    await _transactionRepository.editEmployeeTransactionDetail(
+      salesId: currentTransactionId.value, 
+      rowId: rowId,
+      employeeId: employeeId
+    );
+    currentTransactionDetail.value = await _transactionRepository.getTransactionDetail(transactionId: currentTransactionId.value);
+  }
+
+  Future<String> printNota() async {
+    return await TransactionCrystalReportRepository().printNota(salesId: currentTransactionId.value);
+  }
 }
