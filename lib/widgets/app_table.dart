@@ -225,10 +225,12 @@ class AppTableCell extends StatelessWidget {
   final double height;
   final bool isEdit;
   final bool isDelete;
-  final bool isAdd;
+  final bool isPaket;
+  final bool isBahan;
+  final VoidCallback? onBahan;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
-  final VoidCallback? onAdd;
+  final VoidCallback? onPaket;
 
   AppTableCell({
     Key? key,
@@ -239,10 +241,12 @@ class AppTableCell extends StatelessWidget {
     this.height = 56,
     this.isEdit = false,
     this.isDelete = false,
-    this.isAdd = false,
+    this.isPaket = false,
+    this.isBahan = false,
+    this.onBahan,
     this.onEdit,
     this.onDelete,
-    this.onAdd,
+    this.onPaket,
   }) : super(key: key);
 
   AppTableCell copyWithWidth(double newWidth) {
@@ -254,10 +258,12 @@ class AppTableCell extends StatelessWidget {
       height: height,
       isEdit: isEdit,
       isDelete: isDelete,
-      isAdd: isAdd,
+      isPaket: isPaket,
+      isBahan: isBahan,
+      onBahan: onBahan,
       onEdit: onEdit,
       onDelete: onDelete,
-      onAdd: onAdd,
+      onPaket: onPaket,
     );
   }
 
@@ -290,7 +296,7 @@ class AppTableCell extends StatelessWidget {
                 style: TextStyle(fontSize: 14, color: Colors.black),
               ),
             ),
-          if (isEdit || isDelete || isAdd)
+          if (isEdit || isDelete || isPaket || isBahan)
             Positioned(
               right: 0,
               top: 0,
@@ -312,12 +318,20 @@ class AppTableCell extends StatelessWidget {
                       onPressed: onDelete,
                       backgroundColor: Colors.red.withOpacity(0.1),
                     ),
-                  if (isAdd)
+                  if (isPaket)
                     _buildIconContainer(
-                      icon: Icons.add,
+                      icon: Icons.local_offer,
                       color: Colors.green,
-                      tooltip: 'Add',
-                      onPressed: onAdd,
+                      tooltip: 'Paket',
+                      onPressed: onPaket,
+                      backgroundColor: Colors.green.withOpacity(0.1),
+                    ),
+                  if (isBahan)
+                    _buildIconContainer(
+                      icon: Icons.kitchen,
+                      color: Colors.green,
+                      tooltip: 'Bahan',
+                      onPressed: onBahan,
                       backgroundColor: Colors.green.withOpacity(0.1),
                     ),
                 ],

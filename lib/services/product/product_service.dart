@@ -68,7 +68,7 @@ class ProductService {
     int? discVal,
     int? unitPrice,
     String? isActive,
-    String? isPromo,
+    int? isPromo,
     String? thumbImage,
     String? mainImage,
   }) async {
@@ -81,6 +81,7 @@ class ProductService {
         "COMPANY_ID": api.companyId,
         "USER_ID": api.userId,
         "SESSION_LOGIN_ID": api.sessionId,
+        "PART_ID": partId,
         "PART_NAME": partName,
         "SPEC": deskripsi,
         "ANALISA_ID": analisaId,
