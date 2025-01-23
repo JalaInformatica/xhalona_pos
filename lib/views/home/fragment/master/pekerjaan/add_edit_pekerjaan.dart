@@ -25,8 +25,6 @@ class _AddEditPekerjaanState extends State<AddEditPekerjaan> {
   final _namePekerjaanController = TextEditingController();
   bool _isLoading = true;
 
-  final List<String> genders = ['Laki-laki', 'Perempuan'];
-
   @override
   void initState() {
     super.initState();

@@ -1,23 +1,20 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dropdown_search/dropdown_search.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:xhalona_pos/core/helper/global_helper.dart';
+import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/models/dao/employee.dart';
-import 'package:xhalona_pos/views/home/fragment/pos/pos_controller.dart';
+import 'package:xhalona_pos/widgets/app_dialog.dart';
+import 'package:xhalona_pos/widgets/app_text_field.dart';
+import 'package:xhalona_pos/widgets/app_icon_button.dart';
+import 'package:xhalona_pos/core/helper/global_helper.dart';
+import 'package:xhalona_pos/widgets/app_normal_button.dart';
+import 'package:xhalona_pos/widgets/app_elevated_button.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_widget.dart';
+import 'package:xhalona_pos/views/home/fragment/pos/pos_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/widgets/employee_modal.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/widgets/employee_modal_controller.dart';
-import 'package:xhalona_pos/widgets/app_dialog.dart';
-import 'package:xhalona_pos/widgets/app_elevated_button.dart';
-import 'package:xhalona_pos/widgets/app_icon_button.dart';
-import 'package:xhalona_pos/widgets/app_image.dart';
-import 'package:xhalona_pos/widgets/app_normal_button.dart';
-import 'package:xhalona_pos/widgets/app_text_field.dart';
 
 class PosScreen extends StatelessWidget {
   final PosController controller = Get.put(PosController());

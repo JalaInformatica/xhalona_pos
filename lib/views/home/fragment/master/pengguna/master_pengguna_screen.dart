@@ -4,16 +4,16 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:xhalona_pos/repositories/pekerjaan/pekerjaan_repository.dart';
-import 'package:xhalona_pos/views/home/fragment/master/pekerjaan/add_edit_pekerjaan.dart';
-import 'package:xhalona_pos/views/home/fragment/master/pekerjaan/pekerjaan_controller.dart';
+import 'package:xhalona_pos/repositories/pengguna/pengguna_repository.dart';
+import 'package:xhalona_pos/views/home/fragment/master/pengguna/add_edit_pengguna.dart';
+import 'package:xhalona_pos/views/home/fragment/master/pengguna/pengguna_controller.dart';
 
 // ignore: must_be_immutable
-class MasterPekerjaanScreen extends StatelessWidget {
-  MasterPekerjaanScreen({super.key});
+class MasterPenggunaScreen extends StatelessWidget {
+  MasterPenggunaScreen({super.key});
 
-  final PekerjaanController controller = Get.put(PekerjaanController());
-  PekerjaanRepository _pekerjaanRepository = PekerjaanRepository();
+  final PenggunaController controller = Get.put(PenggunaController());
+  PenggunaRepository _penggunaRepository = PenggunaRepository();
 
   Widget mButton(VoidCallback onTap, IconData icon, String label) {
     return GestureDetector(
@@ -54,7 +54,7 @@ class MasterPekerjaanScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Master Pekerjaant"),
+          title: Text("Master Pengguna"),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
@@ -75,9 +75,9 @@ class MasterPekerjaanScreen extends StatelessWidget {
             children: [
               mButton(() {
                 Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => AddEditPekerjaan()),
+                    MaterialPageRoute(builder: (context) => AddEditPengguna()),
                     (route) => false);
-              }, Icons.add, "Add Pekerjaan"),
+              }, Icons.add, "Add Pengguna"),
               SizedBox(
                 height: 5.h,
               ),
@@ -91,16 +91,24 @@ class MasterPekerjaanScreen extends StatelessWidget {
                     pageNo: controller.pageNo.value,
                     pageRow: controller.pageRow.value,
                     titles: [
-                      AppTableTitle(value: "Kode Pekerjaant"),
-                      AppTableTitle(value: "Nama Pekerjaant"),
+                      AppTableTitle(value: "UserId"),
+                      AppTableTitle(value: "UserName"),
+                      AppTableTitle(value: "Email"),
+                      AppTableTitle(value: "Level"),
+                      AppTableTitle(value: "Departemen"),
+                      AppTableTitle(value: "Role"),
                       AppTableTitle(value: "Aksi"),
                     ],
-                    data: List.generate(controller.pekerjaanHeader.length,
+                    data: List.generate(controller.penggunaHeader.length,
                         (int i) {
-                      var pekerjaan = controller.pekerjaanHeader[i];
+                      var pengguna = controller.penggunaHeader[i];
                       return [
-                        AppTableCell(value: pekerjaan.jobId, index: i),
-                        AppTableCell(value: pekerjaan.jobDesc, index: i),
+                        AppTableCell(value: pengguna.userId, index: i),
+                        AppTableCell(value: pengguna.userName, index: i),
+                        AppTableCell(value: pengguna.emailAddress, index: i),
+                        AppTableCell(value: "${pengguna.levelId}", index: i),
+                        AppTableCell(value: pengguna.deptId!, index: i),
+                        AppTableCell(value: "${pengguna.roleId}", index: i),
                         AppTableCell(
                           index: i,
                           value: "", // Ganti dengan URL gambar jika ada
@@ -109,8 +117,8 @@ class MasterPekerjaanScreen extends StatelessWidget {
                           onEdit: () {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (context) => AddEditPekerjaan(
-                                          pekerjaan: pekerjaan,
+                                    builder: (context) => AddEditPengguna(
+                                          pengguna: pengguna,
                                         )),
                                 (route) => false);
                           },
@@ -132,7 +140,7 @@ class MasterPekerjaanScreen extends StatelessWidget {
                                     textAlign: TextAlign.center,
                                   ),
                                   content: Text(
-                                    "Apakah Anda yakin ingin menghapus data '${pekerjaan.jobDesc}'?",
+                                    "Apakah Anda yakin ingin menghapus data '${pengguna.userName}'?",
                                     maxLines: 2,
                                     style: AppTextStyle.textSubtitleStyle(),
                                     textAlign: TextAlign.center,
@@ -151,9 +159,10 @@ class MasterPekerjaanScreen extends StatelessWidget {
                                     TextButton(
                                       onPressed: () async {
                                         String result =
-                                            await _pekerjaanRepository
-                                                .deletePekerjaan(
-                                                    jobId: pekerjaan.jobId);
+                                            await _penggunaRepository
+                                                .deletePengguna(
+                                                    memberId:
+                                                        pengguna.memberId);
 
                                         bool isSuccess = result == "1";
                                         if (isSuccess) {

@@ -3,12 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:xhalona_pos/repositories/product/product_repository.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/add_edit_product.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
 
 class MasterProductScreen extends StatelessWidget {
   MasterProductScreen({super.key});
 
   final ProductController controller = Get.put(ProductController());
+  ProductRepository _productRepository = ProductRepository();
 
   Widget checkboxItem(String title, bool value, ValueChanged<bool?> onChanged) {
     return Row(
@@ -24,6 +28,34 @@ class MasterProductScreen extends StatelessWidget {
           style: AppTextStyle.textBodyStyle(),
         ),
       ],
+    );
+  }
+
+   Widget mButton(VoidCallback onTap, IconData icon, String label) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 40,
+        width: double.infinity,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: AppColor.secondaryColor),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: Colors.white),
+            SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -57,6 +89,14 @@ class MasterProductScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              mButton(() {
+                Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => AddEditProduct()),
+                    (route) => false);
+              }, Icons.add, "Add Product"),
+              SizedBox(
+                height: 5.h,
+              ),
               Obx(
                 () => Row(
                   children: [
@@ -142,6 +182,7 @@ class MasterProductScreen extends StatelessWidget {
                       AppTableTitle(value: "Fee (Rp)"),
                       AppTableTitle(value: "Ubah Harga"),
                       AppTableTitle(value: "Free"),
+                      AppTableTitle(value: "Aksi"),
                     ],
                     data:
                         List.generate(controller.productHeader.length, (int i) {
@@ -176,6 +217,91 @@ class MasterProductScreen extends StatelessWidget {
                             value:
                                 '${product.isFree == 'true' ? 'Iya' : 'Tidak'}',
                             index: i),
+                            AppTableCell(
+                          index: i,
+                          value: "", // Ganti dengan URL gambar jika ada
+                          isEdit: true,
+                          isDelete: true,
+                          onEdit: () {
+                            Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                    builder: (context) => AddEditProduct(
+                                          product: product,
+                                        )),
+                                (route) => false);
+                          },
+                          onDelete: () async {
+                            await SmartDialog.show(builder: (context) {
+                              return AlertDialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  icon: const Icon(
+                                    Icons.info_outlined,
+                                    color: AppColor.primaryColor,
+                                  ),
+                                  backgroundColor: Colors.white,
+                                  title: Text(
+                                    "Konfirmasi",
+                                    style: AppTextStyle.textTitleStyle(
+                                        color: AppColor.primaryColor),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  content: Text(
+                                    "Apakah Anda yakin ingin menghapus data '${product.partName}'?",
+                                    maxLines: 2,
+                                    style: AppTextStyle.textSubtitleStyle(),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        SmartDialog.dismiss(result: false);
+                                      },
+                                      child: Text(
+                                        "Tidak",
+                                        style: AppTextStyle.textBodyStyle(
+                                            color: AppColor.grey500),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () async {
+                                        String result =
+                                            await _productRepository
+                                                .deleteProduct(
+                                                    partId: product.partId);
+
+                                        bool isSuccess = result == "1";
+                                        if (isSuccess) {
+                                          SmartDialog.dismiss(result: false);
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                                content: Text(
+                                                    'Data gagal dihapus!')),
+                                          );
+                                        } else {
+                                          SmartDialog.dismiss(result: false);
+                                          controller.fetchProducts();
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                                content: Text(
+                                                    'Data berhasil dihapus!')),
+                                          );
+                                        }
+                                      },
+                                      child: Text(
+                                        "Iya",
+                                        style: AppTextStyle.textBodyStyle(
+                                            color: AppColor.primaryColor),
+                                      ),
+                                    )
+                                  ]);
+                            });
+                          },
+                        ),
+                     
                       ];
                     }),
                     onRefresh: () => controller.fetchProducts(),
