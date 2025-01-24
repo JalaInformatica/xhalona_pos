@@ -55,7 +55,7 @@ class ProductRepository extends AppRepository {
     int? discVal,
     int? unitPrice,
     String? isActive,
-    String? isPromo,
+    int? isPromo,
     String? thumbImage,
     String? mainImage,
   }) async {

@@ -2,19 +2,23 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
-import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:xhalona_pos/repositories/kustomer/kustomer_repository.dart';
-import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/add_edit_kustomer.dart';
-import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplier_kustomer_controller.dart';
+import 'package:xhalona_pos/repositories/varian/varianGroup_repository.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/master_product_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/varian/varian_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/varian/master_varian_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/varian/varian_group/add_edit_varian_group.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/varian/varian_group/varianGroup_controller.dart';
 
 // ignore: must_be_immutable
-class MasterKustomerScreen extends StatelessWidget {
-  String? islabel;
-  MasterKustomerScreen({super.key, this.islabel});
+class MasterVarianGroupScreen extends StatelessWidget {
+  MasterVarianGroupScreen({super.key});
 
-  final KustomerController controller = Get.put(KustomerController());
-  KustomerRepository _kustomerRepository = KustomerRepository();
+  final VarianGroupController controller = Get.put(VarianGroupController());
+  final VarianController controllerVar = Get.put(VarianController());
+  final ProductController controllerPro = Get.put(ProductController());
+  VarianGroupRepository _kategoriRepository = VarianGroupRepository();
 
   Widget mButton(VoidCallback onTap, IconData icon, String label) {
     return GestureDetector(
@@ -49,19 +53,22 @@ class MasterKustomerScreen extends StatelessWidget {
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => MasterProductScreen()),
             (route) => false); // Navigasi kembali ke halaman sebelumnya
+        controllerPro.fetchProducts();
         return false; // Mencegah navigasi bawaan
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Master $islabel"),
+          title: Text("Master VarianGroup"),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
               Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => HomeScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => MasterProductScreen()),
                   (route) => false); // Jika tidak, gunakan navigator default
+              controllerPro.fetchProducts();
             }, // Navigasi kembali ke halaman sebelumnya
           ),
         ),
@@ -77,12 +84,9 @@ class MasterKustomerScreen extends StatelessWidget {
               mButton(() {
                 Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(
-                        builder: (context) => AddEditKustomer(
-                              islabel: islabel,
-                              isSuplier: controller.isSuplier.value,
-                            )),
+                        builder: (context) => AddEditVarianGroup()),
                     (route) => false);
-              }, Icons.add, "Add $islabel"),
+              }, Icons.add, "Add VarianGroup"),
               SizedBox(
                 height: 5.h,
               ),
@@ -96,37 +100,19 @@ class MasterKustomerScreen extends StatelessWidget {
                     pageNo: controller.pageNo.value,
                     pageRow: controller.pageRow.value,
                     titles: [
-                      AppTableTitle(value: "Kode $islabel"),
-                      AppTableTitle(value: "Nama $islabel"),
-                      AppTableTitle(value: "Telp"),
-                      AppTableTitle(value: "Alamat"),
-                      AppTableTitle(value: "Email"),
+                      AppTableTitle(value: "Group Varian"),
                       AppTableTitle(value: "Aksi"),
                     ],
-                    data: List.generate(controller.kustomerHeader.length,
+                    data: List.generate(controller.kategoriHeader.length,
                         (int i) {
-                      var kustomer = controller.kustomerHeader[i];
+                      var kategori = controller.kategoriHeader[i];
                       return [
-                        AppTableCell(value: kustomer.suplierId, index: i),
-                        AppTableCell(value: kustomer.suplierName, index: i),
-                        AppTableCell(value: kustomer.telp, index: i),
-                        AppTableCell(value: kustomer.address1, index: i),
-                        AppTableCell(value: kustomer.emailAdress, index: i),
+                        AppTableCell(value: kategori.varGroupName, index: i),
                         AppTableCell(
                           index: i,
-                          value: "", // Ganti dengan URL gambar jika ada
-                          isEdit: true,
+                          value: "",
                           isDelete: true,
-                          onEdit: () {
-                            Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(
-                                    builder: (context) => AddEditKustomer(
-                                          kustomer: kustomer,
-                                          islabel: islabel,
-                                          isSuplier: controller.isSuplier.value,
-                                        )),
-                                (route) => false);
-                          },
+                          isVarian: true,
                           onDelete: () async {
                             await SmartDialog.show(builder: (context) {
                               return AlertDialog(
@@ -145,7 +131,7 @@ class MasterKustomerScreen extends StatelessWidget {
                                     textAlign: TextAlign.center,
                                   ),
                                   content: Text(
-                                    "Apakah Anda yakin ingin menghapus data '${kustomer.suplierName}'?",
+                                    "Apakah Anda yakin ingin menghapus data '${kategori.varGroupName}'?",
                                     maxLines: 2,
                                     style: AppTextStyle.textSubtitleStyle(),
                                     textAlign: TextAlign.center,
@@ -164,10 +150,11 @@ class MasterKustomerScreen extends StatelessWidget {
                                     TextButton(
                                       onPressed: () async {
                                         String result =
-                                            await _kustomerRepository
-                                                .deleteKustomer(
-                                                    suplierId:
-                                                        kustomer.suplierId);
+                                            await _kategoriRepository
+                                                .deleteVarianGroup(
+                                                    varGroupId: kategori
+                                                        .varGroupId
+                                                        .toString());
 
                                         bool isSuccess = result == "1";
                                         if (isSuccess) {
@@ -197,6 +184,17 @@ class MasterKustomerScreen extends StatelessWidget {
                                     )
                                   ]);
                             });
+                          },
+                          onVarian: () {
+                            Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                    builder: (context) => MasterVarianScreen()),
+                                (route) =>
+                                    false); // Navigasi kembali ke halaman sebelumnya
+                            controllerVar.varGroupId.value =
+                                kategori.varGroupId.toString();
+
+                            controllerVar.fetchProducts();
                           },
                         ),
                       ];

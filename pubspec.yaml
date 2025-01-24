@@ -53,6 +53,8 @@ dependencies:
   esc_pos_printer: ^4.1.0
   esc_pos_utils: ^1.1.0
   flutter_pdfview: ^1.4.0
+  permission_handler: ^11.3.1
+  image_picker: ^1.1.2
 
 
 dev_dependencies:

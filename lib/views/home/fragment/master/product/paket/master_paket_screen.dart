@@ -2,19 +2,20 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
-import 'package:xhalona_pos/views/home/home_screen.dart';
+import 'package:xhalona_pos/repositories/paket_repository.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:xhalona_pos/repositories/kustomer/kustomer_repository.dart';
-import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/add_edit_kustomer.dart';
-import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplier_kustomer_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/paket/add_edit_paket.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/master_product_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/paket/paket_controller.dart';
 
 // ignore: must_be_immutable
-class MasterKustomerScreen extends StatelessWidget {
-  String? islabel;
-  MasterKustomerScreen({super.key, this.islabel});
+class MasterPaketScreen extends StatelessWidget {
+  MasterPaketScreen({super.key});
 
-  final KustomerController controller = Get.put(KustomerController());
-  KustomerRepository _kustomerRepository = KustomerRepository();
+  final PaketController controller = Get.put(PaketController());
+  final ProductController controllerPro = Get.put(ProductController());
+  PaketRepository _paketRepository = PaketRepository();
 
   Widget mButton(VoidCallback onTap, IconData icon, String label) {
     return GestureDetector(
@@ -49,19 +50,22 @@ class MasterKustomerScreen extends StatelessWidget {
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => MasterProductScreen()),
             (route) => false); // Navigasi kembali ke halaman sebelumnya
+        controllerPro.fetchProducts();
         return false; // Mencegah navigasi bawaan
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Master $islabel"),
+          title: Text("Master Paket"),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
               Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => HomeScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => MasterProductScreen()),
                   (route) => false); // Jika tidak, gunakan navigator default
+              controllerPro.fetchProducts();
             }, // Navigasi kembali ke halaman sebelumnya
           ),
         ),
@@ -77,12 +81,11 @@ class MasterKustomerScreen extends StatelessWidget {
               mButton(() {
                 Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(
-                        builder: (context) => AddEditKustomer(
-                              islabel: islabel,
-                              isSuplier: controller.isSuplier.value,
+                        builder: (context) => AddEditPaket(
+                              partId: controller.filterPartId.value,
                             )),
                     (route) => false);
-              }, Icons.add, "Add $islabel"),
+              }, Icons.add, "Add Paket"),
               SizedBox(
                 height: 5.h,
               ),
@@ -96,22 +99,20 @@ class MasterKustomerScreen extends StatelessWidget {
                     pageNo: controller.pageNo.value,
                     pageRow: controller.pageRow.value,
                     titles: [
-                      AppTableTitle(value: "Kode $islabel"),
-                      AppTableTitle(value: "Nama $islabel"),
-                      AppTableTitle(value: "Telp"),
-                      AppTableTitle(value: "Alamat"),
-                      AppTableTitle(value: "Email"),
+                      AppTableTitle(value: "Nama Produk"),
+                      AppTableTitle(value: "Qty"),
+                      AppTableTitle(value: "Harga"),
                       AppTableTitle(value: "Aksi"),
                     ],
-                    data: List.generate(controller.kustomerHeader.length,
-                        (int i) {
-                      var kustomer = controller.kustomerHeader[i];
+                    data: List.generate(controller.paketHeader.length, (int i) {
+                      var paket = controller.paketHeader[i];
                       return [
-                        AppTableCell(value: kustomer.suplierId, index: i),
-                        AppTableCell(value: kustomer.suplierName, index: i),
-                        AppTableCell(value: kustomer.telp, index: i),
-                        AppTableCell(value: kustomer.address1, index: i),
-                        AppTableCell(value: kustomer.emailAdress, index: i),
+                        AppTableCell(value: paket.cpartName ?? '', index: i),
+                        AppTableCell(
+                            value: paket.comValue.toString() ?? '', index: i),
+                        AppTableCell(
+                            value: paket.comUnitPrice.toString() ?? '',
+                            index: i),
                         AppTableCell(
                           index: i,
                           value: "", // Ganti dengan URL gambar jika ada
@@ -120,10 +121,9 @@ class MasterKustomerScreen extends StatelessWidget {
                           onEdit: () {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (context) => AddEditKustomer(
-                                          kustomer: kustomer,
-                                          islabel: islabel,
-                                          isSuplier: controller.isSuplier.value,
+                                    builder: (context) => AddEditPaket(
+                                          paket: paket,
+                                          partId: controller.filterPartId.value,
                                         )),
                                 (route) => false);
                           },
@@ -145,7 +145,7 @@ class MasterKustomerScreen extends StatelessWidget {
                                     textAlign: TextAlign.center,
                                   ),
                                   content: Text(
-                                    "Apakah Anda yakin ingin menghapus data '${kustomer.suplierName}'?",
+                                    "Apakah Anda yakin ingin menghapus data '${paket.cpartName}'?",
                                     maxLines: 2,
                                     style: AppTextStyle.textSubtitleStyle(),
                                     textAlign: TextAlign.center,
@@ -164,10 +164,8 @@ class MasterKustomerScreen extends StatelessWidget {
                                     TextButton(
                                       onPressed: () async {
                                         String result =
-                                            await _kustomerRepository
-                                                .deleteKustomer(
-                                                    suplierId:
-                                                        kustomer.suplierId);
+                                            await _paketRepository.deletePaket(
+                                                rowId: paket.rowId.toString());
 
                                         bool isSuccess = result == "1";
                                         if (isSuccess) {

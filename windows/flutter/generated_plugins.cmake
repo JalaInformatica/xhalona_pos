@@ -4,6 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   charset_converter
+  file_selector_windows
   permission_handler_windows
   share_plus
   url_launcher_windows

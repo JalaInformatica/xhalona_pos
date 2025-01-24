@@ -7,11 +7,21 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/repositories/product/product_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/add_edit_product.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/bahan/bahan_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/paket/paket_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/m_all/master_mAll_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/paket/master_paket_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/bahan/master_bahan_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/kategori/master_kategori_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/varian/varian_group/master_varian_group_screen.dart';
 
+// ignore: must_be_immutable
 class MasterProductScreen extends StatelessWidget {
   MasterProductScreen({super.key});
 
   final ProductController controller = Get.put(ProductController());
+  final BahanController controllerBahan = Get.put(BahanController());
+  final PaketController controllerPaket = Get.put(PaketController());
   ProductRepository _productRepository = ProductRepository();
 
   Widget checkboxItem(String title, bool value, ValueChanged<bool?> onChanged) {
@@ -31,12 +41,13 @@ class MasterProductScreen extends StatelessWidget {
     );
   }
 
-   Widget mButton(VoidCallback onTap, IconData icon, String label) {
+  Widget mButton(
+      VoidCallback onTap, IconData icon, String label, double width) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         height: 40,
-        width: double.infinity,
+        width: width,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color: AppColor.secondaryColor),
@@ -61,6 +72,7 @@ class MasterProductScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
@@ -89,11 +101,60 @@ class MasterProductScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Container(
+                  height: 55,
+                  width: double.infinity,
+                  color: Colors.white,
+                  padding: EdgeInsets.symmetric(vertical: 5),
+                  child: Scrollbar(
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        mButton(() {
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (context) => MasterVarianGroupScreen(),
+                            ),
+                            (route) => false,
+                          );
+                        }, Icons.layers, "Master Varian",
+                            170), // Ikon untuk varian
+                        SizedBox(width: screenWidth * 0.02),
+                        mButton(() {
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (context) => MasterKategoriScreen(),
+                            ),
+                            (route) => false,
+                          );
+                        }, Icons.category, "Master Kategori",
+                            170), // Ikon kategori
+
+                        SizedBox(width: screenWidth * 0.02),
+                        mButton(() {
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (context) => MasterMasAllScreen(),
+                            ),
+                            (route) => false,
+                          );
+                        }, Icons.apps, "Master All",
+                            170), // Ikon untuk semua item
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 5.h,
+              ),
               mButton(() {
                 Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => AddEditProduct()),
                     (route) => false);
-              }, Icons.add, "Add Product"),
+              }, Icons.add, "Add Product", double.infinity),
               SizedBox(
                 height: 5.h,
               ),
@@ -113,47 +174,6 @@ class MasterProductScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(
-                height: 5.h,
-              ),
-              // SingleChildScrollView(
-              //     scrollDirection: Axis.horizontal,
-              //     child: Obx(
-              //       () => Wrap(
-              //         spacing: 5.w,
-              //         children: [
-              //           transactionFilterButton(
-              //             text: "Produk",
-              //             onPressed: () =>
-              //                 controller.updateFilterTrxStatusCategory(
-              //                     TransactionStatusCategory.progress),
-              //             isSelected: controller.trxStatusCategory.value ==
-              //                 TransactionStatusCategory.progress,
-              //           ),
-              //           transactionFilterButton(
-              //               text: "Varian",
-              //               onPressed: () =>
-              //                   controller.updateFilterTrxStatusCategory(
-              //                       TransactionStatusCategory.done),
-              //               isSelected: controller.trxStatusCategory.value ==
-              //                   TransactionStatusCategory.done),
-              //           transactionFilterButton(
-              //               text: "Kategori",
-              //               onPressed: () =>
-              //                   controller.updateFilterTrxStatusCategory(
-              //                       TransactionStatusCategory.late),
-              //               isSelected: controller.trxStatusCategory.value ==
-              //                   TransactionStatusCategory.late),
-              //           transactionFilterButton(
-              //               text: "Master All",
-              //               onPressed: () =>
-              //                   controller.updateFilterTrxStatusCategory(
-              //                       TransactionStatusCategory.cancel),
-              //               isSelected: controller.trxStatusCategory.value ==
-              //                   TransactionStatusCategory.cancel),
-              //         ],
-              //       ),
-              //     )),
               SizedBox(
                 height: 5.h,
               ),
@@ -183,6 +203,7 @@ class MasterProductScreen extends StatelessWidget {
                       AppTableTitle(value: "Ubah Harga"),
                       AppTableTitle(value: "Free"),
                       AppTableTitle(value: "Aksi"),
+                      AppTableTitle(value: ""),
                     ],
                     data:
                         List.generate(controller.productHeader.length, (int i) {
@@ -211,13 +232,13 @@ class MasterProductScreen extends StatelessWidget {
                             value: '${product.employeeFeeVal}', index: i),
                         AppTableCell(
                             value:
-                                '${product.isFixPrice == 'true' ? 'Iya' : 'Tidak'}',
+                                '${product.isFixPrice == true ? 'Iya' : 'Tidak'}',
                             index: i),
                         AppTableCell(
                             value:
-                                '${product.isFree == 'true' ? 'Iya' : 'Tidak'}',
+                                '${product.isFree == true ? 'Iya' : 'Tidak ${product.partId}'}',
                             index: i),
-                            AppTableCell(
+                        AppTableCell(
                           index: i,
                           value: "", // Ganti dengan URL gambar jika ada
                           isEdit: true,
@@ -266,10 +287,9 @@ class MasterProductScreen extends StatelessWidget {
                                     ),
                                     TextButton(
                                       onPressed: () async {
-                                        String result =
-                                            await _productRepository
-                                                .deleteProduct(
-                                                    partId: product.partId);
+                                        String result = await _productRepository
+                                            .deleteProduct(
+                                                partId: product.partId);
 
                                         bool isSuccess = result == "1";
                                         if (isSuccess) {
@@ -301,7 +321,32 @@ class MasterProductScreen extends StatelessWidget {
                             });
                           },
                         ),
-                     
+                        AppTableCell(
+                          index: i,
+                          value: "",
+                          isBahan: product.isFixQty == true ? true : false,
+                          isPaket: product.isPacket == true ? true : false,
+                          onPaket: () {
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(
+                                builder: (context) => MasterPaketScreen(),
+                              ),
+                              (route) => false,
+                            );
+                            controllerPaket.filterPartId.value = product.partId;
+                            controllerPaket.fetchProducts();
+                          },
+                          onBahan: () {
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(
+                                builder: (context) => MasterBahanScreen(),
+                              ),
+                              (route) => false,
+                            );
+                            controllerBahan.filterPartId.value = product.partId;
+                            controllerBahan.fetchProducts();
+                          },
+                        )
                       ];
                     }),
                     onRefresh: () => controller.fetchProducts(),

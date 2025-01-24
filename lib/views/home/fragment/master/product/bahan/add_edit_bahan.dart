@@ -2,49 +2,44 @@ import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/models/dao/kustomer.dart';
-import 'package:xhalona_pos/repositories/kustomer/kustomer_repository.dart';
-import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplier_kustomer_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/master_kustomer_supplier_screen.dart';
+import 'package:xhalona_pos/models/dao/bahan.dart';
+import 'package:xhalona_pos/models/dao/product.dart';
+import 'package:xhalona_pos/models/dao/masterall.dart';
+import 'package:xhalona_pos/repositories/bahan/bahan_repository.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/m_all/mAll_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/bahan/bahan_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/bahan/master_bahan_screen.dart';
 
 // ignore: must_be_immutable
-class AddEditKustomer extends StatefulWidget {
-  KustomerDAO? kustomer;
-  String? islabel;
-  String? isSuplier;
-  AddEditKustomer({super.key, this.kustomer, this.islabel, this.isSuplier});
+class AddEditBahan extends StatefulWidget {
+  BahanDAO? kategori;
+  String? partId;
+  AddEditBahan({super.key, this.kategori, this.partId});
 
   @override
-  _AddEditKustomerState createState() => _AddEditKustomerState();
+  _AddEditBahanState createState() => _AddEditBahanState();
 }
 
-class _AddEditKustomerState extends State<AddEditKustomer> {
-  KustomerRepository _kustomerRepository = KustomerRepository();
-  final KustomerController controller = Get.put(KustomerController());
+class _AddEditBahanState extends State<AddEditBahan> {
+  BahanRepository _kategoriRepository = BahanRepository();
+  final BahanController controller = Get.put(BahanController());
+  final ProductController controllerPro = Get.put(ProductController());
+  final MasAllController controllerMas = Get.put(MasAllController());
 
   final _formKey = GlobalKey<FormState>();
-  final _kdKustomerController = TextEditingController();
-  final _nameKustomerController = TextEditingController();
-  final _telpKustomerController = TextEditingController();
-  final _emailKustomerController = TextEditingController();
-  final _address1KustomerController = TextEditingController();
-  final _address2KustomerController = TextEditingController();
+  final _nameBahanController = TextEditingController();
   bool _isLoading = true;
-
-  final List<String> genders = ['Laki-laki', 'Perempuan'];
+  String? _product;
+  String? _unit;
 
   @override
   void initState() {
     super.initState();
     Inisialisasi();
-    if (widget.kustomer != null) {
+    if (widget.kategori != null) {
       // Inisialisasi data dari karyawan jika tersedia
-      _kdKustomerController.text = widget.kustomer!.suplierId ?? '';
-      _nameKustomerController.text = widget.kustomer!.suplierName ?? '';
-      _telpKustomerController.text = widget.kustomer!.telp ?? '';
-      _emailKustomerController.text = widget.kustomer!.emailAdress ?? '';
-      _address1KustomerController.text = widget.kustomer!.address1 ?? '';
-      _address2KustomerController.text = widget.kustomer!.address2 ?? '';
+      _nameBahanController.text = widget.kategori!.bomPartName ?? '';
     }
   }
 
@@ -56,17 +51,14 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
 
   @override
   Widget build(BuildContext context) {
-    void handleAddEditKustomer() async {
+    void handleAddEditBahan() async {
       if (_formKey.currentState!.validate()) {
-        String result = await _kustomerRepository.addEditKustomer(
-            suplierId: _kdKustomerController.text,
-            suplierName: _nameKustomerController.text,
-            telp: _telpKustomerController.text,
-            emailAdress: _emailKustomerController.text,
-            adress1: _address1KustomerController.text,
-            adress2: _address2KustomerController.text,
-            isSuplier: widget.isSuplier,
-            actionId: widget.kustomer == null ? '0' : '1');
+        String result = await _kategoriRepository.addEditBahan(
+            rowId: widget.kategori?.rowId.toString(),
+            bomPartId: _product,
+            partId: widget.partId,
+            unitId: _unit,
+            actionId: widget.kategori == null ? '0' : '1');
 
         bool isSuccess = result == "1";
         if (isSuccess) {
@@ -76,10 +68,7 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
           setState(() {});
         } else {
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-                builder: (context) => MasterKustomerScreen(
-                      islabel: widget.islabel,
-                    )),
+            MaterialPageRoute(builder: (context) => MasterBahanScreen()),
             (route) => false,
           );
           controller.fetchProducts();
@@ -93,17 +82,14 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-                builder: (context) => MasterKustomerScreen(
-                      islabel: widget.islabel,
-                    )),
+            MaterialPageRoute(builder: (context) => MasterBahanScreen()),
             (route) => false); // Navigasi kembali ke halaman sebelumnya
         return false; // Mencegah navigasi bawaan
       },
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            "Tambah/Edit Data ${widget.islabel} ${widget.isSuplier}",
+            "Tambah/Edit Data Bahan",
             style: TextStyle(color: Colors.white),
           ),
           backgroundColor: AppColor.secondaryColor,
@@ -117,47 +103,42 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Field NIK
-                      buildTextField(
-                          "Kode ${widget.islabel}",
-                          "Masukkan kode ${widget.islabel}",
-                          _kdKustomerController),
-                      SizedBox(height: 16),
-
                       // Field Nama
-                      buildTextField(
-                          "Nama ${widget.islabel}",
-                          "Masukkan nama ${widget.islabel}",
-                          _nameKustomerController),
+                      Obx(() {
+                        return buildDropdownFieldProduct(
+                          "Kode Produk/Nama Produk",
+                          controllerPro.productHeader,
+                          (value) {
+                            setState(() {
+                              _product = value;
+                            });
+                          },
+                        );
+                      }),
                       SizedBox(height: 16),
 
-                      buildTextField(
-                          "Telp ", "Masukkan Telp ", _telpKustomerController),
-                      SizedBox(height: 16),
-                      buildTextField("Email ", "Masukkan Email ",
-                          _emailKustomerController),
-                      SizedBox(height: 16),
-
-                      buildTextField("Alamat ", "Masukkan Alamat ",
-                          _address1KustomerController),
-                      SizedBox(height: 16),
-
-                      buildTextField("Alamat lain", "Masukkan Alamat ",
-                          _address2KustomerController),
+                      Obx(() {
+                        return buildDropdownField(
+                          "Unit",
+                          controllerMas.masAllHeader,
+                          (value) {
+                            setState(() {
+                              _unit = value;
+                            });
+                          },
+                        );
+                      }),
                       SizedBox(height: 32),
 
                       // Action Buttons
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          masterButton(
-                              handleAddEditKustomer, "Simpan", Icons.add),
+                          masterButton(handleAddEditBahan, "Simpan", Icons.add),
                           masterButton(() {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (context) => MasterKustomerScreen(
-                                          islabel: widget.islabel,
-                                        )),
+                                    builder: (context) => MasterBahanScreen()),
                                 (route) => false);
                           }, "Batal", Icons.refresh),
                         ],
@@ -204,17 +185,38 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
     );
   }
 
-  Widget buildTextField(
-      String label, String hint, TextEditingController controller,
-      {TextInputType keyboardType = TextInputType.text}) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
+  Widget buildDropdownFieldProduct(
+      String label, List<ProductDAO> items, ValueChanged<String?> onChanged) {
+    return DropdownButtonFormField<String>(
       decoration: InputDecoration(
         labelText: label,
-        hintText: hint,
         border: OutlineInputBorder(),
       ),
+      items: items.map((item) {
+        return DropdownMenuItem(value: item.partId, child: Text(item.partName));
+      }).toList(),
+      onChanged: onChanged,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return '$label tidak boleh kosong';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget buildDropdownField(
+      String label, List<MasAllDAO> items, ValueChanged<String?> onChanged) {
+    return DropdownButtonFormField<String>(
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(),
+      ),
+      items: items.map((item) {
+        return DropdownMenuItem(
+            value: item.masterId, child: Text(item.masDesc));
+      }).toList(),
+      onChanged: onChanged,
       validator: (value) {
         if (value == null || value.isEmpty) {
           return '$label tidak boleh kosong';

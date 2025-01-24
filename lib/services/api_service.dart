@@ -1,10 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
+import 'dart:convert';
+import 'package:logger/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:logger/logger.dart';
-import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xhalona_pos/core/constant/local_storage.dart';
@@ -102,4 +101,36 @@ Future<void> fetchUserSessionInfo() async {
   userId = prefs.getString(LocalStorageConst.userId);
   sessionId = prefs.getString(LocalStorageConst.sessionLoginId);
   companyId = prefs.getString(LocalStorageConst.companyId);
+}
+
+Future<http.Response> postFormData(String url,
+    {Map<String, String>? headers,
+    Map<String, String>? fields,
+    List<File>? files}) async {
+  Logger logger = Logger();
+  var baseUrl = await getBaseUrl();
+  var request = http.MultipartRequest('POST', Uri.parse(baseUrl! + url));
+
+  if (headers != null) {
+    request.headers.addAll(headers);
+  }
+
+  if (fields != null) {
+    request.fields.addAll(fields);
+  }
+
+  if (files != null) {
+    for (var file in files) {
+      request.files
+          .add(await http.MultipartFile.fromPath('FILE_UPLOAD[]', file.path));
+    }
+  }
+
+  var streamedResponse = await request.send();
+
+  var response = await http.Response.fromStream(streamedResponse);
+
+  logger.i(response.body);
+
+  return response;
 }
