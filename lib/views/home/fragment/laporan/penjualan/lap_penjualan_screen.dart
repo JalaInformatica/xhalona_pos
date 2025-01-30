@@ -1,7 +1,11 @@
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_viewer_screen.dart';
 
 class LapPenjualanScreen extends StatefulWidget {
   @override
@@ -9,11 +13,13 @@ class LapPenjualanScreen extends StatefulWidget {
 }
 
 class _ReportFormPageState extends State<LapPenjualanScreen> {
+  final LapPenjualanController controller = Get.put(LapPenjualanController());
   final TextEditingController _startDateController = TextEditingController();
   final TextEditingController _endDateController = TextEditingController();
-  String? _selectedReportType;
-  String _detailOption = 'Detail';
+  String? _selectedReportType = 'Lap_Penjualan';
+  String _detailOption = '1';
   String _formatOption = 'PDF';
+  final _formKey = GlobalKey<FormState>();
 
   Future<void> _selectDate(
       BuildContext context, TextEditingController controller) async {
@@ -32,7 +38,27 @@ class _ReportFormPageState extends State<LapPenjualanScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
+    void handleLapPenjualan() async {
+      if (_formKey.currentState!.validate()) {
+        controller
+            .printLapPenjualan(_selectedReportType, _startDateController.text,
+                _endDateController.text, _formatOption, _detailOption)
+            .then((url) async {
+          if (_formatOption == 'EXCEL') {
+            // Jika format EXCEL, unduh file
+            await launchUrl(Uri.parse(url));
+          } else {
+            // Jika format PDF, tampilkan di PDF viewer
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                  builder: (context) =>
+                      LapPenjualanViewerScreen(url, _selectedReportType!)),
+              (route) => false,
+            );
+          }
+        });
+      }
+    }
 
     return WillPopScope(
       onWillPop: () async {
@@ -64,130 +90,147 @@ class _ReportFormPageState extends State<LapPenjualanScreen> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextField(
-                      controller: _startDateController,
-                      readOnly: true,
-                      decoration: InputDecoration(
-                        labelText: 'Tanggal Dari',
-                        suffixIcon: IconButton(
-                          icon: Icon(Icons.calendar_today),
-                          onPressed: () =>
-                              _selectDate(context, _startDateController),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextFormField(
+                        controller: _startDateController,
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          labelText: 'Tanggal Dari',
+                          suffixIcon: IconButton(
+                            icon: Icon(Icons.calendar_today),
+                            onPressed: () =>
+                                _selectDate(context, _startDateController),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Tanggal dari tidak boleh kosong';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      TextFormField(
+                        controller: _endDateController,
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          labelText: 'Tanggal Sampai',
+                          suffixIcon: IconButton(
+                            icon: Icon(Icons.calendar_today),
+                            onPressed: () =>
+                                _selectDate(context, _endDateController),
+                          ),
+                          errorText: _endDateController.text.isEmpty
+                              ? 'Tanggal harus diisi.'
+                              : null,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Tanggal Sampai tidak boleh kosong';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      Text('Jenis Laporan:'),
+                      ListTile(
+                        title: Text('Lap. Penjualan'),
+                        leading: Radio(
+                          value: 'Lap_Penjualan',
+                          groupValue: _selectedReportType,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedReportType = value.toString();
+                            });
+                          },
                         ),
                       ),
-                    ),
-                    SizedBox(height: 16),
-                    TextField(
-                      controller: _endDateController,
-                      readOnly: true,
-                      decoration: InputDecoration(
-                        labelText: 'Tanggal Sampai',
-                        suffixIcon: IconButton(
-                          icon: Icon(Icons.calendar_today),
-                          onPressed: () =>
-                              _selectDate(context, _endDateController),
+                      ListTile(
+                        title: Text('Lap. Terapis'),
+                        leading: Radio(
+                          value: 'Lap_Penjualan_By_Terapis',
+                          groupValue: _selectedReportType,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedReportType = value.toString();
+                            });
+                          },
                         ),
-                        errorText: _endDateController.text.isEmpty
-                            ? 'Tanggal harus diisi.'
-                            : null,
                       ),
-                    ),
-                    SizedBox(height: 16),
-                    Text('Jenis Laporan:'),
-                    ListTile(
-                      title: Text('Lap. Penjualan'),
-                      leading: Radio(
-                        value: 'Lap. Penjualan',
-                        groupValue: _selectedReportType,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedReportType = value.toString();
-                          });
-                        },
+                      ListTile(
+                        title: Text('Lap. Kasir'),
+                        leading: Radio(
+                          value: 'Lap_Penjualan_Kasir',
+                          groupValue: _selectedReportType,
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedReportType = value.toString();
+                            });
+                          },
+                        ),
                       ),
-                    ),
-                    ListTile(
-                      title: Text('Lap. Terapis'),
-                      leading: Radio(
-                        value: 'Lap. Terapis',
-                        groupValue: _selectedReportType,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedReportType = value.toString();
-                          });
-                        },
+                      SizedBox(height: 16),
+                      Text('Detail Laporan:'),
+                      ListTile(
+                        title: Text('Detail'),
+                        leading: Radio(
+                          value: '1',
+                          groupValue: _detailOption,
+                          onChanged: (value) {
+                            setState(() {
+                              _detailOption = value.toString();
+                            });
+                          },
+                        ),
                       ),
-                    ),
-                    ListTile(
-                      title: Text('Lap. Terapis'),
-                      leading: Radio(
-                        value: 'Lap. Terapis',
-                        groupValue: _selectedReportType,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedReportType = value.toString();
-                          });
-                        },
+                      ListTile(
+                        title: Text('Rekap'),
+                        leading: Radio(
+                          value: '0',
+                          groupValue: _detailOption,
+                          onChanged: (value) {
+                            setState(() {
+                              _detailOption = value.toString();
+                            });
+                          },
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 16),
-                    Text('Detail Laporan:'),
-                    ListTile(
-                      title: Text('Detail'),
-                      leading: Radio(
-                        value: 'Detail',
-                        groupValue: _detailOption,
-                        onChanged: (value) {
-                          setState(() {
-                            _detailOption = value.toString();
-                          });
-                        },
+                      SizedBox(height: 16),
+                      Text('Format:'),
+                      ListTile(
+                        title: Text('PDF'),
+                        leading: Radio(
+                          value: 'PDF',
+                          groupValue: _formatOption,
+                          onChanged: (value) {
+                            setState(() {
+                              _formatOption = value.toString();
+                            });
+                          },
+                        ),
                       ),
-                    ),
-                    ListTile(
-                      title: Text('Rekap'),
-                      leading: Radio(
-                        value: 'Rekap',
-                        groupValue: _detailOption,
-                        onChanged: (value) {
-                          setState(() {
-                            _detailOption = value.toString();
-                          });
-                        },
+                      ListTile(
+                        title: Text('EXCEL'),
+                        leading: Radio(
+                          value: 'EXCEL',
+                          groupValue: _formatOption,
+                          onChanged: (value) {
+                            setState(() {
+                              _formatOption = value.toString();
+                            });
+                          },
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 16),
-                    Text('Format:'),
-                    ListTile(
-                      title: Text('PDF'),
-                      leading: Radio(
-                        value: 'PDF',
-                        groupValue: _formatOption,
-                        onChanged: (value) {
-                          setState(() {
-                            _formatOption = value.toString();
-                          });
-                        },
-                      ),
-                    ),
-                    ListTile(
-                      title: Text('EXCEL'),
-                      leading: Radio(
-                        value: 'EXCEL',
-                        groupValue: _formatOption,
-                        onChanged: (value) {
-                          setState(() {
-                            _formatOption = value.toString();
-                          });
-                        },
-                      ),
-                    ),
-                    SizedBox(height: 24),
-                    Center(child: masterButton(() {}, "Cetak", Icons.print)),
-                  ],
+                      SizedBox(height: 24),
+                      Center(
+                          child: masterButton(
+                              handleLapPenjualan, "Cetak", Icons.print)),
+                    ],
+                  ),
                 ),
               ),
             ],

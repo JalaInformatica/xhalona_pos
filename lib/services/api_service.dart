@@ -1,14 +1,14 @@
-import 'dart:async';
 import 'dart:io';
+import 'dart:async';
 import 'dart:convert';
 import 'package:logger/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xhalona_pos/core/constant/local_storage.dart';
-import 'package:xhalona_pos/widgets/app_dialog.dart';
-
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 
 Future<String?> getBaseUrl() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -74,10 +74,13 @@ Future<http.Response> showRetryDialog(String url,
             onPressed: () async {
               SmartDialog.dismiss(); // Close the dialog
               try {
-                var retryResponse = await post(url, headers: headers, body: body);
-                completer.complete(retryResponse); // Complete with retry response
+                var retryResponse =
+                    await post(url, headers: headers, body: body);
+                completer
+                    .complete(retryResponse); // Complete with retry response
               } catch (e) {
-                completer.completeError(e); // Complete with error if retry fails
+                completer
+                    .completeError(e); // Complete with error if retry fails
               }
             },
             child: const Text("OK"),
