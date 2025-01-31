@@ -8,6 +8,7 @@ import 'package:xhalona_pos/widgets/app_text_field.dart';
 import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
 
+// ignore: must_be_immutable
 class AppTable extends StatefulWidget {
   final List<AppTableTitle> titles;
   final List<List<AppTableCell>> data;
@@ -397,7 +398,9 @@ class AppTableTitle extends StatelessWidget {
       color: AppColor.secondaryColor,
       child: Text(
         value,
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        style: AppTextStyle.textTitleStyle(
+          color: Colors.white,
+        ),
       ),
     );
   }

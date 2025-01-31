@@ -57,6 +57,7 @@ class MasterBahanScreen extends StatelessWidget {
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => MasterProductScreen()),
             (route) => false); // Navigasi kembali ke halaman sebelumnya
+        controllerPro.filterValue.value = "";
         controllerPro.fetchProducts();
         return false; // Mencegah navigasi bawaan
       },

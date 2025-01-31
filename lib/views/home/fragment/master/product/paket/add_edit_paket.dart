@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/paket.dart';
 import 'package:xhalona_pos/models/dao/product.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:xhalona_pos/repositories/paket_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/paket/paket_controller.dart';
@@ -45,26 +46,6 @@ class _AddEditPaketState extends State<AddEditPaket> {
     setState(() {
       _isLoading = false;
     });
-  }
-
-  Widget buildDropdownFieldProduct(
-      String label, List<ProductDAO> items, ValueChanged<String?> onChanged) {
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(),
-      ),
-      items: items.map((item) {
-        return DropdownMenuItem(value: item.partId, child: Text(item.partName));
-      }).toList(),
-      onChanged: onChanged,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return '$label tidak boleh kosong';
-        }
-        return null;
-      },
-    );
   }
 
   @override
@@ -122,17 +103,12 @@ class _AddEditPaketState extends State<AddEditPaket> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Field NIK
-                      Obx(() {
-                        return buildDropdownFieldProduct(
-                          "Kode Produk/Nama Produk",
-                          controllerPro.productHeader,
-                          (value) {
-                            setState(() {
-                              _product = value;
-                            });
-                          },
-                        );
-                      }),
+                      buildTypeAheadFieldProduct("Kode Produk/Nama Produk",
+                          controllerPro.productHeader, (value) {
+                        setState(() {
+                          _product = value;
+                        });
+                      }, controllerPro.updateFilterValue),
                       SizedBox(height: 16),
 
                       // Field Nama
@@ -161,6 +137,57 @@ class _AddEditPaketState extends State<AddEditPaket> {
                 ),
               ),
       ),
+    );
+  }
+
+  Widget buildTypeAheadFieldProduct(
+    String label,
+    List<ProductDAO> items,
+    ValueChanged<String?> onChanged,
+    void Function(String newFilterValue) updateFilterValue,
+  ) {
+    TextEditingController controller = TextEditingController();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: AppTextStyle.textTitleStyle()),
+        SizedBox(height: 8),
+        TypeAheadField<String>(
+          suggestionsCallback: (pattern) async {
+            updateFilterValue(pattern); // Update filter
+            return items
+                .where((item) =>
+                    item.partName.toLowerCase().contains(pattern.toLowerCase()))
+                .map((item) => item.partName)
+                .toList();
+          },
+          builder: (context, textEditingController, focusNode) {
+            // Set nilai controller dari textEditingController yang diberikan oleh TypeAheadField
+            controller = textEditingController;
+
+            return TextField(
+              controller: controller, // Gunakan controller yang tetap
+              focusNode: focusNode,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: "Cari produk...",
+              ),
+              onChanged: onChanged, // Callback saat teks berubah
+            );
+          },
+          itemBuilder: (context, suggestion) {
+            return ListTile(
+              title: Text(suggestion),
+            );
+          },
+          onSelected: (suggestion) {
+            controller.text =
+                suggestion; // Perbarui teks dengan pilihan pengguna
+            onChanged(suggestion); // Kirim perubahan ke callback
+          },
+        ),
+      ],
     );
   }
 
