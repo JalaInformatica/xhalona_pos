@@ -19,23 +19,34 @@ import 'package:xhalona_pos/views/home/fragment/master/pekerjaan/master_pekerjaa
 import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplier_kustomer_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/master_kustomer_supplier_screen.dart';
 
+// ignore: must_be_immutable
 class HomeScreen extends StatelessWidget {
   final HomeController controller = Get.put(HomeController());
   final KustomerController controllerKus = Get.put(KustomerController());
 
+  Widget? previousScreen;
+
   Widget menuScreen(String menuName) {
+    Widget screen;
+
     switch (menuName.toLowerCase()) {
       case "pos":
-        return PosScreen();
+        screen = PosScreen();
+        break;
       case "dashboard":
-        return DashboardScreen();
+        screen = DashboardScreen();
+        break;
       case "transaksi":
-        return TransactionScreen();
+        screen = TransactionScreen();
+        break;
       // case "profil"
       //   return 
       default:
-        return TransactionScreen();
+        return previousScreen ?? SizedBox();
     }
+
+    previousScreen = screen; // Simpan halaman terakhir sebelum berpindah
+    return screen;
   }
 
   Widget menuComponent(String menuName, BuildContext context) {
@@ -150,7 +161,7 @@ class HomeScreen extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
         decoration: BoxDecoration(
           color: AppColor.secondaryColor, // Background color
           borderRadius: BorderRadius.circular(8), // Rounded corners
@@ -164,16 +175,14 @@ class HomeScreen extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, color: Colors.white),
-            SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
+            Icon(
+              icon,
+              color: Colors.white,
+              size: 20,
             ),
+            SizedBox(width: 8),
+            Text(label,
+                style: AppTextStyle.textTitleStyle(color: Colors.white)),
           ],
         ),
       ),
@@ -207,7 +216,7 @@ class HomeScreen extends StatelessWidget {
                         ? Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: Container(
-                              height: 60,
+                              height: 47,
                               width: double.infinity,
                               color: Colors.white,
                               padding: EdgeInsets.symmetric(vertical: 5),
@@ -355,7 +364,7 @@ class HomeScreen extends StatelessWidget {
                         ? Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: Container(
-                              height: 60,
+                              height: 47,
                               width: double.infinity,
                               color: Colors.white,
                               padding: EdgeInsets.symmetric(vertical: 5),

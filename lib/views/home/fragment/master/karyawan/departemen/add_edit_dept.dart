@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/departemen.dart';
 import 'package:xhalona_pos/repositories/departemen/depertemen_repository.dart';
-import 'package:xhalona_pos/views/home/fragment/master/karyawan/master_karyawan_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/departemen_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/master_departemen_screen.dart';
 
@@ -84,7 +83,7 @@ class _AddEditDeptState extends State<AddEditDept> {
         appBar: AppBar(
           title: Text(
             "Tambah/Edit Data Departement",
-            style: TextStyle(color: Colors.white),
+            style: AppTextStyle.textTitleStyle(color: Colors.white),
           ),
           backgroundColor: AppColor.secondaryColor,
         ),
@@ -143,11 +142,11 @@ class _AddEditDeptState extends State<AddEditDept> {
     );
   }
 
-  Widget masterButton(VoidCallback onPressed, String label, IconData icon) {
+  Widget masterButton(VoidCallback onTap, String label, IconData icon) {
     return GestureDetector(
-      onTap: onPressed,
+      onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
         decoration: BoxDecoration(
           color: AppColor.secondaryColor, // Background color
           borderRadius: BorderRadius.circular(8), // Rounded corners
@@ -160,17 +159,16 @@ class _AddEditDeptState extends State<AddEditDept> {
           ],
         ),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.white),
-            SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
+            Icon(
+              icon,
+              color: Colors.white,
+              size: 20,
             ),
+            SizedBox(width: 8),
+            Text(label,
+                style: AppTextStyle.textTitleStyle(color: Colors.white)),
           ],
         ),
       ),

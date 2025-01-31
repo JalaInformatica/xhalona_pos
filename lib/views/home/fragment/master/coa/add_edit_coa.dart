@@ -108,7 +108,7 @@ class _AddEditCoaState extends State<AddEditCoa> {
         appBar: AppBar(
           title: Text(
             "Tambah/Edit Data Coa",
-            style: TextStyle(color: Colors.white),
+            style: AppTextStyle.textTitleStyle(color: Colors.white),
           ),
           backgroundColor: AppColor.secondaryColor,
         ),
@@ -191,11 +191,11 @@ class _AddEditCoaState extends State<AddEditCoa> {
     );
   }
 
-  Widget masterButton(VoidCallback onPressed, String label, IconData icon) {
+  Widget masterButton(VoidCallback onTap, String label, IconData icon) {
     return GestureDetector(
-      onTap: onPressed,
+      onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
         decoration: BoxDecoration(
           color: AppColor.secondaryColor, // Background color
           borderRadius: BorderRadius.circular(8), // Rounded corners
@@ -208,17 +208,16 @@ class _AddEditCoaState extends State<AddEditCoa> {
           ],
         ),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.white),
-            SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
+            Icon(
+              icon,
+              color: Colors.white,
+              size: 20,
             ),
+            SizedBox(width: 8),
+            Text(label,
+                style: AppTextStyle.textTitleStyle(color: Colors.white)),
           ],
         ),
       ),

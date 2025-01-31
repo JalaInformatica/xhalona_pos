@@ -21,24 +21,29 @@ class MasterVarianScreen extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 40,
-        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: AppColor.secondaryColor),
+          color: AppColor.secondaryColor, // Background color
+          borderRadius: BorderRadius.circular(8), // Rounded corners
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 4,
+              offset: Offset(0, 2), // Shadow position
+            ),
+          ],
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.white),
-            SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
+            Icon(
+              icon,
+              color: Colors.white,
+              size: 20,
             ),
+            SizedBox(width: 8),
+            Text(label,
+                style: AppTextStyle.textTitleStyle(color: Colors.white)),
           ],
         ),
       ),
@@ -57,7 +62,10 @@ class MasterVarianScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Master Varian"),
+          title: Text(
+            "Master Sub Varian",
+            style: AppTextStyle.textTitleStyle(),
+          ),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
@@ -85,7 +93,7 @@ class MasterVarianScreen extends StatelessWidget {
                               varGroupId: controller.varGroupId.value,
                             )),
                     (route) => false);
-              }, Icons.add, "Add Varian"),
+              }, Icons.add, "Add Sub Varian"),
               SizedBox(
                 height: 5.h,
               ),

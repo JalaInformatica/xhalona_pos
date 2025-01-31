@@ -19,24 +19,29 @@ class MasterPekerjaanScreen extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 40,
-        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: AppColor.secondaryColor),
+          color: AppColor.secondaryColor, // Background color
+          borderRadius: BorderRadius.circular(8), // Rounded corners
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 4,
+              offset: Offset(0, 2), // Shadow position
+            ),
+          ],
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.white),
-            SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
+            Icon(
+              icon,
+              color: Colors.white,
+              size: 20,
             ),
+            SizedBox(width: 8),
+            Text(label,
+                style: AppTextStyle.textTitleStyle(color: Colors.white)),
           ],
         ),
       ),
@@ -54,7 +59,10 @@ class MasterPekerjaanScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Master Pekerjaant"),
+          title: Text(
+            "Master Pekerjaan",
+            style: AppTextStyle.textTitleStyle(),
+          ),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
@@ -91,8 +99,8 @@ class MasterPekerjaanScreen extends StatelessWidget {
                     pageNo: controller.pageNo.value,
                     pageRow: controller.pageRow.value,
                     titles: [
-                      AppTableTitle(value: "Kode Pekerjaant"),
-                      AppTableTitle(value: "Nama Pekerjaant"),
+                      AppTableTitle(value: "Kode Pekerjaan"),
+                      AppTableTitle(value: "Nama Pekerjaan"),
                       AppTableTitle(value: "Aksi"),
                     ],
                     data: List.generate(controller.pekerjaanHeader.length,

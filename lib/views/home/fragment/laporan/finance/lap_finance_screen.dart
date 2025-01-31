@@ -46,7 +46,7 @@ class _ReportFormPageState extends State<LapFinanceScreen> {
           iconTheme: IconThemeData(color: Colors.white),
           title: Text(
             "Lap. Finance",
-            style: TextStyle(color: Colors.white),
+            style: AppTextStyle.textTitleStyle(color: Colors.white),
           ),
           backgroundColor: AppColor.secondaryColor,
           leading: IconButton(
@@ -96,9 +96,11 @@ class _ReportFormPageState extends State<LapFinanceScreen> {
                       ),
                     ),
                     SizedBox(height: 16),
-                    Text('Jenis Laporan:'),
+                    Text('Jenis Laporan:',
+                        style: AppTextStyle.textTitleStyle()),
                     ListTile(
-                      title: Text('Lap. Finance'),
+                      title: Text('Lap. Finance',
+                          style: AppTextStyle.textTitleStyle()),
                       leading: Radio(
                         value: 'Lap. Finance',
                         groupValue: _selectedReportType,
@@ -110,7 +112,8 @@ class _ReportFormPageState extends State<LapFinanceScreen> {
                       ),
                     ),
                     ListTile(
-                      title: Text('Lap. Piutang Customer'),
+                      title: Text('Lap. Piutang Customer',
+                          style: AppTextStyle.textTitleStyle()),
                       leading: Radio(
                         value: 'Lap. Piutang Customer',
                         groupValue: _selectedReportType,
@@ -122,9 +125,11 @@ class _ReportFormPageState extends State<LapFinanceScreen> {
                       ),
                     ),
                     SizedBox(height: 16),
-                    Text('Detail Laporan:'),
+                    Text('Detail Laporan:',
+                        style: AppTextStyle.textTitleStyle()),
                     ListTile(
-                      title: Text('Detail'),
+                      title:
+                          Text('Detail', style: AppTextStyle.textTitleStyle()),
                       leading: Radio(
                         value: 'Detail',
                         groupValue: _detailOption,
@@ -136,7 +141,8 @@ class _ReportFormPageState extends State<LapFinanceScreen> {
                       ),
                     ),
                     ListTile(
-                      title: Text('Rekap'),
+                      title:
+                          Text('Rekap', style: AppTextStyle.textTitleStyle()),
                       leading: Radio(
                         value: 'Rekap',
                         groupValue: _detailOption,
@@ -148,9 +154,9 @@ class _ReportFormPageState extends State<LapFinanceScreen> {
                       ),
                     ),
                     SizedBox(height: 16),
-                    Text('Format:'),
+                    Text('Format:', style: AppTextStyle.textTitleStyle()),
                     ListTile(
-                      title: Text('PDF'),
+                      title: Text('PDF', style: AppTextStyle.textTitleStyle()),
                       leading: Radio(
                         value: 'PDF',
                         groupValue: _formatOption,
@@ -162,7 +168,8 @@ class _ReportFormPageState extends State<LapFinanceScreen> {
                       ),
                     ),
                     ListTile(
-                      title: Text('EXCEL'),
+                      title:
+                          Text('EXCEL', style: AppTextStyle.textTitleStyle()),
                       leading: Radio(
                         value: 'EXCEL',
                         groupValue: _formatOption,
@@ -206,14 +213,8 @@ class _ReportFormPageState extends State<LapFinanceScreen> {
           children: [
             Icon(icon, color: Colors.white),
             SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            Text(label,
+                style: AppTextStyle.textTitleStyle(color: Colors.white)),
           ],
         ),
       ),

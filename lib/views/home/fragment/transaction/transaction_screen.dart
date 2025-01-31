@@ -1,13 +1,10 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:get/get.dart';
-import 'package:xhalona_pos/core/constant/transaction.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
+import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/widgets/app_calendar.dart';
 import 'package:xhalona_pos/core/constant/transaction.dart';
-import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/widgets/app_normal_button.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/views/home/fragment/transaction/transaction_widget.dart';
@@ -48,26 +45,26 @@ class TransactionScreen extends StatelessWidget {
                             onPressed: () {
                               SmartDialog.show(builder: (context) {
                                 return AppDialog(
-                                  content: SizedBox(
-                                    width: double.maxFinite,
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        AppCalendar(
-                                          focusedDay: DateTime(
-                                            controller.filterYear.value,
-                                            controller.filterMonth.value,
-                                            controller.filterDay.value
-                                          ),
-                                          onDaySelected: (selectedDay, _){
-                                            controller.updateFilterTrxDate(selectedDay);
-                                            SmartDialog.dismiss();
-                                          },
-                                        ),
-                                      ]
-                                    )
-                                  )
-                                );
+                                    content: SizedBox(
+                                        width: double.maxFinite,
+                                        child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              AppCalendar(
+                                                focusedDay: DateTime(
+                                                    controller.filterYear.value,
+                                                    controller
+                                                        .filterMonth.value,
+                                                    controller.filterDay.value),
+                                                onDaySelected:
+                                                    (selectedDay, _) {
+                                                  controller
+                                                      .updateFilterTrxDate(
+                                                          selectedDay);
+                                                  SmartDialog.dismiss();
+                                                },
+                                              ),
+                                            ])));
                               });
                             },
                             borderColor: AppColor.grey300,

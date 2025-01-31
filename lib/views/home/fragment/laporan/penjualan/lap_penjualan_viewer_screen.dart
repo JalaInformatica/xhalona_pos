@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_screen.dart';
 
@@ -74,7 +75,12 @@ class _LapPenjualanViewerScreenState extends State<LapPenjualanViewerScreen> {
         return false; // Mencegah navigasi bawaan
       },
       child: Scaffold(
-        appBar: AppBar(title: Text("${widget.label} Viewer")),
+        appBar: AppBar(
+          title: Text(
+            "${widget.label} Viewer",
+            style: AppTextStyle.textTitleStyle(),
+          ),
+        ),
         body: localFilePath == null
             ? const Center(child: CircularProgressIndicator())
             : PDFView(
