@@ -5,6 +5,7 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/masterall.dart';
 import 'package:xhalona_pos/repositories/m_all/mAll_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/m_all/mAll_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/pos/widgets/employee_modal_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/m_all/master_mAll_screen.dart';
 
 // ignore: must_be_immutable
@@ -19,6 +20,8 @@ class AddEditMasAll extends StatefulWidget {
 class _AddEditMasAllState extends State<AddEditMasAll> {
   MasAllRepository _pekerjaanRepository = MasAllRepository();
   final MasAllController controller = Get.put(MasAllController());
+  final EmployeeModalController controllerEm =
+      Get.put(EmployeeModalController());
 
   final _formKey = GlobalKey<FormState>();
   final _kdMasAllController = TextEditingController();
@@ -40,6 +43,50 @@ class _AddEditMasAllState extends State<AddEditMasAll> {
     setState(() {
       _isLoading = false;
     });
+  }
+
+  void filterSearchResults(String query) async {
+    setState(() {
+      _isDataLoading = true;
+      _companyName = query;
+    });
+
+    await storeProvider.getStores(companyName: _companyName, pageNo: 1);
+
+    filteredList = storeProvider.stores;
+
+    setState(() {
+      _isDataLoading = false;
+    });
+  }
+
+  Widget searchSalonWidget() {
+    return Container(
+      padding: const EdgeInsets.only(right: 10, left: 10, bottom: 5),
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(10),
+          bottomRight: Radius.circular(10),
+        ),
+        color: Color(0xffC0226D),
+      ),
+      child: TextFormField(
+        onFieldSubmitted: (value) {
+          filterSearchResults(value); // Panggil fungsi pencarian
+        },
+        decoration: InputDecoration(
+            isDense: true,
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide.none,
+            ),
+            suffixIcon: const Icon(Icons.search),
+            hintText: 'Pencarian Salon'),
+      ),
+    );
   }
 
   @override
@@ -96,6 +143,7 @@ class _AddEditMasAllState extends State<AddEditMasAll> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Field NIK
+
                       buildTextField("Keterangan", "Masukkan keterangan",
                           _kdMasAllController),
                       SizedBox(height: 16),
