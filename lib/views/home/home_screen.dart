@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/views/authentication/login/login_screen.dart';
 import 'fragment/laporan/monitor/monitor_screen.dart';
 import 'package:xhalona_pos/views/home/home_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
@@ -30,12 +31,14 @@ class HomeScreen extends StatelessWidget {
         return DashboardScreen();
       case "transaksi":
         return TransactionScreen();
+      // case "profil"
+      //   return 
       default:
         return TransactionScreen();
     }
   }
 
-  Widget menuComponent(String menuName) {
+  Widget menuComponent(String menuName, BuildContext context) {
     menuName = menuName.toLowerCase();
     String iconPath = "assets/images/menu/";
     Color iconColor = menuName != controller.selectedMenuName.value
@@ -69,7 +72,14 @@ class HomeScreen extends StatelessWidget {
     }
     return Obx(() => GestureDetector(
         onTap: () {
-          controller.selectedMenuName.value = menuName;
+          if(menuName!="profil"){
+            controller.selectedMenuName.value = menuName;
+          }
+          else {
+            Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => LoginScreen()),
+            (route) => false);
+          }
         },
         child: Container(
             padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
@@ -443,13 +453,13 @@ class HomeScreen extends StatelessWidget {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children:
                                         menuItem.dataSubMenu.map((subMenu) {
-                                      return menuComponent(subMenu.subMenuDesc);
+                                      return menuComponent(subMenu.subMenuDesc, context);
                                     }).toList(),
                                   );
                                 }
-                                return menuComponent(menuItem.menuDesc);
+                                return menuComponent(menuItem.menuDesc, context);
                               }),
-                              menuComponent("profil")
+                              menuComponent("profil", context)
                             ],
                           ),
                         ],
