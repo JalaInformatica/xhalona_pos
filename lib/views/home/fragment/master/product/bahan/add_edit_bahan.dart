@@ -49,6 +49,89 @@ class _AddEditBahanState extends State<AddEditBahan> {
     });
   }
 
+//   Widget searchSalonWidget() {
+//   return Container(
+//     padding: EdgeInsets.only(top: 30.h, bottom: 10.h, right: 10.w),
+//     width: double.infinity,
+//     color: const Color(0xffC0226D),
+//     child: Row(
+//       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//       children: [
+//         IconButton(
+//           style: IconButton.styleFrom(visualDensity: VisualDensity.compact),
+//           onPressed: () {
+//             Navigator.of(context).pop();
+//           },
+//           icon: const Icon(
+//             Icons.arrow_back,
+//             color: Colors.white,
+//           ),
+//         ),
+//         Expanded(
+//           child: TypeAheadField<String>(
+//             suggestionsCallback: (pattern) async {
+//               print("suggestionsCallback triggered");
+//               return await _getSuggestions(pattern);
+//             },
+//             builder: (context, controller, focusNode) {
+//               return TextFormField(
+//                 controller: controller,
+//                 focusNode: focusNode,
+//                 textInputAction: TextInputAction.search,
+//                 onFieldSubmitted: (value) {
+//                   filterSearchResults(value);
+//                   storeProvider.addSearchHistory(value);
+//                 },
+//                 onTapOutside: (_) {
+//                   focusNode.unfocus();
+//                 },
+//                 decoration: InputDecoration(
+//                   isDense: true,
+//                   filled: true,
+//                   fillColor: Colors.white,
+//                   border: OutlineInputBorder(
+//                     borderRadius: BorderRadius.circular(10),
+//                     borderSide: BorderSide.none,
+//                   ),
+//                   suffixIcon: controller.text.isEmpty
+//                       ? const Icon(Icons.search)
+//                       : GestureDetector(
+//                           onTap: () {
+//                             controller.clear();
+//                             filterSearchResults("");
+//                           },
+//                           child: const Icon(Icons.close),
+//                         ),
+//                   hintText: 'Pencarian Salon',
+//                   hintStyle: AppTextStyle.textSubtitleStyle(),
+//                 ),
+//               );
+//             },
+//             itemBuilder: (context, salonName) {
+//               return ListTile(
+//                 isThreeLine: false,
+//                 dense: true,
+//                 visualDensity: VisualDensity.compact,
+//                 tileColor: Colors.white,
+//                 title: Text(
+//                   salonName,
+//                   style: AppTextStyle.textBodyStyle(
+//                       color: AppColor.primaryColor),
+//                 ),
+//               );
+//             },
+//             hideOnEmpty: true,
+//             onSelected: (salonName) {
+//               filterSearchResults(salonName);
+//               storeProvider.addSearchHistory(salonName);
+//             },
+//           ),
+//         ),
+//       ],
+//     ),
+//   );
+// }
+
   @override
   Widget build(BuildContext context) {
     void handleAddEditBahan() async {
@@ -90,7 +173,7 @@ class _AddEditBahanState extends State<AddEditBahan> {
         appBar: AppBar(
           title: Text(
             "Tambah/Edit Data Bahan",
-            style: TextStyle(color: Colors.white),
+            style: AppTextStyle.textTitleStyle(color: Colors.white),
           ),
           backgroundColor: AppColor.secondaryColor,
         ),
@@ -155,7 +238,7 @@ class _AddEditBahanState extends State<AddEditBahan> {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
         decoration: BoxDecoration(
           color: AppColor.secondaryColor, // Background color
           borderRadius: BorderRadius.circular(8), // Rounded corners
@@ -168,17 +251,16 @@ class _AddEditBahanState extends State<AddEditBahan> {
           ],
         ),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.white),
-            SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
+            Icon(
+              icon,
+              color: Colors.white,
+              size: 20,
             ),
+            SizedBox(width: 8),
+            Text(label,
+                style: AppTextStyle.textTitleStyle(color: Colors.white)),
           ],
         ),
       ),
@@ -204,6 +286,39 @@ class _AddEditBahanState extends State<AddEditBahan> {
       },
     );
   }
+
+  // Widget buildTypeAheadFieldProduct(
+  //     String label, List<ProductDAO> items, ValueChanged<String?> onChanged) {
+  //   return TypeAheadFormField<String>(
+  //     textFieldConfiguration: TextFieldConfiguration(
+  //       decoration: InputDecoration(
+  //         labelText: label,
+  //         border: OutlineInputBorder(),
+  //       ),
+  //     ),
+  //     suggestionsCallback: (pattern) async {
+  //       return items
+  //           .where((item) =>
+  //               item.partName.toLowerCase().contains(pattern.toLowerCase()))
+  //           .map((item) => item.partName)
+  //           .toList();
+  //     },
+  //     itemBuilder: (context, suggestion) {
+  //       return ListTile(
+  //         title: Text(suggestion),
+  //       );
+  //     },
+  //     onSuggestionSelected: (suggestion) {
+  //       onChanged(suggestion);
+  //     },
+  //     validator: (value) {
+  //       if (value == null || value.isEmpty) {
+  //         return '$label tidak boleh kosong';
+  //       }
+  //       return null;
+  //     },
+  //   );
+  // }
 
   Widget buildDropdownField(
       String label, List<MasAllDAO> items, ValueChanged<String?> onChanged) {

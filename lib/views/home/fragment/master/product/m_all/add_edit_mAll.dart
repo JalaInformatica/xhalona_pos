@@ -45,50 +45,6 @@ class _AddEditMasAllState extends State<AddEditMasAll> {
     });
   }
 
-  // void filterSearchResults(String query) async {
-  //   setState(() {
-  //     _isDataLoading = true;
-  //     _companyName = query;
-  //   });
-
-  //   await storeProvider.getStores(companyName: _companyName, pageNo: 1);
-
-  //   filteredList = storeProvider.stores;
-
-  //   setState(() {
-  //     _isDataLoading = false;
-  //   });
-  // }
-
-  // Widget searchSalonWidget() {
-  //   return Container(
-  //     padding: const EdgeInsets.only(right: 10, left: 10, bottom: 5),
-  //     width: double.infinity,
-  //     decoration: const BoxDecoration(
-  //       borderRadius: BorderRadius.only(
-  //         bottomLeft: Radius.circular(10),
-  //         bottomRight: Radius.circular(10),
-  //       ),
-  //       color: Color(0xffC0226D),
-  //     ),
-  //     child: TextFormField(
-  //       onFieldSubmitted: (value) {
-  //         filterSearchResults(value); // Panggil fungsi pencarian
-  //       },
-  //       decoration: InputDecoration(
-  //           isDense: true,
-  //           filled: true,
-  //           fillColor: Colors.white,
-  //           border: OutlineInputBorder(
-  //             borderRadius: BorderRadius.circular(10),
-  //             borderSide: BorderSide.none,
-  //           ),
-  //           suffixIcon: const Icon(Icons.search),
-  //           hintText: 'Pencarian Salon'),
-  //     ),
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     void handleAddEditMasAll() async {
@@ -128,8 +84,8 @@ class _AddEditMasAllState extends State<AddEditMasAll> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            "Tambah/Edit Data MasAll",
-            style: TextStyle(color: Colors.white),
+            "Tambah/Edit Data Master All",
+            style: AppTextStyle.textTitleStyle(color: Colors.white),
           ),
           backgroundColor: AppColor.secondaryColor,
         ),
@@ -179,7 +135,7 @@ class _AddEditMasAllState extends State<AddEditMasAll> {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
         decoration: BoxDecoration(
           color: AppColor.secondaryColor, // Background color
           borderRadius: BorderRadius.circular(8), // Rounded corners
@@ -192,17 +148,16 @@ class _AddEditMasAllState extends State<AddEditMasAll> {
           ],
         ),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.white),
-            SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
+            Icon(
+              icon,
+              color: Colors.white,
+              size: 20,
             ),
+            SizedBox(width: 8),
+            Text(label,
+                style: AppTextStyle.textTitleStyle(color: Colors.white)),
           ],
         ),
       ),

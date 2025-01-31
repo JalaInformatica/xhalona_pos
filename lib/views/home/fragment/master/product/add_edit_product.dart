@@ -139,7 +139,7 @@ class _AddEditProductState extends State<AddEditProduct> {
         appBar: AppBar(
           title: Text(
             "Tambah/Edit Data Product",
-            style: TextStyle(color: Colors.white),
+            style: AppTextStyle.textTitleStyle(color: Colors.white),
           ),
           backgroundColor: AppColor.secondaryColor,
         ),
@@ -229,8 +229,8 @@ class _AddEditProductState extends State<AddEditProduct> {
                                 "Unggah (1X1)", Icons.image),
                             SizedBox(width: 8.0),
                             Container(
-                              width: 100,
-                              height: 100,
+                              width: 60,
+                              height: 60,
                               decoration: BoxDecoration(
                                 shape: BoxShape.rectangle,
                                 border: Border.all(
@@ -365,31 +365,29 @@ class _AddEditProductState extends State<AddEditProduct> {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
         decoration: BoxDecoration(
-          color: AppColor.secondaryColor,
-          borderRadius: BorderRadius.circular(8),
+          color: AppColor.secondaryColor, // Background color
+          borderRadius: BorderRadius.circular(8), // Rounded corners
           boxShadow: [
             BoxShadow(
               color: Colors.black26,
               blurRadius: 4,
-              offset: Offset(0, 2),
+              offset: Offset(0, 2), // Shadow position
             ),
           ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.white),
-            SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
+            Icon(
+              icon,
+              color: Colors.white,
+              size: 20,
             ),
+            SizedBox(width: 8),
+            Text(label,
+                style: AppTextStyle.textTitleStyle(color: Colors.white)),
           ],
         ),
       ),

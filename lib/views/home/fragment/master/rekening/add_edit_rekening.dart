@@ -105,7 +105,7 @@ class _AddEditRekeningState extends State<AddEditRekening> {
         appBar: AppBar(
           title: Text(
             "Tambah/Edit Data Rekening",
-            style: TextStyle(color: Colors.white),
+            style: AppTextStyle.textTitleStyle(color: Colors.white),
           ),
           backgroundColor: AppColor.secondaryColor,
         ),

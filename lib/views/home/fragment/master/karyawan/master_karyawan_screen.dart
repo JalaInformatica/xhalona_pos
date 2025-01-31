@@ -9,6 +9,7 @@ import 'package:xhalona_pos/views/home/fragment/master/karyawan/add_edit_karyawa
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/karyawan_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/master_departemen_screen.dart';
 
+// ignore: must_be_immutable
 class MasterKaryawanScreen extends StatelessWidget {
   MasterKaryawanScreen({super.key});
 
@@ -19,24 +20,29 @@ class MasterKaryawanScreen extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 40,
-        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: AppColor.secondaryColor),
+          color: AppColor.secondaryColor, // Background color
+          borderRadius: BorderRadius.circular(8), // Rounded corners
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 4,
+              offset: Offset(0, 2), // Shadow position
+            ),
+          ],
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.white),
-            SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
+            Icon(
+              icon,
+              color: Colors.white,
+              size: 20,
             ),
+            SizedBox(width: 8),
+            Text(label,
+                style: AppTextStyle.textTitleStyle(color: Colors.white)),
           ],
         ),
       ),
@@ -54,7 +60,10 @@ class MasterKaryawanScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Master Karyawan"),
+          title: Text(
+            "Master Karyawan",
+            style: AppTextStyle.textTitleStyle(),
+          ),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {

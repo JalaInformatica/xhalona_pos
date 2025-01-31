@@ -54,7 +54,10 @@ class MasterRekeningScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Master Rekening"),
+          title: Text(
+            "Master Rekening",
+            style: AppTextStyle.textTitleStyle(),
+          ),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
@@ -77,7 +80,7 @@ class MasterRekeningScreen extends StatelessWidget {
                 Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => AddEditRekening()),
                     (route) => false);
-              }, Icons.add, "Add Rekeningt"),
+              }, Icons.add, "Add Rekening"),
               SizedBox(
                 height: 5.h,
               ),

@@ -103,8 +103,8 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            "Tambah/Edit Data ${widget.islabel} ${widget.isSuplier}",
-            style: TextStyle(color: Colors.white),
+            "Tambah/Edit Data ${widget.islabel}",
+            style: AppTextStyle.textTitleStyle(color: Colors.white),
           ),
           backgroundColor: AppColor.secondaryColor,
         ),
@@ -170,11 +170,11 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
     );
   }
 
-  Widget masterButton(VoidCallback onPressed, String label, IconData icon) {
+  Widget masterButton(VoidCallback onTap, String label, IconData icon) {
     return GestureDetector(
-      onTap: onPressed,
+      onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
         decoration: BoxDecoration(
           color: AppColor.secondaryColor, // Background color
           borderRadius: BorderRadius.circular(8), // Rounded corners
@@ -187,17 +187,16 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
           ],
         ),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.white),
-            SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
+            Icon(
+              icon,
+              color: Colors.white,
+              size: 20,
             ),
+            SizedBox(width: 8),
+            Text(label,
+                style: AppTextStyle.textTitleStyle(color: Colors.white)),
           ],
         ),
       ),

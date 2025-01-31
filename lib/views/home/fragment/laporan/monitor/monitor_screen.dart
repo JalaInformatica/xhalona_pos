@@ -56,7 +56,7 @@ class _MonitorScreenState extends State<MonitorScreen> {
           iconTheme: IconThemeData(color: Colors.white),
           title: Text(
             "Monitor Penjualan",
-            style: TextStyle(color: Colors.white),
+            style: AppTextStyle.textTitleStyle(color: Colors.white),
           ),
           backgroundColor: AppColor.secondaryColor,
           leading: IconButton(
@@ -112,7 +112,8 @@ class _MonitorScreenState extends State<MonitorScreen> {
                 items: controllerKar.karyawanHeader
                     .map((therapist) => DropdownMenuItem(
                           value: therapist.fullName,
-                          child: Text(therapist.fullName),
+                          child: Text(therapist.fullName,
+                              style: AppTextStyle.textTitleStyle()),
                         ))
                     .toList(),
                 onChanged: (value) {
@@ -127,7 +128,8 @@ class _MonitorScreenState extends State<MonitorScreen> {
                 items: controllerKus.kustomerHeader
                     .map((customer) => DropdownMenuItem(
                           value: customer.suplierId,
-                          child: Text(customer.suplierName),
+                          child: Text(customer.suplierName,
+                              style: AppTextStyle.textTitleStyle()),
                         ))
                     .toList(),
                 onChanged: (value) {
@@ -142,7 +144,8 @@ class _MonitorScreenState extends State<MonitorScreen> {
                 items: controllerProduct.productHeader
                     .map((product) => DropdownMenuItem(
                           value: product.partId,
-                          child: Text(product.partName),
+                          child: Text(product.partName,
+                              style: AppTextStyle.textTitleStyle()),
                         ))
                     .toList(),
                 onChanged: (value) {
@@ -157,7 +160,8 @@ class _MonitorScreenState extends State<MonitorScreen> {
                 items: ['Kategori 1', 'Kategori 2', 'Kategori 3']
                     .map((category) => DropdownMenuItem(
                           value: category,
-                          child: Text(category),
+                          child: Text(category,
+                              style: AppTextStyle.textTitleStyle()),
                         ))
                     .toList(),
                 onChanged: (value) {
@@ -176,7 +180,8 @@ class _MonitorScreenState extends State<MonitorScreen> {
                       items: ['Detail', 'Summary']
                           .map((type) => DropdownMenuItem(
                                 value: type,
-                                child: Text(type),
+                                child: Text(type,
+                                    style: AppTextStyle.textTitleStyle()),
                               ))
                           .toList(),
                       onChanged: (value) {
@@ -194,7 +199,8 @@ class _MonitorScreenState extends State<MonitorScreen> {
                       items: ['Semua', 'Pagi', 'Siang', 'Malam']
                           .map((shift) => DropdownMenuItem(
                                 value: shift,
-                                child: Text(shift),
+                                child: Text(shift,
+                                    style: AppTextStyle.textTitleStyle()),
                               ))
                           .toList(),
                       onChanged: (value) {
@@ -207,11 +213,12 @@ class _MonitorScreenState extends State<MonitorScreen> {
                 ],
               ),
               SizedBox(height: 16),
-              Text('Format Penjualan By:'),
+              Text('Format Penjualan By:',
+                  style: AppTextStyle.textTitleStyle()),
               Column(
                 children: [
                   RadioListTile(
-                    title: Text('Harian'),
+                    title: Text('Harian', style: AppTextStyle.textTitleStyle()),
                     value: 'Harian',
                     groupValue: _salesFormat,
                     onChanged: (value) {
@@ -221,7 +228,7 @@ class _MonitorScreenState extends State<MonitorScreen> {
                     },
                   ),
                   RadioListTile(
-                    title: Text('Kasir'),
+                    title: Text('Kasir', style: AppTextStyle.textTitleStyle()),
                     value: 'Kasir',
                     groupValue: _salesFormat,
                     onChanged: (value) {
@@ -231,7 +238,8 @@ class _MonitorScreenState extends State<MonitorScreen> {
                     },
                   ),
                   RadioListTile(
-                    title: Text('Terapis'),
+                    title:
+                        Text('Terapis', style: AppTextStyle.textTitleStyle()),
                     value: 'Terapis',
                     groupValue: _salesFormat,
                     onChanged: (value) {
@@ -278,14 +286,8 @@ class _MonitorScreenState extends State<MonitorScreen> {
           children: [
             Icon(icon, color: Colors.white),
             SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            Text(label,
+                style: AppTextStyle.textTitleStyle(color: Colors.white)),
           ],
         ),
       ),
