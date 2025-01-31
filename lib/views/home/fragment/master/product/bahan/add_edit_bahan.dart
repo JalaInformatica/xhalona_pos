@@ -5,6 +5,7 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/bahan.dart';
 import 'package:xhalona_pos/models/dao/product.dart';
 import 'package:xhalona_pos/models/dao/masterall.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:xhalona_pos/repositories/bahan/bahan_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/m_all/mAll_controller.dart';
@@ -48,89 +49,6 @@ class _AddEditBahanState extends State<AddEditBahan> {
       _isLoading = false;
     });
   }
-
-//   Widget searchSalonWidget() {
-//   return Container(
-//     padding: EdgeInsets.only(top: 30.h, bottom: 10.h, right: 10.w),
-//     width: double.infinity,
-//     color: const Color(0xffC0226D),
-//     child: Row(
-//       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//       children: [
-//         IconButton(
-//           style: IconButton.styleFrom(visualDensity: VisualDensity.compact),
-//           onPressed: () {
-//             Navigator.of(context).pop();
-//           },
-//           icon: const Icon(
-//             Icons.arrow_back,
-//             color: Colors.white,
-//           ),
-//         ),
-//         Expanded(
-//           child: TypeAheadField<String>(
-//             suggestionsCallback: (pattern) async {
-//               print("suggestionsCallback triggered");
-//               return await _getSuggestions(pattern);
-//             },
-//             builder: (context, controller, focusNode) {
-//               return TextFormField(
-//                 controller: controller,
-//                 focusNode: focusNode,
-//                 textInputAction: TextInputAction.search,
-//                 onFieldSubmitted: (value) {
-//                   filterSearchResults(value);
-//                   storeProvider.addSearchHistory(value);
-//                 },
-//                 onTapOutside: (_) {
-//                   focusNode.unfocus();
-//                 },
-//                 decoration: InputDecoration(
-//                   isDense: true,
-//                   filled: true,
-//                   fillColor: Colors.white,
-//                   border: OutlineInputBorder(
-//                     borderRadius: BorderRadius.circular(10),
-//                     borderSide: BorderSide.none,
-//                   ),
-//                   suffixIcon: controller.text.isEmpty
-//                       ? const Icon(Icons.search)
-//                       : GestureDetector(
-//                           onTap: () {
-//                             controller.clear();
-//                             filterSearchResults("");
-//                           },
-//                           child: const Icon(Icons.close),
-//                         ),
-//                   hintText: 'Pencarian Salon',
-//                   hintStyle: AppTextStyle.textSubtitleStyle(),
-//                 ),
-//               );
-//             },
-//             itemBuilder: (context, salonName) {
-//               return ListTile(
-//                 isThreeLine: false,
-//                 dense: true,
-//                 visualDensity: VisualDensity.compact,
-//                 tileColor: Colors.white,
-//                 title: Text(
-//                   salonName,
-//                   style: AppTextStyle.textBodyStyle(
-//                       color: AppColor.primaryColor),
-//                 ),
-//               );
-//             },
-//             hideOnEmpty: true,
-//             onSelected: (salonName) {
-//               filterSearchResults(salonName);
-//               storeProvider.addSearchHistory(salonName);
-//             },
-//           ),
-//         ),
-//       ],
-//     ),
-//   );
-// }
 
   @override
   Widget build(BuildContext context) {
@@ -187,30 +105,20 @@ class _AddEditBahanState extends State<AddEditBahan> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Field Nama
-                      Obx(() {
-                        return buildDropdownFieldProduct(
-                          "Kode Produk/Nama Produk",
-                          controllerPro.productHeader,
-                          (value) {
-                            setState(() {
-                              _product = value;
-                            });
-                          },
-                        );
-                      }),
+                      buildTypeAheadFieldProduct("Kode Produk/Nama Produk",
+                          controllerPro.productHeader, (value) {
+                        setState(() {
+                          _product = value;
+                        });
+                      }, controllerPro.updateFilterValue),
                       SizedBox(height: 16),
 
-                      Obx(() {
-                        return buildDropdownField(
-                          "Unit",
-                          controllerMas.masAllHeader,
+                      buildTypeAheadField("Unit", controllerMas.masAllHeader,
                           (value) {
-                            setState(() {
-                              _unit = value;
-                            });
-                          },
-                        );
-                      }),
+                        setState(() {
+                          _unit = value;
+                        });
+                      }, controllerMas.updateFilterValue),
                       SizedBox(height: 32),
 
                       // Action Buttons
@@ -267,77 +175,105 @@ class _AddEditBahanState extends State<AddEditBahan> {
     );
   }
 
-  Widget buildDropdownFieldProduct(
-      String label, List<ProductDAO> items, ValueChanged<String?> onChanged) {
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(),
-      ),
-      items: items.map((item) {
-        return DropdownMenuItem(value: item.partId, child: Text(item.partName));
-      }).toList(),
-      onChanged: onChanged,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return '$label tidak boleh kosong';
-        }
-        return null;
-      },
+  Widget buildTypeAheadFieldProduct(
+    String label,
+    List<ProductDAO> items,
+    ValueChanged<String?> onChanged,
+    void Function(String newFilterValue) updateFilterValue,
+  ) {
+    TextEditingController controller = TextEditingController();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: AppTextStyle.textTitleStyle()),
+        SizedBox(height: 8),
+        TypeAheadField<String>(
+          suggestionsCallback: (pattern) async {
+            updateFilterValue(pattern); // Update filter
+            return items
+                .where((item) =>
+                    item.partName.toLowerCase().contains(pattern.toLowerCase()))
+                .map((item) => item.partName)
+                .toList();
+          },
+          builder: (context, textEditingController, focusNode) {
+            // Set nilai controller dari textEditingController yang diberikan oleh TypeAheadField
+            controller = textEditingController;
+
+            return TextField(
+              controller: controller, // Gunakan controller yang tetap
+              focusNode: focusNode,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: "Cari produk...",
+              ),
+              onChanged: onChanged, // Callback saat teks berubah
+            );
+          },
+          itemBuilder: (context, suggestion) {
+            return ListTile(
+              title: Text(suggestion),
+            );
+          },
+          onSelected: (suggestion) {
+            controller.text =
+                suggestion; // Perbarui teks dengan pilihan pengguna
+            onChanged(suggestion); // Kirim perubahan ke callback
+          },
+        ),
+      ],
     );
   }
 
-  // Widget buildTypeAheadFieldProduct(
-  //     String label, List<ProductDAO> items, ValueChanged<String?> onChanged) {
-  //   return TypeAheadFormField<String>(
-  //     textFieldConfiguration: TextFieldConfiguration(
-  //       decoration: InputDecoration(
-  //         labelText: label,
-  //         border: OutlineInputBorder(),
-  //       ),
-  //     ),
-  //     suggestionsCallback: (pattern) async {
-  //       return items
-  //           .where((item) =>
-  //               item.partName.toLowerCase().contains(pattern.toLowerCase()))
-  //           .map((item) => item.partName)
-  //           .toList();
-  //     },
-  //     itemBuilder: (context, suggestion) {
-  //       return ListTile(
-  //         title: Text(suggestion),
-  //       );
-  //     },
-  //     onSuggestionSelected: (suggestion) {
-  //       onChanged(suggestion);
-  //     },
-  //     validator: (value) {
-  //       if (value == null || value.isEmpty) {
-  //         return '$label tidak boleh kosong';
-  //       }
-  //       return null;
-  //     },
-  //   );
-  // }
+  Widget buildTypeAheadField(
+    String label,
+    List<MasAllDAO> items,
+    ValueChanged<String?> onChanged,
+    void Function(String newFilterValue) updateFilterValue,
+  ) {
+    TextEditingController controller = TextEditingController();
 
-  Widget buildDropdownField(
-      String label, List<MasAllDAO> items, ValueChanged<String?> onChanged) {
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(),
-      ),
-      items: items.map((item) {
-        return DropdownMenuItem(
-            value: item.masterId, child: Text(item.masDesc));
-      }).toList(),
-      onChanged: onChanged,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return '$label tidak boleh kosong';
-        }
-        return null;
-      },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: AppTextStyle.textTitleStyle()),
+        SizedBox(height: 8),
+        TypeAheadField<String>(
+          suggestionsCallback: (pattern) async {
+            updateFilterValue(pattern); // Update filter
+            return items
+                .where((item) =>
+                    item.masDesc.toLowerCase().contains(pattern.toLowerCase()))
+                .map((item) => item.masDesc)
+                .toList();
+          },
+          builder: (context, textEditingController, focusNode) {
+            // Set nilai controller dari textEditingController yang diberikan oleh TypeAheadField
+            controller = textEditingController;
+
+            return TextField(
+              controller: controller, // Gunakan controller yang tetap
+              focusNode: focusNode,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: " Unit...",
+              ),
+              onChanged: onChanged, // Callback saat teks berubah
+            );
+          },
+          itemBuilder: (context, suggestion) {
+            return ListTile(
+              title: Text(suggestion),
+            );
+          },
+          onSelected: (suggestion) {
+            controller.text =
+                suggestion; // Perbarui teks dengan pilihan pengguna
+            onChanged(suggestion); // Kirim perubahan ke callback
+          },
+        ),
+      ],
     );
   }
 

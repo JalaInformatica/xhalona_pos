@@ -244,7 +244,7 @@ class MasterProductScreen extends StatelessWidget {
                             index: i),
                         AppTableCell(
                             value:
-                                '${product.isFree == true ? 'Iya' : 'Tidak ${product.partId}'}',
+                                '${product.isFree == true ? 'Iya' : 'Tidak'}',
                             index: i),
                         AppTableCell(
                           index: i,
