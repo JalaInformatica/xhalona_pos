@@ -27,171 +27,81 @@ class PosScreen extends StatelessWidget {
           children: [
             Column(
               children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.h),
-                  child: AppTextField(
-                    context: context,
-                    hintText: "Cari Produk",
-                    onChanged: controller.updateProductFilterValue,
+                Container(
+                  decoration: BoxDecoration(
+                    // color: AppColor.tertiaryColor
                   ),
+                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
+                  child: Row(
+                    spacing: 5.w,
+                    children: [
+                    Expanded(child: AppTextField(
+                      fillColor: AppColor.whiteColor,
+                      context: context,
+                      hintText: "Cari Produk",
+                      onChanged: controller.updateProductFilterValue,
+                    )),
+                    AppIconButton(
+                      padding: EdgeInsets.all(5),
+                      shape: RoundedRectangleBorder(side: BorderSide(color: AppColor.grey500),borderRadius: BorderRadius.circular(5) ),
+                      onPressed: (){}, 
+                      foregroundColor: AppColor.secondaryColor,
+                      icon: Icon(Icons.category_outlined))
+                  ],) 
+                ),
+                Padding(padding: EdgeInsets.symmetric(
+                  horizontal: 20.w,
+                  vertical: 10.h
+                ),
+                child: Row(
+                  spacing: 10.w,
+                  children: [
+                    Row(
+                    spacing: 5.w,
+                      children: [
+                        Icon(Icons.face_retouching_natural, size: 15, color: AppColor.secondaryColor,),
+                        Text("Jasa", style: AppTextStyle.textCaptionStyle(),),
+                      ],
+                    ),
+                    Row(
+                    spacing: 5.w,
+                      children: [
+                        Icon(Icons.all_inbox, size: 15, color: AppColor.dangerColor,),
+                        Text("Paket", style: AppTextStyle.textCaptionStyle(),),
+                      ],
+                    ),
+                    Row(
+                    spacing: 5.w,
+                      children: [
+                        Icon(Icons.shopping_bag, size: 15, color: AppColor.blackColor,),
+                        Text("Barang", style: AppTextStyle.textCaptionStyle(),),
+                      ],
+                    ),
+                  ],
+                ),
                 ),
                 Obx(() {
                   if (controller.isLoading.value) {
                     return Center(child: CircularProgressIndicator());
                   } else {
                     return Expanded(
-                      child: RefreshIndicator(
-                        onRefresh: () => controller.fetchProducts(),
-                        child: SingleChildScrollView(
+                      child: 
+                      // RefreshIndicator(
+                      //   onRefresh: () => controller.fetchProducts(),
+                      //   child: 
+                        SingleChildScrollView(
+                          padding: EdgeInsets.symmetric(horizontal: 5.w),
                           child: Column(
                             children: [
                               Wrap(
-                                spacing: 10,
-                                runSpacing: 10,
+                                alignment: WrapAlignment.center,
+                                spacing: 15.w,
+                                runSpacing: 15.h,
                                 children: List.generate(
                                   controller.products.length,
                                   (index) {
                                     final product = controller.products[index];
-                                    return GestureDetector(
-                                        onTap: () {
-                                          if (!controller
-                                              .isAddingProductToTrx.value) {
-                                            controller.addProductToTrx(product);
-                                          }
-                                        },
-                                        child: Container(
-                                          width: 115,
-                                          height: 115,
-                                          decoration: BoxDecoration(
-                                            color: !controller
-                                                        .isAddingProductToTrx
-                                                        .value ||
-                                                    controller
-                                                            .selectedProductPartIdToTrx
-                                                            .value ==
-                                                        product.partId
-                                                ? AppColor.tertiaryColor
-                                                : AppColor.blackColor
-                                                    .withOpacity(0.2),
-                                            borderRadius:
-                                                BorderRadius.circular(5),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: AppColor.grey200,
-                                                blurRadius: 1,
-                                                spreadRadius: 1,
-                                              ),
-                                            ],
-                                          ),
-                                          child: Stack(
-                                            children: [
-                                              ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(5),
-                                                  child: Opacity(
-                                                      opacity:
-                                                          0.7, // Set opacity value here (0.0 to 1.0)
-                                                      child: CachedNetworkImage(
-                                                        imageUrl:
-                                                            "https://dreadnought.core-erp.com/XHALONA/${product.mainImage}",
-                                                        fit: BoxFit.cover,
-                                                        placeholder:
-                                                            (context, url) {
-                                                          // Shimmer effect when image is loading
-                                                          return Shimmer
-                                                              .fromColors(
-                                                            baseColor: AppColor
-                                                                .grey100,
-                                                            highlightColor:
-                                                                AppColor
-                                                                    .grey200,
-                                                            child: Container(
-                                                              width: double
-                                                                  .infinity,
-                                                              height: double
-                                                                  .infinity,
-                                                              color: AppColor
-                                                                  .grey300, // Color of the shimmer
-                                                            ),
-                                                          );
-                                                        },
-                                                        errorWidget: (context,
-                                                            str, obj) {
-                                                          return SvgPicture
-                                                              .asset(
-                                                            'assets/logo-only-pink.svg',
-                                                            color: AppColor
-                                                                .whiteColor,
-                                                            fit: BoxFit.cover,
-                                                          );
-                                                        },
-                                                      ))),
-                                              Column(
-                                                mainAxisSize: MainAxisSize.max,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.end,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Container(
-                                                      padding:
-                                                          EdgeInsets.symmetric(
-                                                              horizontal: 5.w),
-                                                      width: double.maxFinite,
-                                                      color: AppColor.blackColor
-                                                          .withOpacity(0.7),
-                                                      child: Text(
-                                                        product.partName,
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style: AppTextStyle
-                                                            .textBodyStyle(
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .visible,
-                                                                color: AppColor
-                                                                    .whiteColor),
-                                                      )),
-                                                  Container(
-                                                      width: double.maxFinite,
-                                                      padding: EdgeInsets
-                                                          .symmetric(
-                                                              horizontal: 5.w),
-                                                      decoration: BoxDecoration(
-                                                          color: AppColor
-                                                              .whiteColor,
-                                                          border: Border.all(
-                                                              color: AppColor
-                                                                  .primaryColor),
-                                                          borderRadius:
-                                                              BorderRadius.only(
-                                                                  bottomLeft: Radius
-                                                                      .circular(
-                                                                          5),
-                                                                  bottomRight: Radius
-                                                                      .circular(
-                                                                          5))),
-                                                      child: Text(
-                                                        formatToRupiah(
-                                                            product.unitPrice),
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style: AppTextStyle
-                                                            .textBodyStyle(
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .visible,
-                                                                color: AppColor
-                                                                    .primaryColor,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
-                                                      )),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ));
+                                    return produkImage(controller, product);
                                   },
                                 ),
                               ),
@@ -199,7 +109,7 @@ class PosScreen extends StatelessWidget {
                             ],
                           ),
                         )
-                      )
+                      // )
                     );
                   }
                 }),
@@ -227,121 +137,209 @@ class PosScreen extends StatelessWidget {
                 }, 
                 context: context,
                 onCheckoutClicked: () async {
-                  double a = 10, b = 20, c = 30, d = 40, e = 100;
-
-                  TextEditingController aController = TextEditingController(text: a.toString());
-                  TextEditingController bController = TextEditingController(text: b.toString());
-                  TextEditingController cController = TextEditingController(text: c.toString());
-                  TextEditingController dController = TextEditingController(text: d.toString());
-
-                  void adjustValues(String variable, double newValue) {
-                    Map<String, double> variables = {'a': a, 'b': b, 'c': c, 'd': d};
-                    List<String> precedence = ['a', 'b', 'c', 'd'];
-                    int index = precedence.indexOf(variable);
-                    double difference = newValue - variables[variable]!;
-                    variables[variable] = newValue;
-
-                    if (difference > 0) {
-                      // Increase logic
-                      for (int i = index + 1; i < precedence.length; i++) {
-                        String key = precedence[i];
-                        if (variables[key]! >= difference) {
-                          variables[key] = variables[key]! - difference;
-                          difference = 0;
-                          break;
-                        } else {
-                          difference -= variables[key]!;
-                          variables[key] = 0;
-                        }
-                      }
-                    } else if (difference < 0) {
-                      // Decrease logic
-                      difference = difference.abs();
-                      for (int i = index - 1; i >= 0; i--) {
-                        String key = precedence[i];
-                        if (variables[key]! + difference <= e) {
-                          variables[key] = variables[key]! + difference;
-                          difference = 0;
-                          break;
-                        } else {
-                          difference -= (e - variables[key]!);
-                          variables[key] = e;
-                        }
-                      }
-                    }
-
-                    // If total > e, set others to 0
-                    double total = variables.values.reduce((x, y) => x + y);
-                    if (total > e) {
-                      for (String key in precedence) {
-                        variables[key] = (variables[key]! > e) ? e : 0;
-                      }
-                    }
-
-                    a = variables['a']!;
-                    b = variables['b']!;
-                    c = variables['c']!;
-                    d = variables['d']!;
-
-                    // Update text fields
-                    aController.text = a.toString();
-                    bController.text = b.toString();
-                    cController.text = c.toString();
-                    dController.text = d.toString();
-                  }
-
                   await SmartDialog.show(
-                    builder: (_) => AlertDialog(
-                      title: const Text("Adjust Values"),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
+                    builder: (_) => SafeArea(child: Container(
+                      margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+                      padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.h),
+                      decoration: BoxDecoration(
+                        color: AppColor.whiteColor,
+                        borderRadius: BorderRadius.circular(5)
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.max,
                         children: [
-                          TextField(
-                            controller: aController,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(labelText: 'a'),
-                            onChanged: (value) {
-                              double? newValue = double.tryParse(value);
-                              if (newValue != null) adjustValues('a', newValue);
-                            },
-                          ),
-                          TextField(
-                            controller: bController,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(labelText: 'b'),
-                            onChanged: (value) {
-                              double? newValue = double.tryParse(value);
-                              if (newValue != null) adjustValues('b', newValue);
-                            },
-                          ),
-                          TextField(
-                            controller: cController,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(labelText: 'c'),
-                            onChanged: (value) {
-                              double? newValue = double.tryParse(value);
-                              if (newValue != null) adjustValues('c', newValue);
-                            },
-                          ),
-                          TextField(
-                            controller: dController,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(labelText: 'd'),
-                            onChanged: (value) {
-                              double? newValue = double.tryParse(value);
-                              if (newValue != null) adjustValues('d', newValue);
-                            },
-                          ),
+                          Text("Checkout", style: AppTextStyle.textTitleStyle(color: AppColor.primaryColor),),
+                          SizedBox(height: 5.h,),
+                          Text("Ringkasan Tagihan", style: AppTextStyle.textSubtitleStyle(),),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                            Text("Total: ", style: AppTextStyle.textBodyStyle(color: AppColor.grey500),),
+                            Text("Rp. 100.000", style: AppTextStyle.textBodyStyle(),),
+                          ],),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                            Text("Diskon: ", style: AppTextStyle.textBodyStyle(color: AppColor.grey500),),
+                            Text("Rp. 10.000", style: AppTextStyle.textBodyStyle(),),
+                          ],),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                            Text("Tagihan: ", style: AppTextStyle.textBodyStyle(color: AppColor.grey500),),
+                            Text("Rp. 90.000", style: AppTextStyle.textBodyStyle(),),
+                          ],),
+                          SizedBox(height: 10.h,),
+                          Text("Pembayaran", style: AppTextStyle.textSubtitleStyle(),),
+                          Row(
+                            spacing: 5.w,
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Text("Tunai: ", style: AppTextStyle.textBodyStyle(),)
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: AppTextField(
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                                  context: context, hintText: "0", textAlign: TextAlign.right,)),
+                          ],), 
+                          SizedBox(height: 5.h,),
+                          Row(
+                            spacing: 5.w,
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: DropdownButton<String>(
+                                value: "Non-tunai",
+                                items: [
+                                  DropdownMenuItem(
+                                    value: "Non-tunai",
+                                    child: Text(
+                                      "Non-tunai", style: AppTextStyle.textBodyStyle(),
+                                    )
+                                  ),
+                                  DropdownMenuItem(
+                                    value: "QRIZ",
+                                    child: Text(
+                                      "QRIZ", style: AppTextStyle.textBodyStyle(),
+                                    )
+                                  ),
+                                ], 
+                                onChanged: (v){})
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child:AppTextField(
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                                  context: context, hintText: "0", textAlign: TextAlign.right,)),
+                          ],), 
+                          SizedBox(height: 5.h,),
+                          Row(
+                            spacing: 5.w,
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: DropdownButton<String>(
+                                value: "Non-tunai",
+                                items: [
+                                  DropdownMenuItem(
+                                    value: "Non-tunai",
+                                    child: Text(
+                                      "Non-tunai", style: AppTextStyle.textBodyStyle(),
+                                    )
+                                  ),
+                                  DropdownMenuItem(
+                                    value: "QRIZ",
+                                    child: Text(
+                                      "QRIZ", style: AppTextStyle.textBodyStyle(),
+                                    )
+                                  ),
+                                ], 
+                                onChanged: (v){})
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: AppTextField(
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                                  context: context, hintText: "0", textAlign: TextAlign.right,)),
+                          ],), 
+                          SizedBox(height: 5.h,),
+                          Row(
+                            spacing: 5.w,
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Text("Komplimen: ", style: AppTextStyle.textBodyStyle(),)
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: AppTextField(
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                                  context: context, hintText: "0", textAlign: TextAlign.right,)),
+                          ],),
+                          SizedBox(height: 10.h,),
+                          Row(
+                            spacing: 5.w,
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Text("Hutang: ", style: AppTextStyle.textBodyStyle(),)
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: AppTextField(
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                                  context: context, hintText: "0", textAlign: TextAlign.right,)),
+                          ],),
+                          SizedBox(height: 10.h),
+                          Row(
+                            spacing: 5.w,
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Padding(
+                                  padding: EdgeInsets.only(left: 10.w),
+                                  child: Text("Total: ", style: AppTextStyle.textBodyStyle(fontWeight: FontWeight.bold),))
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                  padding: EdgeInsets.only(top: 5.h),
+                                  decoration: BoxDecoration(
+                                    border: Border(top: BorderSide())
+                                  ),
+                                  child: AppTextField(
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                                  context: context, hintText: "0", textAlign: TextAlign.right,))),
+                          ],),
+                          SizedBox(height:10.h,),
+                          Row(
+                            spacing: 5.w,
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Padding(
+                                  padding: EdgeInsets.only(left: 10.w),
+                                  child: Text("Kembalian: ", style: AppTextStyle.textBodyStyle(fontWeight: FontWeight.bold),))
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: AppTextField(
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                                  context: context, hintText: "0", textAlign: TextAlign.right,)),
+                          ],),
+                          SizedBox(height: 10.h,),
+                          Row(
+                            spacing: 5.w,
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Padding(
+                                  padding: EdgeInsets.only(left: 10.w),
+                                  child: Text("Titipan: ", style: AppTextStyle.textBodyStyle(fontWeight: FontWeight.bold),))
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: AppTextField(
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                                  context: context, hintText: "0", textAlign: TextAlign.right,)),
+                          ],),
+                          SizedBox(height: 10.h,),
+                          SizedBox(
+                            width: double.infinity,
+                            child: AppElevatedButton(
+                              backgroundColor: AppColor.primaryColor,
+                              foregroundColor: AppColor.whiteColor,
+                              onPressed: (){}, 
+                              text: Text("Checkout", style: AppTextStyle.textSubtitleStyle(),)),
+                          )
                         ],
                       ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => SmartDialog.dismiss(),
-                          child: const Text("Close"),
-                        ),
-                      ],
+                      
                     ),
-                  );
+                  ));
                 }
               )
             )
@@ -370,6 +368,7 @@ class PosScreen extends StatelessWidget {
                       style: AppTextStyle.textSubtitleStyle(
                           color: AppColor.whiteColor),
                     ),
+
                   ],
                 ))
             : SizedBox.shrink()));

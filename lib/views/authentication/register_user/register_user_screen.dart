@@ -6,18 +6,16 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/authentication.dart';
 import 'package:xhalona_pos/repositories/authentication/authentication_repository.dart';
 import 'package:xhalona_pos/services/api_service.dart';
-import 'package:xhalona_pos/views/authentication/register_main/register_main_screen.dart';
-import 'package:xhalona_pos/views/authentication/register_user/register_user_screen.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/widgets/app_loading_button.dart';
 import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 
-class LoginScreen extends StatefulWidget {
+class RegisterUserScreen extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _LoginScreen();
+  State<StatefulWidget> createState() => _RegisterUserScreen();
 }
 
-class _LoginScreen extends State<LoginScreen> {
+class _RegisterUserScreen extends State<RegisterUserScreen> {
   TextEditingController userIdController = TextEditingController(text: '');
   TextEditingController storeIdController = TextEditingController(text: '');
   TextEditingController passwordController = TextEditingController(text: '');
@@ -68,6 +66,7 @@ class _LoginScreen extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: AppColor.whiteColor,
       body: ListView(
+        
         children: [
           SvgPicture.asset(
             'assets/logo-only-pink.svg',
@@ -81,11 +80,14 @@ class _LoginScreen extends State<LoginScreen> {
               style: AppTextStyle.textTitleStyle(),
             ),
           ),
-          SvgPicture.asset(
-            'assets/logo_text.svg',
-          ),
+          // SvgPicture.asset(
+          //   'assets/logo_text.svg',
+          // ),
           const SizedBox(
-            height: 30,
+            height: 20,
+          ),
+          Center(
+            child: Text("Daftar Sebagai Karyawan Salon", style: AppTextStyle.textSubtitleStyle(),),
           ),
           Form(
             key: _formkey,
@@ -163,21 +165,21 @@ class _LoginScreen extends State<LoginScreen> {
                         foregroundColor: AppColor.whiteColor,
                         size: AppLoadingButtonSize.big,
                         text: Text(
-                          "Masuk",
+                          "Daftar",
                           style: AppTextStyle.textSubtitleStyle(),
                         ),
                       )),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Belum Punya Akun?",
+                      Text("Sudah Punya Akun?",
                           style: AppTextStyle.textBodyStyle()),
                       TextButton(
                         onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>RegisterMainScreen()));
+                          // Navigator.pushNamed(context, '/sign-up');
                         },
                         child: Text(
-                          "Daftar Baru",
+                          "Masuk",
                           style: AppTextStyle.textBodyStyle(
                               fontWeight: FontWeight.bold,
                               color: AppColor.blackColor),

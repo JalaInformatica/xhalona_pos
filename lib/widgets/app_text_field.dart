@@ -15,7 +15,8 @@ class AppTextField extends TextField{
     EdgeInsets? contentPadding,
     super.onChanged,
     super.autofocus,
-    super.readOnly
+    super.readOnly,
+    super.textAlign
   }) : super(
       onTapOutside: (_) {
         FocusScope.of(context).unfocus();
@@ -25,6 +26,8 @@ class AppTextField extends TextField{
       cursorColor: AppColor.primaryColor,
       textInputAction: inputAction,
       decoration: InputDecoration(
+        filled: fillColor!=null,
+        fillColor: fillColor,
         labelText: labelText,
         labelStyle: AppTextStyle.textBodyStyle(
           color: AppColor.grey500,

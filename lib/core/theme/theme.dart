@@ -144,7 +144,7 @@ class AppTextStyle {
       String? package,
       TextOverflow? overflow = TextOverflow.ellipsis}) {
     double fontSize = titleSize;
-    FontWeight fontWeight = FontWeight.w500;
+    FontWeight fontWeight = FontWeight.bold;
 
     return TextStyle(
       inherit: inherit,
@@ -320,7 +320,7 @@ class AppTextStyle {
       List<String>? fontFamilyFallback,
       String? package,
       TextOverflow? overflow = TextOverflow.ellipsis}) {
-    double fontSize = 9;
+    double fontSize = 9.5;
 
     return TextStyle(
       inherit: inherit,

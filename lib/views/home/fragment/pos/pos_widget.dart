@@ -1,8 +1,16 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:xhalona_pos/core/helper/global_helper.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/models/dao/product.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_controller.dart';
+import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/widgets/app_elevated_button.dart';
 import 'package:xhalona_pos/widgets/app_icon_button.dart';
+import 'package:xhalona_pos/widgets/app_image.dart';
 import 'package:xhalona_pos/widgets/app_normal_button.dart';
 import 'package:xhalona_pos/widgets/app_pdf_viewer.dart';
 import 'package:xhalona_pos/widgets/app_text_field.dart';
@@ -31,6 +39,110 @@ AppElevatedButton posAppButton(
       padding: EdgeInsets.symmetric(horizontal: 5.w),
       onPressed: onPressed,
       text: Text(text));
+}
+
+Widget produkImage(PosController controller, ProductDAO product) {
+  return Container(
+        width: 165.w,
+        padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.h),
+        // height: 125,
+        decoration: BoxDecoration(
+          color: AppColor.whiteColor,
+          borderRadius: BorderRadius.circular(5),
+          boxShadow: [
+            BoxShadow(
+              color: AppColor.grey200,
+              blurRadius: 1,
+              spreadRadius: 1,
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Stack(
+              alignment: Alignment.topRight,
+              children: [
+                AppImage(
+                  imageUrl:
+                      "https://dreadnought.core-erp.com/XHALONA/${product.mainImage}",
+                  width: 160.w,
+                  height: 160.h,
+                  radius: 5,
+                ),
+                Container(
+                  padding: EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(bottomLeft: Radius.circular(5)),
+                    color: product.isPacket? AppColor.dangerColor.withAlpha(200) : product.isFixQty? AppColor.secondaryColor.withAlpha(200) : AppColor.blackColor.withAlpha(200),
+                  ),
+                  child: Icon(product.isPacket? Icons.all_inbox: product.isFixQty? Icons.face_retouching_natural : Icons.shopping_bag, size: 15, color: AppColor.whiteColor,),
+                )
+              ],
+            ),
+            SizedBox(height: 5.h,),
+            Text(product.partName, style: AppTextStyle.textBodyStyle(fontFamily: 'GoogleSans', fontWeight: FontWeight.bold),),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(formatToRupiah(product.unitPriceNet), style: AppTextStyle.textBodyStyle(color: AppColor.doneColor),),
+                Text(formatToRupiah(product.unitPrice), style: AppTextStyle.textCaptionStyle(color: AppColor.dangerColor, decoration: TextDecoration.lineThrough),)
+              ],
+            ),
+            SizedBox(height: 5.h,),
+            SizedBox(
+              width: double.maxFinite,
+              child: AppTextButton(onPressed: (){
+                if (!controller.isAddingProductToTrx.value) {
+                  controller.addProductToTrx(product);
+                  SmartDialog.show(builder: (_){
+                    return AppDialog(
+                      content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text("Menambahkan", style: AppTextStyle.textSubtitleStyle(),),
+                        SizedBox(height: 10.h,),
+                        Stack(
+                          alignment: Alignment.topRight,
+                          children: [
+                            AppImage(
+                              imageUrl:
+                                  "https://dreadnought.core-erp.com/XHALONA/${product.mainImage}",
+                              width: 160.w,
+                              height: 160.h,
+                              radius: 5,
+                            ),
+                            Container(
+                              padding: EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(5)),
+                                color: product.isPacket? AppColor.dangerColor.withAlpha(200) : product.isFixQty? AppColor.secondaryColor.withAlpha(200) : AppColor.blackColor.withAlpha(200),
+                              ),
+                              child: Icon(product.isPacket? Icons.all_inbox: product.isFixQty? Icons.face_retouching_natural : Icons.shopping_bag, size: 15, color: AppColor.whiteColor,),
+                            )
+                          ],
+                        ),
+                        SizedBox(height: 5.h,),
+                        Text(product.partName, style: AppTextStyle.textBodyStyle(fontFamily: 'GoogleSans', fontWeight: FontWeight.bold),),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          spacing: 5.w,
+                          children: [
+                            Text(formatToRupiah(product.unitPriceNet), style: AppTextStyle.textBodyStyle(color: AppColor.doneColor),),
+                            Text(formatToRupiah(product.unitPrice), style: AppTextStyle.textCaptionStyle(color: AppColor.dangerColor, decoration: TextDecoration.lineThrough),)
+                          ],  
+                        ),]
+                    ));
+                  });
+                  Future.delayed(Duration(seconds: 2), () {
+                    SmartDialog.dismiss();
+                  });
+                }
+              }, child: Text("Tambah Pesanan", style: AppTextStyle.textBodyStyle(),)))
+          ]
+        )
+      );
 }
 
 Widget transaction(
@@ -102,8 +214,7 @@ Widget transaction(
                 vertical: 10.w,
               ),
               constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height*0.5
-              ),
+                  maxHeight: MediaQuery.of(context).size.height * 0.5),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 spacing: 5.h,
@@ -111,6 +222,7 @@ Widget transaction(
                   Expanded(
                     child: SingleChildScrollView(
                       child: Column(
+                        spacing: 10.h,
                         children: [
                           ...controller.currentTransactionDetail
                               .map((currentTrxDetail) {
@@ -124,7 +236,8 @@ Widget transaction(
                                     ),
                                     Expanded(
                                       child: AppTextButton(
-                                        onPressed: ()=> onTerapisClicked(currentTrxDetail.rowId),
+                                        onPressed: () => onTerapisClicked(
+                                            currentTrxDetail.rowId),
                                         borderColor: AppColor.grey300,
                                         foregroundColor: AppColor.blackColor,
                                         child: Row(
@@ -132,7 +245,8 @@ Widget transaction(
                                               MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
-                                              currentTrxDetail.employeeName1 ?? "Terapis",
+                                              currentTrxDetail.employeeName1 ??
+                                                  "Terapis",
                                               style:
                                                   AppTextStyle.textBodyStyle(),
                                             ),
@@ -152,16 +266,18 @@ Widget transaction(
                                         borderRadius: BorderRadius.circular(5),
                                       ),
                                       onPressed: () {
-                                        controller.deleteProductFromTrx(currentTrxDetail.rowId);
+                                        controller.deleteProductFromTrx(
+                                            currentTrxDetail.rowId);
                                       },
-                                      icon: controller.isDeletingProductFromTrx.value? 
-                                        SizedBox(
-                                          width: 18, 
-                                          height: 18,
-                                          child: CircularProgressIndicator(
-                                            color: AppColor.whiteColor,
-                                          )
-                                        ) : Icon(Icons.delete),
+                                      icon: controller
+                                              .isDeletingProductFromTrx.value
+                                          ? SizedBox(
+                                              width: 18,
+                                              height: 18,
+                                              child: CircularProgressIndicator(
+                                                color: AppColor.whiteColor,
+                                              ))
+                                          : Icon(Icons.delete),
                                     ),
                                   ],
                                 ),
@@ -218,11 +334,169 @@ Widget transaction(
                         text: "Baru",
                       ),
                       posAppButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          SmartDialog.show(builder: (_){
+                            return AppDialog(
+                              content: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                spacing: 5.h,
+                                children: [
+                                  Text("Member", style: AppTextStyle.textSubtitleStyle(),),
+                                  AppTextField(
+                                    context: context,
+                                    hintText: "Cari Member",
+                                    onChanged: (_){},
+                                    autofocus: true,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Expanded(child: AppTextButton(
+                                        foregroundColor: AppColor.blackColor,
+                                        onPressed: () {
+                                        },
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          "Ujang Bahrun",
+                                          style: AppTextStyle.textBodyStyle(),
+                                        ),
+                                        shape: BeveledRectangleBorder(
+                                          side: BorderSide(color: AppColor.grey100)
+                                        ),
+                                      )),
+                                      AppIconButton(
+                                        onPressed: (){},
+                                        shape: RoundedRectangleBorder(),
+                                        backgroundColor: AppColor.primaryColor,
+                                        icon: Icon(Icons.edit, color: AppColor.whiteColor,))
+                                    ]
+                                  ),
+                                  Row(
+                                    children: [
+                                      Expanded(child: AppTextButton(
+                                        foregroundColor: AppColor.blackColor,
+                                        onPressed: () {
+                                        },
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          "Ifah Barkoh",
+                                          style: AppTextStyle.textBodyStyle(),
+                                        ),
+                                        shape: BeveledRectangleBorder(
+                                          side: BorderSide(color: AppColor.grey100)
+                                        ),
+                                      )),
+                                      AppIconButton(
+                                        onPressed: (){},
+                                        shape: RoundedRectangleBorder(),
+                                        backgroundColor: AppColor.primaryColor,
+                                        icon: Icon(Icons.edit, color: AppColor.whiteColor,))
+                                    ]
+                                  ),
+                                  Row(
+                                    children: [
+                                      Expanded(child: AppTextButton(
+                                        foregroundColor: AppColor.blackColor,
+                                        onPressed: () {
+                                        },
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          "Mahalini",
+                                          style: AppTextStyle.textBodyStyle(),
+                                        ),
+                                        shape: BeveledRectangleBorder(
+                                          side: BorderSide(color: AppColor.grey100)
+                                        ),
+                                      )),
+                                      AppIconButton(
+                                        onPressed: (){},
+                                        shape: RoundedRectangleBorder(),
+                                        backgroundColor: AppColor.primaryColor,
+                                        icon: Icon(Icons.edit, color: AppColor.whiteColor,))
+                                    ]
+                                  ),
+                                  Row(
+                                    children: [
+                                      Expanded(child: AppTextButton(
+                                        foregroundColor: AppColor.blackColor,
+                                        onPressed: () {
+                                        },
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          "Ferdi Irawan",
+                                          style: AppTextStyle.textBodyStyle(),
+                                        ),
+                                        shape: BeveledRectangleBorder(
+                                          side: BorderSide(color: AppColor.grey100)
+                                        ),
+                                      )),
+                                      AppIconButton(
+                                        onPressed: (){},
+                                        shape: RoundedRectangleBorder(),
+                                        backgroundColor: AppColor.primaryColor,
+                                        icon: Icon(Icons.edit, color: AppColor.whiteColor,))
+                                    ]
+                                  ),
+                                  SizedBox(height: 5.h),
+                                  Text("Tambah/Edit Member", style: AppTextStyle.textSubtitleStyle(),),
+                                  AppTextField(
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                                    context: context, labelText: "Nama Customer*",),
+                                  AppTextField(
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                                    context: context, labelText: "Nomor Handphone/Telp",),
+                                  AppTextField(
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                                    context: context, labelText: "Keterangan",),
+                                  SizedBox(
+                                    width: double.maxFinite,
+                                    child: AppElevatedButton(
+                                      backgroundColor: AppColor.primaryColor,
+                                      foregroundColor: AppColor.whiteColor,
+                                      onPressed: (){}, 
+                                      text: Text("Simpan")
+                                    ),
+                                  )
+                                ],
+                              ),
+                            );
+                          });
+                        },
                         text: "Member",
                       ),
                       posAppButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          SmartDialog.show(builder: (_){
+                            return AppDialog(
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                spacing: 15.h,
+                                children: [
+                                  Text("Tamu", style: AppTextStyle.textSubtitleStyle(),),
+                                  AppTextField(
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                                    context: context, labelText: "Nama Customer*",),
+                                  AppTextField(
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                                    context: context, labelText: "Nomor Handphone/Telp",),
+                                  AppTextField(
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                                    context: context, labelText: "Keterangan",),
+                                  SizedBox(
+                                    width: double.maxFinite,
+                                    child: AppElevatedButton(
+                                      backgroundColor: AppColor.primaryColor,
+                                      foregroundColor: AppColor.whiteColor,
+                                      onPressed: (){}, 
+                                      text: Text("Simpan")
+                                    ),
+                                  )
+                                ],
+                              ),
+                            );
+                          });
+                        },
                         text: "Tamu",
                       ),
                       posAppButton(
@@ -259,12 +533,10 @@ Widget transaction(
                             AppTextButton(
                               foregroundColor: AppColor.primaryColor,
                               onPressed: () {
-                                controller.printNota().then(
-                                  (url)=>{
-                                    print(url)
-                                    // Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AppPDFViewer(pdfUrl: url)));
-                                  }
-                                );
+                                controller.printNota().then((url) => {
+                                      print(url)
+                                      // Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AppPDFViewer(pdfUrl: url)));
+                                    });
                               },
                               child: Row(
                                 spacing: 5.w,

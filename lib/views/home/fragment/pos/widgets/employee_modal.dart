@@ -29,8 +29,10 @@ class EmployeeModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(()=> Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 5.h,
       children: [
+        Text("Terapis", style: AppTextStyle.textSubtitleStyle(),),
         AppTextField(
           context: context,
           hintText: "Cari Terapis",

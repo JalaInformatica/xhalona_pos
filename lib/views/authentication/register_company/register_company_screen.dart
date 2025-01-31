@@ -5,19 +5,17 @@ import 'package:xhalona_pos/core/constant/local_storage.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/authentication.dart';
 import 'package:xhalona_pos/repositories/authentication/authentication_repository.dart';
-import 'package:xhalona_pos/services/api_service.dart';
-import 'package:xhalona_pos/views/authentication/register_main/register_main_screen.dart';
-import 'package:xhalona_pos/views/authentication/register_user/register_user_screen.dart';
+import 'package:xhalona_pos/views/authentication/login/login_screen.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/widgets/app_loading_button.dart';
 import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 
-class LoginScreen extends StatefulWidget {
+class RegisterCompanyScreen extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _LoginScreen();
+  State<StatefulWidget> createState() => _RegisterCompanyScreen();
 }
 
-class _LoginScreen extends State<LoginScreen> {
+class _RegisterCompanyScreen extends State<RegisterCompanyScreen> {
   TextEditingController userIdController = TextEditingController(text: '');
   TextEditingController storeIdController = TextEditingController(text: '');
   TextEditingController passwordController = TextEditingController(text: '');
@@ -69,41 +67,30 @@ class _LoginScreen extends State<LoginScreen> {
       backgroundColor: AppColor.whiteColor,
       body: ListView(
         children: [
-          SvgPicture.asset(
-            'assets/logo-only-pink.svg',
-            height: 280,
-            width: 280,
-            color: AppColor.primaryColor,
-          ),
+          SizedBox(height: 10.h,),
           Center(
-            child: Text(
-              "Xhalona",
-              style: AppTextStyle.textTitleStyle(),
-            ),
-          ),
-          SvgPicture.asset(
-            'assets/logo_text.svg',
-          ),
-          const SizedBox(
-            height: 30,
+            child: Text("Daftarkan Salon",
+              style: AppTextStyle.textTitleStyle()),
           ),
           Form(
             key: _formkey,
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Text("Deskripsi Salon", style: AppTextStyle.textSubtitleStyle(),),
+                  SizedBox(height: 10.h,),
                   AppTextFormField(
                     context: context,
                     textEditingController: storeIdController,
                     validator: (value) {
                       if (value == '') {
-                        return "Kode Salon harus diisi";
+                        return "Nama Salon harus diisi";
                       }
                       return null;
                     },
-                    labelText: "Kode Salon",
+                    labelText: "Nama Salon*",
                     inputAction: TextInputAction.next,
                   ),
                   const SizedBox(
@@ -118,7 +105,7 @@ class _LoginScreen extends State<LoginScreen> {
                       }
                       return null;
                     },
-                    labelText: "Nama Pengguna",
+                    labelText: "Alamat Salon",
                     inputAction: TextInputAction.next,
                   ),
                   const SizedBox(
@@ -127,7 +114,7 @@ class _LoginScreen extends State<LoginScreen> {
                   AppTextFormField(
                     context: context,
                     textEditingController: passwordController,
-                    icon: tooglePass(),
+                    // icon: tooglePass(),
                     isScurePass: isScurePass,
                     validator: (value) {
                       if (value == '') {
@@ -135,25 +122,26 @@ class _LoginScreen extends State<LoginScreen> {
                       }
                       return null;
                     },
-                    labelText: "Password",
-                    inputAction: TextInputAction.send,
-                    onFieldSubmitted: (_) {
-                      handleLogin();
-                    },
+                    labelText: "Deskripsi",
+                    inputAction: TextInputAction.next,
+                    // onFieldSubmitted: (_) {
+                    //   handleLogin();
+                    // },
                   ),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: TextButton(
-                      onPressed: () {
-                        // Navigator.pushNamed(context, '/forget-password');
-                      },
-                      child: Text(
-                        "Lupa Password",
-                        style:
-                            AppTextStyle.textBodyStyle(color: AppColor.grey500),
-                      ),
-                    ),
-                  ),
+                  // Align(
+                  //   alignment: Alignment.topRight,
+                  //   child: TextButton(
+                  //     onPressed: () {
+                  //       // Navigator.pushNamed(context, '/forget-password');
+                  //     },
+                  //     child: Text(
+                  //       "Lupa Password",
+                  //       style:
+                  //           AppTextStyle.textBodyStyle(color: AppColor.grey500),
+                  //     ),
+                  //   ),
+                  // ),
+                  SizedBox(height: 10.h,),
                   SizedBox(
                       width: double.infinity,
                       child: AppLoadingButton(
@@ -163,21 +151,21 @@ class _LoginScreen extends State<LoginScreen> {
                         foregroundColor: AppColor.whiteColor,
                         size: AppLoadingButtonSize.big,
                         text: Text(
-                          "Masuk",
+                          "Daftar",
                           style: AppTextStyle.textSubtitleStyle(),
                         ),
                       )),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Belum Punya Akun?",
+                      Text("Sudah Punya Akun?",
                           style: AppTextStyle.textBodyStyle()),
                       TextButton(
                         onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>RegisterMainScreen()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
                         },
                         child: Text(
-                          "Daftar Baru",
+                          "Masuk",
                           style: AppTextStyle.textBodyStyle(
                               fontWeight: FontWeight.bold,
                               color: AppColor.blackColor),
