@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         ResponsiveScreen.init(context, designSize: const Size(390, 844));
         return MaterialApp(
           theme: ThemeData(
-            fontFamily: 'GoogleSans',
+            fontFamily: 'GlacialIndifference',
           ),
           debugShowCheckedModeBanner: false,
           builder: FlutterSmartDialog.init(),

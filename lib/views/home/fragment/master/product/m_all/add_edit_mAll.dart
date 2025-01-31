@@ -45,49 +45,49 @@ class _AddEditMasAllState extends State<AddEditMasAll> {
     });
   }
 
-  void filterSearchResults(String query) async {
-    setState(() {
-      _isDataLoading = true;
-      _companyName = query;
-    });
+  // void filterSearchResults(String query) async {
+  //   setState(() {
+  //     _isDataLoading = true;
+  //     _companyName = query;
+  //   });
 
-    await storeProvider.getStores(companyName: _companyName, pageNo: 1);
+  //   await storeProvider.getStores(companyName: _companyName, pageNo: 1);
 
-    filteredList = storeProvider.stores;
+  //   filteredList = storeProvider.stores;
 
-    setState(() {
-      _isDataLoading = false;
-    });
-  }
+  //   setState(() {
+  //     _isDataLoading = false;
+  //   });
+  // }
 
-  Widget searchSalonWidget() {
-    return Container(
-      padding: const EdgeInsets.only(right: 10, left: 10, bottom: 5),
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(10),
-          bottomRight: Radius.circular(10),
-        ),
-        color: Color(0xffC0226D),
-      ),
-      child: TextFormField(
-        onFieldSubmitted: (value) {
-          filterSearchResults(value); // Panggil fungsi pencarian
-        },
-        decoration: InputDecoration(
-            isDense: true,
-            filled: true,
-            fillColor: Colors.white,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none,
-            ),
-            suffixIcon: const Icon(Icons.search),
-            hintText: 'Pencarian Salon'),
-      ),
-    );
-  }
+  // Widget searchSalonWidget() {
+  //   return Container(
+  //     padding: const EdgeInsets.only(right: 10, left: 10, bottom: 5),
+  //     width: double.infinity,
+  //     decoration: const BoxDecoration(
+  //       borderRadius: BorderRadius.only(
+  //         bottomLeft: Radius.circular(10),
+  //         bottomRight: Radius.circular(10),
+  //       ),
+  //       color: Color(0xffC0226D),
+  //     ),
+  //     child: TextFormField(
+  //       onFieldSubmitted: (value) {
+  //         filterSearchResults(value); // Panggil fungsi pencarian
+  //       },
+  //       decoration: InputDecoration(
+  //           isDense: true,
+  //           filled: true,
+  //           fillColor: Colors.white,
+  //           border: OutlineInputBorder(
+  //             borderRadius: BorderRadius.circular(10),
+  //             borderSide: BorderSide.none,
+  //           ),
+  //           suffixIcon: const Icon(Icons.search),
+  //           hintText: 'Pencarian Salon'),
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {

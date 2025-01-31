@@ -85,22 +85,22 @@ class _AppTableState extends State<AppTable> {
                     contentPadding: EdgeInsets.all(0),
                   )),
             ),
-            !widget.isRefreshing
-                ? AppIconButton(
-                    backgroundColor: AppColor.doneColor,
-                    foregroundColor: AppColor.whiteColor,
-                    shape: CircleBorder(),
-                    onPressed: widget.onRefresh,
-                    icon: Icon(Icons.refresh))
-                : Padding(
-                    padding: EdgeInsets.all(8),
-                    child: SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                          color: AppColor.doneColor,
-                          strokeWidth: 4,
-                        ))),
+            // !widget.isRefreshing
+            //     ? AppIconButton(
+            //         backgroundColor: AppColor.doneColor,
+            //         foregroundColor: AppColor.whiteColor,
+            //         shape: CircleBorder(),
+            //         onPressed: widget.onRefresh,
+            //         icon: Icon(Icons.refresh))
+            //     : Padding(
+            //         padding: EdgeInsets.all(8),
+            //         child: SizedBox(
+            //             width: 24,
+            //             height: 24,
+            //             child: CircularProgressIndicator(
+            //               color: AppColor.doneColor,
+            //               strokeWidth: 4,
+            //             ))),
           ],
         ),
         SizedBox(height: 5),
@@ -164,8 +164,7 @@ class _AppTableState extends State<AppTable> {
                     borderRadius: BorderRadius.circular(5)),
                 child: DropdownButton<String>(
                   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  value:
-                      "${widget.pageRow}/page", // Set the currently selected value
+                  value: "${widget.pageRow}/page",
                   onChanged: (String? newValue) {
                     widget.onChangePageRow(
                         int.parse((newValue ?? "10/page").split("/")[0]));
@@ -240,7 +239,7 @@ class AppTableCell extends StatelessWidget {
     required this.value,
     this.imageUrl,
     this.width = 100,
-    this.height = 56,
+    this.height = 40,
     this.isEdit = false,
     this.isDelete = false,
     this.isPaket = false,
@@ -296,11 +295,9 @@ class AppTableCell extends StatelessWidget {
               },
             )
           else
-            Center(
-              child: Text(
-                value,
-                style: TextStyle(fontSize: 14, color: Colors.black),
-              ),
+            Text(
+              value,
+              style: AppTextStyle.textBodyStyle(),
             ),
           if (isEdit || isDelete || isPaket || isBahan || isVarian)
             Positioned(
@@ -384,7 +381,7 @@ class AppTableTitle extends StatelessWidget {
   final double height;
 
   AppTableTitle(
-      {Key? key, required this.value, this.width = 100, this.height = 56})
+      {Key? key, required this.value, this.width = 100, this.height = 35})
       : super(key: key);
 
   AppTableTitle copyWithWidth(double newWidth) {
