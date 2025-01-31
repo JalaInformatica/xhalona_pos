@@ -49,43 +49,33 @@ class HomeScreen extends StatelessWidget {
   Widget menuComponent(String menuName) {
     menuName = menuName.toLowerCase();
     String iconPath = "assets/images/menu/";
-    late Color iconColor;
+    Color iconColor = menuName != controller.selectedMenuName.value
+        ? AppColor.grey500
+        : AppColor.primaryColor;
     switch (menuName) {
       case "pos":
-        iconPath += "cashier.png";
-        iconColor = menuName != controller.selectedMenuName.value
-            ? Colors.green.shade100
-            : AppColor.whiteColor;
+        iconPath += "cashier_machine_cash_register_pos_icon_225108.png";
         break;
       case "dashboard":
-        iconPath += "report_data.png";
-        iconColor = menuName != controller.selectedMenuName.value
-            ? Colors.blue.shade100
-            : AppColor.whiteColor;
+        iconPath += "view_dashboard_outline_icon_139087.png";
         break;
       case "transaksi":
-        iconPath += "shopping_bag.png";
-        iconColor = menuName != controller.selectedMenuName.value
-            ? Colors.orange.shade100
-            : AppColor.whiteColor;
+        iconPath += "bag_buy_cart_market_shop_shopping_tote_icon_123191.png";
         break;
       case "finance":
-        iconPath += "coin_dollar.png";
-        iconColor = menuName != controller.selectedMenuName.value
-            ? Colors.orange.shade100
-            : AppColor.whiteColor;
+        iconPath +=
+            "business_cash_coin_dollar_finance_money_payment_icon_123244.png";
         break;
       case "master":
-        iconPath += "documentation.png";
-        iconColor = menuName != controller.selectedMenuName.value
-            ? Colors.blueGrey.shade100
-            : AppColor.whiteColor;
+        iconPath += "product_information_management_icon_149893.png";
         break;
       case "laporan":
-        iconPath += "task_document.png";
-        iconColor = menuName != controller.selectedMenuName.value
-            ? Colors.blue.shade100
-            : AppColor.whiteColor;
+        iconPath +=
+            "report_document_finance_business_analysis_analytics_chart_icon_188615.png";
+        break;
+      case "profil":
+        iconPath += 
+          "avatar_male_man_people_person_profile_user_icon_123199.png";
         break;
     }
     return Obx(() => GestureDetector(
@@ -99,25 +89,23 @@ class HomeScreen extends StatelessWidget {
             ),
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               Container(
-                padding: EdgeInsets.only(top: 5, left: 5),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
+                  padding: EdgeInsets.all(3.w),
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColor.whiteColor,
+                      border: menuName != controller.selectedMenuName.value
+                          ? null
+                          : Border.all(color: AppColor.primaryColor)),
+                  child: Image.asset(
+                    iconPath,
+                    width: 24,
+                    height: 24,
                     color: iconColor,
-                    border: menuName == controller.selectedMenuName.value
-                        ? Border(
-                            top: BorderSide(
-                                width: 2, color: AppColor.secondaryColor),
-                            left: BorderSide(
-                                width: 2, color: AppColor.secondaryColor))
-                        : null),
-                child: Image.asset(
-                  iconPath,
-                  width: 28,
-                  height: 28,
-                ),
-              ),
+                  )),
               Text(
-                menuName[0].toUpperCase() + menuName.substring(1),
+                menuName != "pos"
+                    ? menuName[0].toUpperCase() + menuName.substring(1)
+                    : menuName.toUpperCase(),
                 style: AppTextStyle.textCaptionStyle(
                     color: menuName != controller.selectedMenuName.value
                         ? AppColor.blackColor
@@ -470,6 +458,7 @@ class HomeScreen extends StatelessWidget {
                                 }
                                 return menuComponent(menuItem.menuDesc);
                               }),
+                              menuComponent("profil")
                             ],
                           ),
                         ],

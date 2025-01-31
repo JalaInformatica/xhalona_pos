@@ -8,6 +8,7 @@ class AppColor {
   static const Color starColor = Color.fromARGB(255, 244, 203, 4);
   static const Color dividerColor = Color(0xFFBDBDBD);
   static const Color grey500 = Colors.grey;
+  static const Color grey400 = Color.fromARGB(255, 185, 185, 185);
   static const Color grey200 = Color.fromRGBO(238, 238, 238, 1);
   static const Color grey300 = Color.fromRGBO(224, 224, 224, 1);
   static const Color grey100 = Color.fromRGBO(245, 245, 245, 1);
