@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/models/dao/paket.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/repositories/paket_repository.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
@@ -116,95 +117,54 @@ class MasterPaketScreen extends StatelessWidget {
                     data: List.generate(controller.paketHeader.length, (int i) {
                       var paket = controller.paketHeader[i];
                       return [
-                        AppTableCell(value: paket.cpartName ?? '', index: i),
                         AppTableCell(
-                            value: paket.comValue.toString() ?? '', index: i),
+                            value: paket.cpartName ?? '',
+                            index: i,
+                            onEdit: () {
+                              goTo(context, paket,
+                                  controller.filterPartId.value);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  paket.rowId.toString(), paket.cpartName!);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: paket.comValue.toString() ?? '',
+                            index: i,
+                            onEdit: () {
+                              goTo(context, paket,
+                                  controller.filterPartId.value);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  paket.rowId.toString(), paket.cpartName!);
+                            },
+                            showOptionsOnTap: true),
                         AppTableCell(
                             value: paket.comUnitPrice.toString() ?? '',
-                            index: i),
+                            index: i,
+                            onEdit: () {
+                              goTo(context, paket,
+                                  controller.filterPartId.value);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  paket.rowId.toString(), paket.cpartName!);
+                            },
+                            showOptionsOnTap: true),
                         AppTableCell(
                           index: i,
+                          onEdit: () {
+                            goTo(context, paket, controller.filterPartId.value);
+                          },
+                          onDelete: () async {
+                            await messageHapus(
+                                paket.rowId.toString(), paket.cpartName!);
+                          },
                           value: "", // Ganti dengan URL gambar jika ada
                           isEdit: true,
                           isDelete: true,
-                          onEdit: () {
-                            Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(
-                                    builder: (context) => AddEditPaket(
-                                          paket: paket,
-                                          partId: controller.filterPartId.value,
-                                        )),
-                                (route) => false);
-                          },
-                          onDelete: () async {
-                            await SmartDialog.show(builder: (context) {
-                              return AlertDialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  icon: const Icon(
-                                    Icons.info_outlined,
-                                    color: AppColor.primaryColor,
-                                  ),
-                                  backgroundColor: Colors.white,
-                                  title: Text(
-                                    "Konfirmasi",
-                                    style: AppTextStyle.textTitleStyle(
-                                        color: AppColor.primaryColor),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  content: Text(
-                                    "Apakah Anda yakin ingin menghapus data '${paket.cpartName}'?",
-                                    maxLines: 2,
-                                    style: AppTextStyle.textSubtitleStyle(),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        SmartDialog.dismiss(result: false);
-                                      },
-                                      child: Text(
-                                        "Tidak",
-                                        style: AppTextStyle.textBodyStyle(
-                                            color: AppColor.grey500),
-                                      ),
-                                    ),
-                                    TextButton(
-                                      onPressed: () async {
-                                        String result =
-                                            await _paketRepository.deletePaket(
-                                                rowId: paket.rowId.toString());
-
-                                        bool isSuccess = result == "1";
-                                        if (isSuccess) {
-                                          SmartDialog.dismiss(result: false);
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                                content: Text(
-                                                    'Data gagal dihapus!')),
-                                          );
-                                        } else {
-                                          SmartDialog.dismiss(result: false);
-                                          controller.fetchProducts();
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                                content: Text(
-                                                    'Data berhasil dihapus!')),
-                                          );
-                                        }
-                                      },
-                                      child: Text(
-                                        "Iya",
-                                        style: AppTextStyle.textBodyStyle(
-                                            color: AppColor.primaryColor),
-                                      ),
-                                    )
-                                  ]);
-                            });
-                          },
                         ),
                       ];
                     }),
@@ -216,5 +176,75 @@ class MasterPaketScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<dynamic> messageHapus(String rowId, String cpartName) {
+    return SmartDialog.show(builder: (context) {
+      return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          icon: const Icon(
+            Icons.info_outlined,
+            color: AppColor.primaryColor,
+          ),
+          backgroundColor: Colors.white,
+          title: Text(
+            "Konfirmasi",
+            style: AppTextStyle.textTitleStyle(color: AppColor.primaryColor),
+            textAlign: TextAlign.center,
+          ),
+          content: Text(
+            "Apakah Anda yakin ingin menghapus data '$cpartName!'?",
+            maxLines: 2,
+            style: AppTextStyle.textSubtitleStyle(),
+            textAlign: TextAlign.center,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                SmartDialog.dismiss(result: false);
+              },
+              child: Text(
+                "Tidak",
+                style: AppTextStyle.textBodyStyle(color: AppColor.grey500),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                String result =
+                    await _paketRepository.deletePaket(rowId: rowId);
+
+                bool isSuccess = result == "1";
+                if (isSuccess) {
+                  SmartDialog.dismiss(result: false);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Data gagal dihapus!')),
+                  );
+                } else {
+                  SmartDialog.dismiss(result: false);
+                  controller.fetchProducts();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Data berhasil dihapus!')),
+                  );
+                }
+              },
+              child: Text(
+                "Iya",
+                style: AppTextStyle.textBodyStyle(color: AppColor.primaryColor),
+              ),
+            )
+          ]);
+    });
+  }
+
+  Future<dynamic> goTo(BuildContext context, PaketDAO paket, String partId) {
+    return Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+            builder: (context) => AddEditPaket(
+                  paket: paket,
+                  partId: partId,
+                )),
+        (route) => false);
   }
 }

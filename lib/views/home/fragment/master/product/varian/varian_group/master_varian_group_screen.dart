@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/models/dao/varian.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/repositories/varian/varianGroup_repository.dart';
@@ -115,84 +116,29 @@ class MasterVarianGroupScreen extends StatelessWidget {
                         (int i) {
                       var kategori = controller.kategoriHeader[i];
                       return [
-                        AppTableCell(value: kategori.varGroupName, index: i),
+                        AppTableCell(
+                            value: kategori.varGroupName,
+                            index: i,
+                            onEdit: () {
+                              goTo(context, kategori);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  kategori.varGroupId, kategori.varGroupName);
+                            },
+                            showOptionsOnTap: true),
                         AppTableCell(
                           index: i,
+                          onEdit: () {
+                            goTo(context, kategori);
+                          },
+                          onDelete: () async {
+                            await messageHapus(
+                                kategori.varGroupId, kategori.varGroupName);
+                          },
                           value: "",
                           isDelete: true,
                           isVarian: true,
-                          onDelete: () async {
-                            await SmartDialog.show(builder: (context) {
-                              return AlertDialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  icon: const Icon(
-                                    Icons.info_outlined,
-                                    color: AppColor.primaryColor,
-                                  ),
-                                  backgroundColor: Colors.white,
-                                  title: Text(
-                                    "Konfirmasi",
-                                    style: AppTextStyle.textTitleStyle(
-                                        color: AppColor.primaryColor),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  content: Text(
-                                    "Apakah Anda yakin ingin menghapus data '${kategori.varGroupName}'?",
-                                    maxLines: 2,
-                                    style: AppTextStyle.textSubtitleStyle(),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        SmartDialog.dismiss(result: false);
-                                      },
-                                      child: Text(
-                                        "Tidak",
-                                        style: AppTextStyle.textBodyStyle(
-                                            color: AppColor.grey500),
-                                      ),
-                                    ),
-                                    TextButton(
-                                      onPressed: () async {
-                                        String result =
-                                            await _kategoriRepository
-                                                .deleteVarianGroup(
-                                                    varGroupId: kategori
-                                                        .varGroupId
-                                                        .toString());
-
-                                        bool isSuccess = result == "1";
-                                        if (isSuccess) {
-                                          SmartDialog.dismiss(result: false);
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                                content: Text(
-                                                    'Data gagal dihapus!')),
-                                          );
-                                        } else {
-                                          SmartDialog.dismiss(result: false);
-                                          controller.fetchProducts();
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                                content: Text(
-                                                    'Data berhasil dihapus!')),
-                                          );
-                                        }
-                                      },
-                                      child: Text(
-                                        "Iya",
-                                        style: AppTextStyle.textBodyStyle(
-                                            color: AppColor.primaryColor),
-                                      ),
-                                    )
-                                  ]);
-                            });
-                          },
                           onVarian: () {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
@@ -215,5 +161,72 @@ class MasterVarianGroupScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<dynamic> messageHapus(String varGroupId, String namaRekening) {
+    return SmartDialog.show(builder: (context) {
+      return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          icon: const Icon(
+            Icons.info_outlined,
+            color: AppColor.primaryColor,
+          ),
+          backgroundColor: Colors.white,
+          title: Text(
+            "Konfirmasi",
+            style: AppTextStyle.textTitleStyle(color: AppColor.primaryColor),
+            textAlign: TextAlign.center,
+          ),
+          content: Text(
+            "Apakah Anda yakin ingin menghapus data '$namaRekening'?",
+            maxLines: 2,
+            style: AppTextStyle.textSubtitleStyle(),
+            textAlign: TextAlign.center,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                SmartDialog.dismiss(result: false);
+              },
+              child: Text(
+                "Tidak",
+                style: AppTextStyle.textBodyStyle(color: AppColor.grey500),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                String result = await await _kategoriRepository
+                    .deleteVarianGroup(varGroupId: varGroupId);
+
+                bool isSuccess = result == "1";
+                if (isSuccess) {
+                  SmartDialog.dismiss(result: false);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Data gagal dihapus!')),
+                  );
+                } else {
+                  SmartDialog.dismiss(result: false);
+                  controller.fetchProducts();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Data berhasil dihapus!')),
+                  );
+                }
+              },
+              child: Text(
+                "Iya",
+                style: AppTextStyle.textBodyStyle(color: AppColor.primaryColor),
+              ),
+            )
+          ]);
+    });
+  }
+
+  Future<dynamic> goTo(BuildContext context, VarianDAO kategori) {
+    return Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+            builder: (context) => AddEditVarianGroup(kategori: kategori)),
+        (route) => false);
   }
 }

@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/models/dao/bahan.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/repositories/bahan/bahan_repository.dart';
@@ -15,7 +16,7 @@ class MasterBahanScreen extends StatelessWidget {
 
   final BahanController controller = Get.put(BahanController());
   final ProductController controllerPro = Get.put(ProductController());
-  BahanRepository _kategoriRepository = BahanRepository();
+  BahanRepository _bahanRepository = BahanRepository();
 
   Widget mButton(VoidCallback onTap, IconData icon, String label) {
     return GestureDetector(
@@ -112,88 +113,44 @@ class MasterBahanScreen extends StatelessWidget {
                       AppTableTitle(value: "Unit"),
                       AppTableTitle(value: "Aksi"),
                     ],
-                    data: List.generate(controller.kategoriHeader.length,
-                        (int i) {
-                      var kategori = controller.kategoriHeader[i];
+                    data: List.generate(controller.bahanHeader.length, (int i) {
+                      var bahan = controller.bahanHeader[i];
                       return [
-                        AppTableCell(value: kategori.bomPartName, index: i),
                         AppTableCell(
-                            value: kategori.unitId.toString(), index: i),
+                            value: bahan.bomPartName,
+                            index: i,
+                            onEdit: () {
+                              goTo(context, bahan,
+                                  controller.filterPartId.value);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  bahan.rowId.toString(), bahan.bomPartName);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: bahan.unitId.toString(),
+                            index: i,
+                            onEdit: () {
+                              goTo(context, bahan,
+                                  controller.filterPartId.value);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  bahan.rowId.toString(), bahan.bomPartName);
+                            },
+                            showOptionsOnTap: true),
                         AppTableCell(
                           index: i,
+                          onEdit: () {
+                            goTo(context, bahan, controller.filterPartId.value);
+                          },
+                          onDelete: () async {
+                            await messageHapus(
+                                bahan.rowId.toString(), bahan.bomPartName);
+                          },
                           value: "",
                           isDelete: true,
-                          onDelete: () async {
-                            await SmartDialog.show(builder: (context) {
-                              return AlertDialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  icon: const Icon(
-                                    Icons.info_outlined,
-                                    color: AppColor.primaryColor,
-                                  ),
-                                  backgroundColor: Colors.white,
-                                  title: Text(
-                                    "Konfirmasi",
-                                    style: AppTextStyle.textTitleStyle(
-                                        color: AppColor.primaryColor),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  content: Text(
-                                    "Apakah Anda yakin ingin menghapus data '${kategori.bomPartName}'?",
-                                    maxLines: 2,
-                                    style: AppTextStyle.textSubtitleStyle(),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        SmartDialog.dismiss(result: false);
-                                      },
-                                      child: Text(
-                                        "Tidak",
-                                        style: AppTextStyle.textBodyStyle(
-                                            color: AppColor.grey500),
-                                      ),
-                                    ),
-                                    TextButton(
-                                      onPressed: () async {
-                                        String result =
-                                            await _kategoriRepository
-                                                .deleteBahan(
-                                                    rowId: kategori.rowId
-                                                        .toString());
-
-                                        bool isSuccess = result == "1";
-                                        if (isSuccess) {
-                                          SmartDialog.dismiss(result: false);
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                                content: Text(
-                                                    'Data gagal dihapus!')),
-                                          );
-                                        } else {
-                                          SmartDialog.dismiss(result: false);
-                                          controller.fetchProducts();
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                                content: Text(
-                                                    'Data berhasil dihapus!')),
-                                          );
-                                        }
-                                      },
-                                      child: Text(
-                                        "Iya",
-                                        style: AppTextStyle.textBodyStyle(
-                                            color: AppColor.primaryColor),
-                                      ),
-                                    )
-                                  ]);
-                            });
-                          },
                         ),
                       ];
                     }),
@@ -205,5 +162,75 @@ class MasterBahanScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<dynamic> messageHapus(String rowId, String cpartName) {
+    return SmartDialog.show(builder: (context) {
+      return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          icon: const Icon(
+            Icons.info_outlined,
+            color: AppColor.primaryColor,
+          ),
+          backgroundColor: Colors.white,
+          title: Text(
+            "Konfirmasi",
+            style: AppTextStyle.textTitleStyle(color: AppColor.primaryColor),
+            textAlign: TextAlign.center,
+          ),
+          content: Text(
+            "Apakah Anda yakin ingin menghapus data '$cpartName'?",
+            maxLines: 2,
+            style: AppTextStyle.textSubtitleStyle(),
+            textAlign: TextAlign.center,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                SmartDialog.dismiss(result: false);
+              },
+              child: Text(
+                "Tidak",
+                style: AppTextStyle.textBodyStyle(color: AppColor.grey500),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                String result =
+                    await _bahanRepository.deleteBahan(rowId: rowId);
+
+                bool isSuccess = result == "1";
+                if (isSuccess) {
+                  SmartDialog.dismiss(result: false);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Data gagal dihapus!')),
+                  );
+                } else {
+                  SmartDialog.dismiss(result: false);
+                  controller.fetchProducts();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Data berhasil dihapus!')),
+                  );
+                }
+              },
+              child: Text(
+                "Iya",
+                style: AppTextStyle.textBodyStyle(color: AppColor.primaryColor),
+              ),
+            )
+          ]);
+    });
+  }
+
+  Future<dynamic> goTo(BuildContext context, BahanDAO bahan, String partId) {
+    return Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+            builder: (context) => AddEditBahan(
+                  kategori: bahan,
+                  partId: partId,
+                )),
+        (route) => false);
   }
 }

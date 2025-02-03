@@ -115,13 +115,92 @@ class MasterKustomerScreen extends StatelessWidget {
                         (int i) {
                       var kustomer = controller.kustomerHeader[i];
                       return [
-                        AppTableCell(value: kustomer.suplierId, index: i),
-                        AppTableCell(value: kustomer.suplierName, index: i),
-                        AppTableCell(value: kustomer.telp, index: i),
-                        AppTableCell(value: kustomer.address1, index: i),
-                        AppTableCell(value: kustomer.emailAdress, index: i),
+                        AppTableCell(
+                            value: kustomer.suplierId,
+                            index: i,
+                            onEdit: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => AddEditKustomer(
+                                            kustomer: kustomer,
+                                          )),
+                                  (route) => false);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  kustomer.suplierId, kustomer.suplierName);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: kustomer.suplierName,
+                            index: i,
+                            onEdit: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => AddEditKustomer(
+                                            kustomer: kustomer,
+                                          )),
+                                  (route) => false);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  kustomer.suplierId, kustomer.suplierName);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: kustomer.telp,
+                            index: i,
+                            onEdit: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => AddEditKustomer(
+                                            kustomer: kustomer,
+                                          )),
+                                  (route) => false);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  kustomer.suplierId, kustomer.suplierName);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: kustomer.address1,
+                            index: i,
+                            onEdit: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => AddEditKustomer(
+                                            kustomer: kustomer,
+                                          )),
+                                  (route) => false);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  kustomer.suplierId, kustomer.suplierName);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: kustomer.emailAdress,
+                            index: i,
+                            onEdit: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => AddEditKustomer(
+                                            kustomer: kustomer,
+                                          )),
+                                  (route) => false);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  kustomer.suplierId, kustomer.suplierName);
+                            },
+                            showOptionsOnTap: true),
                         AppTableCell(
                           index: i,
+                          onDelete: () async {
+                            await messageHapus(
+                                kustomer.suplierId, kustomer.suplierName);
+                          },
                           value: "", // Ganti dengan URL gambar jika ada
                           isEdit: true,
                           isDelete: true,
@@ -135,77 +214,6 @@ class MasterKustomerScreen extends StatelessWidget {
                                         )),
                                 (route) => false);
                           },
-                          onDelete: () async {
-                            await SmartDialog.show(builder: (context) {
-                              return AlertDialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  icon: const Icon(
-                                    Icons.info_outlined,
-                                    color: AppColor.primaryColor,
-                                  ),
-                                  backgroundColor: Colors.white,
-                                  title: Text(
-                                    "Konfirmasi",
-                                    style: AppTextStyle.textTitleStyle(
-                                        color: AppColor.primaryColor),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  content: Text(
-                                    "Apakah Anda yakin ingin menghapus data '${kustomer.suplierName}'?",
-                                    maxLines: 2,
-                                    style: AppTextStyle.textSubtitleStyle(),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        SmartDialog.dismiss(result: false);
-                                      },
-                                      child: Text(
-                                        "Tidak",
-                                        style: AppTextStyle.textBodyStyle(
-                                            color: AppColor.grey500),
-                                      ),
-                                    ),
-                                    TextButton(
-                                      onPressed: () async {
-                                        String result =
-                                            await _kustomerRepository
-                                                .deleteKustomer(
-                                                    suplierId:
-                                                        kustomer.suplierId);
-
-                                        bool isSuccess = result == "1";
-                                        if (isSuccess) {
-                                          SmartDialog.dismiss(result: false);
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                                content: Text(
-                                                    'Data gagal dihapus!')),
-                                          );
-                                        } else {
-                                          SmartDialog.dismiss(result: false);
-                                          controller.fetchProducts();
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                                content: Text(
-                                                    'Data berhasil dihapus!')),
-                                          );
-                                        }
-                                      },
-                                      child: Text(
-                                        "Iya",
-                                        style: AppTextStyle.textBodyStyle(
-                                            color: AppColor.primaryColor),
-                                      ),
-                                    )
-                                  ]);
-                            });
-                          },
                         ),
                       ];
                     }),
@@ -217,5 +225,65 @@ class MasterKustomerScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<dynamic> messageHapus(String suplierId, String suplierName) {
+    return SmartDialog.show(builder: (context) {
+      return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          icon: const Icon(
+            Icons.info_outlined,
+            color: AppColor.primaryColor,
+          ),
+          backgroundColor: Colors.white,
+          title: Text(
+            "Konfirmasi",
+            style: AppTextStyle.textTitleStyle(color: AppColor.primaryColor),
+            textAlign: TextAlign.center,
+          ),
+          content: Text(
+            "Apakah Anda yakin ingin menghapus data '$suplierName'?",
+            maxLines: 2,
+            style: AppTextStyle.textSubtitleStyle(),
+            textAlign: TextAlign.center,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                SmartDialog.dismiss(result: false);
+              },
+              child: Text(
+                "Tidak",
+                style: AppTextStyle.textBodyStyle(color: AppColor.grey500),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                String result = await _kustomerRepository.deleteKustomer(
+                    suplierId: suplierId);
+
+                bool isSuccess = result == "1";
+                if (isSuccess) {
+                  SmartDialog.dismiss(result: false);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Data gagal dihapus!')),
+                  );
+                } else {
+                  SmartDialog.dismiss(result: false);
+                  controller.fetchProducts();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Data berhasil dihapus!')),
+                  );
+                }
+              },
+              child: Text(
+                "Iya",
+                style: AppTextStyle.textBodyStyle(color: AppColor.primaryColor),
+              ),
+            )
+          ]);
+    });
   }
 }

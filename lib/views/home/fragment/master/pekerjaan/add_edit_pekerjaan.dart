@@ -95,7 +95,7 @@ class _AddEditPekerjaanState extends State<AddEditPekerjaan> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Field NIK
-                      buildTextField("Kode Pekerjaant",
+                      buildTextField("Kode Pekerjaan",
                           "Masukkan nama Pekerjaan", _kdPekerjaanController),
                       SizedBox(height: 16),
 
