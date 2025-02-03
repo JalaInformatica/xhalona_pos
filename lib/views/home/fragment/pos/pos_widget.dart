@@ -506,14 +506,39 @@ Widget transaction(
                       posAppButton(text: "Batal", onPressed: () {})
                     ],
                   ),
+                  SizedBox(height: 3.h,),
                   IntrinsicHeight(
                       child: Row(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     mainAxisAlignment: MainAxisAlignment.start,
                     spacing: 5.w,
                     children: [
-                      // Wrap the Column with IntrinsicWidth for uniform width
                       IntrinsicWidth(
+                        child: Column(
+                          spacing: 5.h,
+                          children: [
+                      
+                      Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                            Text("Total: ", style: AppTextStyle.textBodyStyle(color: AppColor.grey500),),
+                            Text("Rp. 100.000", style: AppTextStyle.textBodyStyle(),),
+                          ],),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                            Text("Diskon: ", style: AppTextStyle.textBodyStyle(color: AppColor.grey500),),
+                            Text("Rp. 10.000", style: AppTextStyle.textBodyStyle(),),
+                          ],),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                            Text("Tagihan: ", style: AppTextStyle.textBodyStyle(color: AppColor.grey500),),
+                            Text("Rp. 90.000", style: AppTextStyle.textBodyStyle(),),
+                          ],),
+                          ])),
+                          Spacer(),
+                          IntrinsicWidth(
                         child: Column(
                           spacing: 5.h,
                           children: [
@@ -552,15 +577,14 @@ Widget transaction(
                         ),
                       ),
                       AppElevatedButton(
-                        size: AppElevatedButtonSize.big,
                         backgroundColor: AppColor.primaryColor,
                         foregroundColor: AppColor.whiteColor,
                         onPressed: onCheckoutClicked,
                         text: Row(
                           spacing: 5.w,
                           children: [
-                            Icon(Icons.payment_outlined,
-                                color: AppColor.whiteColor),
+                            // Icon(Icons.payment_outlined,
+                            //     color: AppColor.whiteColor),
                             Text("Checkout",
                                 style: AppTextStyle.textSubtitleStyle())
                           ],

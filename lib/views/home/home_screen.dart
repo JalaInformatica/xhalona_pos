@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/views/authentication/login/login_screen.dart';
+import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'fragment/laporan/monitor/monitor_screen.dart';
 import 'package:xhalona_pos/views/home/home_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
@@ -128,33 +129,47 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget profileInfo() {
-    return Obx(() => GestureDetector(
-        onTap: () {},
-        child: Container(
-            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-            decoration: BoxDecoration(
-              color: AppColor.whiteColor,
-            ),
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  color: AppColor.whiteColor,
-                ),
-                child: Icon(
-                  Icons.person,
-                  size: 28,
-                ),
-              ),
-              Text(
-                controller.profileData.value.userName,
-                style: AppTextStyle.textCaptionStyle(
-                  color: AppColor.blackColor,
-                  fontWeight: FontWeight.normal,
-                ),
-              )
-            ]))));
+    return Obx(() => Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10.w),
+      decoration: BoxDecoration(
+        color: AppColor.primaryColor,
+      ),
+      child: Row(children: [
+        AppIconButton(
+          onPressed: (){},
+          icon: Icon(Icons.menu),
+          foregroundColor: AppColor.whiteColor,
+        ),
+        Spacer(),
+        AppIconButton(
+          foregroundColor: AppColor.whiteColor,
+          onPressed: (){},
+          icon: Icon(Icons.shopping_bag),
+        ),
+        AppIconButton(
+          foregroundColor: AppColor.whiteColor,
+          onPressed: (){},
+          icon: Icon(Icons.notifications),
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min, children: [
+        Text(
+          "AMIRA",
+          style: AppTextStyle.textBodyStyle(
+            color: AppColor.whiteColor,
+          ),
+        ),
+        Text(
+          controller.profileData.value.userName,
+          style: AppTextStyle.textCaptionStyle(
+            color: AppColor.whiteColor,
+          ),
+        ),
+
+      ])
+      ],) ));
   }
 
   Widget masterButton(VoidCallback onPressed, String label, IconData icon) {
@@ -203,7 +218,7 @@ class HomeScreen extends StatelessWidget {
             backgroundColor: AppColor.whiteColor,
             body: Column(
               children: [
-                // profileInfo(),
+                profileInfo(),
                 Expanded(child: menuScreen(controller.selectedMenuName.value)),
               ],
             ),

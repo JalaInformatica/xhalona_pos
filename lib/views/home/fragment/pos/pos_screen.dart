@@ -29,57 +29,67 @@ class PosScreen extends StatelessWidget {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    // color: AppColor.tertiaryColor
+                    color: AppColor.whiteColor,
+                    boxShadow: [
+                      BoxShadow(
+                        spreadRadius:0,
+                        blurRadius: 0.5,
+                        color: AppColor.grey500,
+                        offset: Offset(0, 1)
+                      )
+                    ]
                   ),
-                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
-                  child: Row(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.h),
+                  child: 
+                  Column(
+                    spacing: 5.h,
+                    children: [
+                                        Row(
                     spacing: 5.w,
                     children: [
                     Expanded(child: AppTextField(
                       fillColor: AppColor.whiteColor,
                       context: context,
+                      contentPadding: EdgeInsets.all(5),
                       hintText: "Cari Produk",
                       onChanged: controller.updateProductFilterValue,
                     )),
                     AppIconButton(
                       padding: EdgeInsets.all(5),
-                      shape: RoundedRectangleBorder(side: BorderSide(color: AppColor.grey500),borderRadius: BorderRadius.circular(5) ),
+                      shape: RoundedRectangleBorder(side: BorderSide(color: AppColor.grey300),borderRadius: BorderRadius.circular(5) ),
                       onPressed: (){}, 
                       foregroundColor: AppColor.secondaryColor,
                       icon: Icon(Icons.category_outlined))
-                  ],) 
-                ),
-                Padding(padding: EdgeInsets.symmetric(
-                  horizontal: 20.w,
-                  vertical: 10.h
-                ),
-                child: Row(
+                  ],) ,
+Row(
                   spacing: 10.w,
                   children: [
                     Row(
                     spacing: 5.w,
                       children: [
                         Icon(Icons.face_retouching_natural, size: 15, color: AppColor.secondaryColor,),
-                        Text("Jasa", style: AppTextStyle.textCaptionStyle(),),
+                        Text("Jasa", style: AppTextStyle.textBodyStyle(),),
                       ],
                     ),
                     Row(
                     spacing: 5.w,
                       children: [
                         Icon(Icons.all_inbox, size: 15, color: AppColor.dangerColor,),
-                        Text("Paket", style: AppTextStyle.textCaptionStyle(),),
+                        Text("Paket", style: AppTextStyle.textBodyStyle(),),
                       ],
                     ),
                     Row(
                     spacing: 5.w,
                       children: [
                         Icon(Icons.shopping_bag, size: 15, color: AppColor.blackColor,),
-                        Text("Barang", style: AppTextStyle.textCaptionStyle(),),
+                        Text("Barang", style: AppTextStyle.textBodyStyle(),),
                       ],
                     ),
                   ],
                 ),
+                    ],),
                 ),
+                SizedBox(height: 5.h,),
                 Obx(() {
                   if (controller.isLoading.value) {
                     return Center(child: CircularProgressIndicator());
@@ -147,7 +157,7 @@ class PosScreen extends StatelessWidget {
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.max,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Text("Checkout", style: AppTextStyle.textTitleStyle(color: AppColor.primaryColor),),
                           SizedBox(height: 5.h,),
@@ -368,6 +378,14 @@ class PosScreen extends StatelessWidget {
                       style: AppTextStyle.textSubtitleStyle(
                           color: AppColor.whiteColor),
                     ),
+                    Container(
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: AppColor.backgroundColor,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(controller.currentTransactionDetail.length.toString(), style: AppTextStyle.textBodyStyle(fontWeight: FontWeight.bold, color: AppColor.dangerColor),),
+                    )
 
                   ],
                 ))
