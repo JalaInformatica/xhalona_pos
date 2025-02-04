@@ -107,7 +107,22 @@ class MasterKategoriScreen extends StatelessWidget {
                         (int i) {
                       var kategori = controller.kategoriHeader[i];
                       return [
-                        AppTableCell(value: kategori.ketAnalisa, index: i),
+                        AppTableCell(
+                            value: kategori.ketAnalisa,
+                            index: i,
+                            onEdit: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => AddEditKategori(
+                                            kategori: kategori,
+                                          )),
+                                  (route) => false);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  kategori.analisaId, kategori.ketAnalisa);
+                            },
+                            showOptionsOnTap: true),
                         AppTableCell(
                           index: i,
                           value: "", // Ganti dengan URL gambar jika ada
@@ -122,75 +137,8 @@ class MasterKategoriScreen extends StatelessWidget {
                                 (route) => false);
                           },
                           onDelete: () async {
-                            await SmartDialog.show(builder: (context) {
-                              return AlertDialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  icon: const Icon(
-                                    Icons.info_outlined,
-                                    color: AppColor.primaryColor,
-                                  ),
-                                  backgroundColor: Colors.white,
-                                  title: Text(
-                                    "Konfirmasi",
-                                    style: AppTextStyle.textTitleStyle(
-                                        color: AppColor.primaryColor),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  content: Text(
-                                    "Apakah Anda yakin ingin menghapus data '${kategori.ketAnalisa}'?",
-                                    maxLines: 2,
-                                    style: AppTextStyle.textSubtitleStyle(),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        SmartDialog.dismiss(result: false);
-                                      },
-                                      child: Text(
-                                        "Tidak",
-                                        style: AppTextStyle.textBodyStyle(
-                                            color: AppColor.grey500),
-                                      ),
-                                    ),
-                                    TextButton(
-                                      onPressed: () async {
-                                        String result =
-                                            await _kategoriRepository
-                                                .deleteKategori(
-                                                    analisaId:
-                                                        kategori.analisaId);
-
-                                        bool isSuccess = result == "1";
-                                        if (isSuccess) {
-                                          SmartDialog.dismiss(result: false);
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                                content: Text(
-                                                    'Data gagal dihapus!')),
-                                          );
-                                        } else {
-                                          SmartDialog.dismiss(result: false);
-                                          controller.fetchProducts();
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                                content: Text(
-                                                    'Data berhasil dihapus!')),
-                                          );
-                                        }
-                                      },
-                                      child: Text(
-                                        "Iya",
-                                        style: AppTextStyle.textBodyStyle(
-                                            color: AppColor.primaryColor),
-                                      ),
-                                    )
-                                  ]);
-                            });
+                            await messageHapus(
+                                kategori.analisaId, kategori.ketAnalisa);
                           },
                         ),
                       ];
@@ -203,5 +151,65 @@ class MasterKategoriScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<dynamic> messageHapus(String acId, String namaRekening) {
+    return SmartDialog.show(builder: (context) {
+      return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          icon: const Icon(
+            Icons.info_outlined,
+            color: AppColor.primaryColor,
+          ),
+          backgroundColor: Colors.white,
+          title: Text(
+            "Konfirmasi",
+            style: AppTextStyle.textTitleStyle(color: AppColor.primaryColor),
+            textAlign: TextAlign.center,
+          ),
+          content: Text(
+            "Apakah Anda yakin ingin menghapus data '$namaRekening'?",
+            maxLines: 2,
+            style: AppTextStyle.textSubtitleStyle(),
+            textAlign: TextAlign.center,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                SmartDialog.dismiss(result: false);
+              },
+              child: Text(
+                "Tidak",
+                style: AppTextStyle.textBodyStyle(color: AppColor.grey500),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                String result =
+                    await _kategoriRepository.deleteKategori(analisaId: acId);
+
+                bool isSuccess = result == "1";
+                if (isSuccess) {
+                  SmartDialog.dismiss(result: false);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Data gagal dihapus!')),
+                  );
+                } else {
+                  SmartDialog.dismiss(result: false);
+                  controller.fetchProducts();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Data berhasil dihapus!')),
+                  );
+                }
+              },
+              child: Text(
+                "Iya",
+                style: AppTextStyle.textBodyStyle(color: AppColor.primaryColor),
+              ),
+            )
+          ]);
+    });
   }
 }

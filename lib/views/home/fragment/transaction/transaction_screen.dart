@@ -174,30 +174,52 @@ class TransactionScreen extends StatelessWidget {
                           AppTableCell(
                               value: transaction.salesId
                                   .substring(transaction.salesId.length - 4),
-                              index: i),
+                              index: i,
+                              showOptionsOnTap: true),
                           AppTableCell(
                               value: transaction.salesDate.split("T")[0],
-                              index: i),
-                          AppTableCell(value: transaction.cashierBy, index: i),
+                              index: i,
+                              showOptionsOnTap: true),
                           AppTableCell(
-                              value: transaction.supplierName, index: i),
+                              value: transaction.cashierBy,
+                              index: i,
+                              showOptionsOnTap: true),
+                          AppTableCell(
+                              value: transaction.supplierName,
+                              index: i,
+                              showOptionsOnTap: true),
                           AppTableCell(
                               value: transaction.queueNumber.toString(),
-                              index: i),
-                          AppTableCell(value: transaction.sourceId, index: i),
-                          AppTableCell(value: transaction.statusDesc, index: i),
+                              index: i,
+                              showOptionsOnTap: true),
                           AppTableCell(
-                              value: transaction.bookingType, index: i),
+                              value: transaction.sourceId,
+                              index: i,
+                              showOptionsOnTap: true),
                           AppTableCell(
-                              value: transaction.nettoVal.toString(), index: i),
+                              value: transaction.statusDesc,
+                              index: i,
+                              showOptionsOnTap: true),
                           AppTableCell(
-                              value: transaction.settlePaymentMethod, index: i),
+                              value: transaction.bookingType,
+                              index: i,
+                              showOptionsOnTap: true),
+                          AppTableCell(
+                              value: transaction.nettoVal.toString(),
+                              index: i,
+                              showOptionsOnTap: true),
+                          AppTableCell(
+                              value: transaction.settlePaymentMethod,
+                              index: i,
+                              showOptionsOnTap: true),
                           AppTableCell(
                               value: transaction.paymentVal.toString(),
-                              index: i),
+                              index: i,
+                              showOptionsOnTap: true),
                           AppTableCell(
                               value: transaction.totalHutang.toString(),
-                              index: i),
+                              index: i,
+                              showOptionsOnTap: true),
                         ];
                       }),
                       onRefresh: () => controller.fetchTransactions(),

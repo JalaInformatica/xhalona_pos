@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
+import 'package:xhalona_pos/models/dao/rekening.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/repositories/rekening/rekening_repository.dart';
@@ -107,96 +108,94 @@ class MasterRekeningScreen extends StatelessWidget {
                         (int i) {
                       var rekening = controller.rekeningHeader[i];
                       return [
-                        AppTableCell(value: rekening.acNoReff!, index: i),
-                        AppTableCell(value: rekening.namaAc, index: i),
-                        AppTableCell(value: rekening.bankName!, index: i),
-                        AppTableCell(value: rekening.acGL!, index: i),
-                        AppTableCell(value: rekening.bankAcName!, index: i),
-                        AppTableCell(value: rekening.jenisAc, index: i),
-                        AppTableCell(value: rekening.acGroupId!, index: i),
+                        AppTableCell(
+                            value: rekening.acNoReff!,
+                            index: i,
+                            onEdit: () {
+                              goTo(context, rekening);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  rekening.acId, rekening.namaAc);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: rekening.namaAc,
+                            index: i,
+                            onEdit: () {
+                              goTo(context, rekening);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  rekening.acId, rekening.namaAc);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: rekening.bankName!,
+                            index: i,
+                            onEdit: () {
+                              goTo(context, rekening);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  rekening.acId, rekening.namaAc);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: rekening.acGL!,
+                            index: i,
+                            onEdit: () {
+                              goTo(context, rekening);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  rekening.acId, rekening.namaAc);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: rekening.bankAcName!,
+                            index: i,
+                            onEdit: () {
+                              goTo(context, rekening);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  rekening.acId, rekening.namaAc);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: rekening.jenisAc,
+                            index: i,
+                            onEdit: () {
+                              goTo(context, rekening);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  rekening.acId, rekening.namaAc);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: rekening.acGroupId!,
+                            index: i,
+                            onEdit: () {
+                              goTo(context, rekening);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  rekening.acId, rekening.namaAc);
+                            },
+                            showOptionsOnTap: true),
                         AppTableCell(
                           index: i,
+                          onEdit: () {
+                            goTo(context, rekening);
+                          },
+                          onDelete: () async {
+                            await messageHapus(rekening.acId, rekening.namaAc);
+                          },
                           value: "", // Ganti dengan URL gambar jika ada
                           isEdit: true,
                           isDelete: true,
-                          onEdit: () {
-                            Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(
-                                    builder: (context) => AddEditRekening(
-                                          rekening: rekening,
-                                        )),
-                                (route) => false);
-                          },
-                          onDelete: () async {
-                            await SmartDialog.show(builder: (context) {
-                              return AlertDialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  icon: const Icon(
-                                    Icons.info_outlined,
-                                    color: AppColor.primaryColor,
-                                  ),
-                                  backgroundColor: Colors.white,
-                                  title: Text(
-                                    "Konfirmasi",
-                                    style: AppTextStyle.textTitleStyle(
-                                        color: AppColor.primaryColor),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  content: Text(
-                                    "Apakah Anda yakin ingin menghapus data '${rekening.namaAc}'?",
-                                    maxLines: 2,
-                                    style: AppTextStyle.textSubtitleStyle(),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        SmartDialog.dismiss(result: false);
-                                      },
-                                      child: Text(
-                                        "Tidak",
-                                        style: AppTextStyle.textBodyStyle(
-                                            color: AppColor.grey500),
-                                      ),
-                                    ),
-                                    TextButton(
-                                      onPressed: () async {
-                                        String result =
-                                            await _rekeningRepository
-                                                .deleteKaryawan(
-                                                    acId: rekening.acId);
-
-                                        bool isSuccess = result == "1";
-                                        if (isSuccess) {
-                                          SmartDialog.dismiss(result: false);
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                                content: Text(
-                                                    'Data gagal dihapus!')),
-                                          );
-                                        } else {
-                                          SmartDialog.dismiss(result: false);
-                                          controller.fetchProducts();
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                                content: Text(
-                                                    'Data berhasil dihapus!')),
-                                          );
-                                        }
-                                      },
-                                      child: Text(
-                                        "Iya",
-                                        style: AppTextStyle.textBodyStyle(
-                                            color: AppColor.primaryColor),
-                                      ),
-                                    )
-                                  ]);
-                            });
-                          },
                         ),
                       ];
                     }),
@@ -208,5 +207,72 @@ class MasterRekeningScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<dynamic> messageHapus(String acId, String namaAc) {
+    return SmartDialog.show(builder: (context) {
+      return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          icon: const Icon(
+            Icons.info_outlined,
+            color: AppColor.primaryColor,
+          ),
+          backgroundColor: Colors.white,
+          title: Text(
+            "Konfirmasi",
+            style: AppTextStyle.textTitleStyle(color: AppColor.primaryColor),
+            textAlign: TextAlign.center,
+          ),
+          content: Text(
+            "Apakah Anda yakin ingin menghapus data '$namaAc'?",
+            maxLines: 2,
+            style: AppTextStyle.textSubtitleStyle(),
+            textAlign: TextAlign.center,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                SmartDialog.dismiss(result: false);
+              },
+              child: Text(
+                "Tidak",
+                style: AppTextStyle.textBodyStyle(color: AppColor.grey500),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                String result =
+                    await _rekeningRepository.deleteKaryawan(acId: acId);
+
+                bool isSuccess = result == "1";
+                if (isSuccess) {
+                  SmartDialog.dismiss(result: false);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Data gagal dihapus!')),
+                  );
+                } else {
+                  SmartDialog.dismiss(result: false);
+                  controller.fetchProducts();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Data berhasil dihapus!')),
+                  );
+                }
+              },
+              child: Text(
+                "Iya",
+                style: AppTextStyle.textBodyStyle(color: AppColor.primaryColor),
+              ),
+            )
+          ]);
+    });
+  }
+
+  Future<dynamic> goTo(BuildContext context, RekeningDAO rekening) {
+    return Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+            builder: (context) => AddEditRekening(rekening: rekening)),
+        (route) => false);
   }
 }

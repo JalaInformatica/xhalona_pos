@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
+import 'package:xhalona_pos/models/dao/pengguna.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/repositories/pengguna/pengguna_repository.dart';
@@ -111,96 +112,77 @@ class MasterPenggunaScreen extends StatelessWidget {
                         (int i) {
                       var pengguna = controller.penggunaHeader[i];
                       return [
-                        AppTableCell(value: pengguna.userId, index: i),
-                        AppTableCell(value: pengguna.userName, index: i),
-                        AppTableCell(value: pengguna.emailAddress, index: i),
-                        AppTableCell(value: "${pengguna.levelId}", index: i),
-                        AppTableCell(value: pengguna.deptId!, index: i),
-                        AppTableCell(value: "${pengguna.roleId}", index: i),
+                        AppTableCell(
+                            value: pengguna.userId,
+                            index: i,
+                            onEdit: () {
+                              goTo(context, pengguna);
+                            },
+                            onDelete: () async {
+                              await messageHapus(pengguna.memberId, pengguna.memberId);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: pengguna.userName,
+                            index: i,
+                            onEdit: () {
+                              goTo(context, pengguna);
+                            },
+                            onDelete: () async {
+                              await messageHapus(pengguna.memberId, pengguna.memberId);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: pengguna.emailAddress,
+                            index: i,
+                            onEdit: () {
+                              goTo(context, pengguna);
+                            },
+                            onDelete: () async {
+                              await messageHapus(pengguna.memberId, pengguna.memberId);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: "${pengguna.levelId}",
+                            index: i,
+                            onEdit: () {
+                              goTo(context, pengguna);
+                            },
+                            onDelete: () async {
+                              await messageHapus(pengguna.memberId, pengguna.memberId);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: pengguna.deptId!,
+                            index: i,
+                            onEdit: () {
+                              goTo(context, pengguna);
+                            },
+                            onDelete: () async {
+                              await messageHapus(pengguna.memberId, pengguna.memberId);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: "${pengguna.roleId}",
+                            index: i,
+                            onEdit: () {
+                              goTo(context, pengguna);
+                            },
+                            onDelete: () async {
+                              await messageHapus(pengguna.memberId, pengguna.memberId);
+                            },
+                            showOptionsOnTap: true),
                         AppTableCell(
                           index: i,
+                            onEdit: () {
+                              goTo(context, pengguna);
+                            },
+                            onDelete: () async {
+                              await messageHapus(pengguna.memberId, pengguna.userName);
+                            },
                           value: "", // Ganti dengan URL gambar jika ada
                           isEdit: true,
                           isDelete: true,
-                          onEdit: () {
-                            Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(
-                                    builder: (context) => AddEditPengguna(
-                                          pengguna: pengguna,
-                                        )),
-                                (route) => false);
-                          },
-                          onDelete: () async {
-                            await SmartDialog.show(builder: (context) {
-                              return AlertDialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  icon: const Icon(
-                                    Icons.info_outlined,
-                                    color: AppColor.primaryColor,
-                                  ),
-                                  backgroundColor: Colors.white,
-                                  title: Text(
-                                    "Konfirmasi",
-                                    style: AppTextStyle.textTitleStyle(
-                                        color: AppColor.primaryColor),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  content: Text(
-                                    "Apakah Anda yakin ingin menghapus data '${pengguna.userName}'?",
-                                    maxLines: 2,
-                                    style: AppTextStyle.textSubtitleStyle(),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        SmartDialog.dismiss(result: false);
-                                      },
-                                      child: Text(
-                                        "Tidak",
-                                        style: AppTextStyle.textBodyStyle(
-                                            color: AppColor.grey500),
-                                      ),
-                                    ),
-                                    TextButton(
-                                      onPressed: () async {
-                                        String result =
-                                            await _penggunaRepository
-                                                .deletePengguna(
-                                                    memberId:
-                                                        pengguna.memberId);
-
-                                        bool isSuccess = result == "1";
-                                        if (isSuccess) {
-                                          SmartDialog.dismiss(result: false);
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                                content: Text(
-                                                    'Data gagal dihapus!')),
-                                          );
-                                        } else {
-                                          SmartDialog.dismiss(result: false);
-                                          controller.fetchProducts();
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                                content: Text(
-                                                    'Data berhasil dihapus!')),
-                                          );
-                                        }
-                                      },
-                                      child: Text(
-                                        "Iya",
-                                        style: AppTextStyle.textBodyStyle(
-                                            color: AppColor.primaryColor),
-                                      ),
-                                    )
-                                  ]);
-                            });
-                          },
                         ),
                       ];
                     }),
@@ -212,5 +194,71 @@ class MasterPenggunaScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<dynamic> messageHapus(String memberId, String userName) {
+    return SmartDialog.show(builder: (context) {
+      return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          icon: const Icon(
+            Icons.info_outlined,
+            color: AppColor.primaryColor,
+          ),
+          backgroundColor: Colors.white,
+          title: Text(
+            "Konfirmasi",
+            style: AppTextStyle.textTitleStyle(color: AppColor.primaryColor),
+            textAlign: TextAlign.center,
+          ),
+          content: Text(
+            "Apakah Anda yakin ingin menghapus data '$memberId'?",
+            maxLines: 2,
+            style: AppTextStyle.textSubtitleStyle(),
+            textAlign: TextAlign.center,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                SmartDialog.dismiss(result: false);
+              },
+              child: Text(
+                "Tidak",
+                style: AppTextStyle.textBodyStyle(color: AppColor.grey500),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                String result = await _penggunaRepository
+                                                .deletePengguna(memberId: userName);
+
+                bool isSuccess = result == "1";
+                if (isSuccess) {
+                  SmartDialog.dismiss(result: false);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Data gagal dihapus!')),
+                  );
+                } else {
+                  SmartDialog.dismiss(result: false);
+                  controller.fetchProducts();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Data berhasil dihapus!')),
+                  );
+                }
+              },
+              child: Text(
+                "Iya",
+                style: AppTextStyle.textBodyStyle(color: AppColor.primaryColor),
+              ),
+            )
+          ]);
+    });
+  }
+
+  Future<dynamic> goTo(BuildContext context, PenggunaDAO pengguna) {
+    return Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => AddEditPengguna(pengguna: pengguna)),
+        (route) => false);
   }
 }

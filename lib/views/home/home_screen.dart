@@ -2,11 +2,11 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/views/authentication/login/login_screen.dart';
-import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'fragment/laporan/monitor/monitor_screen.dart';
+import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:xhalona_pos/views/home/home_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
+import 'package:xhalona_pos/views/authentication/login/login_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/dashboard/dashboard_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/coa/master_coa_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/transaction/transaction_screen.dart';
@@ -41,9 +41,9 @@ class HomeScreen extends StatelessWidget {
         screen = TransactionScreen();
         break;
       // case "profil"
-      //   return 
+      //   return
       default:
-        return previousScreen ?? SizedBox();
+        return previousScreen ?? TransactionScreen();
     }
 
     previousScreen = screen; // Simpan halaman terakhir sebelum berpindah
@@ -78,19 +78,18 @@ class HomeScreen extends StatelessWidget {
             "report_document_finance_business_analysis_analytics_chart_icon_188615.png";
         break;
       case "profil":
-        iconPath += 
-          "avatar_male_man_people_person_profile_user_icon_123199.png";
+        iconPath +=
+            "avatar_male_man_people_person_profile_user_icon_123199.png";
         break;
     }
     return Obx(() => GestureDetector(
         onTap: () {
-          if(menuName!="profil"){
+          if (menuName != "profil") {
             controller.selectedMenuName.value = menuName;
-          }
-          else {
+          } else {
             Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => LoginScreen()),
-            (route) => false);
+                MaterialPageRoute(builder: (context) => LoginScreen()),
+                (route) => false);
           }
         },
         child: Container(
@@ -130,46 +129,48 @@ class HomeScreen extends StatelessWidget {
 
   Widget profileInfo() {
     return Obx(() => Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10.w),
-      decoration: BoxDecoration(
-        color: AppColor.primaryColor,
-      ),
-      child: Row(children: [
-        AppIconButton(
-          onPressed: (){},
-          icon: Icon(Icons.menu),
-          foregroundColor: AppColor.whiteColor,
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10.w),
+        decoration: BoxDecoration(
+          color: AppColor.primaryColor,
         ),
-        Spacer(),
-        AppIconButton(
-          foregroundColor: AppColor.whiteColor,
-          onPressed: (){},
-          icon: Icon(Icons.shopping_bag),
-        ),
-        AppIconButton(
-          foregroundColor: AppColor.whiteColor,
-          onPressed: (){},
-          icon: Icon(Icons.notifications),
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisSize: MainAxisSize.min, children: [
-        Text(
-          "AMIRA",
-          style: AppTextStyle.textBodyStyle(
-            color: AppColor.whiteColor,
-          ),
-        ),
-        Text(
-          controller.profileData.value.userName,
-          style: AppTextStyle.textCaptionStyle(
-            color: AppColor.whiteColor,
-          ),
-        ),
-
-      ])
-      ],) ));
+        child: Row(
+          children: [
+            AppIconButton(
+              onPressed: () {},
+              icon: Icon(Icons.menu),
+              foregroundColor: AppColor.whiteColor,
+            ),
+            Spacer(),
+            AppIconButton(
+              foregroundColor: AppColor.whiteColor,
+              onPressed: () {},
+              icon: Icon(Icons.shopping_bag),
+            ),
+            AppIconButton(
+              foregroundColor: AppColor.whiteColor,
+              onPressed: () {},
+              icon: Icon(Icons.notifications),
+            ),
+            Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "AMIRA",
+                    style: AppTextStyle.textBodyStyle(
+                      color: AppColor.whiteColor,
+                    ),
+                  ),
+                  Text(
+                    controller.profileData.value.userName,
+                    style: AppTextStyle.textCaptionStyle(
+                      color: AppColor.whiteColor,
+                    ),
+                  ),
+                ])
+          ],
+        )));
   }
 
   Widget masterButton(VoidCallback onPressed, String label, IconData icon) {
@@ -477,11 +478,13 @@ class HomeScreen extends StatelessWidget {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children:
                                         menuItem.dataSubMenu.map((subMenu) {
-                                      return menuComponent(subMenu.subMenuDesc, context);
+                                      return menuComponent(
+                                          subMenu.subMenuDesc, context);
                                     }).toList(),
                                   );
                                 }
-                                return menuComponent(menuItem.menuDesc, context);
+                                return menuComponent(
+                                    menuItem.menuDesc, context);
                               }),
                               menuComponent("profil", context)
                             ],

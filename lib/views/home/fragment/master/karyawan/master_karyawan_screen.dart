@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
+import 'package:xhalona_pos/models/dao/karyawan.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/repositories/karyawan/karyawan_repository.dart';
@@ -126,109 +127,194 @@ class MasterKaryawanScreen extends StatelessWidget {
                         (int i) {
                       var karyawan = controller.karyawanHeader[i];
                       return [
-                        AppTableCell(value: karyawan.empId, index: i),
-                        AppTableCell(value: karyawan.fullName, index: i),
                         AppTableCell(
-                            value: karyawan.dateIn.split("T").first, index: i),
-                        AppTableCell(value: karyawan.bpjsNo, index: i),
-                        AppTableCell(value: '${karyawan.bpjsTk}', index: i),
+                            value: karyawan.empId,
+                            index: i,
+                            onEdit: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => AddEditKaryawan(
+                                            karyawan: karyawan,
+                                          )),
+                                  (route) => false);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  karyawan.empId, karyawan.fullName);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: karyawan.fullName,
+                            index: i,
+                            onEdit: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => AddEditKaryawan(
+                                            karyawan: karyawan,
+                                          )),
+                                  (route) => false);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  karyawan.empId, karyawan.fullName);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: karyawan.dateIn.split("T").first,
+                            index: i,
+                            onEdit: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => AddEditKaryawan(
+                                            karyawan: karyawan,
+                                          )),
+                                  (route) => false);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  karyawan.empId, karyawan.fullName);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: karyawan.bpjsNo,
+                            index: i,
+                            onEdit: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => AddEditKaryawan(
+                                            karyawan: karyawan,
+                                          )),
+                                  (route) => false);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  karyawan.empId, karyawan.fullName);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: '${karyawan.bpjsTk}',
+                            index: i,
+                            onEdit: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => AddEditKaryawan(
+                                            karyawan: karyawan,
+                                          )),
+                                  (route) => false);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  karyawan.empId, karyawan.fullName);
+                            },
+                            showOptionsOnTap: true),
                         AppTableCell(
                             value:
                                 '${karyawan.gender == 1 ? 'Laki-laki' : 'Perempuan'}',
-                            index: i),
+                            index: i,
+                            onEdit: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => AddEditKaryawan(
+                                            karyawan: karyawan,
+                                          )),
+                                  (route) => false);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  karyawan.empId, karyawan.fullName);
+                            },
+                            showOptionsOnTap: true),
                         AppTableCell(
                             value: karyawan.birthDate!.split("T").first,
-                            index: i),
-                        AppTableCell(value: '${karyawan.alamat}', index: i),
-                        AppTableCell(value: '${karyawan.kd_dept}', index: i),
+                            index: i,
+                            onEdit: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => AddEditKaryawan(
+                                            karyawan: karyawan,
+                                          )),
+                                  (route) => false);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  karyawan.empId, karyawan.fullName);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: '${karyawan.alamat}',
+                            index: i,
+                            onEdit: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => AddEditKaryawan(
+                                            karyawan: karyawan,
+                                          )),
+                                  (route) => false);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  karyawan.empId, karyawan.fullName);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: '${karyawan.kd_dept}',
+                            index: i,
+                            onEdit: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => AddEditKaryawan(
+                                            karyawan: karyawan,
+                                          )),
+                                  (route) => false);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  karyawan.empId, karyawan.fullName);
+                            },
+                            showOptionsOnTap: true),
                         AppTableCell(
                             value: formatCurrency(karyawan.bonusAmount),
-                            index: i),
+                            index: i,
+                            onEdit: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => AddEditKaryawan(
+                                            karyawan: karyawan,
+                                          )),
+                                  (route) => false);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  karyawan.empId, karyawan.fullName);
+                            },
+                            showOptionsOnTap: true),
                         AppTableCell(
                             value: formatCurrency(karyawan.bonusAmount),
-                            index: i),
+                            index: i,
+                            onEdit: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => AddEditKaryawan(
+                                            karyawan: karyawan,
+                                          )),
+                                  (route) => false);
+                            },
+                            onDelete: () async {
+                              await messageHapus(
+                                  karyawan.empId, karyawan.fullName);
+                            },
+                            showOptionsOnTap: true),
                         AppTableCell(
                           index: i,
+                          onDelete: () async {
+                            await messageHapus(
+                                karyawan.empId, karyawan.fullName);
+                          },
                           value: "", // Ganti dengan URL gambar jika ada
                           isEdit: true,
                           isDelete: true,
                           onEdit: () {
-                            Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(
-                                    builder: (context) => AddEditKaryawan(
-                                          karyawan: karyawan,
-                                        )),
-                                (route) => false);
-                          },
-                          onDelete: () async {
-                            await SmartDialog.show(builder: (context) {
-                              return AlertDialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  icon: const Icon(
-                                    Icons.info_outlined,
-                                    color: AppColor.primaryColor,
-                                  ),
-                                  backgroundColor: Colors.white,
-                                  title: Text(
-                                    "Konfirmasi",
-                                    style: AppTextStyle.textTitleStyle(
-                                        color: AppColor.primaryColor),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  content: Text(
-                                    "Apakah Anda yakin ingin menghapus data '${karyawan.fullName}'?",
-                                    maxLines: 2,
-                                    style: AppTextStyle.textSubtitleStyle(),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        SmartDialog.dismiss(result: false);
-                                      },
-                                      child: Text(
-                                        "Tidak",
-                                        style: AppTextStyle.textBodyStyle(
-                                            color: AppColor.grey500),
-                                      ),
-                                    ),
-                                    TextButton(
-                                      onPressed: () async {
-                                        String result =
-                                            await _karyawanRepository
-                                                .deleteKaryawan(
-                                                    empId: karyawan.empId);
-
-                                        bool isSuccess = result == "1";
-                                        if (isSuccess) {
-                                          SmartDialog.dismiss(result: false);
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                                content: Text(
-                                                    'Data gagal dihapus!')),
-                                          );
-                                        } else {
-                                          SmartDialog.dismiss(result: false);
-                                          controller.fetchProducts();
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                                content: Text(
-                                                    'Data berhasil dihapus!')),
-                                          );
-                                        }
-                                      },
-                                      child: Text(
-                                        "Iya",
-                                        style: AppTextStyle.textBodyStyle(
-                                            color: AppColor.primaryColor),
-                                      ),
-                                    )
-                                  ]);
-                            });
+                            goTo(context,karyawan);
                           },
                         ),
                       ];
@@ -241,5 +327,71 @@ class MasterKaryawanScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<dynamic> goTo(BuildContext context, KaryawanDAO karyawan) {
+    return Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => AddEditKaryawan(karyawan: karyawan)),
+        (route) => false);
+  }
+
+  Future<dynamic> messageHapus(String empId, String fullName) {
+    return SmartDialog.show(builder: (context) {
+      return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          icon: const Icon(
+            Icons.info_outlined,
+            color: AppColor.primaryColor,
+          ),
+          backgroundColor: Colors.white,
+          title: Text(
+            "Konfirmasi",
+            style: AppTextStyle.textTitleStyle(color: AppColor.primaryColor),
+            textAlign: TextAlign.center,
+          ),
+          content: Text(
+            "Apakah Anda yakin ingin menghapus data '$fullName'?",
+            maxLines: 2,
+            style: AppTextStyle.textSubtitleStyle(),
+            textAlign: TextAlign.center,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                SmartDialog.dismiss(result: false);
+              },
+              child: Text(
+                "Tidak",
+                style: AppTextStyle.textBodyStyle(color: AppColor.grey500),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                String result = await await _karyawanRepository.deleteKaryawan(
+                    empId: empId);
+
+                bool isSuccess = result == "1";
+                if (isSuccess) {
+                  SmartDialog.dismiss(result: false);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Data gagal dihapus!')),
+                  );
+                } else {
+                  SmartDialog.dismiss(result: false);
+                  controller.fetchProducts();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Data berhasil dihapus!')),
+                  );
+                }
+              },
+              child: Text(
+                "Iya",
+                style: AppTextStyle.textBodyStyle(color: AppColor.primaryColor),
+              ),
+            )
+          ]);
+    });
   }
 }

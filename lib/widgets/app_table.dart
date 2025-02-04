@@ -227,7 +227,10 @@ class AppTableCell extends StatelessWidget {
   final bool isDelete;
   final bool isPaket;
   final bool isBahan;
+  final bool isModalPaket;
+  final bool isModalBahan;
   final bool isVarian;
+  final bool showOptionsOnTap;
   final VoidCallback? onBahan;
   final VoidCallback? onVarian;
   final VoidCallback? onEdit;
@@ -245,9 +248,12 @@ class AppTableCell extends StatelessWidget {
     this.isDelete = false,
     this.isPaket = false,
     this.isBahan = false,
+    this.isModalPaket = false,
+    this.isModalBahan = false,
     this.isVarian = false,
-    this.onVarian,
+    this.showOptionsOnTap = false,
     this.onBahan,
+    this.onVarian,
     this.onEdit,
     this.onDelete,
     this.onPaket,
@@ -264,7 +270,10 @@ class AppTableCell extends StatelessWidget {
       isDelete: isDelete,
       isPaket: isPaket,
       isBahan: isBahan,
+      isModalPaket: isModalPaket,
+      isModalBahan: isModalBahan,
       isVarian: isVarian,
+      showOptionsOnTap: showOptionsOnTap,
       onBahan: onBahan,
       onVarian: onVarian,
       onEdit: onEdit,
@@ -276,82 +285,91 @@ class AppTableCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final backgroundColor =
-        index % 2 == 0 ? Colors.white : AppColor.tertiaryColor;
+        index % 2 == 0 ? Colors.white : Colors.grey.shade200;
 
-    return Container(
-      width: width,
-      height: height,
-      alignment: Alignment.center,
-      color: backgroundColor,
-      child: Stack(
-        children: [
-          if (imageUrl != null)
-            Image.network(
-              imageUrl!,
-              fit: BoxFit.cover,
-              width: width * 0.8,
-              height: height * 0.8,
-              errorBuilder: (context, error, stackTrace) {
-                return Icon(Icons.broken_image, color: Colors.grey, size: 24);
-              },
-            )
-          else
-            Text(
-              value,
-              style: AppTextStyle.textBodyStyle(),
-            ),
-          if (isEdit || isDelete || isPaket || isBahan || isVarian)
-            Positioned(
-              right: 0,
-              top: 0,
-              child: Row(
-                children: [
-                  if (isEdit)
-                    _buildIconContainer(
-                      icon: Icons.edit,
-                      color: Colors.blue,
-                      tooltip: 'Edit',
-                      onPressed: onEdit,
-                      backgroundColor: Colors.blue.withOpacity(0.1),
-                    ),
-                  if (isDelete)
-                    _buildIconContainer(
-                      icon: Icons.delete,
-                      color: Colors.red,
-                      tooltip: 'Delete',
-                      onPressed: onDelete,
-                      backgroundColor: Colors.red.withOpacity(0.1),
-                    ),
-                  if (isPaket)
-                    _buildIconContainer(
-                      icon: Icons.local_offer,
-                      color: Colors.green,
-                      tooltip: 'Paket',
-                      onPressed: onPaket,
-                      backgroundColor: Colors.green.withOpacity(0.1),
-                    ),
-                  if (isBahan)
-                    _buildIconContainer(
-                      icon: Icons.kitchen,
-                      color: Colors.green,
-                      tooltip: 'Bahan',
-                      onPressed: onBahan,
-                      backgroundColor: Colors.green.withOpacity(0.1),
-                    ),
-                  if (isVarian)
-                    _buildIconContainer(
-                      icon: Icons.arrow_circle_right_outlined,
-                      color: Colors.green,
-                      tooltip: 'Varian',
-                      onPressed: onVarian,
-                      backgroundColor: Colors.green.withOpacity(0.1),
-                    ),
-                ],
+    return GestureDetector(
+      onTap: showOptionsOnTap ? () => _showOptions(context) : null,
+      child: Container(
+        width: width,
+        height: height,
+        alignment: Alignment.center,
+        color: backgroundColor,
+        child: Stack(
+          children: [
+            if (imageUrl != null)
+              Image.network(
+                imageUrl!,
+                fit: BoxFit.cover,
+                width: width * 0.8,
+                height: height * 0.8,
+                errorBuilder: (context, error, stackTrace) {
+                  return Icon(Icons.broken_image, color: Colors.grey, size: 24);
+                },
+              )
+            else
+              Center(
+                child: Text(
+                  value,
+                  style: TextStyle(fontSize: 14, color: Colors.black),
+                ),
               ),
-            ),
-        ],
+            if (isEdit || isDelete || isPaket || isBahan || isVarian)
+              Positioned(
+                right: 0,
+                top: 0,
+                child: Row(
+                  children: _buildIcons(),
+                ),
+              ),
+          ],
+        ),
       ),
     );
+  }
+
+  List<Widget> _buildIcons() {
+    return [
+      if (isEdit)
+        _buildIconContainer(
+          icon: Icons.edit,
+          color: Colors.blue,
+          tooltip: 'Edit',
+          onPressed: onEdit,
+          backgroundColor: Colors.blue.withOpacity(0.1),
+        ),
+      if (isDelete)
+        _buildIconContainer(
+          icon: Icons.delete,
+          color: Colors.red,
+          tooltip: 'Delete',
+          onPressed: onDelete,
+          backgroundColor: Colors.red.withOpacity(0.1),
+        ),
+      if (isPaket)
+        _buildIconContainer(
+          icon: Icons.local_offer,
+          color: Colors.green,
+          tooltip: 'Paket',
+          onPressed: onPaket,
+          backgroundColor: Colors.green.withOpacity(0.1),
+        ),
+      if (isBahan)
+        _buildIconContainer(
+          icon: Icons.kitchen,
+          color: Colors.green,
+          tooltip: 'Bahan',
+          onPressed: onBahan,
+          backgroundColor: Colors.green.withOpacity(0.1),
+        ),
+      if (isVarian)
+        _buildIconContainer(
+          icon: Icons.arrow_circle_right_outlined,
+          color: Colors.green,
+          tooltip: 'Varian',
+          onPressed: onVarian,
+          backgroundColor: Colors.green.withOpacity(0.1),
+        ),
+    ];
   }
 
   Widget _buildIconContainer({
@@ -372,6 +390,71 @@ class AppTableCell extends StatelessWidget {
         onPressed: onPressed,
         tooltip: tooltip,
       ),
+    );
+  }
+
+  void _showOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildBottomSheetOption(
+                icon: Icons.edit,
+                text: 'Edit',
+                onTap: () {
+                  Navigator.pop(context);
+                  if (onEdit != null) onEdit!();
+                },
+              ),
+              _buildBottomSheetOption(
+                icon: Icons.delete,
+                text: 'Delete',
+                onTap: () {
+                  Navigator.pop(context);
+                  if (onDelete != null) onDelete!();
+                },
+              ),
+              if (isModalPaket)
+                _buildBottomSheetOption(
+                  icon: Icons.local_offer,
+                  text: 'Paket',
+                  onTap: () {
+                    Navigator.pop(context);
+                    if (onPaket != null) onPaket!();
+                  },
+                ),
+              if (isModalBahan)
+                _buildBottomSheetOption(
+                  icon: Icons.kitchen,
+                  text: 'Bahan',
+                  onTap: () {
+                    Navigator.pop(context);
+                    if (onBahan != null) onBahan!();
+                  },
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildBottomSheetOption({
+    required IconData icon,
+    required String text,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.blue),
+      title: Text(text, style: TextStyle(fontSize: 16)),
+      onTap: onTap,
     );
   }
 }

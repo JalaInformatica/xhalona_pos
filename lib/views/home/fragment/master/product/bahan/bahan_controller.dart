@@ -3,9 +3,9 @@ import 'package:xhalona_pos/models/dao/bahan.dart';
 import 'package:xhalona_pos/repositories/bahan/bahan_repository.dart';
 
 class BahanController extends GetxController {
-  BahanRepository _kategoriRepository = BahanRepository();
+  BahanRepository _bahanRepository = BahanRepository();
 
-  var kategoriHeader = <BahanDAO>[].obs;
+  var bahanHeader = <BahanDAO>[].obs;
   var isLoading = true.obs;
   // var trxStatusCategory = ProductStatusCategory.progress.obs;
   var isActive = false.obs;
@@ -57,14 +57,14 @@ class BahanController extends GetxController {
   Future<void> fetchProducts() async {
     try {
       isLoading.value = true;
-      final result = await _kategoriRepository.getBahan(
+      final result = await _bahanRepository.getBahan(
           // statusCategory: getProductStatusCategoryStr(trxStatusCategory.value),
           isActive: '${isActive.value ? '1' : ''}',
           filterValue: filterValue.value,
           filterPartId: filterPartId.value,
           pageNo: pageNo.value,
           pageRow: pageRow.value);
-      kategoriHeader.value = result;
+      bahanHeader.value = result;
     } finally {
       isLoading.value = false;
     }
