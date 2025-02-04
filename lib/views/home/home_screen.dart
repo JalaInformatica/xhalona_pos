@@ -7,6 +7,7 @@ import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:xhalona_pos/views/home/home_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
 import 'package:xhalona_pos/views/authentication/login/login_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/finance/finance_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/dashboard/dashboard_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/coa/master_coa_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/transaction/transaction_screen.dart';
@@ -39,6 +40,9 @@ class HomeScreen extends StatelessWidget {
         break;
       case "transaksi":
         screen = TransactionScreen();
+        break;
+      case "finance":
+        screen = FinanceScreen();
         break;
       // case "profil"
       //   return

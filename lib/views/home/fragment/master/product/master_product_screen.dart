@@ -43,37 +43,39 @@ class MasterProductScreen extends StatelessWidget {
   final HomeController controllerHome = Get.put(HomeController());
   final KustomerController controllerKus = Get.put(KustomerController());
 
-  Widget? previousScreen;
-
-  Widget menuScreen(String menuName) {
-    Widget screen;
-
+  void navigateToMenu(String menuName, BuildContext context) {
     switch (menuName.toLowerCase()) {
       case "pos":
-        screen = PosScreen();
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => HomeScreen()));
         break;
       case "dashboard":
-        screen = DashboardScreen();
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => HomeScreen()));
         break;
       case "transaksi":
-        screen = TransactionScreen();
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => HomeScreen()));
         break;
-      // case "profil"
-      //   return
+      case "profil":
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => LoginScreen()),
+            (route) => false);
+        break;
       default:
-        return previousScreen ?? TransactionScreen();
+        // Tidak melakukan apa-apa jika menu tidak dikenali
+        break;
     }
-
-    previousScreen = screen; // Simpan halaman terakhir sebelum berpindah
-    return screen;
   }
 
+  // Komponen Menu
   Widget menuComponent(String menuName, BuildContext context) {
     menuName = menuName.toLowerCase();
     String iconPath = "assets/images/menu/";
     Color iconColor = menuName != controllerHome.selectedMenuName.value
         ? AppColor.grey500
         : AppColor.primaryColor;
+
     switch (menuName) {
       case "pos":
         iconPath += "cashier_machine_cash_register_pos_icon_225108.png";
@@ -100,15 +102,12 @@ class MasterProductScreen extends StatelessWidget {
             "avatar_male_man_people_person_profile_user_icon_123199.png";
         break;
     }
+
     return Obx(() => GestureDetector(
         onTap: () {
-          if (menuName != "profil") {
-            controllerHome.selectedMenuName.value = menuName;
-          } else {
-            Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => LoginScreen()),
-                (route) => false);
-          }
+          controllerHome.selectedMenuName.value = menuName;
+          navigateToMenu(
+              menuName, context); // Navigasi sesuai menu yang dipilih
         },
         child: Container(
             padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
