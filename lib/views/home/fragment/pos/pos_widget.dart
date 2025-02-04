@@ -2,10 +2,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:xhalona_pos/core/helper/global_helper.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/product.dart';
+import 'package:xhalona_pos/models/dto/tamu.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_controller.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/widgets/app_elevated_button.dart';
@@ -14,12 +16,15 @@ import 'package:xhalona_pos/widgets/app_image.dart';
 import 'package:xhalona_pos/widgets/app_normal_button.dart';
 import 'package:xhalona_pos/widgets/app_pdf_viewer.dart';
 import 'package:xhalona_pos/widgets/app_text_field.dart';
+import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 
 AppTextField posTextField({
   required BuildContext context,
   required TextEditingController textEditingController,
   required labelText,
   bool isReadOnly = false,
+  TextAlign textAlign = TextAlign.start,
+  bool isThousand = false
 }) {
   return AppTextField(
     context: context,
@@ -27,18 +32,20 @@ AppTextField posTextField({
     labelText: labelText,
     contentPadding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.h),
     readOnly: isReadOnly,
+    textAlign: textAlign,
+    isThousand: isThousand,
   );
 }
 
-AppElevatedButton posAppButton(
-    {required String text, required VoidCallback onPressed}) {
+AppElevatedButton posAppButton({
+  required String text, required VoidCallback onPressed, bool isActive=false}) {
   return AppElevatedButton(
-      backgroundColor: AppColor.whiteColor,
-      foregroundColor: AppColor.primaryColor,
-      borderColor: AppColor.primaryColor,
-      padding: EdgeInsets.symmetric(horizontal: 5.w),
-      onPressed: onPressed,
-      text: Text(text));
+    backgroundColor: !isActive? AppColor.whiteColor : AppColor.doneColor,
+    foregroundColor: !isActive? AppColor.primaryColor : AppColor.whiteColor,
+    borderColor: !isActive? AppColor.primaryColor: AppColor.doneColor,
+    padding: EdgeInsets.symmetric(horizontal: 8.w),
+    onPressed: onPressed,
+    text: Text(text, style: AppTextStyle.textBodyStyle(),));
 }
 
 Widget produkImage(PosController controller, ProductDAO product) {
@@ -145,11 +152,12 @@ Widget produkImage(PosController controller, ProductDAO product) {
       );
 }
 
-Widget transaction(
-    {required PosController controller,
-    required Function(String) onTerapisClicked,
-    required VoidCallback onCheckoutClicked,
-    required BuildContext context}) {
+Widget transaction({
+  required PosController controller,
+  required Function(String) onTerapisClicked,
+  required VoidCallback onCheckoutClicked,
+  required VoidCallback onMemberClicked,
+  required BuildContext context}) {
   return controller.isOpenTransaksi.value
       ? Column(
           mainAxisSize: MainAxisSize.max,
@@ -167,7 +175,8 @@ Widget transaction(
               child: Row(
                 children: [
                   Text(
-                    "Transaksi",
+                    controller.currentTransactionId.value==""? "Transaksi" : 
+                    shortenTrxIdAndName(controller.currentTransactionId.value, guestName: controller.currentTransaction.value.guestName, supplierName: controller.currentTransaction.value.supplierName),
                     style: AppTextStyle.textSubtitleStyle(
                       color: AppColor.whiteColor,
                     ),
@@ -214,7 +223,7 @@ Widget transaction(
                 vertical: 10.w,
               ),
               constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.5),
+                  maxHeight: MediaQuery.of(context).size.height * 0.4),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 spacing: 5.h,
@@ -288,35 +297,47 @@ Widget transaction(
                                       child: posTextField(
                                         context: context,
                                         textEditingController:
-                                            TextEditingController(),
-                                        labelText: "Note",
+                                          TextEditingController()
+                                            ..text = formatThousands(currentTrxDetail
+                                                .nettoVal
+                                                .toString()),
+                                        labelText: "Harga",
+                                        isReadOnly:
+                                            currentTrxDetail.isFixPrice,
+                                        textAlign: TextAlign.end,
+                                        isThousand: true
                                       ),
-                                    ),
-                                    Expanded(
-                                      child: posTextField(
-                                          context: context,
-                                          textEditingController:
-                                              TextEditingController()
-                                                ..text = currentTrxDetail
-                                                    .nettoVal
-                                                    .toString(),
-                                          labelText: "Harga",
-                                          isReadOnly:
-                                              currentTrxDetail.isFixPrice),
                                     ),
                                     Expanded(
                                       child: posTextField(
                                         context: context,
                                         textEditingController:
-                                            TextEditingController(),
+                                          TextEditingController()
+                                          ..text = formatThousands(currentTrxDetail
+                                              .deductionVal
+                                              .toString()),
                                         labelText: "Diskon",
+                                        textAlign: TextAlign.end,
+                                        isThousand: true
                                       ),
+                                    ),
+                                    AppIconButton(
+                                      onPressed: (){
+                                        controller.toggleNoteVisible(currentTrxDetail.rowId);
+                                      }, 
+                                      icon: Icon(Icons.note_add_outlined)
                                     ),
                                   ],
                                 ),
+                                Obx(()=> (controller.isNoteVisible[currentTrxDetail.rowId] ?? false)? 
+                                  AppTextField(
+                                    context: context,
+                                    maxLines: 3,
+                                  ): SizedBox.shrink()),
+                                Divider(color: AppColor.secondaryColor,)
                               ],
                             );
-                          }).toList(),
+                          }),
                         ],
                       ),
                     ),
@@ -327,218 +348,126 @@ Widget transaction(
                     children: [
                       posAppButton(
                         onPressed: () {
-                          controller.currentTransactionId.value = "";
-                          controller.currentTransaction.value = [];
-                          controller.currentTransactionDetail.value = [];
+                          controller.newTransaction();
                         },
                         text: "Baru",
                       ),
                       posAppButton(
-                        onPressed: () {
-                          SmartDialog.show(builder: (_){
-                            return AppDialog(
-                              content: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                spacing: 5.h,
-                                children: [
-                                  Text("Member", style: AppTextStyle.textSubtitleStyle(),),
-                                  AppTextField(
-                                    context: context,
-                                    hintText: "Cari Member",
-                                    onChanged: (_){},
-                                    autofocus: true,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Expanded(child: AppTextButton(
-                                        foregroundColor: AppColor.blackColor,
-                                        onPressed: () {
-                                        },
-                                        alignment: Alignment.centerLeft,
-                                        child: Text(
-                                          "Ujang Bahrun",
-                                          style: AppTextStyle.textBodyStyle(),
-                                        ),
-                                        shape: BeveledRectangleBorder(
-                                          side: BorderSide(color: AppColor.grey100)
-                                        ),
-                                      )),
-                                      AppIconButton(
-                                        onPressed: (){},
-                                        shape: RoundedRectangleBorder(),
-                                        backgroundColor: AppColor.primaryColor,
-                                        icon: Icon(Icons.edit, color: AppColor.whiteColor,))
-                                    ]
-                                  ),
-                                  Row(
-                                    children: [
-                                      Expanded(child: AppTextButton(
-                                        foregroundColor: AppColor.blackColor,
-                                        onPressed: () {
-                                        },
-                                        alignment: Alignment.centerLeft,
-                                        child: Text(
-                                          "Ifah Barkoh",
-                                          style: AppTextStyle.textBodyStyle(),
-                                        ),
-                                        shape: BeveledRectangleBorder(
-                                          side: BorderSide(color: AppColor.grey100)
-                                        ),
-                                      )),
-                                      AppIconButton(
-                                        onPressed: (){},
-                                        shape: RoundedRectangleBorder(),
-                                        backgroundColor: AppColor.primaryColor,
-                                        icon: Icon(Icons.edit, color: AppColor.whiteColor,))
-                                    ]
-                                  ),
-                                  Row(
-                                    children: [
-                                      Expanded(child: AppTextButton(
-                                        foregroundColor: AppColor.blackColor,
-                                        onPressed: () {
-                                        },
-                                        alignment: Alignment.centerLeft,
-                                        child: Text(
-                                          "Mahalini",
-                                          style: AppTextStyle.textBodyStyle(),
-                                        ),
-                                        shape: BeveledRectangleBorder(
-                                          side: BorderSide(color: AppColor.grey100)
-                                        ),
-                                      )),
-                                      AppIconButton(
-                                        onPressed: (){},
-                                        shape: RoundedRectangleBorder(),
-                                        backgroundColor: AppColor.primaryColor,
-                                        icon: Icon(Icons.edit, color: AppColor.whiteColor,))
-                                    ]
-                                  ),
-                                  Row(
-                                    children: [
-                                      Expanded(child: AppTextButton(
-                                        foregroundColor: AppColor.blackColor,
-                                        onPressed: () {
-                                        },
-                                        alignment: Alignment.centerLeft,
-                                        child: Text(
-                                          "Ferdi Irawan",
-                                          style: AppTextStyle.textBodyStyle(),
-                                        ),
-                                        shape: BeveledRectangleBorder(
-                                          side: BorderSide(color: AppColor.grey100)
-                                        ),
-                                      )),
-                                      AppIconButton(
-                                        onPressed: (){},
-                                        shape: RoundedRectangleBorder(),
-                                        backgroundColor: AppColor.primaryColor,
-                                        icon: Icon(Icons.edit, color: AppColor.whiteColor,))
-                                    ]
-                                  ),
-                                  SizedBox(height: 5.h),
-                                  Text("Tambah/Edit Member", style: AppTextStyle.textSubtitleStyle(),),
-                                  AppTextField(
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                                    context: context, labelText: "Nama Customer*",),
-                                  AppTextField(
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                                    context: context, labelText: "Nomor Handphone/Telp",),
-                                  AppTextField(
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                                    context: context, labelText: "Keterangan",),
-                                  SizedBox(
-                                    width: double.maxFinite,
-                                    child: AppElevatedButton(
-                                      backgroundColor: AppColor.primaryColor,
-                                      foregroundColor: AppColor.whiteColor,
-                                      onPressed: (){}, 
-                                      text: Text("Simpan")
-                                    ),
-                                  )
-                                ],
-                              ),
-                            );
-                          });
-                        },
+                        onPressed: onMemberClicked,
                         text: "Member",
                       ),
                       posAppButton(
+                        isActive: true,
                         onPressed: () {
+                          TextEditingController guestNameController = TextEditingController(); 
+                          TextEditingController guestPhoneController = TextEditingController(); 
+                          final _formkey = GlobalKey<FormState>();
                           SmartDialog.show(builder: (_){
                             return AppDialog(
-                              content: Column(
+                              content: Form(
+                                key: _formkey,
+                                child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 spacing: 15.h,
                                 children: [
                                   Text("Tamu", style: AppTextStyle.textSubtitleStyle(),),
-                                  AppTextField(
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                                    context: context, labelText: "Nama Customer*",),
-                                  AppTextField(
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                                    context: context, labelText: "Nomor Handphone/Telp",),
-                                  AppTextField(
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                                    context: context, labelText: "Keterangan",),
+                                  AppTextFormField(
+                                    textEditingController: guestNameController..text=controller.currentTransaction.value.guestName,
+                                    // contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                                    context: context, labelText: "Nama Customer*",
+                                    validator: (value) {
+                                      if(value==''){
+                                        return 'Nama Tamu Wajib diisi';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  AppTextFormField(
+                                    textEditingController: guestPhoneController..text=controller.currentTransaction.value.guestPhone,
+                                    // contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                                    context: context, labelText: "Nomor Handphone/Telp",
+                                    validator: (value) {
+                                      if(value==''){
+                                        return 'No HP Wajib diisi';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  // AppTextField(
+                                  //   // contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                                  //   context: context, labelText: "Keterangan",),
                                   SizedBox(
                                     width: double.maxFinite,
                                     child: AppElevatedButton(
                                       backgroundColor: AppColor.primaryColor,
                                       foregroundColor: AppColor.whiteColor,
-                                      onPressed: (){}, 
+                                      onPressed: (){
+                                        if(_formkey.currentState?.validate() ?? false){
+                                          controller.addTamuToTrx(TamuDTO(
+                                            guestName: guestNameController.text,
+                                            guestPhone: guestPhoneController.text,
+                                          ));
+                                          SmartDialog.dismiss();
+                                        }
+                                      }, 
                                       text: Text("Simpan")
                                     ),
                                   )
                                 ],
                               ),
-                            );
+                            ));
                           });
                         },
                         text: "Tamu",
                       ),
                       posAppButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          
+                        },
                         text: "Diskon",
                       ),
-                      posAppButton(text: "Batal", onPressed: () {})
+                      posAppButton(text: "Batal", onPressed: () {
+
+                      })
                     ],
                   ),
-                  SizedBox(height: 3.h,),
-                  IntrinsicHeight(
-                      child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                  SizedBox(height: 3.h,),                          
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     spacing: 5.w,
                     children: [
                       IntrinsicWidth(
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           spacing: 5.h,
                           children: [
-                      
-                      Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                            Text("Total: ", style: AppTextStyle.textBodyStyle(color: AppColor.grey500),),
-                            Text("Rp. 100.000", style: AppTextStyle.textBodyStyle(),),
-                          ],),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                            Text("Diskon: ", style: AppTextStyle.textBodyStyle(color: AppColor.grey500),),
-                            Text("Rp. 10.000", style: AppTextStyle.textBodyStyle(),),
-                          ],),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                            Text("Tagihan: ", style: AppTextStyle.textBodyStyle(color: AppColor.grey500),),
-                            Text("Rp. 90.000", style: AppTextStyle.textBodyStyle(),),
-                          ],),
-                          ])),
-                          Spacer(),
-                          IntrinsicWidth(
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                              Text("Total: ", style: AppTextStyle.textBodyStyle(color: AppColor.grey500),),
+                              Text("${formatToRupiah(controller.currentTransaction.value.brutoVal)}", style : AppTextStyle.textBodyStyle(),),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                              Text("Diskon: ", style: AppTextStyle.textBodyStyle(color: AppColor.grey500),),
+                              Text("${formatToRupiah(controller.currentTransaction.value.discVal)}", style: AppTextStyle.textBodyStyle(),),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                              Text("Tagihan: ", style: AppTextStyle.textBodyStyle(color: AppColor.grey500),),
+                              Text("${formatToRupiah(controller.currentTransaction.value.nettoVal)}", style: AppTextStyle.textBodyStyle(),),
+                              ],
+                            ),
+                          ]
+                        ),
+                      ),
+                      Spacer(),
+                      IntrinsicWidth(
                         child: Column(
                           spacing: 5.h,
                           children: [
@@ -559,9 +488,9 @@ Widget transaction(
                               foregroundColor: AppColor.primaryColor,
                               onPressed: () {
                                 controller.printNota().then((url) => {
-                                      print(url)
-                                      // Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AppPDFViewer(pdfUrl: url)));
-                                    });
+                                print(url)
+                                // Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AppPDFViewer(pdfUrl: url)));
+                                });
                               },
                               child: Row(
                                 spacing: 5.w,
@@ -574,24 +503,28 @@ Widget transaction(
                               ),
                             ),
                           ],
-                        ),
+                        )
                       ),
-                      AppElevatedButton(
-                        backgroundColor: AppColor.primaryColor,
-                        foregroundColor: AppColor.whiteColor,
-                        onPressed: onCheckoutClicked,
-                        text: Row(
-                          spacing: 5.w,
-                          children: [
-                            // Icon(Icons.payment_outlined,
-                            //     color: AppColor.whiteColor),
-                            Text("Checkout",
-                                style: AppTextStyle.textSubtitleStyle())
-                          ],
-                        ),
+                      Column(
+                        children: [
+                          AppElevatedButton(
+                            backgroundColor: AppColor.primaryColor,
+                            foregroundColor: AppColor.whiteColor,
+                            onPressed: onCheckoutClicked,
+                            text: Row(
+                              spacing: 5.w,
+                              children: [
+                                // Icon(Icons.payment_outlined,
+                                //     color: AppColor.whiteColor),
+                                Text("Checkout",
+                                    style: AppTextStyle.textSubtitleStyle())
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ],
-                  )),
+                  ),
                 ],
               ),
             ),

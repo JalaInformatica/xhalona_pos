@@ -40,6 +40,11 @@ class TransactionRepository extends AppRepository {
     return getResponseTrxData(result)[0]["NO_TRX"];
   }
 
+  Future<String> editTransactionHeader(TransactionDTO transaction) async {
+    var result = await _transactionService.editTransaction(transaction);
+    return getResponseTrxData(result)[0]["NO_TRX"];
+  }
+
   Future<List<TransactionDetailDAO>> getTransactionDetail({required String transactionId}) async {
     var result = await _transactionService.getTransactionDetail(transactionId: transactionId);
     List data = getResponseListData(result);

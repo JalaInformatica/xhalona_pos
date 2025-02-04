@@ -8,3 +8,23 @@ String formatToRupiah(int number) {
   );
   return formatter.format(number);
 }
+
+String formatThousands(String text){
+  try {
+    int number = int.parse(text);
+    return NumberFormat("#,###", "id_ID").format(number);
+  } catch (e) {
+    return text;
+  }
+}
+
+String shortenTrxId(String text) {
+  return text.replaceAll(RegExp(r'(?<=AM)0+'), '');
+}
+
+String shortenTrxIdAndName(String trxId, {String guestName="", String supplierName=""}){
+  if(guestName!="" || supplierName!=""){
+    return "${shortenTrxId(trxId)}/${guestName!="" ? guestName : supplierName}";
+  }
+  return shortenTrxId(trxId);
+}

@@ -68,6 +68,26 @@ class TransactionService {
     return ResponseHandler.handle(response);
   }
 
+  Future<String> editTransaction(TransactionDTO transaction) async {
+    await api.fetchUserSessionInfo();
+    var url = '/SALES/order';
+    var body = jsonEncode({
+      "rq": {
+        "IP": "103.78.114.49",
+        "DEF_COMPANY_ID": api.companyId,
+        "USER_ID": api.userId,
+        "SESSION_LOGIN_ID": api.sessionId,
+        "ACTION_ID": "EDIT_H",
+        "COMPANY_ID": api.companyId,
+        ...transaction.toJson()
+      }
+    });
+    var response =
+        await api.post(url, headers: await api.requestHeaders(), body: body);
+
+    return ResponseHandler.handle(response);
+  }
+
   Future<String> getTransactionDetail({required String transactionId}) async {
     await api.fetchUserSessionInfo();
     var url = '/SALES/order_detail';

@@ -6,6 +6,8 @@ class AppTextFormField extends TextFormField {
     required BuildContext context,
     super.validator,
     super.onFieldSubmitted,
+    super.maxLines,
+    super.autofocus,
     TextStyle? style,
     String? hintText,
     String? labelText,
@@ -13,7 +15,7 @@ class AppTextFormField extends TextFormField {
     Widget? icon,
     bool isScurePass = false,
     TextInputAction? inputAction = TextInputAction.done,
-    required TextEditingController textEditingController
+    required TextEditingController textEditingController,
     }) : super(
       onTapOutside: (_) {
         FocusScope.of(context).unfocus();

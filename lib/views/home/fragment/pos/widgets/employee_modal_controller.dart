@@ -5,7 +5,7 @@ import 'package:xhalona_pos/repositories/employee/employee_repository.dart';
 class EmployeeModalController extends GetxController{
   final EmployeeRepository _employeeRepository = EmployeeRepository();
   var employees = <EmployeeDAO>[].obs;
-
+  
   Future<void> fetchEmployees({String? filter}) async{
     employees.value = await _employeeRepository.getEmployees(filterValue: filter);
   }

@@ -3,6 +3,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/views/home/fragment/pos/widgets/member_modal.dart';
+import 'package:xhalona_pos/views/home/fragment/pos/widgets/member_modal_controller.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/widgets/app_text_field.dart';
 import 'package:xhalona_pos/widgets/app_icon_button.dart';
@@ -44,7 +46,7 @@ class PosScreen extends StatelessWidget {
                   Column(
                     spacing: 5.h,
                     children: [
-                                        Row(
+                    Row(
                     spacing: 5.w,
                     children: [
                     Expanded(child: AppTextField(
@@ -126,11 +128,12 @@ Row(
               ],
             ),
             Obx(()=> transaction(
+              context: context,
               controller: controller, 
               onTerapisClicked: (String rowId){
                 SmartDialog.show(
                   builder: (context) {
-                  return AppDialog(
+                  return Padding(padding: EdgeInsets.only(top: 15.h), child: AppDialog(
                     content: SizedBox(
                       width: double.maxFinite,
                       height: MediaQuery.of(context).size.height * 0.5,
@@ -141,11 +144,29 @@ Row(
                         },
                       ),
                     ),
-                  );
+                  ));
                 }).then((_) => Get.delete<
                     EmployeeModalController>());
                 }, 
-                context: context,
+                onMemberClicked: () async {
+                  SmartDialog.show(
+                  builder: (context) {
+                  return Padding(padding: EdgeInsets.only(top: 15.h), child: AppDialog(
+                    content: SizedBox(
+                      width: double.maxFinite,
+                      height: MediaQuery.of(context).size.height * 0.5,
+                      child: MemberModal(
+                        memberContext: context,
+                        onMemberSelected: (selectedMember) {
+                          controller.addMemberToTrx(selectedMember);
+                          SmartDialog.dismiss();
+                        },
+                      ),
+                    ),
+                  ));
+                }).then((_) => Get.delete<
+                    MemberModalController>());
+                },
                 onCheckoutClicked: () async {
                   await SmartDialog.show(
                     builder: (_) => SafeArea(child: Container(
@@ -373,11 +394,12 @@ Row(
                       Icons.shopping_bag,
                       color: AppColor.whiteColor,
                     ),
-                    Text(
-                      "Transaksi",
+                    Obx(()=> Text(
+                      controller.currentTransactionId.value==""? "Transaksi" : 
+                      "${shortenTrxIdAndName(controller.currentTransactionId.value, guestName: controller.currentTransaction.value.guestName)}",
                       style: AppTextStyle.textSubtitleStyle(
                           color: AppColor.whiteColor),
-                    ),
+                    )),
                     Container(
                       padding: EdgeInsets.all(5),
                       decoration: BoxDecoration(
@@ -386,7 +408,6 @@ Row(
                       ),
                       child: Text(controller.currentTransactionDetail.length.toString(), style: AppTextStyle.textBodyStyle(fontWeight: FontWeight.bold, color: AppColor.dangerColor),),
                     )
-
                   ],
                 ))
             : SizedBox.shrink()));

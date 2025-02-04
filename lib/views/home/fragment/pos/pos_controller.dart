@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:get/get.dart';
+import 'package:xhalona_pos/models/dao/kustomer.dart';
 import 'package:xhalona_pos/models/dao/product.dart';
 import 'package:xhalona_pos/models/dao/transaction.dart';
+import 'package:xhalona_pos/models/dto/tamu.dart';
 import 'package:xhalona_pos/models/dto/transaction.dart';
 import 'package:xhalona_pos/repositories/product/product_repository.dart';
 import 'package:xhalona_pos/repositories/transaction/transaction_repository.dart';
@@ -20,12 +22,17 @@ class PosController extends GetxController {
 
   var currentTransactionId = "".obs;
 
-  var currentTransaction = <TransactionHeaderDAO>[].obs;
+  var currentTransaction = TransactionHeaderDAO().obs;
   var currentTransactionDetail = <TransactionDetailDAO>[].obs;
   var selectedProductPartIdToTrx = "".obs;
 
   var isAddingProductToTrx = false.obs;
   var isDeletingProductFromTrx = false.obs;
+
+  var isNoteVisible = <String, bool>{}.obs;
+  void toggleNoteVisible(String rowId) {
+    isNoteVisible[rowId] = !(isNoteVisible[rowId] ?? false);
+  }
 
   Timer? _debounce;
 
@@ -55,6 +62,12 @@ class PosController extends GetxController {
     }
   }
 
+  Future<void> newTransaction() async {
+    currentTransactionId.value = "";
+    currentTransaction.value = TransactionHeaderDAO();
+    currentTransactionDetail.value = [];
+  }
+
   Future<void> addProductToTrx(ProductDAO product) async {
     selectedProductPartIdToTrx.value = product.partId;
     isAddingProductToTrx.value = true;
@@ -69,20 +82,54 @@ class PosController extends GetxController {
           qty: 1,
           price: product.unitPriceNet)
     ]);
-    currentTransaction.value = await _transactionRepository
-        .getTransactionHeader(transactionId: currentTransactionId.value);
+    currentTransaction.value = (await _transactionRepository
+        .getTransactionHeader(transactionId: currentTransactionId.value)).first;
     currentTransactionDetail.value = await _transactionRepository
         .getTransactionDetail(transactionId: currentTransactionId.value);
     isAddingProductToTrx.value = false;
     selectedProductPartIdToTrx.value = "";
   }
 
+  Future<void> addTamuToTrx(TamuDTO tamuDTO ) async{
+    var currentTrxValue = currentTransaction.value;
+    await _transactionRepository.editTransactionHeader(
+      TransactionDTO(
+        salesId: currentTrxValue.salesId,
+        supplierId: tamuDTO.guestPhone,
+        guestName: tamuDTO.guestName,
+        guestPhone: tamuDTO.guestPhone,
+        note: currentTrxValue.note,
+        voucherCode: "",
+        shiftId: currentTrxValue.shiftId
+      )
+    );
+    currentTransaction.value = (await _transactionRepository
+        .getTransactionHeader(transactionId: currentTransactionId.value)).first;
+  }
+
+  Future<void> addMemberToTrx(KustomerDAO tamuDAO ) async{
+    var currentTrxValue = currentTransaction.value;
+    await _transactionRepository.editTransactionHeader(
+      TransactionDTO(
+        salesId: currentTrxValue.salesId,
+        supplierId: tamuDAO.suplierId,
+        guestName: tamuDAO.suplierName,
+        guestPhone: tamuDAO.telp,
+        note: currentTrxValue.note,
+        voucherCode: "",
+        shiftId: currentTrxValue.shiftId
+      )
+    );
+    currentTransaction.value = (await _transactionRepository
+        .getTransactionHeader(transactionId: currentTransactionId.value)).first;
+  }
+
   Future<void> deleteProductFromTrx(String rowId) async {
     isDeletingProductFromTrx.value = true;
     await _transactionRepository.deleteTransactionDetail(
         salesId: currentTransactionId.value, rowId: rowId);
-    currentTransaction.value = await _transactionRepository
-        .getTransactionHeader(transactionId: currentTransactionId.value);
+    currentTransaction.value = (await _transactionRepository
+        .getTransactionHeader(transactionId: currentTransactionId.value)).first;
     currentTransactionDetail.value = await _transactionRepository
         .getTransactionDetail(transactionId: currentTransactionId.value);
     isDeletingProductFromTrx.value = false;

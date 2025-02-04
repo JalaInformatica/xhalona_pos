@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:xhalona_pos/core/helper/global_helper.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 
 class AppTextField extends TextField{
@@ -13,13 +14,40 @@ class AppTextField extends TextField{
     TextInputAction? inputAction = TextInputAction.done,
     TextEditingController? textEditingController,
     EdgeInsets? contentPadding,
-    super.onChanged,
+    bool isThousand = false,
+    Function(String)? onChanged,
     super.autofocus,
     super.readOnly,
-    super.textAlign
+    super.textAlign,
+    super.maxLines
   }) : super(
       onTapOutside: (_) {
         FocusScope.of(context).unfocus();
+      },
+      onChanged: (val){
+        if (isThousand && textEditingController!=null) {
+          // Store the original cursor position
+          int cursorPosition = textEditingController.selection.baseOffset;
+
+          // Remove any existing separators before formatting
+          String cleanValue = val.replaceAll(".", "").replaceAll(",", "");
+
+          // Format the number
+          String formattedText = formatThousands(cleanValue);
+
+          // Calculate new cursor position after formatting
+          int newCursorPosition = formattedText.length - (cleanValue.length - cursorPosition);
+
+          // Ensure the cursor stays within valid bounds
+          newCursorPosition = newCursorPosition.clamp(0, formattedText.length);
+
+          // Update the text field with formatted value and adjusted cursor position
+          textEditingController.value = TextEditingValue(
+            text: formattedText,
+            selection: TextSelection.collapsed(offset: newCursorPosition),
+          );
+        }
+        onChanged?.call(val);
       },
       controller: textEditingController,
       style: style ?? AppTextStyle.textBodyStyle(),
