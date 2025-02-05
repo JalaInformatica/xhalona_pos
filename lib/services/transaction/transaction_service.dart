@@ -88,6 +88,30 @@ class TransactionService {
     return ResponseHandler.handle(response);
   }
 
+  Future<String> deleteTransaction(String salesId) async {
+    await api.fetchUserSessionInfo();
+    var url = '/SALES/order';
+    var body = jsonEncode({
+      "rq": {
+        "IP": "103.78.114.49",
+        "DEF_COMPANY_ID": api.companyId,
+        "USER_ID": api.userId,
+        "SESSION_LOGIN_ID": api.sessionId,
+        "ACTION_ID": "DELETE_H",
+        "COMPANY_ID": api.companyId,
+        "DATA": [
+          {
+            "SALES_ID": salesId
+          }
+        ]
+      }
+    });
+    var response =
+        await api.post(url, headers: await api.requestHeaders(), body: body);
+
+    return ResponseHandler.handle(response);
+  }
+
   Future<String> getTransactionDetail({required String transactionId}) async {
     await api.fetchUserSessionInfo();
     var url = '/SALES/order_detail';

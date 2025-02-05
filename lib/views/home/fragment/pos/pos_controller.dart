@@ -6,6 +6,7 @@ import 'package:xhalona_pos/models/dao/transaction.dart';
 import 'package:xhalona_pos/models/dto/tamu.dart';
 import 'package:xhalona_pos/models/dto/transaction.dart';
 import 'package:xhalona_pos/repositories/product/product_repository.dart';
+import 'package:xhalona_pos/repositories/shift/shift_repository.dart';
 import 'package:xhalona_pos/repositories/transaction/transaction_repository.dart';
 import 'package:xhalona_pos/repositories/crystal_report/transaction_crystal_report_repository.dart';
 
@@ -23,11 +24,13 @@ class PosController extends GetxController {
   var currentTransactionId = "".obs;
 
   var currentTransaction = TransactionHeaderDAO().obs;
+  var currentShiftId = "".obs;
   var currentTransactionDetail = <TransactionDetailDAO>[].obs;
   var selectedProductPartIdToTrx = "".obs;
 
   var isAddingProductToTrx = false.obs;
   var isDeletingProductFromTrx = false.obs;
+
 
   var isNoteVisible = <String, bool>{}.obs;
   void toggleNoteVisible(String rowId) {
@@ -62,10 +65,18 @@ class PosController extends GetxController {
     }
   }
 
+
   Future<void> newTransaction() async {
     currentTransactionId.value = "";
     currentTransaction.value = TransactionHeaderDAO();
     currentTransactionDetail.value = [];
+  }
+
+  Future<void> cancelTransaction() async {
+    String trxId = await _transactionRepository.deleteTransactionHeader(currentTransactionId.value);
+    if(trxId.isNotEmpty){
+      newTransaction();      
+    }
   }
 
   Future<void> addProductToTrx(ProductDAO product) async {
@@ -74,6 +85,9 @@ class PosController extends GetxController {
     if (currentTransactionId.value == "") {
       currentTransactionId.value =
           await _transactionRepository.addTransactionHeader(TransactionDTO());
+      if(currentShiftId.value.isNotEmpty){
+        editShiftTrx();
+      }
     }
     await _transactionRepository.addTransactionDetail([
       TransactionDetailDTO(
@@ -88,6 +102,30 @@ class PosController extends GetxController {
         .getTransactionDetail(transactionId: currentTransactionId.value);
     isAddingProductToTrx.value = false;
     selectedProductPartIdToTrx.value = "";
+  }
+
+  Future<void> setCurrentShift(String shiftId) async {
+    currentShiftId.value = shiftId;
+    if(currentTransactionId.isNotEmpty){
+      editShiftTrx();
+    }
+  }
+
+  Future<void> editShiftTrx() async{
+    var currentTrxValue = currentTransaction.value;
+    await _transactionRepository.editTransactionHeader(
+      TransactionDTO(
+        salesId: currentTransactionId.value,
+        supplierId: currentTrxValue.supplierId,
+        guestName: currentTrxValue.guestName,
+        guestPhone: currentTrxValue.guestPhone,
+        note: currentTrxValue.note,
+        voucherCode: "",
+        shiftId: currentShiftId.value
+      )
+    );
+    currentTransaction.value = (await _transactionRepository
+      .getTransactionHeader(transactionId: currentTransactionId.value)).first;
   }
 
   Future<void> addTamuToTrx(TamuDTO tamuDTO ) async{

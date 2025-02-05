@@ -6,13 +6,14 @@ class MemberModalController extends GetxController{
   final KustomerRepository _customerRepository = KustomerRepository();
   var members = <KustomerDAO>[].obs;
   var isAddMember = false.obs;
+  var errors = <String, String?>{}.obs;
 
   Future<void> fetchMembers({String? filter}) async {
     members.value = await _customerRepository.getKustomer(filterValue: filter);
   }
 
-  Future<void> addMember(KustomerDAO member) async {
-    await _customerRepository.addEditKustomer(
+  Future<bool> addMember(KustomerDAO member) async {
+    String supplierId = await _customerRepository.addEditKustomer(
       actionId: '0',
       suplierId: member.suplierId,
       suplierName: member.suplierName,
@@ -20,6 +21,9 @@ class MemberModalController extends GetxController{
       adress2: member.address2,
       telp: member.telp,
       emailAdress: member.emailAdress,
+      isSuplier: "0"
     );
+    return supplierId.isNotEmpty;
   }
+
 }

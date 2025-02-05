@@ -156,7 +156,9 @@ Widget transaction({
   required PosController controller,
   required Function(String) onTerapisClicked,
   required VoidCallback onCheckoutClicked,
+  required VoidCallback onTamuClicked,
   required VoidCallback onMemberClicked,
+  required VoidCallback onShiftSelected, 
   required BuildContext context}) {
   return controller.isOpenTransaksi.value
       ? Column(
@@ -183,25 +185,19 @@ Widget transaction({
                   ),
                   Spacer(),
                   AppTextButton(
-                    onPressed: () {},
+                    onPressed: onShiftSelected,
                     borderColor: AppColor.grey300,
                     foregroundColor: AppColor.blackColor,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "Shift",
+                          controller.currentShiftId.isEmpty? "Shift" : controller.currentShiftId.value,
                           style: AppTextStyle.textBodyStyle(),
                         ),
                         Icon(Icons.arrow_drop_down),
                       ],
                     ),
-                  ),
-                  AppIconButton(
-                    onPressed: () {},
-                    foregroundColor: AppColor.whiteColor,
-                    padding: EdgeInsets.zero,
-                    icon: Icon(Icons.shopping_bag),
                   ),
                   AppIconButton(
                     onPressed: () {
@@ -346,90 +342,70 @@ Widget transaction({
                     mainAxisAlignment: MainAxisAlignment.start,
                     spacing: 5.w,
                     children: [
-                      posAppButton(
-                        onPressed: () {
+                      AppElevatedButton(
+                        backgroundColor: AppColor.blueColor,
+                        foregroundColor: AppColor.whiteColor,
+                        padding: EdgeInsets.symmetric(horizontal: 8.w),
+                        borderColor: AppColor.blueColor,
+                        onPressed: (){
                           controller.newTransaction();
                         },
-                        text: "Baru",
+                        text: Text("Baru", style: AppTextStyle.textBodyStyle(),)
                       ),
-                      posAppButton(
+                      AppElevatedButton(
+                        disabled: controller.currentTransactionId.isEmpty,                        
+                        backgroundColor: controller.currentTransaction.value.supplierName.isEmpty? AppColor.whiteColor : AppColor.doneColor,
+                        foregroundColor: controller.currentTransaction.value.supplierName.isEmpty? AppColor.primaryColor : AppColor.whiteColor,
+                        borderColor: controller.currentTransaction.value.supplierName.isEmpty? AppColor.primaryColor : AppColor.doneColor,
+                        padding: EdgeInsets.symmetric(horizontal: 8.w),
                         onPressed: onMemberClicked,
-                        text: "Member",
+                        text: Row(
+                          spacing: 5.w,
+                          children: [
+                            Text("Member", style: AppTextStyle.textBodyStyle(),),
+                            if(controller.currentTransaction.value.supplierName.isNotEmpty)
+                            Icon(Icons.check_circle_outline, color: AppColor.whiteColor,)
+                          ]
+                        )
                       ),
-                      posAppButton(
-                        isActive: true,
-                        onPressed: () {
-                          TextEditingController guestNameController = TextEditingController(); 
-                          TextEditingController guestPhoneController = TextEditingController(); 
-                          final _formkey = GlobalKey<FormState>();
-                          SmartDialog.show(builder: (_){
-                            return AppDialog(
-                              content: Form(
-                                key: _formkey,
-                                child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                spacing: 15.h,
-                                children: [
-                                  Text("Tamu", style: AppTextStyle.textSubtitleStyle(),),
-                                  AppTextFormField(
-                                    textEditingController: guestNameController..text=controller.currentTransaction.value.guestName,
-                                    // contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                                    context: context, labelText: "Nama Customer*",
-                                    validator: (value) {
-                                      if(value==''){
-                                        return 'Nama Tamu Wajib diisi';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                  AppTextFormField(
-                                    textEditingController: guestPhoneController..text=controller.currentTransaction.value.guestPhone,
-                                    // contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                                    context: context, labelText: "Nomor Handphone/Telp",
-                                    validator: (value) {
-                                      if(value==''){
-                                        return 'No HP Wajib diisi';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                  // AppTextField(
-                                  //   // contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                                  //   context: context, labelText: "Keterangan",),
-                                  SizedBox(
-                                    width: double.maxFinite,
-                                    child: AppElevatedButton(
-                                      backgroundColor: AppColor.primaryColor,
-                                      foregroundColor: AppColor.whiteColor,
-                                      onPressed: (){
-                                        if(_formkey.currentState?.validate() ?? false){
-                                          controller.addTamuToTrx(TamuDTO(
-                                            guestName: guestNameController.text,
-                                            guestPhone: guestPhoneController.text,
-                                          ));
-                                          SmartDialog.dismiss();
-                                        }
-                                      }, 
-                                      text: Text("Simpan")
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ));
-                          });
-                        },
-                        text: "Tamu",
+                      AppElevatedButton(
+                        disabled: controller.currentTransactionId.isEmpty,
+                        backgroundColor: controller.currentTransaction.value.guestName.isNotEmpty && controller.currentTransaction.value.supplierName.isEmpty? AppColor.doneColor : AppColor.whiteColor,
+                        foregroundColor: controller.currentTransaction.value.guestName.isNotEmpty && controller.currentTransaction.value.supplierName.isEmpty?  AppColor.whiteColor : AppColor.primaryColor,
+                        borderColor: controller.currentTransaction.value.guestName.isNotEmpty && controller.currentTransaction.value.supplierName.isEmpty?  AppColor.doneColor : AppColor.primaryColor,
+                        padding: EdgeInsets.symmetric(horizontal: 8.w),
+                        onPressed: onTamuClicked,
+                        text: 
+                        Row(
+                          spacing: 5.w,
+                          children: [
+                          Text("Tamu", style: AppTextStyle.textBodyStyle(),),
+                          if(controller.currentTransaction.value.guestName.isNotEmpty && controller.currentTransaction.value.supplierName.isEmpty)
+                          Icon(Icons.check_circle_outline, color: AppColor.whiteColor,)
+                        ],)
                       ),
-                      posAppButton(
+                      AppElevatedButton(
+                        backgroundColor: AppColor.whiteColor,
+                        foregroundColor: AppColor.purpleColor,
+                        borderColor: AppColor.purpleColor,
+                        padding: EdgeInsets.symmetric(horizontal: 8.w),
+                        disabled: controller.currentTransactionId.isEmpty,
                         onPressed: () {
                           
                         },
-                        text: "Diskon",
+                        text: Text("Diskon", style: AppTextStyle.textBodyStyle(),)
                       ),
-                      posAppButton(text: "Batal", onPressed: () {
-
-                      })
+                      AppElevatedButton(
+                        backgroundColor: AppColor.dangerColor,
+                        foregroundColor: AppColor.whiteColor,
+                        borderColor: AppColor.dangerColor,
+                        padding: EdgeInsets.symmetric(horizontal: 8.w),
+                        disabled: controller.currentTransactionId.isEmpty,
+                        onPressed: () {
+                          controller.cancelTransaction();
+                        },
+                        text: Text("Batal", style: AppTextStyle.textBodyStyle(),)
+                      ),
                     ],
                   ),
                   SizedBox(height: 3.h,),                          
@@ -508,16 +484,14 @@ Widget transaction({
                       Column(
                         children: [
                           AppElevatedButton(
+                            disabled: controller.currentTransaction.value.supplierId.isEmpty || controller.currentTransactionDetail.any((detail)=>detail.employeeId.isEmpty),
                             backgroundColor: AppColor.primaryColor,
                             foregroundColor: AppColor.whiteColor,
                             onPressed: onCheckoutClicked,
                             text: Row(
                               spacing: 5.w,
                               children: [
-                                // Icon(Icons.payment_outlined,
-                                //     color: AppColor.whiteColor),
-                                Text("Checkout",
-                                    style: AppTextStyle.textSubtitleStyle())
+                                Text("Checkout", style: AppTextStyle.textSubtitleStyle())
                               ],
                             ),
                           ),

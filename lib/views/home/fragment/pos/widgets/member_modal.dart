@@ -13,14 +13,14 @@ import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 class MemberModal extends StatelessWidget{
   final MemberModalController controller = Get.put(MemberModalController());
   final _formkey = GlobalKey<FormState>();
-  BuildContext memberContext;      
+  // BuildContext context;      
   Timer? _debounce;
   Function(KustomerDAO) onMemberSelected;
 
   MemberModal({
     super.key,
     required this.onMemberSelected,
-    required this.memberContext
+    // required this.context
   });
 
   void _onChanged(String query) {
@@ -40,13 +40,27 @@ class MemberModal extends StatelessWidget{
   TextEditingController memberEmailController = TextEditingController(); 
   TextEditingController memberAddressController = TextEditingController(); 
 
+  bool validateFormMember() {
+    controller.errors.clear();
+    if (memberNameController.text.isEmpty) {
+      controller.errors['name'] = "Nama Member Wajib diisi";
+    }
+    if (memberPhoneController.text.isEmpty) {
+      controller.errors['phone'] = "No. HP Member Wajib diisi";
+    }
+    if(controller.errors.isEmpty){
+      return true;
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Obx(()=> Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       spacing: 5.h,
       children: [
-        // Text("Member", style: AppTextStyle.textSubtitleStyle(),),
         AppTextButton(
           onPressed: (){
             controller.isAddMember.value = !controller.isAddMember.value;
@@ -100,74 +114,75 @@ class MemberModal extends StatelessWidget{
             ),
           ],
         )):
-        Expanded(child: Form(
-      key: _formkey,
-      child: Column(
-          spacing: 5.h,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 5.h,),
-          Text("Member Baru", style: AppTextStyle.textSubtitleStyle(),),
-          AppTextFormField(
-            autofocus: true,
-            textEditingController: memberNameController,
-            context: memberContext, labelText: "Nama Member*",
-            validator: (value) {
-              if(value==''){
-                return 'Nama Member Wajib diisi';
-              }
-              return null;
-            },
-          ),
-          AppTextFormField(
-            textEditingController: memberPhoneController,
-            context: memberContext, labelText: "Nomor Handphone*",validator: (value) {
-              if(value==''){
-                return 'No. HP Member Wajib diisi';
-              }
-              return null;
-            },
-          ),
-          AppTextFormField(
-            textEditingController: memberEmailController,
-            context: memberContext, labelText: "Email",),
-          AppTextFormField(
-            maxLines: 3,
-            textEditingController: memberAddressController,
-            context: memberContext, labelText: "Alamat",),
-          Spacer(),
-          SizedBox(
-            width: double.maxFinite,
-            child: AppElevatedButton(
-              backgroundColor: AppColor.primaryColor,
-              foregroundColor: AppColor.whiteColor,
-              onPressed: (){
-                if(_formkey.currentState?.validate() ?? false){
-                  controller.addMember(
-                    KustomerDAO(
-                      suplierId: memberPhoneController.text,
-                      suplierName: memberNameController.text,
-                      emailAdress: memberEmailController.text,
-                      address1: memberAddressController.text
-                    )
-                  ).then(
-                    onMemberSelected(
-                      KustomerDAO(
-                        suplierId: memberPhoneController.text,
-                        suplierName: memberNameController.text,
-                        emailAdress: memberEmailController.text,
-                        address1: memberAddressController.text
-                      )
-                    )
-                  );
-                }
-              }, 
-              text: Text("Simpan")
-            ),
+        Expanded(
+          child: Column(
+            spacing: 5.h,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 5.h,),
+              Text("Member Baru", style: AppTextStyle.textSubtitleStyle(),),
+              AppTextField(
+                unfocusWhenTapOutside: false,
+                textEditingController: memberNameController,
+                context: context, labelText: "Nama Member*",
+                inputAction: TextInputAction.next,
+              ),
+              if(controller.errors['name']!=null)
+                Text("Nama Member wajib diisi", style: AppTextStyle.textBodyStyle(color: AppColor.dangerColor),),
+              AppTextField(
+                unfocusWhenTapOutside: false,
+                textEditingController: memberPhoneController,
+                inputAction: TextInputAction.next,
+                context: context, labelText: "Nomor Handphone*",
+              ),
+              if(controller.errors['phone']!=null)
+                Text("No. HP wajib diisi", style: AppTextStyle.textBodyStyle(color: AppColor.dangerColor),),
+              AppTextField(
+                unfocusWhenTapOutside: false,
+                textEditingController: memberEmailController,
+                inputAction: TextInputAction.next,
+                context: context, labelText: "Email",),
+              AppTextField(
+                unfocusWhenTapOutside: false,
+                maxLines: 3,
+                textEditingController: memberAddressController,
+                inputAction: TextInputAction.done,
+                context: context, labelText: "Alamat",),
+              SizedBox(
+                width: double.maxFinite,
+                child: AppElevatedButton(
+                  backgroundColor: AppColor.primaryColor,
+                  foregroundColor: AppColor.whiteColor,
+                  onPressed: (){
+                    if(validateFormMember()){
+                      controller.addMember(
+                        KustomerDAO(
+                          suplierId: memberPhoneController.text,
+                          suplierName: memberNameController.text,
+                          telp: memberPhoneController.text,
+                          emailAdress: memberEmailController.text,
+                          address1: memberAddressController.text
+                        )
+                      ).then((val){
+                        if(val){
+                          onMemberSelected(
+                            KustomerDAO(
+                              suplierId: memberPhoneController.text,
+                              suplierName: memberNameController.text,
+                              emailAdress: memberEmailController.text,
+                              address1: memberAddressController.text
+                            )
+                          );
+                        }}
+                      );
+                    }
+                  }, 
+                  text: Text("Simpan")
+                ),
+              )
+            ],
           )
-
-          ],
-        )))
+        )
       ],
     ));
   }
