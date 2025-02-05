@@ -2,15 +2,15 @@ import 'dart:convert';
 import 'package:xhalona_pos/services/response_handler.dart';
 import 'package:xhalona_pos/services/api_service.dart' as api;
 
-class KustomerServices {
-  Future<String> getKustomer({
+class MetodeBayarServices {
+  Future<String> getMetodeBayar({
     int? pageNo,
     int? pageRow,
     String? filterValue,
-    String? isSuplier,
+    String? payMethodeGroup,
   }) async {
     await api.fetchUserSessionInfo();
-    var url = '/SALES/m_kustomer';
+    var url = '/SALES/m_metode_bayar';
     var body = jsonEncode({
       "rq": {
         "ACTION_ID": "LIST_H",
@@ -18,13 +18,14 @@ class KustomerServices {
         "COMPANY_ID": api.companyId,
         "USER_ID": api.userId,
         "SESSION_LOGIN_ID": api.sessionId,
+        "FILTER_COLOUMN": "",
         "FILTER_FIELD": "",
         "FILTER_VALUE": filterValue ?? '',
         "PAGE_NO": pageNo ?? 1,
         "PAGE_ROW": pageRow ?? 10,
-        "SORT_ORDER_BY": "SUPPLIER_ID",
+        "SORT_ORDER_BY": "PAYMENT_METHOD_NAME",
         "SORT_ORDER_TYPE": "ASC",
-        "IS_SUPPLIER": isSuplier ?? "1"
+        "PAYMENT_METHOD_GROUP": payMethodeGroup ?? "",
       }
     });
     var response =
@@ -33,18 +34,21 @@ class KustomerServices {
     return ResponseHandler.handle(response);
   }
 
-  Future<String> addEditKustomer({
-    String? suplierId,
-    String? suplierName,
-    String? adress1,
-    String? adress2,
-    String? telp,
-    String? emailAdress,
-    String? isSuplier,
+  Future<String> addEditMetodeBayar({
+    String? payMethodeGroup,
+    String? payMethodeName,
+    String? isCash,
+    String? isCard,
+    String? isDefault,
+    String? isfixAmt,
+    String? isbellowAmt,
+    String? isActive,
+    String? isPiutang,
+    String? isnumberCard,
     String? actionId,
   }) async {
     await api.fetchUserSessionInfo();
-    var url = '/SALES/m_kustomer';
+    var url = '/SALES/m_metode_bayar';
     var body = jsonEncode({
       "rq": {
         "ACTION_ID": actionId == '1' ? "EDIT_H" : "ADD_H",
@@ -52,17 +56,18 @@ class KustomerServices {
         "COMPANY_ID": api.companyId,
         "USER_ID": api.userId,
         "SESSION_LOGIN_ID": api.sessionId,
-        "SUPPLIER_ID": suplierId,
-        "SUPPLIER_NAME": suplierName,
-        "ADDRESS1": adress1,
-        "ADDRESS2": adress2,
-        "TELP": telp,
-        "EMAIL_ADDRESS": emailAdress,
-        "IS_SUPPLIER": isSuplier
+        "PAYMENT_METHOD_NAME": payMethodeName,
+        "PAYMENT_METHOD_GROUP": payMethodeGroup,
+        "IS_CASH": isCash,
+        "IS_CARD": isCard,
+        "IS_DEFAULT": isDefault,
+        "IS_FIX_AMT": isfixAmt,
+        "IS_BELLOW_AMT": isbellowAmt,
+        "IS_ACTIVE": isActive,
+        "IS_PIUTANG": isPiutang ?? "",
+        "IS_NUMBER_CARD": isnumberCard ?? ""
       }
     });
-
-    print('dept: $body');
 
     var response =
         await api.post(url, headers: await api.requestHeaders(), body: body);
@@ -70,11 +75,11 @@ class KustomerServices {
     return ResponseHandler.handle(response);
   }
 
-  Future<String> deleteKustomer({
-    String? suplierId,
+  Future<String> deleteMetodeBayar({
+    String? payMethodeId,
   }) async {
     await api.fetchUserSessionInfo();
-    var url = '/SALES/m_kustomer';
+    var url = '/SALES/m_metode_bayar';
     var body = jsonEncode({
       "rq": {
         "ACTION_ID": "DELETE_H",
@@ -84,7 +89,7 @@ class KustomerServices {
         "USER_ID": api.userId,
         "SESSION_LOGIN_ID": api.sessionId,
         "DATA": [
-          {"SUPPLIER_ID": suplierId}
+          {"PAYMENT_METHOD_ID": payMethodeId}
         ]
       }
     });
