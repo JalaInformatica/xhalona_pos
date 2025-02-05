@@ -3,8 +3,12 @@ import 'package:flutter_svg/svg.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/models/dto/tamu.dart';
+import 'package:xhalona_pos/views/home/fragment/pos/checkout_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/widgets/member_modal.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/widgets/member_modal_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/pos/widgets/shift_modal.dart';
+import 'package:xhalona_pos/views/home/fragment/pos/widgets/shift_modal_controller.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/widgets/app_text_field.dart';
 import 'package:xhalona_pos/widgets/app_icon_button.dart';
@@ -17,6 +21,7 @@ import 'package:xhalona_pos/views/home/fragment/pos/pos_widget.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/widgets/employee_modal.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/widgets/employee_modal_controller.dart';
+import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 
 class PosScreen extends StatelessWidget {
   final PosController controller = Get.put(PosController());
@@ -24,6 +29,7 @@ class PosScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
         backgroundColor: AppColor.whiteColor,
         body: Stack(
           children: [
@@ -130,6 +136,24 @@ Row(
             Obx(()=> transaction(
               context: context,
               controller: controller, 
+              onShiftSelected: () async {
+                SmartDialog.show(
+                builder: (context) {
+                return Padding(padding: EdgeInsets.only(top: 15.h), child: AppDialog(
+                  content: SizedBox(
+                    width: double.maxFinite,
+                    height: MediaQuery.of(context).size.height * 0.5,
+                    child: ShiftModal(
+                      onShiftSelected: (selectedShift) {
+                        controller.setCurrentShift(selectedShift.shiftId);
+                        SmartDialog.dismiss();
+                      },
+                    ),
+                  ),
+                ));
+              }).then((_) => Get.delete<
+                  ShiftModalController>());
+              },
               onTerapisClicked: (String rowId){
                 SmartDialog.show(
                   builder: (context) {
@@ -156,7 +180,7 @@ Row(
                       width: double.maxFinite,
                       height: MediaQuery.of(context).size.height * 0.5,
                       child: MemberModal(
-                        memberContext: context,
+                        // memberContext: context,
                         onMemberSelected: (selectedMember) {
                           controller.addMemberToTrx(selectedMember);
                           SmartDialog.dismiss();
@@ -167,210 +191,77 @@ Row(
                 }).then((_) => Get.delete<
                     MemberModalController>());
                 },
-                onCheckoutClicked: () async {
-                  await SmartDialog.show(
-                    builder: (_) => SafeArea(child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
-                      padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.h),
-                      decoration: BoxDecoration(
-                        color: AppColor.whiteColor,
-                        borderRadius: BorderRadius.circular(5)
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                onTamuClicked: () {
+                  TextEditingController guestNameController = TextEditingController(); 
+                  TextEditingController guestPhoneController = TextEditingController(); 
+                  if(controller.currentTransaction.value.supplierName.isEmpty){
+                    guestNameController..text=controller.currentTransaction.value.guestName;
+                    guestPhoneController..text=controller.currentTransaction.value.guestPhone;
+                  }
+                  final _formkey = GlobalKey<FormState>();
+                  SmartDialog.show(builder: (_){
+                    return AppDialog(
+                      content: Form(
+                        key: _formkey,
+                        child: Column(
                         mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 15.h,
                         children: [
-                          Text("Checkout", style: AppTextStyle.textTitleStyle(color: AppColor.primaryColor),),
-                          SizedBox(height: 5.h,),
-                          Text("Ringkasan Tagihan", style: AppTextStyle.textSubtitleStyle(),),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                            Text("Total: ", style: AppTextStyle.textBodyStyle(color: AppColor.grey500),),
-                            Text("Rp. 100.000", style: AppTextStyle.textBodyStyle(),),
-                          ],),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                            Text("Diskon: ", style: AppTextStyle.textBodyStyle(color: AppColor.grey500),),
-                            Text("Rp. 10.000", style: AppTextStyle.textBodyStyle(),),
-                          ],),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                            Text("Tagihan: ", style: AppTextStyle.textBodyStyle(color: AppColor.grey500),),
-                            Text("Rp. 90.000", style: AppTextStyle.textBodyStyle(),),
-                          ],),
-                          SizedBox(height: 10.h,),
-                          Text("Pembayaran", style: AppTextStyle.textSubtitleStyle(),),
-                          Row(
-                            spacing: 5.w,
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: Text("Tunai: ", style: AppTextStyle.textBodyStyle(),)
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: AppTextField(
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                                  context: context, hintText: "0", textAlign: TextAlign.right,)),
-                          ],), 
-                          SizedBox(height: 5.h,),
-                          Row(
-                            spacing: 5.w,
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: DropdownButton<String>(
-                                value: "Non-tunai",
-                                items: [
-                                  DropdownMenuItem(
-                                    value: "Non-tunai",
-                                    child: Text(
-                                      "Non-tunai", style: AppTextStyle.textBodyStyle(),
-                                    )
-                                  ),
-                                  DropdownMenuItem(
-                                    value: "QRIZ",
-                                    child: Text(
-                                      "QRIZ", style: AppTextStyle.textBodyStyle(),
-                                    )
-                                  ),
-                                ], 
-                                onChanged: (v){})
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child:AppTextField(
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                                  context: context, hintText: "0", textAlign: TextAlign.right,)),
-                          ],), 
-                          SizedBox(height: 5.h,),
-                          Row(
-                            spacing: 5.w,
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: DropdownButton<String>(
-                                value: "Non-tunai",
-                                items: [
-                                  DropdownMenuItem(
-                                    value: "Non-tunai",
-                                    child: Text(
-                                      "Non-tunai", style: AppTextStyle.textBodyStyle(),
-                                    )
-                                  ),
-                                  DropdownMenuItem(
-                                    value: "QRIZ",
-                                    child: Text(
-                                      "QRIZ", style: AppTextStyle.textBodyStyle(),
-                                    )
-                                  ),
-                                ], 
-                                onChanged: (v){})
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: AppTextField(
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                                  context: context, hintText: "0", textAlign: TextAlign.right,)),
-                          ],), 
-                          SizedBox(height: 5.h,),
-                          Row(
-                            spacing: 5.w,
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: Text("Komplimen: ", style: AppTextStyle.textBodyStyle(),)
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: AppTextField(
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                                  context: context, hintText: "0", textAlign: TextAlign.right,)),
-                          ],),
-                          SizedBox(height: 10.h,),
-                          Row(
-                            spacing: 5.w,
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: Text("Hutang: ", style: AppTextStyle.textBodyStyle(),)
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: AppTextField(
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                                  context: context, hintText: "0", textAlign: TextAlign.right,)),
-                          ],),
-                          SizedBox(height: 10.h),
-                          Row(
-                            spacing: 5.w,
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: Padding(
-                                  padding: EdgeInsets.only(left: 10.w),
-                                  child: Text("Total: ", style: AppTextStyle.textBodyStyle(fontWeight: FontWeight.bold),))
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: Container(
-                                  padding: EdgeInsets.only(top: 5.h),
-                                  decoration: BoxDecoration(
-                                    border: Border(top: BorderSide())
-                                  ),
-                                  child: AppTextField(
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                                  context: context, hintText: "0", textAlign: TextAlign.right,))),
-                          ],),
-                          SizedBox(height:10.h,),
-                          Row(
-                            spacing: 5.w,
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: Padding(
-                                  padding: EdgeInsets.only(left: 10.w),
-                                  child: Text("Kembalian: ", style: AppTextStyle.textBodyStyle(fontWeight: FontWeight.bold),))
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: AppTextField(
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                                  context: context, hintText: "0", textAlign: TextAlign.right,)),
-                          ],),
-                          SizedBox(height: 10.h,),
-                          Row(
-                            spacing: 5.w,
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: Padding(
-                                  padding: EdgeInsets.only(left: 10.w),
-                                  child: Text("Titipan: ", style: AppTextStyle.textBodyStyle(fontWeight: FontWeight.bold),))
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: AppTextField(
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                                  context: context, hintText: "0", textAlign: TextAlign.right,)),
-                          ],),
-                          SizedBox(height: 10.h,),
+                          Text("Tamu", style: AppTextStyle.textSubtitleStyle(),),
+                          AppTextFormField(
+                            inputAction: TextInputAction.next,
+                            textEditingController: guestNameController,
+                            // contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                            context: context, labelText: "Nama Customer*",
+                            validator: (value) {
+                              if(value==''){
+                                return 'Nama Tamu Wajib diisi';
+                              }
+                              return null;
+                            },
+                          ),
+                          AppTextFormField(
+                            inputAction: TextInputAction.done,
+                            textEditingController: guestPhoneController,
+                            // contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                            context: context, labelText: "Nomor Handphone/Telp",
+                            validator: (value) {
+                              if(value==''){
+                                return 'No HP Wajib diisi';
+                              }
+                              return null;
+                            },
+                          ),
                           SizedBox(
-                            width: double.infinity,
+                            width: double.maxFinite,
                             child: AppElevatedButton(
                               backgroundColor: AppColor.primaryColor,
                               foregroundColor: AppColor.whiteColor,
-                              onPressed: (){}, 
-                              text: Text("Checkout", style: AppTextStyle.textSubtitleStyle(),)),
+                              onPressed: (){
+                                if(_formkey.currentState?.validate() ?? false){
+                                  controller.addTamuToTrx(TamuDTO(
+                                    guestName: guestNameController.text,
+                                    guestPhone: guestPhoneController.text,
+                                  ));
+                                  SmartDialog.dismiss();
+                                }
+                              }, 
+                              text: Text("Simpan")
+                            ),
                           )
                         ],
                       ),
-                      
-                    ),
-                  ));
+                    ));
+                  });
+                },
+                onCheckoutClicked: () async {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context)=>CheckoutScreen(
+                      brutoVal: controller.currentTransaction.value.brutoVal,
+                      discVal: controller.currentTransaction.value.discVal, 
+                      nettoVal: controller.currentTransaction.value.nettoVal
+                    )));
                 }
               )
             )
@@ -396,7 +287,7 @@ Row(
                     ),
                     Obx(()=> Text(
                       controller.currentTransactionId.value==""? "Transaksi" : 
-                      "${shortenTrxIdAndName(controller.currentTransactionId.value, guestName: controller.currentTransaction.value.guestName)}",
+                      shortenTrxIdAndName(controller.currentTransactionId.value, guestName: controller.currentTransaction.value.guestName),
                       style: AppTextStyle.textSubtitleStyle(
                           color: AppColor.whiteColor),
                     )),

@@ -24,8 +24,8 @@ class AppElevatedButton extends ElevatedButton {
         onPressed: !disabled? onPressed : null,
         child: text,
         style: ElevatedButton.styleFrom(
-          foregroundColor: foregroundColor ?? AppColor.primaryColor,
-          backgroundColor: backgroundColor ?? Colors.white,
+          foregroundColor: !disabled ? foregroundColor ?? AppColor.primaryColor : AppColor.blackColor,
+          backgroundColor: !disabled ? backgroundColor ?? Colors.white : AppColor.grey500,
           visualDensity: size==AppElevatedButtonSize.small? VisualDensity.compact : VisualDensity.standard,
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           padding: padding,

@@ -19,11 +19,12 @@ class AppTextField extends TextField{
     super.autofocus,
     super.readOnly,
     super.textAlign,
-    super.maxLines
+    super.maxLines,
+    bool unfocusWhenTapOutside = true,
   }) : super(
-      onTapOutside: (_) {
+      onTapOutside: unfocusWhenTapOutside? (_) {
         FocusScope.of(context).unfocus();
-      },
+      } : null,
       onChanged: (val){
         if (isThousand && textEditingController!=null) {
           // Store the original cursor position

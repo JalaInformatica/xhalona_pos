@@ -17,5 +17,6 @@ class AppDialog extends AlertDialog {
       borderRadius: BorderRadius.circular(5)
     ),
     titleTextStyle: AppTextStyle.textSubtitleStyle(),
+    scrollable: true
   );
 }

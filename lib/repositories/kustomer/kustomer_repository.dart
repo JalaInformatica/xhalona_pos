@@ -41,11 +41,7 @@ class KustomerRepository extends AppRepository {
       isSuplier: isSuplier,
       actionId: actionId,
     );
-    List data = getResponseTrxData(result);
-    return data
-        .map((kustomer) => KustomerDAO.fromJson(kustomer))
-        .first
-        .suplierId;
+    return getResponseTrxData(result).first["NO_TRX"];
   }
 
   Future<String> deleteKustomer({

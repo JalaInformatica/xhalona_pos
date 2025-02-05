@@ -304,7 +304,7 @@ class TransactionDetailDAO {
   String companyId;
   String salesId;
   String rowId;
-  String? employeeId;
+  String employeeId;
   String? fullName;
   String partId;
   String partName;
@@ -354,7 +354,7 @@ class TransactionDetailDAO {
     this.companyId = "",
     this.salesId = "",
     this.rowId = "",
-    this.employeeId,
+    this.employeeId = "",
     this.fullName,
     this.partId = "",
     this.partName = "",

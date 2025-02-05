@@ -14,6 +14,8 @@ class AppColor {
   static const Color grey100 = Color.fromRGBO(245, 245, 245, 1);
   static const Color borderImageColor = Color(0xFFF5F5F5);
   static const Color doneColor = Colors.green;
+  static const Color blueColor = Colors.blue;
+  static const Color purpleColor = Colors.purple;
   static const Color dangerColor = Colors.red;
   static const Color whiteColor = Colors.white;
   static const Color blackColor = Colors.black;

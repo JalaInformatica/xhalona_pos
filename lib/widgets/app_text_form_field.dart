@@ -7,6 +7,7 @@ class AppTextFormField extends TextFormField {
     super.validator,
     super.onFieldSubmitted,
     super.maxLines,
+    super.focusNode,
     super.autofocus,
     TextStyle? style,
     String? hintText,
@@ -16,10 +17,11 @@ class AppTextFormField extends TextFormField {
     bool isScurePass = false,
     TextInputAction? inputAction = TextInputAction.done,
     required TextEditingController textEditingController,
+    bool unfocusWhenTapOutside = true,
     }) : super(
-      onTapOutside: (_) {
+      onTapOutside: unfocusWhenTapOutside? (_) {
         FocusScope.of(context).unfocus();
-      },
+      } : null,
       controller: textEditingController,
       obscureText: isScurePass,
       style: style ?? AppTextStyle.textBodyStyle(),

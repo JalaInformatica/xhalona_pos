@@ -24,8 +24,8 @@ class AppTextButton extends TextButton {
         onPressed: !disabled? onPressed : null,
         child: child,
         style: TextButton.styleFrom(
-          foregroundColor: foregroundColor ?? AppColor.primaryColor,
-          backgroundColor: backgroundColor ?? Colors.white,
+          foregroundColor: !disabled ? foregroundColor ?? AppColor.primaryColor : AppColor.blackColor,
+          backgroundColor: !disabled ? backgroundColor ?? Colors.white : AppColor.grey300,
           visualDensity: size == AppTextButtonSize.small? VisualDensity.compact : VisualDensity.standard,
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           padding: padding,
