@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/models/dao/karyawan.dart';
+import 'package:xhalona_pos/widgets/app_bottombar.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/repositories/karyawan/karyawan_repository.dart';
@@ -52,6 +53,7 @@ class MasterKaryawanScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
@@ -314,7 +316,7 @@ class MasterKaryawanScreen extends StatelessWidget {
                           isEdit: true,
                           isDelete: true,
                           onEdit: () {
-                            goTo(context,karyawan);
+                            goTo(context, karyawan);
                           },
                         ),
                       ];
@@ -325,13 +327,17 @@ class MasterKaryawanScreen extends StatelessWidget {
             ],
           ),
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: buildFloatingActionButton(context, screenWidth),
+        bottomNavigationBar: buildBottomNavigationBar(context),
       ),
     );
   }
 
   Future<dynamic> goTo(BuildContext context, KaryawanDAO karyawan) {
     return Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => AddEditKaryawan(karyawan: karyawan)),
+        MaterialPageRoute(
+            builder: (context) => AddEditKaryawan(karyawan: karyawan)),
         (route) => false);
   }
 

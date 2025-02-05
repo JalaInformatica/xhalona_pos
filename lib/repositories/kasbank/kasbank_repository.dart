@@ -68,4 +68,14 @@ class KasBankRepository extends AppRepository {
     List data = getResponseTrxData(result);
     return data.map((kustomer) => KasBankDAO.fromJson(kustomer)).first.acId;
   }
+
+  Future<String> printKasBank({
+    String? voucherNo,
+  }) async {
+    var result = await _KasBankService.printKasBank(
+      voucherNo: voucherNo,
+    );
+    String url = getResponseURLData(result);
+    return url;
+  }
 }

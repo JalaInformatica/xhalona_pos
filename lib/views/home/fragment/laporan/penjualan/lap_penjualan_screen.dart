@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/widgets/app_bottombar.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_viewer_screen.dart';
@@ -59,6 +60,8 @@ class _ReportFormPageState extends State<LapPenjualanScreen> {
         });
       }
     }
+
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return WillPopScope(
       onWillPop: () async {
@@ -240,6 +243,7 @@ class _ReportFormPageState extends State<LapPenjualanScreen> {
                       Center(
                           child: masterButton(
                               handleLapPenjualan, "Cetak", Icons.print)),
+                      SizedBox(height: 70),
                     ],
                   ),
                 ),
@@ -247,6 +251,9 @@ class _ReportFormPageState extends State<LapPenjualanScreen> {
             ],
           ),
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: buildFloatingActionButton(context, screenWidth),
+        bottomNavigationBar: buildBottomNavigationBar(context),
       ),
     );
   }

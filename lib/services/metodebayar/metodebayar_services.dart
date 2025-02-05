@@ -35,6 +35,7 @@ class MetodeBayarServices {
   }
 
   Future<String> addEditMetodeBayar({
+    String? payMethodeId,
     String? payMethodeGroup,
     String? payMethodeName,
     String? isCash,
@@ -56,6 +57,7 @@ class MetodeBayarServices {
         "COMPANY_ID": api.companyId,
         "USER_ID": api.userId,
         "SESSION_LOGIN_ID": api.sessionId,
+        if (actionId == '1') "PAYMENT_METHOD_ID": payMethodeId,
         "PAYMENT_METHOD_NAME": payMethodeName,
         "PAYMENT_METHOD_GROUP": payMethodeGroup,
         "IS_CASH": isCash,

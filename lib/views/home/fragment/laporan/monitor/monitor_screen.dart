@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/karyawan.dart';
+import 'package:xhalona_pos/widgets/app_bottombar.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/karyawan_controller.dart';
@@ -44,6 +45,7 @@ class _MonitorScreenState extends State<MonitorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
@@ -258,9 +260,13 @@ class _MonitorScreenState extends State<MonitorScreen> {
                   masterButton(() {}, "Laporan Kasir", Icons.menu_book),
                 ],
               ),
+              SizedBox(height: 70),
             ],
           ),
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: buildFloatingActionButton(context, screenWidth),
+        bottomNavigationBar: buildBottomNavigationBar(context),
       ),
     );
   }

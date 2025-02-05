@@ -151,4 +151,28 @@ class KasBankServices {
 
     return ResponseHandler.handle(response);
   }
+
+  Future<String> printKasBank({
+    String? voucherNo,
+  }) async {
+    await api.fetchUserSessionInfo();
+    var url = '/SALES/lap_finance';
+    var body = jsonEncode({
+      "rq": {
+        "ACTION_ID": "PRINT_KASBANK",
+        "IP": api.ip,
+        "COMPANY_ID": api.companyId,
+        "SITE_ID": "",
+        "USER_ID": api.userId,
+        "SESSION_LOGIN_ID": api.sessionId,
+        "TEMPLATE": "Print_Kas_Bank",
+        "VOUCHER_NO": voucherNo ?? ""
+      }
+    });
+
+    var response =
+        await api.post(url, headers: await api.requestHeaders(), body: body);
+
+    return ResponseHandler.handle(response);
+  }
 }

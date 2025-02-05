@@ -23,6 +23,7 @@ class MetodeBayarRepository extends AppRepository {
   }
 
   Future<String> addEditMetodeBayar({
+    String? payMethodeId,
     String? payMethodeGroup,
     String? payMethodeName,
     String? isCash,
@@ -36,6 +37,7 @@ class MetodeBayarRepository extends AppRepository {
     String? actionId,
   }) async {
     var result = await _MetodeBayarService.addEditMetodeBayar(
+      payMethodeId: payMethodeId,
       payMethodeGroup: payMethodeGroup,
       payMethodeName: payMethodeName,
       isCash: isCash,
