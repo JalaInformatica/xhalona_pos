@@ -7,6 +7,7 @@ import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:xhalona_pos/views/home/home_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
 import 'package:xhalona_pos/views/authentication/login/login_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/profile/profile_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/finance/finance_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/dashboard/dashboard_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/coa/master_coa_screen.dart';
@@ -92,7 +93,7 @@ class HomeScreen extends StatelessWidget {
             controller.selectedMenuName.value = menuName;
           } else {
             Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => LoginScreen()),
+                MaterialPageRoute(builder: (context) => ProfileScreen()),
                 (route) => false);
           }
         },
@@ -131,50 +132,81 @@ class HomeScreen extends StatelessWidget {
             ]))));
   }
 
-  Widget profileInfo() {
+  Widget profileInfo(BuildContext context) {
     return Obx(() => Container(
-        width: double.infinity,
-        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10.w),
-        decoration: BoxDecoration(
-          color: AppColor.primaryColor,
-        ),
-        child: Row(
-          children: [
-            AppIconButton(
-              onPressed: () {},
-              icon: Icon(Icons.menu),
-              foregroundColor: AppColor.whiteColor,
-            ),
-            Spacer(),
-            AppIconButton(
-              foregroundColor: AppColor.whiteColor,
-              onPressed: () {},
-              icon: Icon(Icons.shopping_bag),
-            ),
-            AppIconButton(
-              foregroundColor: AppColor.whiteColor,
-              onPressed: () {},
-              icon: Icon(Icons.notifications),
-            ),
-            Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    "AMIRA",
-                    style: AppTextStyle.textBodyStyle(
-                      color: AppColor.whiteColor,
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10.w),
+          decoration: BoxDecoration(
+            color: AppColor.primaryColor,
+          ),
+          child: Row(
+            children: [
+              AppIconButton(
+                onPressed: () {},
+                icon: Icon(Icons.menu),
+                foregroundColor: AppColor.whiteColor,
+              ),
+              Spacer(),
+              AppIconButton(
+                foregroundColor: AppColor.whiteColor,
+                onPressed: () {},
+                icon: Icon(Icons.shopping_bag),
+              ),
+              AppIconButton(
+                foregroundColor: AppColor.whiteColor,
+                onPressed: () {},
+                icon: Icon(Icons.notifications),
+              ),
+              GestureDetector(
+                onTap: () {
+                  showMenu(
+                    color: Colors.white,
+                    context: context,
+                    position: RelativeRect.fromLTRB(100, 100, 0, 0),
+                    items: [
+                      PopupMenuItem(
+                        child: Text("Settings"),
+                        value: "settings",
+                      ),
+                      PopupMenuItem(
+                        child: Text("Logout"),
+                        value: "logout",
+                      ),
+                    ],
+                  ).then((value) {
+                    if (value == "logout") {
+                      controller.logout();
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (context) => LoginScreen()),
+                          (route) => false);
+                    } else if (value == "settings") {
+                      // Get.to(SettingsPage());
+                    }
+                  });
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "AMIRA",
+                      style: AppTextStyle.textBodyStyle(
+                        color: AppColor.whiteColor,
+                      ),
                     ),
-                  ),
-                  Text(
-                    controller.profileData.value.userName,
-                    style: AppTextStyle.textCaptionStyle(
-                      color: AppColor.whiteColor,
+                    Text(
+                      controller.profileData.value.userName,
+                      style: AppTextStyle.textCaptionStyle(
+                        color: AppColor.whiteColor,
+                      ),
                     ),
-                  ),
-                ])
-          ],
-        )));
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ));
   }
 
   Widget masterButton(VoidCallback onPressed, String label, IconData icon) {
@@ -223,7 +255,7 @@ class HomeScreen extends StatelessWidget {
             backgroundColor: AppColor.whiteColor,
             body: Column(
               children: [
-                profileInfo(),
+                profileInfo(context),
                 Expanded(child: menuScreen(controller.selectedMenuName.value)),
               ],
             ),

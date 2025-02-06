@@ -153,38 +153,39 @@ class _AddEditPaketState extends State<AddEditPaket> {
       children: [
         Text(label, style: AppTextStyle.textTitleStyle()),
         SizedBox(height: 8),
-        TypeAheadField<String>(
+        TypeAheadField<ProductDAO>(
           suggestionsCallback: (pattern) async {
             updateFilterValue(pattern); // Update filter
             return items
                 .where((item) =>
                     item.partName.toLowerCase().contains(pattern.toLowerCase()))
-                .map((item) => item.partName)
-                .toList();
+                .toList(); // Pencarian berdasarkan nama
           },
           builder: (context, textEditingController, focusNode) {
-            // Set nilai controller dari textEditingController yang diberikan oleh TypeAheadField
             controller = textEditingController;
 
             return TextField(
-              controller: controller, // Gunakan controller yang tetap
+              controller: controller,
               focusNode: focusNode,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                hintText: "Cari produk...",
+                hintText: "Cari nama...",
               ),
-              onChanged: onChanged, // Callback saat teks berubah
+              onChanged: (value) {
+                // Jangan lakukan apa-apa saat mengetik, biarkan saat dipilih
+              },
             );
           },
-          itemBuilder: (context, suggestion) {
+          itemBuilder: (context, ProductDAO suggestion) {
             return ListTile(
-              title: Text(suggestion),
+              title: Text(suggestion.partName
+                  .toString()), // Tampilkan ID sebagai info tambahan
             );
           },
-          onSelected: (suggestion) {
-            controller.text =
-                suggestion; // Perbarui teks dengan pilihan pengguna
-            onChanged(suggestion); // Kirim perubahan ke callback
+          onSelected: (ProductDAO suggestion) {
+            controller.text = suggestion.partName
+                .toString(); // Tampilkan nama produk di field
+            onChanged(suggestion.partId); // Simpan ID produk di _product
           },
         ),
       ],

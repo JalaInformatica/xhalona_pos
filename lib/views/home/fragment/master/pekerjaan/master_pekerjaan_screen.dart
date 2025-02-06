@@ -66,14 +66,6 @@ class MasterPekerjaanScreen extends StatelessWidget {
             "Master Pekerjaan",
             style: AppTextStyle.textTitleStyle(),
           ),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => HomeScreen()),
-                  (route) => false); // Jika tidak, gunakan navigator default
-            }, // Navigasi kembali ke halaman sebelumnya
-          ),
         ),
         backgroundColor: AppColor.whiteColor,
         body: Padding(

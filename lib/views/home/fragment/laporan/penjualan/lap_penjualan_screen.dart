@@ -78,14 +78,6 @@ class _ReportFormPageState extends State<LapPenjualanScreen> {
             style: AppTextStyle.textTitleStyle(color: Colors.white),
           ),
           backgroundColor: AppColor.secondaryColor,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => HomeScreen()),
-                  (route) => false); // Jika tidak, gunakan navigator default
-            }, // Navigasi kembali ke halaman sebelumnya
-          ),
         ),
         body: SingleChildScrollView(
           child: Column(
