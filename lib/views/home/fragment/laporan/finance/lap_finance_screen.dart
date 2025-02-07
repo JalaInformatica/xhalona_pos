@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/widgets/app_bottombar.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 
 class LapFinanceScreen extends StatefulWidget {
@@ -188,6 +189,9 @@ class _ReportFormPageState extends State<LapFinanceScreen> {
             ],
           ),
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: buildFloatingActionButton(context, screenWidth),
+        bottomNavigationBar: buildBottomNavigationBar(context),
       ),
     );
   }

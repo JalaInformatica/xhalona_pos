@@ -1,21 +1,20 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:xhalona_pos/models/dao/coa.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
-import 'package:xhalona_pos/widgets/app_bottombar.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
+import 'package:xhalona_pos/models/dao/metodebayar.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:xhalona_pos/repositories/coa/coa_repository.dart';
-import 'package:xhalona_pos/views/home/fragment/master/coa/add_edit_coa.dart';
-import 'package:xhalona_pos/views/home/fragment/master/coa/coa_controller.dart';
+import 'package:xhalona_pos/repositories/metodebayar/metodebayar_repository.dart';
+import 'package:xhalona_pos/views/home/fragment/finance/metodebayar/add_edit_metodebayar.dart';
+import 'package:xhalona_pos/views/home/fragment/finance/metodebayar/metodebayar_controller.dart';
 
 // ignore: must_be_immutable
-class MasterCoaScreen extends StatelessWidget {
-  MasterCoaScreen({super.key});
+class MetodeBayarScreen extends StatelessWidget {
+  MetodeBayarScreen({super.key});
 
-  final CoaController controller = Get.put(CoaController());
-  CoaRepository _coaRepository = CoaRepository();
+  final MetodeBayarController controller = Get.put(MetodeBayarController());
+  MetodeBayarRepository _metodebayarRepository = MetodeBayarRepository();
 
   Widget mButton(
       VoidCallback onTap, String label, IconData icon, double? width) {
@@ -51,7 +50,7 @@ class MasterCoaScreen extends StatelessWidget {
     );
   }
 
-  Future<dynamic> messageHapus(String acId, String namaRekening) {
+  Future<dynamic> messageHapus(String payMethodeId, String namaRekening) {
     return SmartDialog.show(builder: (context) {
       return AlertDialog(
           shape: RoundedRectangleBorder(
@@ -85,7 +84,8 @@ class MasterCoaScreen extends StatelessWidget {
             ),
             TextButton(
               onPressed: () async {
-                String result = await _coaRepository.deleteCoa(accId: acId);
+                String result = await _metodebayarRepository.deleteMetodeBayar(
+                    payMethodeId: payMethodeId);
 
                 bool isSuccess = result == "1";
                 if (isSuccess) {
@@ -110,15 +110,15 @@ class MasterCoaScreen extends StatelessWidget {
     });
   }
 
-  Future<dynamic> goTo(BuildContext context, CoaDAO coa) {
+  Future<dynamic> goTo(BuildContext context, MetodeBayarDAO metodebayar) {
     return Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => AddEditCoa(coa: coa)),
+        MaterialPageRoute(
+            builder: (context) => AddEditMetodeBayar(metodebayar: metodebayar)),
         (route) => false);
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
@@ -129,8 +129,16 @@ class MasterCoaScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            "Master Coa",
+            "Metode Bayar",
             style: AppTextStyle.textTitleStyle(),
+          ),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => HomeScreen()),
+                  (route) => false); // Jika tidak, gunakan navigator default
+            }, // Navigasi kembali ke halaman sebelumnya
           ),
         ),
         backgroundColor: AppColor.whiteColor,
@@ -144,9 +152,10 @@ class MasterCoaScreen extends StatelessWidget {
             children: [
               mButton(() {
                 Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => AddEditCoa()),
+                    MaterialPageRoute(
+                        builder: (context) => AddEditMetodeBayar()),
                     (route) => false);
-              }, "Add Coa", Icons.add, double.infinity),
+              }, "Add MetodeBayar", Icons.add, double.infinity),
               SizedBox(
                 height: 5.h,
               ),
@@ -160,70 +169,129 @@ class MasterCoaScreen extends StatelessWidget {
                     pageNo: controller.pageNo.value,
                     pageRow: controller.pageRow.value,
                     titles: [
-                      AppTableTitle(value: "Kode "),
-                      AppTableTitle(value: "Nama "),
-                      AppTableTitle(value: "jenis"),
-                      AppTableTitle(value: "D/K"),
-                      AppTableTitle(value: "TM"),
+                      AppTableTitle(value: "Metode Pembayaran"),
+                      AppTableTitle(value: "Jenis Metode Pembayaran"),
+                      AppTableTitle(value: "Debit"),
+                      AppTableTitle(value: "Cash"),
+                      AppTableTitle(value: "Otomatis"),
+                      AppTableTitle(value: "Sesuai Tagihan"),
+                      AppTableTitle(value: "Kurang dari Tagihan"),
+                      AppTableTitle(value: "Hutang"),
+                      AppTableTitle(value: "Kartu"),
                       AppTableTitle(value: "Aksi"),
                     ],
-                    data: List.generate(controller.coaHeader.length, (int i) {
-                      var coa = controller.coaHeader[i];
+                    data: List.generate(controller.metodebayarHeader.length,
+                        (int i) {
+                      var metodebayar = controller.metodebayarHeader[i];
                       return [
                         AppTableCell(
-                            value: coa.acId,
+                            value: metodebayar.payMetodeName,
                             index: i,
                             onEdit: () {
-                              goTo(context, coa);
+                              goTo(context, metodebayar);
                             },
                             onDelete: () async {
-                              await messageHapus(coa.acId, coa.namaRekening);
+                              await messageHapus(metodebayar.payMetodeId,
+                                  metodebayar.payMetodeName);
                             },
                             showOptionsOnTap: true),
                         AppTableCell(
-                            value: coa.namaRekening,
+                            value: metodebayar.payMetodeGroup,
                             index: i,
                             onEdit: () {
-                              goTo(context, coa);
+                              goTo(context, metodebayar);
                             },
                             onDelete: () async {
-                              await messageHapus(coa.acId, coa.namaRekening);
+                              await messageHapus(metodebayar.payMetodeId,
+                                  metodebayar.payMetodeName);
                             },
                             showOptionsOnTap: true),
                         AppTableCell(
-                            value: coa.jenisRek,
+                            value: metodebayar.isCard == true ? 'Ya' : 'Tidak',
                             index: i,
                             onEdit: () {
-                              goTo(context, coa);
+                              goTo(context, metodebayar);
                             },
                             onDelete: () async {
-                              await messageHapus(coa.acId, coa.namaRekening);
+                              await messageHapus(metodebayar.payMetodeId,
+                                  metodebayar.payMetodeName);
                             },
                             showOptionsOnTap: true),
                         AppTableCell(
-                            value: coa.flagDk,
+                            value: metodebayar.isCash == true ? 'Ya' : 'Tidak',
                             index: i,
                             onEdit: () {
-                              goTo(context, coa);
+                              goTo(context, metodebayar);
                             },
                             onDelete: () async {
-                              await messageHapus(coa.acId, coa.namaRekening);
+                              await messageHapus(metodebayar.payMetodeId,
+                                  metodebayar.payMetodeName);
                             },
                             showOptionsOnTap: true),
                         AppTableCell(
-                            value: coa.flagTm!,
+                            value:
+                                metodebayar.isDefault == true ? 'Ya' : 'Tidak',
                             index: i,
                             onEdit: () {
-                              goTo(context, coa);
+                              goTo(context, metodebayar);
                             },
                             onDelete: () async {
-                              await messageHapus(coa.acId, coa.namaRekening);
+                              await messageHapus(metodebayar.payMetodeId,
+                                  metodebayar.payMetodeName);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value:
+                                metodebayar.isFixHmt == true ? 'Ya' : 'Tidak',
+                            index: i,
+                            onEdit: () {
+                              goTo(context, metodebayar);
+                            },
+                            onDelete: () async {
+                              await messageHapus(metodebayar.payMetodeId,
+                                  metodebayar.payMetodeName);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: metodebayar.isBellowHmt == true
+                                ? 'Ya'
+                                : 'Tidak',
+                            index: i,
+                            onEdit: () {
+                              goTo(context, metodebayar);
+                            },
+                            onDelete: () async {
+                              await messageHapus(metodebayar.payMetodeId,
+                                  metodebayar.payMetodeName);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: 'Tidak',
+                            index: i,
+                            onEdit: () {
+                              goTo(context, metodebayar);
+                            },
+                            onDelete: () async {
+                              await messageHapus(metodebayar.payMetodeId,
+                                  metodebayar.payMetodeName);
+                            },
+                            showOptionsOnTap: true),
+                        AppTableCell(
+                            value: 'Tidak',
+                            index: i,
+                            onEdit: () {
+                              goTo(context, metodebayar);
+                            },
+                            onDelete: () async {
+                              await messageHapus(metodebayar.payMetodeId,
+                                  metodebayar.payMetodeName);
                             },
                             showOptionsOnTap: true),
                         AppTableCell(
                           index: i,
                           onDelete: () async {
-                            await messageHapus(coa.acId, coa.namaRekening);
+                            await messageHapus(metodebayar.payMetodeId,
+                                metodebayar.payMetodeName);
                           },
                           value: "", // Ganti dengan URL gambar jika ada
                           isEdit: true,
@@ -231,8 +299,8 @@ class MasterCoaScreen extends StatelessWidget {
                           onEdit: () {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (context) => AddEditCoa(
-                                          coa: coa,
+                                    builder: (context) => AddEditMetodeBayar(
+                                          metodebayar: metodebayar,
                                         )),
                                 (route) => false);
                           },
@@ -245,9 +313,6 @@ class MasterCoaScreen extends StatelessWidget {
             ],
           ),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: buildFloatingActionButton(context, screenWidth),
-        bottomNavigationBar: buildBottomNavigationBar(context),
       ),
     );
   }

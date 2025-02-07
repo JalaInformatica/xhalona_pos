@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 import 'package:xhalona_pos/models/dao/user.dart';
 import 'package:xhalona_pos/models/dao/structure.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:xhalona_pos/core/constant/local_storage.dart';
 import 'package:xhalona_pos/repositories/user/user_repository.dart';
 import 'package:xhalona_pos/repositories/structure/structure_repository.dart';
 
@@ -19,6 +21,13 @@ class HomeController extends GetxController {
   void onInit() {
     super.onInit();
     fetchMenu();
+  }
+
+  Future<void> logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await _userRepository.logoutProfile();
+    await prefs.remove(LocalStorageConst.userId);
+    await prefs.remove(LocalStorageConst.sessionLoginId);
   }
 
   Future<void> fetchMenu() async {

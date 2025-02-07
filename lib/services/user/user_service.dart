@@ -42,4 +42,23 @@ class UserService {
       throw Exception('Gagal Mendapatkan data pengguna');
     }
   }
+
+  Future<String> logoutProfile() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var url = '/SYSMAN/login';
+    var body = jsonEncode({
+      "rqLogout": {
+        "USER_ID": prefs.getString(LocalStorageConst.userId),
+        "SESSION_LOGIN_ID": prefs.getString(LocalStorageConst.sessionLoginId),
+      }
+    });
+
+    var response = await api.post(
+      url,
+      headers: await api.requestHeaders(),
+      body: body,
+    );
+
+    return ResponseHandler.handle(response);
+  }
 }

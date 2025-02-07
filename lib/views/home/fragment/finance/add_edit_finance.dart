@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
@@ -6,9 +7,13 @@ import 'package:xhalona_pos/models/dao/kasbank.dart';
 import 'package:xhalona_pos/models/dao/kustomer.dart';
 import 'package:xhalona_pos/models/dao/rekening.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:xhalona_pos/repositories/kasbank/kasbank_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/finance/finance_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/rekening/rekening_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/finance/metodebayar/metodebayar_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/finance/kasbankdetail/edit_kasbankdetail.dart';
+import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_viewer_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplier_kustomer_controller.dart';
 
 // ignore: must_be_immutable
@@ -37,7 +42,6 @@ class _AddEditFinanceState extends State<AddEditFinance> {
   bool _isLoading = true;
 
   final List<String> jenisTrx = ['M', 'K'];
-  final List<String> flagTm = ['T', 'M'];
 
   @override
   void initState() {
@@ -47,6 +51,8 @@ class _AddEditFinanceState extends State<AddEditFinance> {
       // Inisialisasi data dari finance jika tersedia
       _noTrxController.text = widget.finance!.voucherNo ?? '';
       _ketController.text = widget.finance!.ket ?? '';
+      _tanggalController.text =
+          widget.finance!.voucherDate.split("T").first ?? '';
       _jmlBayarController.text = widget.finance!.jmlBayar.toString() ?? '';
       _jenisTrx = widget.finance!.jenisAc ?? '';
       _kustomer = widget.finance!.refName ?? '';
@@ -95,6 +101,17 @@ class _AddEditFinanceState extends State<AddEditFinance> {
       }
     }
 
+    void handlePrint() async {
+      controllerFi.printLapFinance(_noTrxController.text).then((url) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+              builder: (context) =>
+                  LapPenjualanViewerScreen(url, "Print Kas Bank")),
+          (route) => false,
+        );
+      });
+    }
+
     void handleuPost() async {
       String? result;
       if (widget.finance!.isApproved == false) {
@@ -138,9 +155,29 @@ class _AddEditFinanceState extends State<AddEditFinance> {
           ),
           backgroundColor: AppColor.secondaryColor,
           actions: [
-            masterButton(() {}, '', Icons.settings),
+            widget.finance != null && widget.finance!.isApproved == false
+                ? masterButton(() {
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                            builder: (context) => AddEditKasBankDetail(
+                                  noTrx: widget.finance!.voucherNo,
+                                  ket: widget.finance!.ket,
+                                  rowId: widget.finance!.rowId.toString(),
+                                )),
+                        (route) => false);
+                  }, '', Icons.add)
+                : SizedBox(),
             SizedBox(width: 5),
-            masterButton(() {}, 'Print', Icons.print),
+            masterButton(() {
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => MetodeBayarScreen()),
+                  (route) => false);
+            }, '', Icons.settings),
+            SizedBox(width: 5),
+            widget.finance != null
+                ? masterButton(handlePrint, 'Print', Icons.print,
+                    color: Colors.deepOrange)
+                : SizedBox(),
             SizedBox(width: 5),
           ],
         ),
@@ -159,33 +196,65 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                           isEnabled: false),
                       SizedBox(height: 16),
 
-                      buildDropdownFieldJK("Jenis Trx", jenisTrx, (value) {
-                        setState(() {
-                          _jenisTrx = value;
-                        });
-                      }),
+                      buildDropdownFieldJK(
+                        "Jenis Trx",
+                        jenisTrx,
+                        (value) {
+                          setState(() {
+                            _jenisTrx = value;
+                          });
+                        },
+                        enabled: widget.finance != null &&
+                                widget.finance!.isApproved == true
+                            ? false
+                            : true,
+                      ),
                       SizedBox(height: 16),
 
-                      buildDropdownField("Akun", rekening, (value) {
-                        setState(() {
-                          _finance = value;
-                        });
-                      }),
+                      buildTypeAheadFieldAkun(
+                        "Akun",
+                        rekening,
+                        (value) {
+                          setState(() {
+                            _finance = value;
+                          });
+                        },
+                        controllerKar.updateFilterValue,
+                        enabled: widget.finance != null &&
+                                widget.finance!.isApproved == true
+                            ? false
+                            : true,
+                      ),
                       SizedBox(height: 16),
 
-                      buildDateField("Tanggal", _tanggalController),
+                      buildDateField(
+                        "Tanggal",
+                        _tanggalController,
+                        isEnable: widget.finance != null &&
+                                widget.finance!.isApproved == true
+                            ? false
+                            : true,
+                      ),
                       SizedBox(height: 16),
 
-                      buildDropdownFieldRef("Diterima dari", kustomer, (value) {
+                      buildTypeAheadFieldRef("Diterima dari", kustomer,
+                          (value) {
                         setState(() {
                           _kustomer = value;
                         });
-                      }),
+                      }, controllerKus.updateFilterValue),
                       SizedBox(height: 16),
 
                       // Field Nama
                       buildTextField(
-                          "Keterangan", "Masukkan keterangan", _ketController),
+                        "Keterangan",
+                        "Masukkan keterangan",
+                        _ketController,
+                        isEnabled: widget.finance != null &&
+                                widget.finance!.isApproved == true
+                            ? false
+                            : true,
+                      ),
                       SizedBox(height: 16),
 
                       // Field BPJS Kesehatan
@@ -206,7 +275,8 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                                       widget.finance!.isApproved == true
                                   ? 'UnPost'
                                   : 'Post',
-                              Icons.post_add),
+                              Icons.post_add,
+                              color: Colors.deepOrange),
                           masterButton(() {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
@@ -223,13 +293,14 @@ class _AddEditFinanceState extends State<AddEditFinance> {
     );
   }
 
-  Widget masterButton(VoidCallback onTap, String label, IconData icon) {
+  Widget masterButton(VoidCallback onTap, String label, IconData icon,
+      {Color color = AppColor.primaryColor}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
         decoration: BoxDecoration(
-          color: AppColor.primaryColor, // Background color
+          color: color, // Background color
           borderRadius: BorderRadius.circular(8), // Rounded corners
           boxShadow: [
             BoxShadow(
@@ -256,10 +327,12 @@ class _AddEditFinanceState extends State<AddEditFinance> {
     );
   }
 
-  Widget buildDateField(String label, TextEditingController controller) {
+  Widget buildDateField(String label, TextEditingController controller,
+      {bool isEnable = true}) {
     return TextFormField(
       controller: controller,
       readOnly: true,
+      enabled: isEnable,
       decoration: InputDecoration(
         labelText: label,
         border: OutlineInputBorder(),
@@ -312,27 +385,6 @@ class _AddEditFinanceState extends State<AddEditFinance> {
     );
   }
 
-  Widget buildDropdownFieldRef(
-      String label, List<KustomerDAO> items, ValueChanged<String?> onChanged) {
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(),
-      ),
-      items: items.map((item) {
-        return DropdownMenuItem(
-            value: item.suplierId, child: Text(item.suplierName));
-      }).toList(),
-      onChanged: onChanged,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return '$label tidak boleh kosong';
-        }
-        return null;
-      },
-    );
-  }
-
   Widget buildShimmerLoading() {
     return ListView.builder(
       padding: EdgeInsets.all(16),
@@ -351,28 +403,121 @@ class _AddEditFinanceState extends State<AddEditFinance> {
     );
   }
 
-  Widget buildDropdownField(
-      String label, List<RekeningDAO> items, ValueChanged<String?> onChanged) {
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(),
-      ),
-      items: items.map((item) {
-        return DropdownMenuItem(value: item.acId, child: Text(item.namaAc));
-      }).toList(),
-      onChanged: onChanged,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return '$label tidak boleh kosong';
-        }
-        return null;
-      },
+  Widget buildTypeAheadFieldAkun(
+    String label,
+    List<RekeningDAO> items,
+    ValueChanged<String?> onChanged,
+    void Function(String newFilterValue) updateFilterValue, {
+    bool enabled = true,
+  }) {
+    TextEditingController controller = TextEditingController();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: AppTextStyle.textTitleStyle()),
+        SizedBox(height: 8),
+        AbsorbPointer(
+          // Membuat field tidak interaktif saat disabled
+          absorbing: !enabled,
+          child: TypeAheadField<RekeningDAO>(
+            suggestionsCallback: (pattern) async {
+              if (!enabled) return []; // Tidak ada saran jika disabled
+              updateFilterValue(pattern);
+              return items
+                  .where((item) => item.bankAcName!
+                      .toLowerCase()
+                      .contains(pattern.toLowerCase()))
+                  .toList();
+            },
+            builder: (context, textEditingController, focusNode) {
+              controller = textEditingController;
+
+              return TextField(
+                controller: controller,
+                focusNode: focusNode,
+                enabled:
+                    enabled, // Mengatur apakah field bisa diketik atau tidak
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: enabled ? "Cari akun..." : "Input dinonaktifkan",
+                ),
+                onChanged: (value) {
+                  // Biarkan kosong, hanya proses saat dipilih
+                },
+              );
+            },
+            itemBuilder: (context, RekeningDAO suggestion) {
+              return ListTile(
+                title: Text(suggestion.bankAcName.toString()),
+              );
+            },
+            onSelected: (RekeningDAO suggestion) {
+              controller.text = suggestion.bankAcName.toString();
+              onChanged(suggestion.acId);
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildTypeAheadFieldRef(
+    String label,
+    List<KustomerDAO> items,
+    ValueChanged<String?> onChanged,
+    void Function(String newFilterValue) updateFilterValue,
+  ) {
+    TextEditingController controller = TextEditingController();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: AppTextStyle.textTitleStyle()),
+        SizedBox(height: 8),
+        TypeAheadField<KustomerDAO>(
+          suggestionsCallback: (pattern) async {
+            updateFilterValue(pattern); // Update filter
+            return items
+                .where((item) => item.suplierName
+                    .toLowerCase()
+                    .contains(pattern.toLowerCase()))
+                .toList(); // Pencarian berdasarkan nama
+          },
+          builder: (context, textEditingController, focusNode) {
+            controller = textEditingController;
+
+            return TextField(
+              controller: controller,
+              focusNode: focusNode,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: "Cari nama...",
+              ),
+              onChanged: (value) {
+                // Jangan lakukan apa-apa saat mengetik, biarkan saat dipilih
+              },
+            );
+          },
+          itemBuilder: (context, KustomerDAO suggestion) {
+            return ListTile(
+              title: Text(suggestion.suplierName
+                  .toString()), // Tampilkan ID sebagai info tambahan
+            );
+          },
+          onSelected: (KustomerDAO suggestion) {
+            controller.text = suggestion.suplierName
+                .toString(); // Tampilkan nama produk di field
+            onChanged(suggestion.suplierId); // Simpan ID produk di _product
+          },
+        ),
+      ],
     );
   }
 
   Widget buildDropdownFieldJK(
-      String label, List<String> items, ValueChanged<String?> onChanged) {
+      String label, List<String> items, ValueChanged<String?> onChanged,
+      {bool enabled = true}) {
     return DropdownButtonFormField<String>(
       decoration: InputDecoration(
         labelText: label,
@@ -381,13 +526,14 @@ class _AddEditFinanceState extends State<AddEditFinance> {
       items: items.map((item) {
         return DropdownMenuItem(value: item, child: Text(item));
       }).toList(),
-      onChanged: onChanged,
+      onChanged: enabled ? onChanged : null, // Disable onChanged if not enabled
       validator: (value) {
         if (value == null || value.isEmpty) {
           return '$label tidak boleh kosong';
         }
         return null;
       },
+      disabledHint: Text('Pilih $label'), // Optional: hint when disabled
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/models/dao/rekening.dart';
+import 'package:xhalona_pos/widgets/app_bottombar.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/repositories/rekening/rekening_repository.dart';
@@ -46,6 +47,7 @@ class MasterRekeningScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
@@ -58,14 +60,6 @@ class MasterRekeningScreen extends StatelessWidget {
           title: Text(
             "Master Rekening",
             style: AppTextStyle.textTitleStyle(),
-          ),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => HomeScreen()),
-                  (route) => false); // Jika tidak, gunakan navigator default
-            }, // Navigasi kembali ke halaman sebelumnya
           ),
         ),
         backgroundColor: AppColor.whiteColor,
@@ -205,6 +199,9 @@ class MasterRekeningScreen extends StatelessWidget {
             ],
           ),
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: buildFloatingActionButton(context, screenWidth),
+        bottomNavigationBar: buildBottomNavigationBar(context),
       ),
     );
   }

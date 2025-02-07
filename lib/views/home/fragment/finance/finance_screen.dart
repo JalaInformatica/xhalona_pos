@@ -117,6 +117,14 @@ class FinanceScreen extends StatelessWidget {
         (route) => false);
   }
 
+  String getLastFourDigits(String voucherNo) {
+    if (voucherNo.length >= 4) {
+      return voucherNo.substring(voucherNo.length - 4);
+    } else {
+      return voucherNo; // Jika string kurang dari 4 karakter, kembalikan seluruh string
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -169,23 +177,17 @@ class FinanceScreen extends StatelessWidget {
                       var finance = controller.financeHeader[i];
                       return [
                         AppTableCell(
-                            value: finance.voucherNo,
+                            value: getLastFourDigits(finance.voucherNo),
                             index: i,
                             onEdit: () {
                               goTo(context, finance);
-                            },
-                            onDelete: () async {
-                              await messageHapus(finance.acId, finance.ket);
                             },
                             showOptionsOnTap: true),
                         AppTableCell(
-                            value: finance.voucherDate,
+                            value: finance.voucherDate.split("T").first,
                             index: i,
                             onEdit: () {
                               goTo(context, finance);
-                            },
-                            onDelete: () async {
-                              await messageHapus(finance.acId, finance.ket);
                             },
                             showOptionsOnTap: true),
                         AppTableCell(
@@ -194,18 +196,12 @@ class FinanceScreen extends StatelessWidget {
                             onEdit: () {
                               goTo(context, finance);
                             },
-                            onDelete: () async {
-                              await messageHapus(finance.acId, finance.ket);
-                            },
                             showOptionsOnTap: true),
                         AppTableCell(
                             value: finance.namaAc,
                             index: i,
                             onEdit: () {
                               goTo(context, finance);
-                            },
-                            onDelete: () async {
-                              await messageHapus(finance.acId, finance.ket);
                             },
                             showOptionsOnTap: true),
                         AppTableCell(
@@ -214,18 +210,12 @@ class FinanceScreen extends StatelessWidget {
                             onEdit: () {
                               goTo(context, finance);
                             },
-                            onDelete: () async {
-                              await messageHapus(finance.acId, finance.ket);
-                            },
                             showOptionsOnTap: true),
                         AppTableCell(
                             value: finance.ket,
                             index: i,
                             onEdit: () {
                               goTo(context, finance);
-                            },
-                            onDelete: () async {
-                              await messageHapus(finance.acId, finance.ket);
                             },
                             showOptionsOnTap: true),
                         AppTableCell(
@@ -234,9 +224,6 @@ class FinanceScreen extends StatelessWidget {
                             onEdit: () {
                               goTo(context, finance);
                             },
-                            onDelete: () async {
-                              await messageHapus(finance.acId, finance.ket);
-                            },
                             showOptionsOnTap: true),
                         AppTableCell(
                             value: finance.isApproved == true ? 'V' : '',
@@ -244,18 +231,12 @@ class FinanceScreen extends StatelessWidget {
                             onEdit: () {
                               goTo(context, finance);
                             },
-                            onDelete: () async {
-                              await messageHapus(finance.acId, finance.ket);
-                            },
                             showOptionsOnTap: true),
                         AppTableCell(
                           index: i,
-                          onDelete: () async {
-                            await messageHapus(finance.acId, finance.ket);
-                          },
+
                           value: "", // Ganti dengan URL gambar jika ada
                           isEdit: true,
-                          isDelete: true,
                           onEdit: () {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(

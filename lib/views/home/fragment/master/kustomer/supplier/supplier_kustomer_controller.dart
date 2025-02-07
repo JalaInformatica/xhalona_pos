@@ -38,6 +38,15 @@ class KustomerController extends GetxController {
   // }
 
   void updateFilterValue(String newFilterValue) {
+    isSuplier.value = '1';
+    filterValue.value = newFilterValue;
+    pageNo.value = 1;
+    pageRow.value = 10;
+    fetchProducts();
+  }
+
+  void updateMonitorValue(String newFilterValue) {
+    isSuplier.value = '';
     filterValue.value = newFilterValue;
     pageNo.value = 1;
     pageRow.value = 10;

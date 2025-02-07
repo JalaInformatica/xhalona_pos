@@ -1,16 +1,14 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xhalona_pos/core/constant/local_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/models/dao/authentication.dart';
-import 'package:xhalona_pos/repositories/authentication/authentication_repository.dart';
-import 'package:xhalona_pos/services/api_service.dart';
-import 'package:xhalona_pos/views/authentication/register_main/register_main_screen.dart';
-import 'package:xhalona_pos/views/authentication/register_user/register_user_screen.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:xhalona_pos/models/dao/authentication.dart';
 import 'package:xhalona_pos/widgets/app_loading_button.dart';
+import 'package:xhalona_pos/core/constant/local_storage.dart';
 import 'package:xhalona_pos/widgets/app_text_form_field.dart';
+import 'package:xhalona_pos/repositories/authentication/authentication_repository.dart';
+import 'package:xhalona_pos/views/authentication/register_main/register_main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -174,7 +172,8 @@ class _LoginScreen extends State<LoginScreen> {
                           style: AppTextStyle.textBodyStyle()),
                       TextButton(
                         onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>RegisterMainScreen()));
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => RegisterMainScreen()));
                         },
                         child: Text(
                           "Daftar Baru",

@@ -1,10 +1,16 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/models/dao/product.dart';
+import 'package:xhalona_pos/models/dao/kategori.dart';
+import 'package:xhalona_pos/models/dao/kustomer.dart';
 import 'package:xhalona_pos/models/dao/karyawan.dart';
+import 'package:xhalona_pos/widgets/app_bottombar.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/karyawan_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/kategori/kategori_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplier_kustomer_controller.dart';
 
 class MonitorScreen extends StatefulWidget {
@@ -16,6 +22,7 @@ class _MonitorScreenState extends State<MonitorScreen> {
   final KaryawanController controllerKar = Get.put(KaryawanController());
   final KustomerController controllerKus = Get.put(KustomerController());
   final ProductController controllerProduct = Get.put(ProductController());
+  final KategoriController controllerKat = Get.put(KategoriController());
 
   final TextEditingController _startDateController = TextEditingController();
   final TextEditingController _endDateController = TextEditingController();
@@ -44,6 +51,7 @@ class _MonitorScreenState extends State<MonitorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
@@ -59,14 +67,6 @@ class _MonitorScreenState extends State<MonitorScreen> {
             style: AppTextStyle.textTitleStyle(color: Colors.white),
           ),
           backgroundColor: AppColor.secondaryColor,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => HomeScreen()),
-                  (route) => false); // Jika tidak, gunakan navigator default
-            }, // Navigasi kembali ke halaman sebelumnya
-          ),
         ),
         body: SingleChildScrollView(
           padding: EdgeInsets.all(16.0),
@@ -107,69 +107,34 @@ class _MonitorScreenState extends State<MonitorScreen> {
                 ],
               ),
               SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                decoration: InputDecoration(labelText: 'Filter Terapis'),
-                items: controllerKar.karyawanHeader
-                    .map((therapist) => DropdownMenuItem(
-                          value: therapist.fullName,
-                          child: Text(therapist.fullName,
-                              style: AppTextStyle.textTitleStyle()),
-                        ))
-                    .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedTherapist = value;
-                  });
-                },
-              ),
+              buildTypeAheadFieldTerapis(
+                  "Filter Terapis", controllerKar.karyawanHeader, (value) {
+                setState(() {
+                  _selectedTherapist = value;
+                });
+              }, controllerKar.updateFilterValue),
               SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                decoration: InputDecoration(labelText: 'Filter Customer'),
-                items: controllerKus.kustomerHeader
-                    .map((customer) => DropdownMenuItem(
-                          value: customer.suplierId,
-                          child: Text(customer.suplierName,
-                              style: AppTextStyle.textTitleStyle()),
-                        ))
-                    .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedCustomer = value;
-                  });
-                },
-              ),
+              buildTypeAheadFieldCustomer(
+                  "Filter Customer", controllerKus.kustomerHeader, (value) {
+                setState(() {
+                  _selectedCustomer = value;
+                });
+              }, controllerKus.updateMonitorValue),
               SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                decoration: InputDecoration(labelText: 'Filter Produk'),
-                items: controllerProduct.productHeader
-                    .map((product) => DropdownMenuItem(
-                          value: product.partId,
-                          child: Text(product.partName,
-                              style: AppTextStyle.textTitleStyle()),
-                        ))
-                    .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedProduct = value;
-                  });
-                },
-              ),
+              buildTypeAheadFieldProduct(
+                  "Filter Product", controllerProduct.productHeader, (value) {
+                setState(() {
+                  _selectedProduct = value;
+                });
+              }, controllerProduct.updateFilterValue),
               SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                decoration: InputDecoration(labelText: 'Filter Kategori'),
-                items: ['Kategori 1', 'Kategori 2', 'Kategori 3']
-                    .map((category) => DropdownMenuItem(
-                          value: category,
-                          child: Text(category,
-                              style: AppTextStyle.textTitleStyle()),
-                        ))
-                    .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedCategory = value;
-                  });
-                },
-              ),
+              buildTypeAheadFieldKategori(
+                  "Filter Kategori", controllerKat.kategoriGlobalHeader,
+                  (value) {
+                setState(() {
+                  _selectedCategory = value;
+                });
+              }, controllerKat.updateFilterValue),
               SizedBox(height: 16),
               Row(
                 children: [
@@ -177,7 +142,7 @@ class _MonitorScreenState extends State<MonitorScreen> {
                     child: DropdownButtonFormField<String>(
                       decoration: InputDecoration(labelText: 'Type'),
                       value: _reportType,
-                      items: ['Detail', 'Summary']
+                      items: ['Detail', 'Rekap', 'Subtotal']
                           .map((type) => DropdownMenuItem(
                                 value: type,
                                 child: Text(type,
@@ -196,7 +161,7 @@ class _MonitorScreenState extends State<MonitorScreen> {
                     child: DropdownButtonFormField<String>(
                       decoration: InputDecoration(labelText: 'Shift'),
                       value: _shift,
-                      items: ['Semua', 'Pagi', 'Siang', 'Malam']
+                      items: ['Semua', 'Pagi', 'Siang']
                           .map((shift) => DropdownMenuItem(
                                 value: shift,
                                 child: Text(shift,
@@ -258,10 +223,224 @@ class _MonitorScreenState extends State<MonitorScreen> {
                   masterButton(() {}, "Laporan Kasir", Icons.menu_book),
                 ],
               ),
+              SizedBox(height: 70),
             ],
           ),
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: buildFloatingActionButton(context, screenWidth),
+        bottomNavigationBar: buildBottomNavigationBar(context),
       ),
+    );
+  }
+
+  Widget buildTypeAheadFieldCustomer(
+    String label,
+    List<KustomerDAO> items,
+    ValueChanged<String?> onChanged,
+    void Function(String newFilterValue) updateFilterValue,
+  ) {
+    TextEditingController controller = TextEditingController();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: AppTextStyle.textTitleStyle()),
+        SizedBox(height: 8),
+        TypeAheadField<KustomerDAO>(
+          suggestionsCallback: (pattern) async {
+            updateFilterValue(pattern); // Update filter
+            return items
+                .where((item) => item.suplierName
+                    .toLowerCase()
+                    .contains(pattern.toLowerCase()))
+                .toList(); // Pencarian berdasarkan nama
+          },
+          builder: (context, textEditingController, focusNode) {
+            controller = textEditingController;
+
+            return TextField(
+              controller: controller,
+              focusNode: focusNode,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: "Cari nama...",
+              ),
+              onChanged: (value) {
+                // Jangan lakukan apa-apa saat mengetik, biarkan saat dipilih
+              },
+            );
+          },
+          itemBuilder: (context, KustomerDAO suggestion) {
+            return ListTile(
+              title: Text(suggestion.suplierName
+                  .toString()), // Tampilkan ID sebagai info tambahan
+            );
+          },
+          onSelected: (KustomerDAO suggestion) {
+            controller.text = suggestion.suplierName
+                .toString(); // Tampilkan nama produk di field
+            onChanged(suggestion.suplierId); // Simpan ID produk di _product
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget buildTypeAheadFieldTerapis(
+    String label,
+    List<KaryawanDAO> items,
+    ValueChanged<String?> onChanged,
+    void Function(String newFilterValue) updateFilterValue,
+  ) {
+    TextEditingController controller = TextEditingController();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: AppTextStyle.textTitleStyle()),
+        SizedBox(height: 8),
+        TypeAheadField<KaryawanDAO>(
+          suggestionsCallback: (pattern) async {
+            updateFilterValue(pattern); // Update filter
+            return items
+                .where((item) =>
+                    item.fullName.toLowerCase().contains(pattern.toLowerCase()))
+                .toList(); // Pencarian berdasarkan nama
+          },
+          builder: (context, textEditingController, focusNode) {
+            controller = textEditingController;
+
+            return TextField(
+              controller: controller,
+              focusNode: focusNode,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: "Cari nama...",
+              ),
+              onChanged: (value) {
+                // Jangan lakukan apa-apa saat mengetik, biarkan saat dipilih
+              },
+            );
+          },
+          itemBuilder: (context, KaryawanDAO suggestion) {
+            return ListTile(
+              title: Text(suggestion.fullName
+                  .toString()), // Tampilkan ID sebagai info tambahan
+            );
+          },
+          onSelected: (KaryawanDAO suggestion) {
+            controller.text = suggestion.fullName
+                .toString(); // Tampilkan nama produk di field
+            onChanged(suggestion.empId); // Simpan ID produk di _product
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget buildTypeAheadFieldProduct(
+    String label,
+    List<ProductDAO> items,
+    ValueChanged<String?> onChanged,
+    void Function(String newFilterValue) updateFilterValue,
+  ) {
+    TextEditingController controller = TextEditingController();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: AppTextStyle.textTitleStyle()),
+        SizedBox(height: 8),
+        TypeAheadField<ProductDAO>(
+          suggestionsCallback: (pattern) async {
+            updateFilterValue(pattern); // Update filter
+            return items
+                .where((item) =>
+                    item.partName.toLowerCase().contains(pattern.toLowerCase()))
+                .toList(); // Pencarian berdasarkan nama
+          },
+          builder: (context, textEditingController, focusNode) {
+            controller = textEditingController;
+
+            return TextField(
+              controller: controller,
+              focusNode: focusNode,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: "Cari nama...",
+              ),
+              onChanged: (value) {
+                // Jangan lakukan apa-apa saat mengetik, biarkan saat dipilih
+              },
+            );
+          },
+          itemBuilder: (context, ProductDAO suggestion) {
+            return ListTile(
+              title: Text(suggestion.partName
+                  .toString()), // Tampilkan ID sebagai info tambahan
+            );
+          },
+          onSelected: (ProductDAO suggestion) {
+            controller.text = suggestion.partName
+                .toString(); // Tampilkan nama produk di field
+            onChanged(suggestion.partId); // Simpan ID produk di _product
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget buildTypeAheadFieldKategori(
+    String label,
+    List<KategoriDAO> items,
+    ValueChanged<String?> onChanged,
+    void Function(String newFilterValue) updateFilterValue,
+  ) {
+    TextEditingController controller = TextEditingController();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: AppTextStyle.textTitleStyle()),
+        SizedBox(height: 8),
+        TypeAheadField<KategoriDAO>(
+          suggestionsCallback: (pattern) async {
+            updateFilterValue(pattern); // Update filter
+            return items
+                .where((item) => item.ketAnalisa
+                    .toLowerCase()
+                    .contains(pattern.toLowerCase()))
+                .toList(); // Pencarian berdasarkan nama
+          },
+          builder: (context, textEditingController, focusNode) {
+            controller = textEditingController;
+
+            return TextField(
+              controller: controller,
+              focusNode: focusNode,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: "Cari kategori...",
+              ),
+              onChanged: (value) {
+                // Jangan lakukan apa-apa saat mengetik, biarkan saat dipilih
+              },
+            );
+          },
+          itemBuilder: (context, KategoriDAO suggestion) {
+            return ListTile(
+              title: Text(suggestion.ketAnalisa
+                  .toString()), // Tampilkan ID sebagai info tambahan
+            );
+          },
+          onSelected: (KategoriDAO suggestion) {
+            controller.text = suggestion.ketAnalisa
+                .toString(); // Tampilkan nama produk di field
+            onChanged(suggestion.analisaId); // Simpan ID produk di _product
+          },
+        ),
+      ],
     );
   }
 

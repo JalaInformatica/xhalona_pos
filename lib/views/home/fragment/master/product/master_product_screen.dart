@@ -3,32 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/models/dao/product.dart';
+import 'package:xhalona_pos/widgets/app_bottombar.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
-import 'package:xhalona_pos/views/home/home_controller.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
-import 'package:xhalona_pos/views/authentication/login/login_screen.dart';
 import 'package:xhalona_pos/repositories/product/product_repository.dart';
-import 'package:xhalona_pos/views/home/fragment/dashboard/dashboard_screen.dart';
-import 'package:xhalona_pos/views/home/fragment/master/coa/master_coa_screen.dart';
-import 'package:xhalona_pos/views/home/fragment/laporan/monitor/monitor_screen.dart';
-import 'package:xhalona_pos/views/home/fragment/transaction/transaction_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/add_edit_product.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/laporan/finance/lap_finance_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/bahan/bahan_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/paket/paket_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_screen.dart';
-import 'package:xhalona_pos/views/home/fragment/master/karyawan/master_karyawan_screen.dart';
-import 'package:xhalona_pos/views/home/fragment/master/pengguna/master_pengguna_screen.dart';
-import 'package:xhalona_pos/views/home/fragment/master/rekening/master_rekening_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/m_all/master_mAll_screen.dart';
-import 'package:xhalona_pos/views/home/fragment/master/pekerjaan/master_pekerjaan_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/paket/master_paket_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/bahan/master_bahan_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/kategori/master_kategori_screen.dart';
-import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplier_kustomer_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/master_kustomer_supplier_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/varian/varian_group/master_varian_group_screen.dart';
 
 // ignore: must_be_immutable
@@ -39,111 +25,6 @@ class MasterProductScreen extends StatelessWidget {
   final BahanController controllerBahan = Get.put(BahanController());
   final PaketController controllerPaket = Get.put(PaketController());
   ProductRepository _productRepository = ProductRepository();
-
-  final HomeController controllerHome = Get.put(HomeController());
-  final KustomerController controllerKus = Get.put(KustomerController());
-
-  void navigateToMenu(String menuName, BuildContext context) {
-    switch (menuName.toLowerCase()) {
-      case "pos":
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => HomeScreen()));
-        break;
-      case "dashboard":
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => HomeScreen()));
-        break;
-      case "transaksi":
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => HomeScreen()));
-        break;
-      case "profil":
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => LoginScreen()),
-            (route) => false);
-        break;
-      default:
-        // Tidak melakukan apa-apa jika menu tidak dikenali
-        break;
-    }
-  }
-
-  // Komponen Menu
-  Widget menuComponent(String menuName, BuildContext context) {
-    menuName = menuName.toLowerCase();
-    String iconPath = "assets/images/menu/";
-    Color iconColor = menuName != controllerHome.selectedMenuName.value
-        ? AppColor.grey500
-        : AppColor.primaryColor;
-
-    switch (menuName) {
-      case "pos":
-        iconPath += "cashier_machine_cash_register_pos_icon_225108.png";
-        break;
-      case "dashboard":
-        iconPath += "view_dashboard_outline_icon_139087.png";
-        break;
-      case "transaksi":
-        iconPath += "bag_buy_cart_market_shop_shopping_tote_icon_123191.png";
-        break;
-      case "finance":
-        iconPath +=
-            "business_cash_coin_dollar_finance_money_payment_icon_123244.png";
-        break;
-      case "master":
-        iconPath += "product_information_management_icon_149893.png";
-        break;
-      case "laporan":
-        iconPath +=
-            "report_document_finance_business_analysis_analytics_chart_icon_188615.png";
-        break;
-      case "profil":
-        iconPath +=
-            "avatar_male_man_people_person_profile_user_icon_123199.png";
-        break;
-    }
-
-    return Obx(() => GestureDetector(
-        onTap: () {
-          controllerHome.selectedMenuName.value = menuName;
-          navigateToMenu(
-              menuName, context); // Navigasi sesuai menu yang dipilih
-        },
-        child: Container(
-            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-            decoration: BoxDecoration(
-              color: AppColor.whiteColor,
-            ),
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              Container(
-                  padding: EdgeInsets.all(3.w),
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColor.whiteColor,
-                      border: menuName != controllerHome.selectedMenuName.value
-                          ? null
-                          : Border.all(color: AppColor.primaryColor)),
-                  child: Image.asset(
-                    iconPath,
-                    width: 24,
-                    height: 24,
-                    color: iconColor,
-                  )),
-              Text(
-                menuName != "pos"
-                    ? menuName[0].toUpperCase() + menuName.substring(1)
-                    : menuName.toUpperCase(),
-                style: AppTextStyle.textCaptionStyle(
-                    color: menuName != controllerHome.selectedMenuName.value
-                        ? AppColor.blackColor
-                        : AppColor.primaryColor,
-                    fontWeight:
-                        menuName != controllerHome.selectedMenuName.value
-                            ? FontWeight.normal
-                            : FontWeight.bold),
-              )
-            ]))));
-  }
 
   Widget checkboxItem(String title, bool value, ValueChanged<bool?> onChanged) {
     return Row(
@@ -211,14 +92,6 @@ class MasterProductScreen extends StatelessWidget {
           title: Text(
             "Master Product",
             style: AppTextStyle.textTitleStyle(),
-          ),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => HomeScreen()),
-                  (route) => false); // Jika tidak, gunakan navigator default
-            }, // Navigasi kembali ke halaman sebelumnya
           ),
         ),
         backgroundColor: AppColor.whiteColor,
@@ -907,215 +780,8 @@ class MasterProductScreen extends StatelessWidget {
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: Obx(
-          () => Column(mainAxisSize: MainAxisSize.min, children: [
-            controllerHome.selectedMenuName.value.toLowerCase() == "master"
-                ? !controllerHome.isOpenMaster.value
-                    ? Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Container(
-                          height: 47,
-                          width: double.infinity,
-                          color: Colors.white,
-                          padding: EdgeInsets.symmetric(vertical: 5),
-                          child: Scrollbar(
-                            child: ListView(
-                              scrollDirection: Axis.horizontal,
-                              children: [
-                                SizedBox(width: screenWidth * 0.02),
-                                mButton(() {
-                                  Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          MasterProductScreen(),
-                                    ),
-                                    (route) => false,
-                                  );
-                                }, "Master Produk", Icons.shopping_bag, 170),
-                                SizedBox(
-                                    width: screenWidth *
-                                        0.02), // Responsive spacing
-                                mButton(() {
-                                  Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          MasterKaryawanScreen(),
-                                    ),
-                                    (route) => false,
-                                  );
-                                }, "Master Karyawan", Icons.account_circle,
-                                    170),
-                                SizedBox(width: screenWidth * 0.02),
-                                mButton(() {
-                                  Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(
-                                      builder: (context) => MasterCoaScreen(),
-                                    ),
-                                    (route) => false,
-                                  );
-                                }, "Master Coa", Icons.account_balance, 170),
-                                SizedBox(width: screenWidth * 0.02),
-                                mButton(() {
-                                  Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          MasterPenggunaScreen(),
-                                    ),
-                                    (route) => false,
-                                  );
-                                }, "Master Pengguna", Icons.person, 170),
-                                SizedBox(width: screenWidth * 0.02),
-                                mButton(() {
-                                  Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          MasterPekerjaanScreen(),
-                                    ),
-                                    (route) => false,
-                                  );
-                                }, "Master Pekerjaan", Icons.work, 170),
-                                SizedBox(width: screenWidth * 0.02),
-                                mButton(() {
-                                  Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          MasterRekeningScreen(),
-                                    ),
-                                    (route) => false,
-                                  );
-                                }, "Master Rekening",
-                                    Icons.account_balance_wallet, 170),
-                                SizedBox(width: screenWidth * 0.02),
-                                mButton(() {
-                                  Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          MasterKustomerScreen(
-                                              islabel: "Kustomer"),
-                                    ),
-                                    (route) => false,
-                                  );
-                                  controllerKus.isSuplier.value = "0";
-                                  controllerKus.fetchProducts();
-                                }, "Master Kustomer", Icons.people, 170),
-                                SizedBox(width: screenWidth * 0.02),
-                                mButton(() {
-                                  Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          MasterKustomerScreen(
-                                              islabel: "Supplier"),
-                                    ),
-                                    (route) => false,
-                                  );
-                                  controllerKus.isSuplier.value = "1";
-                                  controllerKus.fetchProducts();
-                                }, "Master Supplier", Icons.store, 170),
-                              ],
-                            ),
-                          ),
-                        ),
-                      )
-                    : SizedBox.shrink()
-                : SizedBox.shrink(),
-            controllerHome.selectedMenuName.value.toLowerCase() == "laporan"
-                ? !controllerHome.isOpenLaporan.value
-                    ? Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Container(
-                          height: 47,
-                          width: double.infinity,
-                          color: Colors.white,
-                          padding: EdgeInsets.symmetric(vertical: 5),
-                          child: Scrollbar(
-                            child: ListView(
-                              scrollDirection: Axis.horizontal,
-                              children: [
-                                SizedBox(width: screenWidth * 0.02),
-                                mButton(() {
-                                  Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          LapPenjualanScreen(),
-                                    ),
-                                    (route) => false,
-                                  );
-                                }, "Lap. Penjualan", Icons.graphic_eq_sharp,
-                                    170),
-                                SizedBox(width: screenWidth * 0.02),
-                                mButton(() {
-                                  Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(
-                                      builder: (context) => MonitorScreen(),
-                                    ),
-                                    (route) => false,
-                                  );
-                                }, "Monitor Penjualan", Icons.monitor, 170),
-                                SizedBox(width: screenWidth * 0.02),
-                                mButton(
-                                    () {}, "Lap. Stock", Icons.inventory, 170),
-                                SizedBox(width: screenWidth * 0.02),
-                                mButton(() {
-                                  Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(
-                                      builder: (context) => LapFinanceScreen(),
-                                    ),
-                                    (route) => false,
-                                  );
-                                }, "Lap. Finance", Icons.monetization_on, 170),
-                              ],
-                            ),
-                          ),
-                        ),
-                      )
-                    : SizedBox.shrink()
-                : SizedBox.shrink(),
-          ]),
-        ),
-        bottomNavigationBar: Obx(
-          () => Container(
-              decoration: BoxDecoration(
-                color: AppColor.whiteColor,
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColor.grey500,
-                    blurRadius: 1,
-                    offset: Offset(0, 1),
-                  ),
-                ],
-              ),
-              child: Column(mainAxisSize: MainAxisSize.min, children: [
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Wrap(
-                        alignment: WrapAlignment.center,
-                        runAlignment: WrapAlignment.center,
-                        direction: Axis.horizontal,
-                        spacing: 10,
-                        children: [
-                          ...controllerHome.menuData.map((menuItem) {
-                            if (menuItem.menuId == "NONMENU") {
-                              return Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: menuItem.dataSubMenu.map((subMenu) {
-                                  return menuComponent(
-                                      subMenu.subMenuDesc, context);
-                                }).toList(),
-                              );
-                            }
-                            return menuComponent(menuItem.menuDesc, context);
-                          }),
-                          menuComponent("profil", context)
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ])),
-        ),
+        floatingActionButton: buildFloatingActionButton(context, screenWidth),
+        bottomNavigationBar: buildBottomNavigationBar(context),
       ),
     );
   }

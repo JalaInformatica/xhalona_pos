@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/models/dao/pengguna.dart';
+import 'package:xhalona_pos/widgets/app_bottombar.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/repositories/pengguna/pengguna_repository.dart';
@@ -51,6 +52,7 @@ class MasterPenggunaScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
@@ -63,14 +65,6 @@ class MasterPenggunaScreen extends StatelessWidget {
           title: Text(
             "Master Pengguna",
             style: AppTextStyle.textTitleStyle(),
-          ),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => HomeScreen()),
-                  (route) => false); // Jika tidak, gunakan navigator default
-            }, // Navigasi kembali ke halaman sebelumnya
           ),
         ),
         backgroundColor: AppColor.whiteColor,
@@ -119,7 +113,8 @@ class MasterPenggunaScreen extends StatelessWidget {
                               goTo(context, pengguna);
                             },
                             onDelete: () async {
-                              await messageHapus(pengguna.memberId, pengguna.memberId);
+                              await messageHapus(
+                                  pengguna.memberId, pengguna.memberId);
                             },
                             showOptionsOnTap: true),
                         AppTableCell(
@@ -129,7 +124,8 @@ class MasterPenggunaScreen extends StatelessWidget {
                               goTo(context, pengguna);
                             },
                             onDelete: () async {
-                              await messageHapus(pengguna.memberId, pengguna.memberId);
+                              await messageHapus(
+                                  pengguna.memberId, pengguna.memberId);
                             },
                             showOptionsOnTap: true),
                         AppTableCell(
@@ -139,7 +135,8 @@ class MasterPenggunaScreen extends StatelessWidget {
                               goTo(context, pengguna);
                             },
                             onDelete: () async {
-                              await messageHapus(pengguna.memberId, pengguna.memberId);
+                              await messageHapus(
+                                  pengguna.memberId, pengguna.memberId);
                             },
                             showOptionsOnTap: true),
                         AppTableCell(
@@ -149,7 +146,8 @@ class MasterPenggunaScreen extends StatelessWidget {
                               goTo(context, pengguna);
                             },
                             onDelete: () async {
-                              await messageHapus(pengguna.memberId, pengguna.memberId);
+                              await messageHapus(
+                                  pengguna.memberId, pengguna.memberId);
                             },
                             showOptionsOnTap: true),
                         AppTableCell(
@@ -159,7 +157,8 @@ class MasterPenggunaScreen extends StatelessWidget {
                               goTo(context, pengguna);
                             },
                             onDelete: () async {
-                              await messageHapus(pengguna.memberId, pengguna.memberId);
+                              await messageHapus(
+                                  pengguna.memberId, pengguna.memberId);
                             },
                             showOptionsOnTap: true),
                         AppTableCell(
@@ -169,17 +168,19 @@ class MasterPenggunaScreen extends StatelessWidget {
                               goTo(context, pengguna);
                             },
                             onDelete: () async {
-                              await messageHapus(pengguna.memberId, pengguna.memberId);
+                              await messageHapus(
+                                  pengguna.memberId, pengguna.memberId);
                             },
                             showOptionsOnTap: true),
                         AppTableCell(
                           index: i,
-                            onEdit: () {
-                              goTo(context, pengguna);
-                            },
-                            onDelete: () async {
-                              await messageHapus(pengguna.memberId, pengguna.userName);
-                            },
+                          onEdit: () {
+                            goTo(context, pengguna);
+                          },
+                          onDelete: () async {
+                            await messageHapus(
+                                pengguna.memberId, pengguna.userName);
+                          },
                           value: "", // Ganti dengan URL gambar jika ada
                           isEdit: true,
                           isDelete: true,
@@ -192,6 +193,9 @@ class MasterPenggunaScreen extends StatelessWidget {
             ],
           ),
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: buildFloatingActionButton(context, screenWidth),
+        bottomNavigationBar: buildBottomNavigationBar(context),
       ),
     );
   }
@@ -230,8 +234,8 @@ class MasterPenggunaScreen extends StatelessWidget {
             ),
             TextButton(
               onPressed: () async {
-                String result = await _penggunaRepository
-                                                .deletePengguna(memberId: userName);
+                String result = await _penggunaRepository.deletePengguna(
+                    memberId: userName);
 
                 bool isSuccess = result == "1";
                 if (isSuccess) {
@@ -258,7 +262,8 @@ class MasterPenggunaScreen extends StatelessWidget {
 
   Future<dynamic> goTo(BuildContext context, PenggunaDAO pengguna) {
     return Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => AddEditPengguna(pengguna: pengguna)),
+        MaterialPageRoute(
+            builder: (context) => AddEditPengguna(pengguna: pengguna)),
         (route) => false);
   }
 }

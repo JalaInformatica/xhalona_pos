@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 
 class AppRepository {
@@ -124,9 +123,23 @@ class AppRepository {
       return result['URL'];
     } else {
       SmartDialog.showToast(
-        result['RESULT_MESSAGE'] ??
+          result['RESULT_MESSAGE'] ??
+              'Gagal, silahkan coba kembali setelah beberapa saat',
+          displayTime: Duration(seconds: 5));
+      throw Exception();
+    }
+  }
+
+  String getResponseLogoutData(String response) {
+    var result = jsonDecode(response)["rsloginStatus"];
+    if (result['RESULT_CODE'].toString().contains("01")) {
+      return result['MESSAGE'];
+    } else {
+      SmartDialog.showToast(
+        result['RESULT_DESC'] ??
             'Gagal, silahkan coba kembali setelah beberapa saat',
-        displayTime: Duration(seconds: 5));
+        displayTime: Duration(seconds: 5),
+      );
       throw Exception();
     }
   }

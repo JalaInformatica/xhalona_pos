@@ -68,4 +68,12 @@ class FinanceController extends GetxController {
       isLoading.value = false;
     }
   }
+
+  Future<String> printLapFinance(
+    String? voucherNo,
+  ) async {
+    return await KasBankRepository().printKasBank(
+      voucherNo: voucherNo,
+    );
+  }
 }
