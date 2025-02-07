@@ -18,6 +18,15 @@ String formatThousands(String text){
   }
 }
 
+int unFormatThousands(String strNumber){
+  try {
+    strNumber = strNumber.replaceAll('.','');
+    return int.parse(strNumber);
+  } catch (e){
+    return 0;
+  }
+}
+
 String shortenTrxId(String text) {
   return text.replaceAll(RegExp(r'(?<=AM)0+'), '');
 }

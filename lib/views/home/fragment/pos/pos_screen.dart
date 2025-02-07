@@ -4,6 +4,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dto/tamu.dart';
+import 'package:xhalona_pos/views/home/fragment/pos/checkout_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/checkout_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/widgets/member_modal.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/widgets/member_modal_controller.dart';
@@ -258,10 +259,12 @@ Row(
                 onCheckoutClicked: () async {
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context)=>CheckoutScreen(
+                      salesId: controller.currentTransactionId.value,
                       brutoVal: controller.currentTransaction.value.brutoVal,
                       discVal: controller.currentTransaction.value.discVal, 
                       nettoVal: controller.currentTransaction.value.nettoVal
-                    )));
+                    ))).then((_)=>Get.delete<
+                    CheckoutController>());
                 }
               )
             )

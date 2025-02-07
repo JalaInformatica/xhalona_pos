@@ -24,7 +24,7 @@ class KustomerServices {
         "PAGE_ROW": pageRow ?? 10,
         "SORT_ORDER_BY": "SUPPLIER_ID",
         "SORT_ORDER_TYPE": "ASC",
-        "IS_SUPPLIER": isSuplier ?? "1"
+        "IS_SUPPLIER": isSuplier ?? ""
       }
     });
     var response =

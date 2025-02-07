@@ -17,7 +17,7 @@ class TransactionCrystalReportService {
         "USER_ID": api.userId,
         "SESSION_LOGIN_ID": api.sessionId,
         "FORMAT": "PDF",
-        "TEMPLATE": "Print_Nota",
+        "TEMPLATE": "Print_Nota_58mm",
         "SALES_ID": salesId
       }
     });

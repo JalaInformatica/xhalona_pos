@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:xhalona_pos/models/dto/paymentTransaction.dart';
 import 'package:xhalona_pos/models/dto/transaction.dart';
 import 'package:xhalona_pos/services/api_service.dart' as api;
 import 'package:xhalona_pos/services/response_handler.dart';
@@ -104,6 +105,26 @@ class TransactionService {
             "SALES_ID": salesId
           }
         ]
+      }
+    });
+    var response =
+        await api.post(url, headers: await api.requestHeaders(), body: body);
+
+    return ResponseHandler.handle(response);
+  }
+
+  Future<String> paymentTransaction(PaymentTransactionDTO payment) async {
+    await api.fetchUserSessionInfo();
+    var url = '/SALES/order';
+    var body = jsonEncode({
+      "rq": {
+        "ACTION_ID": "MULTI_PAYMENT",
+        "IP": api.ip,
+        "DEF_COMPANY_ID": api.companyId,
+        "USER_ID": api.userId,
+        "SESSION_LOGIN_ID": api.sessionId,
+        "COMPANY_ID": api.companyId,
+        ...payment.toJson()
       }
     });
     var response =

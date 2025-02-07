@@ -46,12 +46,9 @@ dependencies:
   cached_network_image: ^3.3.1
   dropdown_search: ^6.0.1
   horizontal_data_table: ^4.3.1
-  alice: ^1.0.0-dev.12
   table_calendar: ^3.1.2
   multi_split_view: ^3.6.0
   resizable_widget: ^1.0.5
-  esc_pos_printer: ^4.1.0
-  esc_pos_utils: ^1.1.0
   flutter_pdfview: ^1.4.0
   permission_handler: ^11.3.1
   image_picker: ^1.1.2
@@ -59,7 +56,12 @@ dependencies:
   dio: ^5.8.0+1
   url_launcher: ^6.3.1
   flutter_typeahead: ^5.2.0
-
+  flutter_bluetooth_printer: ^2.17.1
+  pdf_render: ^1.4.12
+  image: ^4.5.2
+  path_provider: ^2.1.5
+  pdfx: ^2.8.0
+  
 
 dev_dependencies:
   flutter_test:
