@@ -31,8 +31,8 @@ class AppTextField extends TextField{
           int cursorPosition = textEditingController.selection.baseOffset;
 
           // Remove any existing separators before formatting
-          String cleanValue = val.replaceAll(".", "").replaceAll(",", "");
-
+          String cleanValue = val.replaceAll(".", "").replaceAll(",", "").replaceAll(RegExp(r'\D'), '');
+          
           // Format the number
           String formattedText = formatThousands(cleanValue);
 

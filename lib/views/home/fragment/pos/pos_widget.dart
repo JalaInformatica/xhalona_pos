@@ -463,10 +463,13 @@ Widget transaction({
                             AppTextButton(
                               foregroundColor: AppColor.primaryColor,
                               onPressed: () {
-                                controller.printNota().then((url) => {
-                                print(url)
-                                // Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AppPDFViewer(pdfUrl: url)));
-                                });
+                                controller.printNota().then((url) => 
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => AppPDFViewer(pdfUrl: url),
+                                    ),
+                                  )
+                                );
                               },
                               child: Row(
                                 spacing: 5.w,

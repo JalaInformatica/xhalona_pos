@@ -1,4 +1,5 @@
 import 'package:xhalona_pos/models/dao/transaction.dart';
+import 'package:xhalona_pos/models/dto/paymentTransaction.dart';
 import 'package:xhalona_pos/models/dto/transaction.dart';
 import 'package:xhalona_pos/repositories/app_repository.dart';
 import 'package:xhalona_pos/services/transaction/transaction_service.dart';
@@ -47,6 +48,11 @@ class TransactionRepository extends AppRepository {
 
   Future<String> deleteTransactionHeader(String salesId) async {
     var result = await _transactionService.deleteTransaction(salesId);
+    return getResponseTrxData(result).first["NO_TRX"];
+  }
+
+  Future<String> paymentTransaction(PaymentTransactionDTO payment) async {
+    var result = await _transactionService.paymentTransaction(payment);
     return getResponseTrxData(result).first["NO_TRX"];
   }
 

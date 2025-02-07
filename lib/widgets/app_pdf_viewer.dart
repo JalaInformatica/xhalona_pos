@@ -1,9 +1,10 @@
 import 'dart:typed_data';
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:http/http.dart' as http;
-import 'package:esc_pos_printer/esc_pos_printer.dart';
-import 'package:esc_pos_utils/esc_pos_utils.dart';
+import 'package:flutter_bluetooth_printer/flutter_bluetooth_printer.dart';
+import 'package:pdfx/pdfx.dart'; 
+import 'package:path_provider/path_provider.dart'; 
 
 class AppPDFViewer extends StatefulWidget {
   final String pdfUrl;
@@ -15,10 +16,10 @@ class AppPDFViewer extends StatefulWidget {
 }
 
 class _AppPDFViewerState extends State<AppPDFViewer> {
-  
-  // final NetworkPrinter printer = NetworkPrinter(PaperSize.mm80, await CapabilityProfile.load());
-  bool isConnected = false;
   Uint8List? pdfBytes;
+  Uint8List? imageBytes; // Store extracted image
+  late int pageWidth; // Extracted width
+  late int pageHeight; // Extracted height
 
   @override
   void initState() {
@@ -30,9 +31,9 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
     try {
       final response = await http.get(Uri.parse(widget.pdfUrl));
       if (response.statusCode == 200) {
-        setState(() {
-          pdfBytes = Uint8List.fromList(response.bodyBytes);
-        });
+        pdfBytes = Uint8List.fromList(response.bodyBytes);
+        await _convertPdfToImage();
+        setState(() {});
       } else {
         _showMessage("Failed to load PDF");
       }
@@ -41,100 +42,84 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
     }
   }
 
-  Future<void> _connectToPrinter(String ipAddress) async {
-    // final result = await printer.connect(ipAddress, port: 9100);
-    // setState(() {
-    //   isConnected = result == PosPrintResult.success;
-    // });
-  }
-
-  void _printToThermalPrinter(String ipAddress) async {
-    if (pdfBytes == null) {
-      _showMessage("PDF not loaded yet. Please wait.");
-      return;
-    }
-
+  // Convert PDF to Image with Dynamic Page Size
+  // Convert PDF to Image with Dynamic Page Size
+  Future<void> _convertPdfToImage() async {
     try {
-      await _connectToPrinter(ipAddress);
+      final tempDir = await getTemporaryDirectory();
+      final pdfFile = File('${tempDir.path}/temp.pdf');
+      await pdfFile.writeAsBytes(pdfBytes!);
 
-      if (!isConnected) {
-        _showMessage("Failed to connect to the printer. Check IP address.");
-        return;
+      final document = await PdfDocument.openFile(pdfFile.path);
+      final page = await document.getPage(1); // Get the first page
+
+      // ✅ Get actual page dimensions
+      pageWidth = page.width.toInt();
+      pageHeight = page.height.toInt();
+
+      final pageImage = await page.render(
+        width: pageWidth.toDouble(), // Use extracted width
+        height: pageHeight.toDouble(), // Use extracted height
+        format: PdfPageImageFormat.png,
+      );
+
+      if (pageImage != null) {
+        setState(() {
+          imageBytes = pageImage.bytes; // Store converted image
+        });
       }
 
-      // Use printBytes to send the bytes to the printer
-      // printer.ytes(pdfBytes!);  // <-- Correct method for printing raw bytes
-      // printer.disconnect();
-
-      _showMessage("PDF sent to the thermal printer successfully!");
+      await page.close();
+      await document.close();
     } catch (e) {
-      _showMessage("Failed to print PDF: $e");
-    } finally {
-      setState(() {
-        isConnected = false;
-      });
+      _showMessage("Error converting PDF to image: $e");
+    }
+  }
+
+  // Print the converted image
+  Future<void> _print() async {
+    final device = await FlutterBluetoothPrinter.selectDevice(context);
+    if (device != null && imageBytes != null) {
+      bool success = await FlutterBluetoothPrinter.printImageSingle(
+        address: device.address,
+        imageWidth: pageWidth!, // Use extracted width
+        imageHeight: pageHeight!, // Use extracted height
+        imageBytes: imageBytes!,
+        keepConnected: true,
+      );
+
+      if (success) {
+        _showMessage("Printing started...");
+      } else {
+        _showMessage("Failed to start printing");
+      }
+    } else {
+      _showMessage("No image data to print");
     }
   }
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-  }
-
-  Future<String?> _showPrinterDialog(BuildContext context) async {
-    String? ipAddress;
-    await showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text("Enter Printer IP Address"),
-          content: TextField(
-            onChanged: (value) => ipAddress = value,
-            decoration: InputDecoration(hintText: "192.168.x.x"),
-          ),
-          actions: [
-            TextButton(
-              child: Text("Cancel"),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            TextButton(
-              child: Text("OK"),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ],
-        );
-      },
-    );
-    return ipAddress;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("PDF Viewer"),
+        backgroundColor: Colors.white,
         actions: [
           IconButton(
             icon: Icon(Icons.print),
-            onPressed: () async {
-              final ipAddress = await _showPrinterDialog(context);
-              if (ipAddress != null && ipAddress.isNotEmpty) {
-                _printToThermalPrinter(ipAddress);
-              }
-            },
-            tooltip: "Print to Thermal Printer",
+            onPressed: _print,
+            tooltip: "Print to Bluetooth Thermal Printer",
           ),
         ],
       ),
-      body: pdfBytes == null
+      body: imageBytes == null
           ? Center(child: CircularProgressIndicator())
-          : PDFView(
-              pdfData: pdfBytes!,
-              enableSwipe: true,
-              swipeHorizontal: false,
-              autoSpacing: false,
-              pageFling: true,
-              onError: (error) => _showMessage("Error displaying PDF: $error"),
-            ),
+          : Image.memory(imageBytes!),
     );
   }
 }
