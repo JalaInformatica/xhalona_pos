@@ -1,14 +1,14 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xhalona_pos/core/constant/local_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/models/dao/authentication.dart';
-import 'package:xhalona_pos/repositories/authentication/authentication_repository.dart';
-import 'package:xhalona_pos/views/authentication/login/login_screen.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:xhalona_pos/models/dao/authentication.dart';
 import 'package:xhalona_pos/widgets/app_loading_button.dart';
+import 'package:xhalona_pos/core/constant/local_storage.dart';
 import 'package:xhalona_pos/widgets/app_text_form_field.dart';
+import 'package:xhalona_pos/views/authentication/login/login_screen.dart';
+import 'package:xhalona_pos/repositories/authentication/authentication_repository.dart';
 
 class RegisterCompanyScreen extends StatefulWidget {
   @override
@@ -50,6 +50,7 @@ class _RegisterCompanyScreen extends State<RegisterCompanyScreen> {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         // print(login.companyId);
         prefs.setString(LocalStorageConst.userId, login.userId);
+        prefs.setString(LocalStorageConst.userName, login.userName);
         prefs.setString(LocalStorageConst.ip, login.loginIpFrom);
         prefs.setString(LocalStorageConst.companyId, login.companyId);
         prefs.setString(LocalStorageConst.defCompanyId, login.defCompanyId);

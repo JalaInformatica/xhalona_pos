@@ -43,13 +43,73 @@ class UserService {
     }
   }
 
+  Future<String> changePasswordProfile(
+      {String? password1, String? password2}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var url = '/SYSMAN/user';
+    var body = jsonEncode({
+      "rq": {
+        "ACTION_ID": "RESET_PASSWORD",
+        "IP": api.ip,
+        "USER_ID": api.userId,
+        "SESSION_LOGIN_ID": api.sessionId,
+        "MEMBER_ID": prefs.getString(LocalStorageConst.userName),
+        "PASSWORD": password1,
+        "PASSWORD2": password2
+      }
+    });
+
+    var response = await api.post(
+      url,
+      headers: await api.requestHeaders(),
+      body: body,
+    );
+
+    return ResponseHandler.handle(response);
+  }
+
   Future<String> logoutProfile() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var url = '/SYSMAN/login';
     var body = jsonEncode({
-      "rqLogout": {
+      "RESET_PASSWORD": {
         "USER_ID": prefs.getString(LocalStorageConst.userId),
         "SESSION_LOGIN_ID": prefs.getString(LocalStorageConst.sessionLoginId),
+      }
+    });
+
+    var response = await api.post(
+      url,
+      headers: await api.requestHeaders(),
+      body: body,
+    );
+
+    return ResponseHandler.handle(response);
+  }
+
+  Future<String> settings({String? nota}) async {
+    var url = '/SALES/m_setting';
+    var body = jsonEncode({
+      "rq": {
+        "ACTION_ID": "EDIT_H",
+        "IP": api.ip,
+        "USER_ID": api.userId,
+        "SESSION_LOGIN_ID": api.sessionId,
+        "COMPANY_ID": api.companyId,
+        "DEF_COMPANY_ID": api.companyId,
+        "SETTING_TYPE": "REPORT",
+        "SETTING_ID": "NOTA_PAPER_TEMPLATE",
+        "SETTING_VALUE_1": "Print_Nota_$nota",
+        "SETTING_VALUE_2": "",
+        "SETTING_VALUE_3": "",
+        "SETTING_VALUE_4": "",
+        "SETTING_VALUE_5": "",
+        "SETTING_VALUE_6": "",
+        "SETTING_VALUE_7": "",
+        "SETTING_VALUE_8": "",
+        "GROUP_ANALISA_ID": "",
+        "NOTES": "Setting ukuran kertas print nota",
+        "IS_ACTIVE": "1"
       }
     });
 

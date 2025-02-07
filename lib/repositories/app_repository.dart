@@ -130,6 +130,27 @@ class AppRepository {
     }
   }
 
+  String getResponseData(String response) {
+    var result = jsonDecode(response)["rs"];
+
+    // Pastikan result adalah List dan memiliki setidaknya satu elemen
+    if (result is List && result.isNotEmpty) {
+      var item = result.first; // Ambil elemen pertama
+
+      if (item['RESULT_CODE'].toString().contains("01")) {
+        return item['RESULT_MESSAGE'];
+      } else {
+        SmartDialog.showToast(
+            item['RESULT_MESSAGE'] ??
+                'Gagal, silahkan coba kembali setelah beberapa saat',
+            displayTime: Duration(seconds: 5));
+        throw Exception();
+      }
+    } else {
+      throw Exception("Response tidak sesuai format yang diharapkan");
+    }
+  }
+
   String getResponseLogoutData(String response) {
     var result = jsonDecode(response)["rsloginStatus"];
     if (result['RESULT_CODE'].toString().contains("01")) {

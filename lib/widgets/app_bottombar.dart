@@ -53,7 +53,7 @@ void navigateToMenu(String menuName, BuildContext context) {
       break;
     case "profil":
       Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => LoginScreen()),
+          MaterialPageRoute(builder: (context) => HomeScreen()),
           (route) => false);
       break;
     default:

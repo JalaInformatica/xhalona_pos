@@ -1,14 +1,14 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xhalona_pos/core/constant/local_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/models/dao/authentication.dart';
-import 'package:xhalona_pos/repositories/authentication/authentication_repository.dart';
 import 'package:xhalona_pos/services/api_service.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:xhalona_pos/models/dao/authentication.dart';
 import 'package:xhalona_pos/widgets/app_loading_button.dart';
+import 'package:xhalona_pos/core/constant/local_storage.dart';
 import 'package:xhalona_pos/widgets/app_text_form_field.dart';
+import 'package:xhalona_pos/repositories/authentication/authentication_repository.dart';
 
 class RegisterUserScreen extends StatefulWidget {
   @override
@@ -50,6 +50,7 @@ class _RegisterUserScreen extends State<RegisterUserScreen> {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         // print(login.companyId);
         prefs.setString(LocalStorageConst.userId, login.userId);
+        prefs.setString(LocalStorageConst.userName, login.userName);
         prefs.setString(LocalStorageConst.ip, login.loginIpFrom);
         prefs.setString(LocalStorageConst.companyId, login.companyId);
         prefs.setString(LocalStorageConst.defCompanyId, login.defCompanyId);
@@ -66,7 +67,6 @@ class _RegisterUserScreen extends State<RegisterUserScreen> {
     return Scaffold(
       backgroundColor: AppColor.whiteColor,
       body: ListView(
-        
         children: [
           SvgPicture.asset(
             'assets/logo-only-pink.svg',
@@ -87,7 +87,10 @@ class _RegisterUserScreen extends State<RegisterUserScreen> {
             height: 20,
           ),
           Center(
-            child: Text("Daftar Sebagai Karyawan Salon", style: AppTextStyle.textSubtitleStyle(),),
+            child: Text(
+              "Daftar Sebagai Karyawan Salon",
+              style: AppTextStyle.textSubtitleStyle(),
+            ),
           ),
           Form(
             key: _formkey,

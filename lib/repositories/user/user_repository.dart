@@ -15,4 +15,22 @@ class UserRepository extends AppRepository {
     String data = getResponseLogoutData(result);
     return data;
   }
+
+  Future<String> changePasswordProfile(
+      {String? password1, String? password2}) async {
+    var result = await _userService.changePasswordProfile(
+      password1: password1,
+      password2: password2,
+    );
+    String data = getResponseData(result);
+    return data;
+  }
+
+  Future<String> settings({String? nota}) async {
+    var result = await _userService.settings(
+      nota: nota,
+    );
+    String data = getResponseData(result);
+    return data;
+  }
 }

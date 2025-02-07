@@ -4,6 +4,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:xhalona_pos/services/user/user_service.dart';
@@ -41,7 +42,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   getData() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs = await SharedPreferences.getInstance();
     setState(() {
       name = prefs.getString('userName');
       tLahir = prefs.getString('datePicker');
@@ -246,230 +247,174 @@ class _ProfileScreenState extends State<ProfileScreen> {
     //   }
     // }
 
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        iconTheme: const IconThemeData(color: Colors.white),
-        backgroundColor: AppColor.primaryColor,
-        title: const Text(
-          'Profile Saya',
-          style: TextStyle(color: Colors.white),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.check),
-            onPressed: () {},
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+            (route) => false); // Navigasi kembali ke halaman sebelumnya
+        return false; // Mencegah navigasi bawaan
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            "My Profile",
+            style: AppTextStyle.textTitleStyle(),
           ),
-        ],
-      ),
-      backgroundColor: Colors.white,
-      body: isLoading // Periksa apakah data masih dimuat
-          ? Shimmer.fromColors(
-              baseColor: Colors.grey[300]!,
-              highlightColor: Colors.grey[100]!,
-              child: Column(
-                children: [
-                  // CircleAvatar di atas daftar
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 20),
-                    child: CircleAvatar(
-                      radius: 50,
-                      backgroundColor: Colors.grey[300],
-                    ),
-                  ),
-                  // ListTile di bawah CircleAvatar
-                  Expanded(
-                    child: ListView(
-                      children: List.generate(
-                        5,
-                        (index) => Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                height: 20,
-                                width: double.infinity,
-                                color: Colors.grey[300],
-                              ),
-                              const SizedBox(height: 5),
-                              Container(
-                                height: 20,
-                                width: double.infinity,
-                                color: Colors.grey[300],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            )
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Avatar & Edit Button
-                    Center(
-                      child: GestureDetector(
-                        onTap: _showImageSourceSelector,
-                        child: Stack(
-                          children: [
-                            prefs.getString('profileImageUrl') != null &&
-                                    prefs
-                                        .getString('profileImageUrl')!
-                                        .isNotEmpty
-                                ? Container(
-                                    width:
-                                        100, // Ukuran `width` dan `height` harus lebih besar dari `CircleAvatar`
-                                    height: 100,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: AppColor.primaryColor,
-                                        width: 4, // Tebal border
-                                      ),
-                                    ),
-                                    child: CircleAvatar(
-                                      radius: 50,
-                                      backgroundColor: Colors.transparent,
-                                      child: ClipOval(
-                                        child: CachedNetworkImage(
-                                          imageUrl:
-                                              '${baseUrl}/${prefs.getString('profileImageUrl')}',
-                                          imageBuilder:
-                                              (context, imageProvider) =>
-                                                  Container(
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              image: DecorationImage(
-                                                image: imageProvider,
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
-                                          ),
-                                          placeholder: (context, url) =>
-                                              Shimmer.fromColors(
-                                            baseColor: Colors.grey[300]!,
-                                            highlightColor: Colors.grey[100]!,
-                                            child: CircleAvatar(
-                                              radius: 50,
-                                              backgroundColor: Colors.grey[200],
-                                            ),
-                                          ),
-                                          errorWidget: (context, url, error) =>
-                                              CircleAvatar(
-                                            radius: 50,
-                                            backgroundColor: Colors.grey[200],
-                                            child: const Icon(Icons.error,
-                                                color: Colors.redAccent),
+        ),
+        resizeToAvoidBottomInset: true,
+        backgroundColor: Colors.white,
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Avatar & Edit Button
+                Center(
+                  child: GestureDetector(
+                    onTap: _showImageSourceSelector,
+                    child: Stack(
+                      children: [
+                        prefs.getString('profileImageUrl') != null &&
+                                prefs.getString('profileImageUrl')!.isNotEmpty
+                            ? Container(
+                                width:
+                                    100, // Ukuran `width` dan `height` harus lebih besar dari `CircleAvatar`
+                                height: 100,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: AppColor.primaryColor,
+                                    width: 4, // Tebal border
+                                  ),
+                                ),
+                                child: CircleAvatar(
+                                  radius: 50,
+                                  backgroundColor: Colors.transparent,
+                                  child: ClipOval(
+                                    child: CachedNetworkImage(
+                                      imageUrl:
+                                          '${baseUrl}/${prefs.getString('profileImageUrl')}',
+                                      imageBuilder: (context, imageProvider) =>
+                                          Container(
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          image: DecorationImage(
+                                            image: imageProvider,
+                                            fit: BoxFit.cover,
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  )
-                                : Container(
-                                    width:
-                                        100, // Ukuran `width` dan `height` harus lebih besar dari `CircleAvatar`
-                                    height: 100,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: Colors.white,
-                                        width: 4, // Tebal border
+                                      placeholder: (context, url) =>
+                                          Shimmer.fromColors(
+                                        baseColor: Colors.grey[300]!,
+                                        highlightColor: Colors.grey[100]!,
+                                        child: CircleAvatar(
+                                          radius: 50,
+                                          backgroundColor: Colors.grey[200],
+                                        ),
                                       ),
-                                    ),
-                                    child: CircleAvatar(
-                                      child: Text(
-                                        'A',
-                                        style: TextStyle(
-                                            color: Colors.pink.shade800,
-                                            fontSize: 30),
+                                      errorWidget: (context, url, error) =>
+                                          CircleAvatar(
+                                        radius: 50,
+                                        backgroundColor: Colors.grey[200],
+                                        child: const Icon(Icons.error,
+                                            color: Colors.redAccent),
                                       ),
                                     ),
                                   ),
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: Container(
-                                width:
-                                    28, // Slightly larger edit icon container
-                                height: 28,
-                                decoration: const BoxDecoration(
-                                  color:
-                                      Colors.blue, // Edit icon background color
-                                  shape: BoxShape.circle,
                                 ),
-                                child: const Icon(
-                                  Icons.edit,
-                                  color: Colors.white, // Edit icon color
-                                  size: 18, // Slightly larger edit icon
+                              )
+                            : Container(
+                                width:
+                                    100, // Ukuran `width` dan `height` harus lebih besar dari `CircleAvatar`
+                                height: 100,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 4, // Tebal border
+                                  ),
+                                ),
+                                child: CircleAvatar(
+                                  child: Text(
+                                    'A',
+                                    style: TextStyle(
+                                        color: Colors.pink.shade800,
+                                        fontSize: 30),
+                                  ),
                                 ),
                               ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Container(
+                            width: 28, // Slightly larger edit icon container
+                            height: 28,
+                            decoration: const BoxDecoration(
+                              color: Colors.blue, // Edit icon background color
+                              shape: BoxShape.circle,
                             ),
-                          ],
+                            child: const Icon(
+                              Icons.edit,
+                              color: Colors.white, // Edit icon color
+                              size: 18, // Slightly larger edit icon
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                    const SizedBox(height: 20),
-                    ListTile(
-                      title: const Text('Nama'),
-                      subtitle: Text('Atur Sekarang'),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => EditNamePage()));
-                      },
-                    ),
-                    const Divider(),
-                    ListTile(
-                      title: const Text('Tanggal lahir'),
-                      subtitle: Text('Atur Sekarang'),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: _selectDate,
-                    ),
-                    const Divider(),
-                    ListTile(
-                      title: const Text('No. Handphone'),
-                      subtitle: Text('Atur Sekarang'),
-                    ),
-                    const Divider(),
-                    ListTile(
-                      title: const Text('Email'),
-                      subtitle: Text('Atur Sekarang'),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => EditEmailPage()));
-                      },
-                    ),
-                    const Divider(),
-                    ListTile(
-                      title: const Text('Jenis Kelamin'),
-                      subtitle:
-                          Text(_selectedGender ?? jKelamin ?? 'Atur Sekarang'),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: _showGenderSelector,
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+                const SizedBox(height: 20),
+                ListTile(
+                  title: const Text('Nama'),
+                  subtitle: Text('Atur Sekarang'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => EditNamePage()));
+                  },
+                ),
+                const Divider(),
+                ListTile(
+                  title: const Text('Tanggal lahir'),
+                  subtitle: Text('Atur Sekarang'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: _selectDate,
+                ),
+                const Divider(),
+                ListTile(
+                  title: const Text('No. Handphone'),
+                  subtitle: Text('Atur Sekarang'),
+                ),
+                const Divider(),
+                ListTile(
+                  title: const Text('Email'),
+                  subtitle: Text('Atur Sekarang'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => EditEmailPage()));
+                  },
+                ),
+                const Divider(),
+                ListTile(
+                  title: const Text('Jenis Kelamin'),
+                  subtitle:
+                      Text(_selectedGender ?? jKelamin ?? 'Atur Sekarang'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: _showGenderSelector,
+                ),
+              ],
             ),
+          ),
+        ),
+      ),
     );
   }
 }
