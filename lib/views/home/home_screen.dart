@@ -10,6 +10,8 @@ import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
 import 'package:xhalona_pos/views/authentication/login/login_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/profile/profile_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/finance/finance_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/profile/settings_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/profile/change_password.dart';
 import 'package:xhalona_pos/views/home/fragment/dashboard/dashboard_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/coa/master_coa_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/transaction/transaction_screen.dart';
@@ -22,6 +24,7 @@ import 'package:xhalona_pos/views/home/fragment/master/karyawan/master_karyawan_
 import 'package:xhalona_pos/views/home/fragment/master/pekerjaan/master_pekerjaan_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplier_kustomer_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/master_kustomer_supplier_screen.dart';
+// ignore_for_file: use_build_context_synchronously
 
 // ignore: must_be_immutable
 class HomeScreen extends StatelessWidget {
@@ -49,6 +52,7 @@ class HomeScreen extends StatelessWidget {
       case "profil":
         screen = ProfileScreen();
         break;
+      // case "profil"
       //   return
       default:
         return previousScreen ?? TransactionScreen();
@@ -170,12 +174,16 @@ class HomeScreen extends StatelessWidget {
                     position: RelativeRect.fromLTRB(100, 100, 0, 0),
                     items: [
                       PopupMenuItem(
-                        child: Text("Settings"),
-                        value: "settings",
+                        value: "change",
+                        child: Text("Ganti Password"),
                       ),
                       PopupMenuItem(
-                        child: Text("Logout"),
+                        value: "settings",
+                        child: Text("Settings"),
+                      ),
+                      PopupMenuItem(
                         value: "logout",
+                        child: Text("Logout"),
                       ),
                     ],
                   ).then((value) {
@@ -186,7 +194,15 @@ class HomeScreen extends StatelessWidget {
                               builder: (context) => LoginScreen()),
                           (route) => false);
                     } else if (value == "settings") {
-                      // Get.to(SettingsPage());
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (context) => SettingScreen()),
+                          (route) => false);
+                    } else if (value == "change") {
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (context) => EditPassword()),
+                          (route) => false);
                     }
                   });
                 },

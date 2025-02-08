@@ -23,14 +23,7 @@ class _AddEditCoaState extends State<AddEditCoa> {
   final _formKey = GlobalKey<FormState>();
   final _kodeRekController = TextEditingController();
   final _nameController = TextEditingController();
-  final _joinDateController = TextEditingController();
   final _jenisRekController = TextEditingController();
-  final _bpjsKetController = TextEditingController();
-  final _birthDateController = TextEditingController();
-  final _birthPlaceController = TextEditingController();
-  final _addressController = TextEditingController();
-  final _bonusController = TextEditingController();
-  final _targetController = TextEditingController();
   String? _flagDk;
   String? _flagTm;
   String? _coa;

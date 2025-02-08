@@ -50,6 +50,7 @@ class _LoginScreen extends State<LoginScreen> {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         // print(login.companyId);
         prefs.setString(LocalStorageConst.userId, login.userId);
+        prefs.setString(LocalStorageConst.userName, login.userName);
         prefs.setString(LocalStorageConst.ip, login.loginIpFrom);
         prefs.setString(LocalStorageConst.companyId, login.companyId);
         prefs.setString(LocalStorageConst.defCompanyId, login.defCompanyId);

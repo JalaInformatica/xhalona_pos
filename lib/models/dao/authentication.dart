@@ -1,5 +1,6 @@
 class LoginDAO {
   String userId;
+  String userName;
   String sessionLoginId;
   String companyId;
   String defCompanyId;
@@ -12,6 +13,7 @@ class LoginDAO {
   // Default constructor with optional named parameters
   LoginDAO({
     this.userId = "",
+    this.userName = "",
     this.sessionLoginId = "",
     this.companyId = "",
     this.defCompanyId = "",
@@ -25,6 +27,7 @@ class LoginDAO {
   // Named constructor to create an instance from a JSON object
   LoginDAO.fromJson(Map<String, dynamic> json)
       : userId = json['USER_ID'] ?? "",
+        userName = json['UserName'] ?? "",
         sessionLoginId = json['SESSION_LOGIN_ID'] ?? "",
         companyId = json['COMPANY_ID'] ?? "",
         defCompanyId = json['DEF_COMPANY_ID'] ?? "",
