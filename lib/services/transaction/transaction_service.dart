@@ -113,6 +113,50 @@ class TransactionService {
     return ResponseHandler.handle(response);
   }
 
+  Future<String> statusTransactions({
+    int? pageNo,
+    int? pageRow,
+    String? filterField,
+    String? filterValue,
+    int? filterDay,
+    int? filterMonth,
+    int? filterYear,
+    String? statusId,
+    String? statusCategory,
+    String? sourceId,
+    String? statusClosed
+  }) async {
+    await api.fetchUserSessionInfo();
+    var url = '/SALES/order';
+    var body = jsonEncode({
+      "rq": {
+        "ACTION_ID": "LIST_H_STATUS",
+        "IP": api.ip,
+        "DEF_COMPANY_ID": api.companyId,
+        "USER_ID": api.userId,
+        "SESSION_LOGIN_ID": api.sessionId,
+        "COMPANY_ID": api.companyId,
+        "FILTER_DAY": filterDay ?? "",
+        "FILTER_MONTH": filterMonth ?? "",
+        "FILTER_YEAR": filterYear ?? "",
+        "FILTER_FIELD": filterField ?? "",
+        "FILTER_VALUE": filterValue ?? "",
+        "PAGE_NO": pageNo ?? "1",
+        "PAGE_ROW": pageRow ?? "10",
+        "SORT_ORDER_BY": "STATUS_ID",
+        "SORT_ORDER_TYPE": "DESC",
+        "STATUS_ID": statusId ?? "",
+        "SOURCE_ID": sourceId ?? "",
+        "STATUS_CATEGORY": statusCategory ?? "",
+        "STATUS_CLOSED": statusClosed ?? ""
+      }
+    });
+    var response =
+        await api.post(url, headers: await api.requestHeaders(), body: body);
+
+    return ResponseHandler.handle(response);
+  }
+
   Future<String> paymentTransaction(PaymentTransactionDTO payment) async {
     await api.fetchUserSessionInfo();
     var url = '/SALES/order';

@@ -10,7 +10,8 @@ class AppElevatedButton extends ElevatedButton {
   AppElevatedButton({
     super.key, 
     required VoidCallback? onPressed,
-    required Widget text, 
+    VoidCallback? onPressedValidation,
+    required Widget child, 
     Color? backgroundColor,
     Color? borderColor,
     Color? foregroundColor,
@@ -21,17 +22,23 @@ class AppElevatedButton extends ElevatedButton {
     double? elevation,
     BorderRadius? borderRadius
   }) : super(
-        onPressed: !disabled? onPressed : null,
-        child: text,
+        onPressed: !disabled? onPressed : onPressedValidation ?? (){},
+        child: !disabled? child : Row(
+          spacing: 3.w,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+          child,
+          Icon(Icons.warning, color: foregroundColor ?? AppColor.whiteColor,)
+        ],),
         style: ElevatedButton.styleFrom(
-          foregroundColor: !disabled ? foregroundColor ?? AppColor.primaryColor : AppColor.blackColor,
-          backgroundColor: !disabled ? backgroundColor ?? Colors.white : AppColor.grey500,
+          foregroundColor: foregroundColor ?? AppColor.primaryColor,
+          backgroundColor: backgroundColor ?? Colors.white,
           visualDensity: size==AppElevatedButtonSize.small? VisualDensity.compact : VisualDensity.standard,
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           padding: padding,
           shape: RoundedRectangleBorder(
             borderRadius: borderRadius ?? BorderRadius.circular(5),
-            side: BorderSide(color: disabled? AppColor.grey500 : borderColor ?? AppColor.primaryColor),
+            side: BorderSide(color: borderColor ?? AppColor.primaryColor),
           ),
           elevation: elevation
         ),

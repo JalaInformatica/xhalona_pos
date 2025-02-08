@@ -219,7 +219,8 @@ class TransactionHeaderDAO {
         isEditable = json['IS_EDITABLE'] ?? false,
         createDate = json['CREATEDATE'] ?? "",
         createBy = json['CREATEBY'] ?? "",
-        paymentList = List<Map<String, dynamic>>.from(json['PAYMENT_LIST'] ?? []);
+        paymentList =
+            List<Map<String, dynamic>>.from(json['PAYMENT_LIST'] ?? []);
 
   // To JSON method
   Map<String, dynamic> toJson() {
@@ -511,6 +512,41 @@ class TransactionDetailDAO {
       'VARIAN_DATA': varianData.map((item) => item.toJson()).toList(),
     };
   }
+}
+
+class TransactionStatusDAO {
+  int rowNumber;
+  String companyId;
+  int tahun;
+  int bulan;
+  String statusId;
+  String statusIdDesc;
+  String statusCategory;
+  int total;
+  String statusClosed;
+
+  TransactionStatusDAO({
+    this.rowNumber = 0,
+    this.companyId = "",
+    this.tahun = 0,
+    this.bulan = 0,
+    this.statusId = "",
+    this.statusIdDesc = "",
+    this.statusCategory = "",
+    this.total = 0,
+    this.statusClosed = "",
+  });
+
+  TransactionStatusDAO.fromJson(Map<String, dynamic> json)
+      : rowNumber = json['ROW_NUMBER'] ?? 0,
+        companyId = json['COMPANY_ID'] ?? "",
+        tahun = json['TAHUN'] ?? 0,
+        bulan = json['BULAN'] ?? 0,
+        statusId = json['STATUS_ID'] ?? "",
+        statusIdDesc = json['STATUS_ID_DESC'] ?? "",
+        statusCategory = json['STATUS_CATEGORY'] ?? "",
+        total = json['TOTAL'] ?? 0,
+        statusClosed = json['STATUS_CLOSED'] ?? "";
 }
 
 class BOMDataDAO {

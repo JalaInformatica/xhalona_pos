@@ -11,11 +11,13 @@ import 'package:xhalona_pos/widgets/app_text_field.dart';
 // ignore: must_be_immutable
 class EmployeeModal extends StatelessWidget {
   final EmployeeModalController controller = Get.put(EmployeeModalController());
+  String? selectedEmpName;
   Timer? _debounce;
   Function(EmployeeDAO) onEmployeeSelected;
 
   EmployeeModal({
     super.key, 
+    this.selectedEmpName,
     required this.onEmployeeSelected
   });
 
@@ -34,6 +36,7 @@ class EmployeeModal extends StatelessWidget {
       children: [
         Text("Terapis", style: AppTextStyle.textSubtitleStyle(),),
         AppTextField(
+          textEditingController: TextEditingController()..text=selectedEmpName ?? "",
           context: context,
           hintText: "Cari Terapis",
           onChanged: _onChanged,
@@ -48,6 +51,8 @@ class EmployeeModal extends StatelessWidget {
               EmployeeDAO employee = controller.employees[index];
               return AppTextButton(
                 foregroundColor: AppColor.blackColor,
+                backgroundColor: AppColor.tertiaryColor,
+                borderColor: Colors.transparent,
                 onPressed: () {
                   onEmployeeSelected(employee);
                 },
@@ -55,9 +60,6 @@ class EmployeeModal extends StatelessWidget {
                 child: Text(
                   employee.fullName,
                   style: AppTextStyle.textBodyStyle(),
-                ),
-                shape: BeveledRectangleBorder(
-                  side: BorderSide(color: AppColor.grey100)
                 ),
               );
             },

@@ -11,6 +11,7 @@ class AppDialog extends AlertDialog {
     super.titlePadding,
     super.actions,
     super.actionsPadding,
+    super.shadowColor
   }) : super(
     backgroundColor: AppColor.whiteColor,
     shape: RoundedRectangleBorder(
