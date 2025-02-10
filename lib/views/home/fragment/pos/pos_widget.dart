@@ -4,8 +4,6 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_image.dart';
 import 'package:xhalona_pos/models/dao/product.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
-import 'package:xhalona_pos/models/dao/product.dart';
-import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/widgets/app_pdf_viewer.dart';
 import 'package:xhalona_pos/widgets/app_text_field.dart';
 import 'package:xhalona_pos/widgets/app_icon_button.dart';
