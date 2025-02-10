@@ -142,7 +142,7 @@ class MasterPaketScreen extends StatelessWidget {
                             },
                             showOptionsOnTap: true),
                         AppTableCell(
-                            value: paket.comUnitPrice.toString() ?? '',
+                            value: formatCurrency(paket.comUnitPrice) ?? '',
                             index: i,
                             onEdit: () {
                               goTo(context, paket,

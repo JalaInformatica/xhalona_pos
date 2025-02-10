@@ -42,7 +42,7 @@ class _EditNamePageState extends State<EditNamePage> {
               if (_formKey.currentState!.validate()) {
                 final SharedPreferences prefs =
                     await SharedPreferences.getInstance();
-                await prefs.setString('userName', _nameController.text);
+                await prefs.setString('name', _nameController.text);
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => ProfileScreen()),

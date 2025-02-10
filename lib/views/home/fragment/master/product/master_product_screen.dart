@@ -460,7 +460,7 @@ class MasterProductScreen extends StatelessWidget {
                           showOptionsOnTap: true,
                         ),
                         AppTableCell(
-                          value: '${product.unitPriceNet}',
+                          value: '${formatCurrency(product.unitPriceNet)}',
                           index: i,
                           isModalBahan: product.isFixQty == true ? true : false,
                           isModalPaket: product.isPacket == true ? true : false,
@@ -562,7 +562,7 @@ class MasterProductScreen extends StatelessWidget {
                           showOptionsOnTap: true,
                         ),
                         AppTableCell(
-                          value: '${product.unitPrice}',
+                          value: '${formatCurrency(product.unitPrice)}',
                           index: i,
                           isModalBahan: product.isFixQty == true ? true : false,
                           isModalPaket: product.isPacket == true ? true : false,

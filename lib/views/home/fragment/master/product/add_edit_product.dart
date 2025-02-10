@@ -9,8 +9,8 @@ import 'package:xhalona_pos/models/dao/kategori.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:xhalona_pos/services/user/user_service.dart';
+import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:xhalona_pos/repositories/kategori_repository.dart';
 import 'package:xhalona_pos/repositories/product/product_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/master_product_screen.dart';
@@ -302,6 +302,7 @@ class _AddEditProductState extends State<AddEditProduct> {
                           ),
                           initialValue: widget.product?.unitPriceNet.toString(),
                           keyboardType: TextInputType.number,
+                          inputFormatters: [CurrencyInputFormatter()],
                           onChanged: (value) =>
                               productPrice = double.tryParse(value ?? '0'),
                         ),
@@ -356,39 +357,6 @@ class _AddEditProductState extends State<AddEditProduct> {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget masterButton(VoidCallback onPressed, String label, IconData icon) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-        decoration: BoxDecoration(
-          color: AppColor.secondaryColor, // Background color
-          borderRadius: BorderRadius.circular(8), // Rounded corners
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 4,
-              offset: Offset(0, 2), // Shadow position
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: Colors.white,
-              size: 20,
-            ),
-            SizedBox(width: 8),
-            Text(label,
-                style: AppTextStyle.textTitleStyle(color: Colors.white)),
-          ],
         ),
       ),
     );
@@ -489,26 +457,6 @@ class _AddEditProductState extends State<AddEditProduct> {
       items: items.map((item) {
         return DropdownMenuItem(
             value: item.analisaId, child: Text(item.ketAnalisa));
-      }).toList(),
-      onChanged: onChanged,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return '$label tidak boleh kosong';
-        }
-        return null;
-      },
-    );
-  }
-
-  Widget buildDropdownFieldJK(
-      String label, List<String> items, ValueChanged<String?> onChanged) {
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(),
-      ),
-      items: items.map((item) {
-        return DropdownMenuItem(value: item, child: Text(item));
       }).toList(),
       onChanged: onChanged,
       validator: (value) {

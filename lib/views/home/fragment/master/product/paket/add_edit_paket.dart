@@ -1,10 +1,10 @@
 import 'package:get/get.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/paket.dart';
 import 'package:xhalona_pos/models/dao/product.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/repositories/paket_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/paket/paket_controller.dart';
@@ -116,7 +116,9 @@ class _AddEditPaketState extends State<AddEditPaket> {
                       SizedBox(height: 16),
 
                       buildTextField(
-                          "Harga", "Masukkan Harga", _hargaController),
+                          "Harga", "Masukkan Harga", _hargaController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [CurrencyInputFormatter()]),
                       SizedBox(height: 32),
 
                       // Action Buttons
@@ -189,77 +191,6 @@ class _AddEditPaketState extends State<AddEditPaket> {
           },
         ),
       ],
-    );
-  }
-
-  Widget masterButton(VoidCallback onPressed, String label, IconData icon) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-        decoration: BoxDecoration(
-          color: AppColor.secondaryColor, // Background color
-          borderRadius: BorderRadius.circular(8), // Rounded corners
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 4,
-              offset: Offset(0, 2), // Shadow position
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: Colors.white,
-              size: 20,
-            ),
-            SizedBox(width: 8),
-            Text(label,
-                style: AppTextStyle.textTitleStyle(color: Colors.white)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildTextField(
-      String label, String hint, TextEditingController controller,
-      {TextInputType keyboardType = TextInputType.text}) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        border: OutlineInputBorder(),
-      ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return '$label tidak boleh kosong';
-        }
-        return null;
-      },
-    );
-  }
-
-  Widget buildShimmerLoading() {
-    return ListView.builder(
-      padding: EdgeInsets.all(16),
-      itemCount: 10,
-      itemBuilder: (context, index) {
-        return Shimmer.fromColors(
-          baseColor: Colors.grey[300]!,
-          highlightColor: Colors.grey[100]!,
-          child: Container(
-            height: 16,
-            margin: EdgeInsets.symmetric(vertical: 8),
-            color: Colors.white,
-          ),
-        );
-      },
     );
   }
 }

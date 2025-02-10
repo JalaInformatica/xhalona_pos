@@ -1,7 +1,7 @@
-import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
+import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/repositories/user/user_repository.dart';
 // ignore_for_file: deprecated_member_use, non_constant_identifier_names, prefer_const_constructors_in_immutables, library_private_types_in_public_api
 
@@ -125,77 +125,6 @@ class _SettingScreenState extends State<SettingScreen> {
                 ),
               ),
       ),
-    );
-  }
-
-  Widget masterButton(VoidCallback onTap, String label, IconData icon) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-        decoration: BoxDecoration(
-          color: AppColor.secondaryColor, // Background color
-          borderRadius: BorderRadius.circular(8), // Rounded corners
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 4,
-              offset: Offset(0, 2), // Shadow position
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: Colors.white,
-              size: 20,
-            ),
-            SizedBox(width: 8),
-            Text(label,
-                style: AppTextStyle.textTitleStyle(color: Colors.white)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildShimmerLoading() {
-    return ListView.builder(
-      padding: EdgeInsets.all(16),
-      itemCount: 10,
-      itemBuilder: (context, index) {
-        return Shimmer.fromColors(
-          baseColor: Colors.grey[300]!,
-          highlightColor: Colors.grey[100]!,
-          child: Container(
-            height: 16,
-            margin: EdgeInsets.symmetric(vertical: 8),
-            color: Colors.white,
-          ),
-        );
-      },
-    );
-  }
-
-  Widget buildDropdownFieldJK(
-      String label, List<String> items, ValueChanged<String?> onChanged) {
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(),
-      ),
-      items: items.map((item) {
-        return DropdownMenuItem(value: item, child: Text(item));
-      }).toList(),
-      onChanged: onChanged,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return '$label tidak boleh kosong';
-        }
-        return null;
-      },
     );
   }
 }

@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/karyawan.dart';
 import 'package:xhalona_pos/models/dao/departemen.dart';
+import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/repositories/karyawan/karyawan_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/karyawan_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/master_karyawan_screen.dart';
@@ -240,77 +240,6 @@ class _AddEditKaryawanState extends State<AddEditKaryawan> {
     );
   }
 
-  Widget masterButton(VoidCallback onTap, String label, IconData icon) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-        decoration: BoxDecoration(
-          color: AppColor.secondaryColor, // Background color
-          borderRadius: BorderRadius.circular(8), // Rounded corners
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 4,
-              offset: Offset(0, 2), // Shadow position
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: Colors.white,
-              size: 20,
-            ),
-            SizedBox(width: 8),
-            Text(label,
-                style: AppTextStyle.textTitleStyle(color: Colors.white)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildTextField(
-      String label, String hint, TextEditingController controller,
-      {TextInputType keyboardType = TextInputType.text}) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        border: OutlineInputBorder(),
-      ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return '$label tidak boleh kosong';
-        }
-        return null;
-      },
-    );
-  }
-
-  Widget buildShimmerLoading() {
-    return ListView.builder(
-      padding: EdgeInsets.all(16),
-      itemCount: 10,
-      itemBuilder: (context, index) {
-        return Shimmer.fromColors(
-          baseColor: Colors.grey[300]!,
-          highlightColor: Colors.grey[100]!,
-          child: Container(
-            height: 16,
-            margin: EdgeInsets.symmetric(vertical: 8),
-            color: Colors.white,
-          ),
-        );
-      },
-    );
-  }
-
   Widget buildDateField(String label, TextEditingController controller) {
     return TextFormField(
       controller: controller,
@@ -351,26 +280,6 @@ class _AddEditKaryawanState extends State<AddEditKaryawan> {
       ),
       items: items.map((item) {
         return DropdownMenuItem(value: item.kdDept, child: Text(item.namaDept));
-      }).toList(),
-      onChanged: onChanged,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return '$label tidak boleh kosong';
-        }
-        return null;
-      },
-    );
-  }
-
-  Widget buildDropdownFieldJK(
-      String label, List<String> items, ValueChanged<String?> onChanged) {
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(),
-      ),
-      items: items.map((item) {
-        return DropdownMenuItem(value: item, child: Text(item));
       }).toList(),
       onChanged: onChanged,
       validator: (value) {

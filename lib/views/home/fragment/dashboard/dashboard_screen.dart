@@ -1,8 +1,12 @@
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:xhalona_pos/views/home/fragment/dashboard/summary_controller.dart';
 
 class DashboardScreen extends StatelessWidget {
+  final SummaryController controller = Get.put(SummaryController());
   @override
   Widget build(BuildContext context) {
+    controller.fetchProducts();
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -18,7 +22,8 @@ class DashboardScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildSummaryCard('Pendapatan', 'Rp 2.000.000', Colors.green),
-                _buildSummaryCard('Transaksi', '25', Colors.blue),
+                _buildSummaryCard(
+                    'Transaksi', controller.total.value, Colors.blue),
               ],
             ),
           ],
@@ -54,21 +59,6 @@ class DashboardScreen extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildActionButton(
-      IconData icon, String label, VoidCallback onPressed) {
-    return Column(
-      children: [
-        FloatingActionButton(
-          onPressed: onPressed,
-          backgroundColor: Colors.purple,
-          child: Icon(icon, color: Colors.white),
-        ),
-        SizedBox(height: 8),
-        Text(label, style: TextStyle(fontSize: 14)),
-      ],
     );
   }
 }

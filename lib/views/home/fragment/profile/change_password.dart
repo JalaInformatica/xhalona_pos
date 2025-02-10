@@ -1,7 +1,7 @@
-import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
+import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/repositories/user/user_repository.dart';
 
 // ignore: must_be_immutable
@@ -179,24 +179,6 @@ class _EditPasswordState extends State<EditPassword> {
           ? const Icon(Icons.visibility)
           : const Icon(Icons.visibility_off),
       color: Colors.grey,
-    );
-  }
-
-  Widget buildShimmerLoading() {
-    return ListView.builder(
-      padding: EdgeInsets.all(16),
-      itemCount: 10,
-      itemBuilder: (context, index) {
-        return Shimmer.fromColors(
-          baseColor: Colors.grey[300]!,
-          highlightColor: Colors.grey[100]!,
-          child: Container(
-            height: 16,
-            margin: EdgeInsets.symmetric(vertical: 8),
-            color: Colors.white,
-          ),
-        );
-      },
     );
   }
 }

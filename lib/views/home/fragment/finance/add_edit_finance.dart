@@ -1,6 +1,4 @@
-import 'dart:ffi';
 import 'package:get/get.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/kasbank.dart';
@@ -8,6 +6,7 @@ import 'package:xhalona_pos/models/dao/kustomer.dart';
 import 'package:xhalona_pos/models/dao/rekening.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/repositories/kasbank/kasbank_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/finance/finance_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/rekening/rekening_controller.dart';
@@ -193,7 +192,7 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                       // Field NIK
                       buildTextField(
                           "No Trx", "Masukkan no trx", _noTrxController,
-                          isEnabled: false),
+                          isEnabled: widget.finance != null ? false : true),
                       SizedBox(height: 16),
 
                       buildDropdownFieldJK(
@@ -260,7 +259,7 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                       // Field BPJS Kesehatan
                       buildTextField("Jumlah Bayar", "Masukkan jumlah bayar",
                           _jmlBayarController,
-                          isEnabled: false),
+                          isEnabled: widget.finance != null ? false : true),
                       SizedBox(height: 32),
 
                       // Action Buttons
@@ -289,40 +288,6 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                   ),
                 ),
               ),
-      ),
-    );
-  }
-
-  Widget masterButton(VoidCallback onTap, String label, IconData icon,
-      {Color color = AppColor.primaryColor}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-        decoration: BoxDecoration(
-          color: color, // Background color
-          borderRadius: BorderRadius.circular(8), // Rounded corners
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 4,
-              offset: Offset(0, 2), // Shadow position
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: Colors.white,
-              size: 20,
-            ),
-            SizedBox(width: 8),
-            Text(label,
-                style: AppTextStyle.textTitleStyle(color: Colors.white)),
-          ],
-        ),
       ),
     );
   }
@@ -381,24 +346,6 @@ class _AddEditFinanceState extends State<AddEditFinance> {
           return '$label tidak boleh kosong';
         }
         return null;
-      },
-    );
-  }
-
-  Widget buildShimmerLoading() {
-    return ListView.builder(
-      padding: EdgeInsets.all(16),
-      itemCount: 10,
-      itemBuilder: (context, index) {
-        return Shimmer.fromColors(
-          baseColor: Colors.grey[300]!,
-          highlightColor: Colors.grey[100]!,
-          child: Container(
-            height: 16,
-            margin: EdgeInsets.symmetric(vertical: 8),
-            color: Colors.white,
-          ),
-        );
       },
     );
   }
@@ -512,28 +459,6 @@ class _AddEditFinanceState extends State<AddEditFinance> {
           },
         ),
       ],
-    );
-  }
-
-  Widget buildDropdownFieldJK(
-      String label, List<String> items, ValueChanged<String?> onChanged,
-      {bool enabled = true}) {
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(),
-      ),
-      items: items.map((item) {
-        return DropdownMenuItem(value: item, child: Text(item));
-      }).toList(),
-      onChanged: enabled ? onChanged : null, // Disable onChanged if not enabled
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return '$label tidak boleh kosong';
-        }
-        return null;
-      },
-      disabledHint: Text('Pilih $label'), // Optional: hint when disabled
     );
   }
 }
