@@ -14,7 +14,7 @@ String formatThousands(String text){
     int number = int.parse(text);
     return NumberFormat("#,###", "id_ID").format(number);
   } catch (e) {
-    return text;
+    return "0";
   }
 }
 

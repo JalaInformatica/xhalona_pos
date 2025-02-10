@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/models/dto/tamu.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
@@ -7,10 +7,8 @@ import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/widgets/app_text_field.dart';
 import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:xhalona_pos/core/helper/global_helper.dart';
-import 'package:xhalona_pos/widgets/app_normal_button.dart';
 import 'package:xhalona_pos/widgets/app_elevated_button.dart';
 import 'package:xhalona_pos/widgets/app_text_form_field.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_widget.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_controller.dart';
@@ -22,7 +20,6 @@ import 'package:xhalona_pos/views/home/fragment/pos/widgets/employee_modal.dart'
 import 'package:xhalona_pos/views/home/fragment/pos/widgets/shift_modal_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/widgets/member_modal_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/widgets/employee_modal_controller.dart';
-
 
 class PosScreen extends StatelessWidget {
   final PosController controller = Get.put(PosController());
@@ -124,7 +121,28 @@ class PosScreen extends StatelessWidget {
               ),
               Obx(() {
                 if (controller.isLoading.value) {
-                  return Center(child: CircularProgressIndicator());
+                  return Padding(
+                      padding: EdgeInsets.only(top: 15.h),
+                      child: Column(children: [
+                        Wrap(
+                          alignment: WrapAlignment.center,
+                          spacing: 15.w,
+                          runSpacing: 15.h,
+                          children: List.generate(
+                            4,
+                            (index) {
+                              return Shimmer.fromColors(
+                                  child: Container(
+                                    width: 165.w,
+                                    height: 185.h,
+                                    color: AppColor.whiteColor,
+                                  ),
+                                  baseColor: AppColor.grey300,
+                                  highlightColor: AppColor.grey100);
+                            },
+                          ),
+                        )
+                      ]));
                 } else {
                   return Expanded(
                       child:
@@ -132,7 +150,8 @@ class PosScreen extends StatelessWidget {
                           //   onRefresh: () => controller.fetchProducts(),
                           //   child:
                           SingleChildScrollView(
-                    padding: EdgeInsets.symmetric(horizontal: 5.w),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 5.w, vertical: 15.h),
                     child: Column(
                       children: [
                         Wrap(
@@ -147,12 +166,9 @@ class PosScreen extends StatelessWidget {
                             },
                           ),
                         ),
-                        SizedBox(height: 115),
                       ],
                     ),
-                  )
-                      // )
-                      );
+                  ));
                 }
               }),
             ],
@@ -178,7 +194,7 @@ class PosScreen extends StatelessWidget {
                       ));
                 }).then((_) => Get.delete<ShiftModalController>());
               },
-              onTerapisClicked: (String rowId) {
+              onTerapisClicked: (String rowId, String? selectedEmpName) {
                 SmartDialog.show(builder: (context) {
                   return Padding(
                       padding: EdgeInsets.only(top: 15.h),
@@ -187,6 +203,7 @@ class PosScreen extends StatelessWidget {
                           width: double.maxFinite,
                           height: MediaQuery.of(context).size.height * 0.5,
                           child: EmployeeModal(
+                            selectedEmpName: selectedEmpName ?? "",
                             onEmployeeSelected: (selectedEmployee) {
                               controller.editTerapisOfTrx(
                                   rowId, selectedEmployee.empId);
@@ -280,7 +297,7 @@ class PosScreen extends StatelessWidget {
                                   SmartDialog.dismiss();
                                 }
                               },
-                              text: Text("Simpan")),
+                              child: Text("Simpan")),
                         )
                       ],
                     ),
@@ -311,7 +328,7 @@ class PosScreen extends StatelessWidget {
                     topLeft: Radius.circular(5), topRight: Radius.circular(5)),
                 backgroundColor: AppColor.primaryColor,
                 foregroundColor: AppColor.whiteColor,
-                text: Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   spacing: 5.w,
                   children: [

@@ -17,14 +17,16 @@ class AppTextField extends TextField{
     bool isThousand = false,
     Function(String)? onChanged,
     super.autofocus,
-    super.readOnly,
+    bool readOnly = false,
     super.textAlign,
     super.maxLines,
+    bool disabled = false,
     bool unfocusWhenTapOutside = true,
   }) : super(
       onTapOutside: unfocusWhenTapOutside? (_) {
         FocusScope.of(context).unfocus();
       } : null,
+      readOnly: disabled || readOnly,
       onChanged: (val){
         if (isThousand && textEditingController!=null) {
           // Store the original cursor position
@@ -55,8 +57,8 @@ class AppTextField extends TextField{
       cursorColor: AppColor.primaryColor,
       textInputAction: inputAction,
       decoration: InputDecoration(
-        filled: fillColor!=null,
-        fillColor: fillColor,
+        filled: disabled || fillColor!=null,
+        fillColor: disabled ? AppColor.grey300 : fillColor,
         labelText: labelText,
         labelStyle: AppTextStyle.textBodyStyle(
           color: AppColor.grey500,

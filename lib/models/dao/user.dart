@@ -5,16 +5,16 @@ class UserDAO {
   String phoneNumber1;
   int levelId;
   String jointDate;
-  String? profilePic;
-  String? profileBirthDate;
-  String? profileSex;
-  String? profileAddress;
-  String? profileCity;
-  String? profileAddressPoint;
-  String? profileKelurahan;
-  String? profileKecamatan;
-  String? profileProvinsi;
-  String? profilePostalCode;
+  String profilePic;
+  String profileBirthDate;
+  String profileSex;
+  String profileAddress;
+  String profileCity;
+  String profileAddressPoint;
+  String profileKelurahan;
+  String profileKecamatan;
+  String profileProvinsi;
+  String profilePostalCode;
 
   UserDAO({
     this.userId = "",
@@ -23,16 +23,16 @@ class UserDAO {
     this.phoneNumber1 = "",
     this.levelId = 0,
     this.jointDate = "",
-    this.profilePic,
-    this.profileBirthDate,
-    this.profileSex,
-    this.profileAddress,
-    this.profileCity,
-    this.profileAddressPoint,
-    this.profileKelurahan,
-    this.profileKecamatan,
-    this.profileProvinsi,
-    this.profilePostalCode,
+    this.profilePic = "",
+    this.profileBirthDate = "",
+    this.profileSex = "",
+    this.profileAddress = "",
+    this.profileCity = "",
+    this.profileAddressPoint = "",
+    this.profileKelurahan = "",
+    this.profileKecamatan = '',
+    this.profileProvinsi = "",
+    this.profilePostalCode = "",
   });
 
   UserDAO.fromJson(Map<String, dynamic> json)
@@ -42,16 +42,16 @@ class UserDAO {
         phoneNumber1 = json['PhoneNumber1'] ?? "",
         levelId = json['LevelID'] ?? 0,
         jointDate = json['JOINT_DATE'] ?? "",
-        profilePic = json['PROFILE_PIC'],
-        profileBirthDate = json['PROFILE_BIRTH_DATE'],
-        profileSex = json['PROFILE_SEX'],
-        profileAddress = json['PROFILE_ADDRESS'],
-        profileCity = json['PROFILE_CITY'],
-        profileAddressPoint = json['PROFILE_ADDRESS_POINT'],
-        profileKelurahan = json['PROFILE_KELURAHAN'],
-        profileKecamatan = json['PROFILE_KECAMATAN'],
-        profileProvinsi = json['PROFILE_PROVINSI'],
-        profilePostalCode = json['PROFILE_POSTAL_CODE'];
+        profilePic = json['PROFILE_PIC'] ?? "",
+        profileBirthDate = json['PROFILE_BIRTH_DATE'] ?? "",
+        profileSex = json['PROFILE_SEX'] ?? "",
+        profileAddress = json['PROFILE_ADDRESS']?? "",
+        profileCity = json['PROFILE_CITY'] ?? "",
+        profileAddressPoint = json['PROFILE_ADDRESS_POINT']?? "",
+        profileKelurahan = json['PROFILE_KELURAHAN'] ?? "",
+        profileKecamatan = json['PROFILE_KECAMATAN'] ?? "",
+        profileProvinsi = json['PROFILE_PROVINSI'] ?? "",
+        profilePostalCode = json['PROFILE_POSTAL_CODE'] ?? "";
 
   Map<String, dynamic> toJson() {
     return {

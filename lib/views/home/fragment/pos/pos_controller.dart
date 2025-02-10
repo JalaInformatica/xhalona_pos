@@ -6,7 +6,6 @@ import 'package:xhalona_pos/models/dao/transaction.dart';
 import 'package:xhalona_pos/models/dto/tamu.dart';
 import 'package:xhalona_pos/models/dto/transaction.dart';
 import 'package:xhalona_pos/repositories/product/product_repository.dart';
-import 'package:xhalona_pos/repositories/shift/shift_repository.dart';
 import 'package:xhalona_pos/repositories/transaction/transaction_repository.dart';
 import 'package:xhalona_pos/repositories/crystal_report/transaction_crystal_report_repository.dart';
 
@@ -31,6 +30,7 @@ class PosController extends GetxController {
   var isAddingProductToTrx = false.obs;
   var isDeletingProductFromTrx = false.obs;
 
+  var showError = false.obs;
 
   var isNoteVisible = <String, bool>{}.obs;
   void toggleNoteVisible(String rowId) {
@@ -65,11 +65,19 @@ class PosController extends GetxController {
     }
   }
 
+  Future<void> reinitTransaction(TransactionHeaderDAO transaction) async {
+    currentTransactionId.value = transaction.salesId;
+    currentTransaction.value = transaction;
+    currentTransactionDetail.value = await _transactionRepository
+        .getTransactionDetail(transactionId: currentTransactionId.value);
+    showError.value = false;
+  }
 
   Future<void> newTransaction() async {
     currentTransactionId.value = "";
     currentTransaction.value = TransactionHeaderDAO();
     currentTransactionDetail.value = [];
+    showError.value = false;
   }
 
   Future<void> cancelTransaction() async {

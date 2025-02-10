@@ -400,7 +400,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   : controller.profileData.value.profilePic !=
                                               null &&
                                           controller.profileData.value
-                                              .profilePic!.isNotEmpty
+                                              .profilePic.isNotEmpty
                                       ? Container(
                                           width:
                                               100, // Ukuran `width` dan `height` harus lebih besar dari `CircleAvatar`
@@ -473,10 +473,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                       controller
                                                           .profileData
                                                           .value
-                                                          .userName!
+                                                          .userName
                                                           .isNotEmpty
                                                   ? controller.profileData.value
-                                                      .userName![0]
+                                                      .userName[0]
                                                       .toUpperCase()
                                                   : '?',
                                               style: TextStyle(

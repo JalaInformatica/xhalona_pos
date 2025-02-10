@@ -223,6 +223,7 @@ class AppTableCell extends StatelessWidget {
   final String? imageUrl;
   final double width;
   final double height;
+  final bool isOpenPOS;
   final bool isEdit;
   final bool isDelete;
   final bool isPaket;
@@ -231,6 +232,7 @@ class AppTableCell extends StatelessWidget {
   final bool isModalBahan;
   final bool isVarian;
   final bool showOptionsOnTap;
+  final VoidCallback? onPOS;
   final VoidCallback? onBahan;
   final VoidCallback? onVarian;
   final VoidCallback? onEdit;
@@ -244,6 +246,7 @@ class AppTableCell extends StatelessWidget {
     this.imageUrl,
     this.width = 100,
     this.height = 40,
+    this.isOpenPOS = false,
     this.isEdit = false,
     this.isDelete = false,
     this.isPaket = false,
@@ -252,6 +255,7 @@ class AppTableCell extends StatelessWidget {
     this.isModalBahan = false,
     this.isVarian = false,
     this.showOptionsOnTap = false,
+    this.onPOS,
     this.onBahan,
     this.onVarian,
     this.onEdit,
@@ -266,6 +270,7 @@ class AppTableCell extends StatelessWidget {
       imageUrl: imageUrl,
       width: newWidth,
       height: height,
+      isOpenPOS: isOpenPOS,
       isEdit: isEdit,
       isDelete: isDelete,
       isPaket: isPaket,
@@ -279,6 +284,7 @@ class AppTableCell extends StatelessWidget {
       onEdit: onEdit,
       onDelete: onDelete,
       onPaket: onPaket,
+      onPOS: onPOS,
     );
   }
 
@@ -329,11 +335,20 @@ class AppTableCell extends StatelessWidget {
 
   List<Widget> _buildIcons() {
     return [
+      if (isOpenPOS)(
+        _buildIconContainer(
+          icon: Icons.open_in_new, 
+          color: AppColor.primaryColor, 
+          tooltip: 'Buka di POS', 
+          onPressed: onPOS, 
+          backgroundColor: AppColor.primaryColor.withAlpha(100)
+        )
+      ),
       if (isEdit)
         _buildIconContainer(
           icon: Icons.edit,
           color: Colors.blue,
-          tooltip: 'Edit',
+          tooltip: 'Edit2',
           onPressed: onEdit,
           backgroundColor: Colors.blue.withOpacity(0.1),
         ),
@@ -405,6 +420,14 @@ class AppTableCell extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              _buildBottomSheetOption(
+                icon: Icons.open_in_new, 
+                text: 'Buka di POS', 
+                onTap: (){
+                  Navigator.pop(context);
+                  if (onPOS != null) onPOS!();
+                },
+              ),
               _buildBottomSheetOption(
                 icon: Icons.edit,
                 text: 'Edit',
@@ -481,7 +504,7 @@ class AppTableTitle extends StatelessWidget {
       color: AppColor.secondaryColor,
       child: Text(
         value,
-        style: AppTextStyle.textTitleStyle(
+        style: AppTextStyle.textSubtitleStyle(
           color: Colors.white,
         ),
       ),

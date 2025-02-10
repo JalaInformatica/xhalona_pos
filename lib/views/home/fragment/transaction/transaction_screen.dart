@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/views/home/fragment/pos/pos_controller.dart';
+import 'package:xhalona_pos/views/home/home_controller.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/widgets/app_calendar.dart';
@@ -172,51 +174,118 @@ class TransactionScreen extends StatelessWidget {
                         var transaction = controller.transactionHeader[i];
                         return [
                           AppTableCell(
-                              value: transaction.salesId
-                                  .substring(transaction.salesId.length - 4),
-                              index: i,
-                              showOptionsOnTap: true),
+                            onPOS: () {
+                              var controller = Get.find<PosController>();
+                              var homeController = Get.find<HomeController>();
+                              controller
+                                  .reinitTransaction(transaction)
+                                  .then((value) {
+                                controller.isOpenTransaksi.value = true;
+                                homeController.selectedMenuName.value = "pos";
+                              });
+                            },
+                            value: transaction.salesId
+                                .substring(transaction.salesId.length - 4),
+                            index: i,
+                            showOptionsOnTap: true,
+                            isOpenPOS: true,
+                          ),
                           AppTableCell(
+                              onPOS: () {
+                                var controller = Get.find<PosController>();
+                                controller.reinitTransaction(transaction);
+                              },
                               value: transaction.salesDate.split("T")[0],
                               index: i,
+                              isOpenPOS: true,
                               showOptionsOnTap: true),
                           AppTableCell(
+                              onPOS: () {
+                                var controller = Get.find<PosController>();
+                                controller.reinitTransaction(transaction);
+                              },
                               value: transaction.cashierBy,
+                              isOpenPOS: true,
                               index: i,
                               showOptionsOnTap: true),
                           AppTableCell(
+                              isOpenPOS: true,
+                              onPOS: () {
+                                var controller = Get.find<PosController>();
+                                controller.reinitTransaction(transaction);
+                              },
                               value: transaction.supplierName,
                               index: i,
                               showOptionsOnTap: true),
                           AppTableCell(
+                              isOpenPOS: true,
+                              onPOS: () {
+                                var controller = Get.find<PosController>();
+                                controller.reinitTransaction(transaction);
+                              },
                               value: transaction.queueNumber.toString(),
                               index: i,
                               showOptionsOnTap: true),
                           AppTableCell(
+                              isOpenPOS: true,
+                              onPOS: () {
+                                var controller = Get.find<PosController>();
+                                controller.reinitTransaction(transaction);
+                              },
                               value: transaction.sourceId,
                               index: i,
                               showOptionsOnTap: true),
                           AppTableCell(
+                              isOpenPOS: true,
+                              onPOS: () {
+                                var controller = Get.find<PosController>();
+                                controller.reinitTransaction(transaction);
+                              },
                               value: transaction.statusDesc,
                               index: i,
                               showOptionsOnTap: true),
                           AppTableCell(
+                              isOpenPOS: true,
+                              onPOS: () {
+                                var controller = Get.find<PosController>();
+                                controller.reinitTransaction(transaction);
+                              },
                               value: transaction.bookingType,
                               index: i,
                               showOptionsOnTap: true),
                           AppTableCell(
+                              isOpenPOS: true,
+                              onPOS: () {
+                                var controller = Get.find<PosController>();
+                                controller.reinitTransaction(transaction);
+                              },
                               value: transaction.nettoVal.toString(),
                               index: i,
                               showOptionsOnTap: true),
                           AppTableCell(
+                              isOpenPOS: true,
+                              onPOS: () {
+                                var controller = Get.find<PosController>();
+                                controller.reinitTransaction(transaction);
+                              },
                               value: transaction.settlePaymentMethod,
                               index: i,
                               showOptionsOnTap: true),
                           AppTableCell(
+                              isOpenPOS: true,
+                              onPOS: () {
+                                var controller = Get.find<PosController>();
+                                controller.reinitTransaction(transaction);
+                              },
                               value: transaction.paymentVal.toString(),
                               index: i,
                               showOptionsOnTap: true),
                           AppTableCell(
+                              onPOS: () {
+                                var controller = Get.find<PosController>();
+                                controller.reinitTransaction(transaction);
+                              },
+                              isOpenPOS: true,
                               value: transaction.totalHutang.toString(),
                               index: i,
                               showOptionsOnTap: true),

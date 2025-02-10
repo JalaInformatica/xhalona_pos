@@ -56,14 +56,14 @@ class _RegisterMainScreen extends State<RegisterMainScreen> {
               child: AppElevatedButton(
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(builder: (context)=>RegisterCompanyScreen()));
-                  }, text: Text("Daftarkan Salon"))),
+                  }, child: Text("Daftarkan Salon"))),
           Container(
               padding: EdgeInsets.symmetric(horizontal: 10.w),
               width: double.maxFinite,
               child: AppElevatedButton(
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(builder: (context)=>RegisterUserScreen()));  
-                  }, text: Text("Daftar Sebagai Karyawan Salon"))),
+                  }, child: Text("Daftar Sebagai Karyawan Salon"))),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

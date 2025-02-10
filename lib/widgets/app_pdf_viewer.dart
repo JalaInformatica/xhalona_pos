@@ -1,10 +1,14 @@
 import 'dart:typed_data';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_bluetooth_printer/flutter_bluetooth_printer.dart';
-import 'package:pdfx/pdfx.dart'; 
-import 'package:path_provider/path_provider.dart'; 
+import 'package:pdfx/pdfx.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/widgets/app_dialog.dart';
+import 'package:open_filex/open_filex.dart';
 
 class AppPDFViewer extends StatefulWidget {
   final String pdfUrl;
@@ -103,6 +107,23 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
         .showSnackBar(SnackBar(content: Text(message)));
   }
 
+  Future<void> _openPdfExternally() async {
+    if (pdfBytes != null) {
+      try {
+        final tempDir = await getTemporaryDirectory();
+        final pdfFile = File('${tempDir.path}/temp.pdf');
+        await pdfFile.writeAsBytes(pdfBytes!);
+
+        // Open the PDF with an external app
+        await OpenFilex.open(pdfFile.path);
+      } catch (e) {
+        _showMessage("Error opening PDF: $e");
+      }
+    } else {
+      _showMessage("PDF not loaded yet");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -115,11 +136,35 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
             onPressed: _print,
             tooltip: "Print to Bluetooth Thermal Printer",
           ),
+          IconButton(
+            icon: Icon(Icons.open_in_new),
+            onPressed: _openPdfExternally,
+            tooltip: "Open with External PDF Viewer",
+          ),
         ],
       ),
-      body: imageBytes == null
-          ? Center(child: CircularProgressIndicator())
-          : Image.memory(imageBytes!),
+      body: pdfBytes == null
+          ? Center(
+              child: AppDialog(
+                  shadowColor: AppColor.blackColor,
+                  content: Column(spacing: 10.h, children: [
+                    Text(
+                      "Tunggu Sebentar",
+                      style: AppTextStyle.textSubtitleStyle(
+                          color: AppColor.primaryColor),
+                    ),
+                    CircularProgressIndicator(
+                      color: AppColor.primaryColor,
+                    )
+                  ])))
+          : PDFView(
+              pdfData: pdfBytes,
+              enableSwipe: true,
+              swipeHorizontal: false,
+              autoSpacing: false,
+              pageFling: true,
+              onError: (error) => _showMessage("Error: $error"),
+            ),
     );
   }
 }

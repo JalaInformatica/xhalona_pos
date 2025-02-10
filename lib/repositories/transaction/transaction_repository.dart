@@ -51,6 +51,36 @@ class TransactionRepository extends AppRepository {
     return getResponseTrxData(result).first["NO_TRX"];
   }
 
+  Future<List<TransactionStatusDAO>> statusTransaction({
+    int? pageNo,
+    int? pageRow,
+    String? filterField,
+    String? filterValue,
+    int? filterDay,
+    int? filterMonth,
+    int? filterYear,
+    String? statusId,
+    String? statusCategory,
+    String? sourceId,
+    String? statusClosed
+  }) async {
+    var result = await _transactionService.statusTransactions(
+      pageNo: pageNo,
+      pageRow: pageRow,
+      filterField: filterField,
+      filterValue: filterValue,
+      filterDay: filterDay,
+      filterMonth: filterMonth,
+      filterYear: filterYear,
+      statusId: statusId,
+      statusCategory: statusCategory,
+      sourceId: sourceId,
+      statusClosed: statusClosed
+    );
+    List data = getResponseListData(result);
+    return data.map((statusTrx)=>TransactionStatusDAO.fromJson(statusTrx)).toList();
+  }
+
   Future<String> paymentTransaction(PaymentTransactionDTO payment) async {
     var result = await _transactionService.paymentTransaction(payment);
     return getResponseTrxData(result).first["NO_TRX"];

@@ -11,6 +11,6 @@ Widget transactionFilterButton({
     backgroundColor: isSelected? AppColor.primaryColor : AppColor.whiteColor,
     foregroundColor: isSelected? AppColor.whiteColor : AppColor.primaryColor,
     onPressed: onPressed,
-    text: Text(text, style: AppTextStyle.textBodyStyle(),)
+    child: Text(text, style: AppTextStyle.textBodyStyle(),)
   );
 }

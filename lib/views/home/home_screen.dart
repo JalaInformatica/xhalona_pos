@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'fragment/laporan/monitor/monitor_screen.dart';
 import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:xhalona_pos/views/home/home_controller.dart';
@@ -95,13 +96,7 @@ class HomeScreen extends StatelessWidget {
     }
     return Obx(() => GestureDetector(
         onTap: () {
-          if (menuName != "profil") {
-            controller.selectedMenuName.value = menuName;
-          } else {
-            Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => ProfileScreen()),
-                (route) => false);
-          }
+          controller.selectedMenuName.value = menuName;
         },
         child: Container(
             padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
@@ -155,8 +150,16 @@ class HomeScreen extends StatelessWidget {
               Spacer(),
               AppIconButton(
                 foregroundColor: AppColor.whiteColor,
-                onPressed: () {},
-                icon: Icon(Icons.shopping_bag),
+                onPressed: () {
+                  controller.selectedMenuName.value="transaksi";
+                },
+                icon: Badge.count(
+                  textStyle: AppTextStyle.textCaptionStyle(fontWeight: FontWeight.bold),
+                  textColor: AppColor.blackColor,
+                  backgroundColor: AppColor.warningColor,
+                  count: controller.todayTrx.value,
+                  child: Icon(Icons.shopping_bag),
+                ),
               ),
               AppIconButton(
                 foregroundColor: AppColor.whiteColor,
@@ -267,7 +270,17 @@ class HomeScreen extends StatelessWidget {
         if (controller.isMenuLoading.value) {
           return Scaffold(
               backgroundColor: AppColor.whiteColor,
-              body: Center(child: CircularProgressIndicator()));
+              body: Center(child: 
+                AppDialog(
+                  shadowColor: AppColor.blackColor,
+                  content: Column(
+                    spacing: 10.h,
+                    children: [
+                      Text("Tunggu Sebentar", style: AppTextStyle.textSubtitleStyle(color: AppColor.primaryColor),),
+                      CircularProgressIndicator(color: AppColor.primaryColor,)
+                  ])
+                )
+              ));
         } else {
           return Scaffold(
             backgroundColor: AppColor.whiteColor,
