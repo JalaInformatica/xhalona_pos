@@ -551,7 +551,7 @@ Widget transaction(
                                 )),
                           ],
                         ),
-                        if (controller.showError.value)
+                        if (controller.showError.value && (controller.currentTransaction.value.supplierId.isEmpty || controller.currentTransactionDetail.any((detail) => detail.employeeId.isEmpty)))
                           Text(
                             "*Lengkapi informasi${controller.currentTransaction.value.supplierId.isEmpty ? " pelanggan" : ""} ${controller.currentTransactionDetail.any((detail) => detail.employeeId.isEmpty) ? " terapis" : ""}",
                             style: AppTextStyle.textCaptionStyle(

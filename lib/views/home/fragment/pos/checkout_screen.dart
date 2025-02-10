@@ -4,6 +4,7 @@ import 'package:xhalona_pos/core/helper/global_helper.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dto/paymentTransaction.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/checkout_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/pos/pos_controller.dart';
 import 'package:xhalona_pos/widgets/app_elevated_button.dart';
 import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:xhalona_pos/widgets/app_pdf_viewer.dart';
@@ -57,10 +58,9 @@ class _CheckoutScreen extends State<CheckoutScreen> {
     int parsedAmount = unFormatThousands(amount);
     switch (key) {
       case 0:
-        if (parsedAmount < _controller.tunai.value) {
+        if (parsedAmount < widget.nettoVal) {
           _controller.tunai.value = _controller.tunai.value;
-          _tunaiController.text =
-              formatThousands(_controller.tunai.value.toString());
+          _tunaiController.text = formatThousands(_controller.tunai.value.toString());
         } else {
           _controller.tunai.value = parsedAmount;
         }
@@ -73,7 +73,7 @@ class _CheckoutScreen extends State<CheckoutScreen> {
           _controller.tunai.value = 0;
           _controller.nonTunai2.value = 0;
         } else {
-          _controller.tunai.value -= diff; // Deduct or add the difference
+          _controller.tunai.value -= diff; 
         }
         break;
 
@@ -109,9 +109,14 @@ class _CheckoutScreen extends State<CheckoutScreen> {
         _controller.komplimen.value;
     _controller.hutang.value;
 
-    if (_controller.totalPaid.value >= widget.nettoVal) {
+    if (_controller.totalPaid.value > widget.nettoVal) {
       _controller.kembalian.value =
           _controller.totalPaid.value - widget.nettoVal;
+    }
+
+    else {
+      if(_controller.kembalian.value > 0) _controller.kembalian.value = 0;
+      if(_controller.titipan.value > 0) _controller.titipan.value = 0;
     }
 
     // _controller.tunai.value = payments["tunai"]!;
@@ -538,7 +543,7 @@ class _CheckoutScreen extends State<CheckoutScreen> {
                                     }
                                   } else {
                                     _titipanController.text = formatThousands(
-                                        _controller.kembalian.value.toString());
+                                        _controller.titipan.value.toString());
                                   }
                                 },
                               ))),
@@ -575,14 +580,17 @@ class _CheckoutScreen extends State<CheckoutScreen> {
                                 titipanVal: _controller.titipan.value,
                               ))
                                   .then((val) {
-                                _controller
-                                    .printNota(widget.salesId)
-                                    .then((url) => Navigator.of(context).push(
+                                _controller.printNota(widget.salesId)
+                                    .then((url) => Navigator.of(context)
+                                            .push(
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 AppPDFViewer(pdfUrl: url),
                                           ),
-                                        ));
+                                        )
+                                            .then((_) {
+                                          Get.reload<PosController>();
+                                        }));
                               });
                             },
                             child: Text(

@@ -10,11 +10,13 @@ class ProfileController extends GetxController{
   @override
   void onInit() {
     // TODO: implement onInit
+    fetchProfile();
     super.onInit();
   }
 
   Future<void> fetchProfile() async {
     profileData.value = await _userRepository.getUserProfile();
+    isProfileLoading.value = false;
   }
 
 }

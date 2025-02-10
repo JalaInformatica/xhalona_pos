@@ -20,10 +20,10 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Obx(()=> Scaffold(
         backgroundColor: Colors.white,
         body: controller.isProfileLoading.value
-            ? CircularProgressIndicator()
+            ? Center(child: CircularProgressIndicator())
             : Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: SingleChildScrollView(
@@ -31,36 +31,37 @@ class ProfileScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       spacing: 10.h,
                       children: [
+                        Text("Profil Saya", style: AppTextStyle.textSubtitleStyle()),
                         AppTextField(
                           labelText: "Nama",
                           readOnly: true,
                           context: context,
-                          hintText: controller.profileData.value.userName,
+                          textEditingController: TextEditingController()..text=controller.profileData.value.userName,
                           style: AppTextStyle.textBodyStyle(color: AppColor.blackColor),
                         ),
                         AppTextField(
                           labelText: "No. HP",
                           readOnly: true,
                           context: context,
-                          hintText: controller.profileData.value.phoneNumber1,
+                          textEditingController: TextEditingController()..text=controller.profileData.value.phoneNumber1,
                           style: AppTextStyle.textBodyStyle(color: AppColor.blackColor),
                         ),
                         AppTextField(
                           labelText: "Email",
                           readOnly: true,
                           context: context,
-                          hintText: controller.profileData.value.emailAddress,
+                          textEditingController: TextEditingController()..text=controller.profileData.value.emailAddress,
                           style: AppTextStyle.textBodyStyle(color: AppColor.blackColor),
                         ),
                         AppTextField(
                           labelText: "Alamat",
                           readOnly: true,
                           context: context,
-                          hintText: controller.profileData.value.profileAddress,
+                          textEditingController: TextEditingController()..text=controller.profileData.value.profileAddress,
                           style: AppTextStyle.textBodyStyle(color: AppColor.blackColor),
                         ),
                       ]),
                 ),
-              ));
+              )));
   }
 }

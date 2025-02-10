@@ -162,7 +162,7 @@ class TransactionService {
     var url = '/SALES/order';
     var body = jsonEncode({
       "rq": {
-        "ACTION_ID": "MULTI_PAYMENT",
+        "ACTION_ID": "PAYMENT",
         "IP": api.ip,
         "DEF_COMPANY_ID": api.companyId,
         "USER_ID": api.userId,
