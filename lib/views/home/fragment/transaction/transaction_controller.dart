@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
-import 'package:xhalona_pos/core/constant/transaction.dart';
 import 'package:xhalona_pos/models/dao/transaction.dart';
+import 'package:xhalona_pos/core/constant/transaction.dart';
 import 'package:xhalona_pos/repositories/transaction/transaction_repository.dart';
 
-class TransactionController extends GetxController{
+class TransactionController extends GetxController {
   TransactionRepository _transactionRepository = TransactionRepository();
 
   var transactionHeader = <TransactionHeaderDAO>[].obs;
@@ -11,10 +11,11 @@ class TransactionController extends GetxController{
   var trxStatusCategory = TransactionStatusCategory.progress.obs;
   var isOnline = false.obs;
   var filterValue = "".obs;
+  RxDouble sumTrx = 0.0.obs;
 
   DateTime dateNow = DateTime.now();
   late RxInt filterDay = dateNow.day.obs;
-  late RxInt filterMonth = dateNow.month.obs;   
+  late RxInt filterMonth = dateNow.month.obs;
   late RxInt filterYear = dateNow.year.obs;
 
   var pageNo = 1.obs;
@@ -33,8 +34,9 @@ class TransactionController extends GetxController{
     fetchTransactions();
   }
 
-  void updateFilterTrxStatusCategory(TransactionStatusCategory newStatusCategory) async {
-    if(trxStatusCategory.value!=newStatusCategory){
+  void updateFilterTrxStatusCategory(
+      TransactionStatusCategory newStatusCategory) async {
+    if (trxStatusCategory.value != newStatusCategory) {
       trxStatusCategory.value = newStatusCategory;
       pageNo.value = 1;
       pageRow.value = 10;
@@ -42,7 +44,7 @@ class TransactionController extends GetxController{
     }
   }
 
-  void updateFilterTrxDate(DateTime selectedDay){
+  void updateFilterTrxDate(DateTime selectedDay) {
     filterYear.value = selectedDay.year;
     filterMonth.value = selectedDay.month;
     filterDay.value = selectedDay.day;
@@ -51,19 +53,19 @@ class TransactionController extends GetxController{
     fetchTransactions();
   }
 
-  void updateFilterValue(String newFilterValue){
+  void updateFilterValue(String newFilterValue) {
     filterValue.value = newFilterValue;
     pageNo.value = 1;
     pageRow.value = 10;
     fetchTransactions();
   }
-  
-  void updatePageNo(int newFilterValue){
+
+  void updatePageNo(int newFilterValue) {
     pageNo.value = newFilterValue;
     fetchTransactions();
   }
 
-  void updatePageRow(int newFilterValue){
+  void updatePageRow(int newFilterValue) {
     pageRow.value = newFilterValue;
     fetchTransactions();
   }
@@ -72,16 +74,18 @@ class TransactionController extends GetxController{
     try {
       isLoading.value = true;
       final result = await _transactionRepository.getTransactionHeader(
-        statusCategory: getTransactionStatusCategoryStr(trxStatusCategory.value),
-        sourceId: isOnline.value? "ONLINE" : "",
-        filterDay: filterDay?.value,
-        filterMonth: filterMonth?.value,
-        filterYear: filterYear?.value,
-        filterValue: filterValue.value,
-        pageNo: pageNo.value,
-        pageRow: pageRow.value
-      );
+          statusCategory:
+              getTransactionStatusCategoryStr(trxStatusCategory.value),
+          sourceId: isOnline.value ? "ONLINE" : "",
+          filterDay: filterDay?.value,
+          filterMonth: filterMonth?.value,
+          filterYear: filterYear?.value,
+          filterValue: filterValue.value,
+          pageNo: pageNo.value,
+          pageRow: pageRow.value);
       transactionHeader.value = result;
+      sumTrx.value =
+          result.fold(0.0, (sum, item) => sum + (item.nettoVal ?? 0.0));
     } finally {
       isLoading.value = false;
     }

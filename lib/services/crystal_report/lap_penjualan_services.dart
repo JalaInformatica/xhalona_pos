@@ -14,7 +14,8 @@ class LapPenjualanCrystalReportService {
     var url = '/SALES/lap_sales';
     var body = jsonEncode({
       "rq": {
-        "ACTION_ID": "LAP_PENJUALAN",
+        if (template == 'Lap_Penjualan_Kasir') "ACTION_ID": "LAP_KASIR",
+        if (template == 'Lap_Penjualan') "ACTION_ID": "LAP_PENJUALAN",
         "IP": api.ip,
         "COMPANY_ID": api.companyId,
         "SITE_ID": "",

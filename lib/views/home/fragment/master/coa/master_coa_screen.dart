@@ -150,98 +150,100 @@ class MasterCoaScreen extends StatelessWidget {
               SizedBox(
                 height: 5.h,
               ),
-              Obx(() => Expanded(
-                      child: AppTable(
-                    onSearch: (filterValue) =>
-                        controller.updateFilterValue(filterValue),
-                    onChangePageNo: (pageNo) => controller.updatePageNo(pageNo),
-                    onChangePageRow: (pageRow) =>
-                        controller.updatePageRow(pageRow),
-                    pageNo: controller.pageNo.value,
-                    pageRow: controller.pageRow.value,
-                    titles: [
-                      AppTableTitle(value: "Kode "),
-                      AppTableTitle(value: "Nama "),
-                      AppTableTitle(value: "jenis"),
-                      AppTableTitle(value: "D/K"),
-                      AppTableTitle(value: "TM"),
-                      AppTableTitle(value: "Aksi"),
-                    ],
-                    data: List.generate(controller.coaHeader.length, (int i) {
-                      var coa = controller.coaHeader[i];
-                      return [
-                        AppTableCell(
-                            value: coa.acId,
-                            index: i,
-                            onEdit: () {
-                              goTo(context, coa);
-                            },
-                            onDelete: () async {
-                              await messageHapus(coa.acId, coa.namaRekening);
-                            },
-                            showOptionsOnTap: true),
-                        AppTableCell(
-                            value: coa.namaRekening,
-                            index: i,
-                            onEdit: () {
-                              goTo(context, coa);
-                            },
-                            onDelete: () async {
-                              await messageHapus(coa.acId, coa.namaRekening);
-                            },
-                            showOptionsOnTap: true),
-                        AppTableCell(
-                            value: coa.jenisRek,
-                            index: i,
-                            onEdit: () {
-                              goTo(context, coa);
-                            },
-                            onDelete: () async {
-                              await messageHapus(coa.acId, coa.namaRekening);
-                            },
-                            showOptionsOnTap: true),
-                        AppTableCell(
-                            value: coa.flagDk,
-                            index: i,
-                            onEdit: () {
-                              goTo(context, coa);
-                            },
-                            onDelete: () async {
-                              await messageHapus(coa.acId, coa.namaRekening);
-                            },
-                            showOptionsOnTap: true),
-                        AppTableCell(
-                            value: coa.flagTm!,
-                            index: i,
-                            onEdit: () {
-                              goTo(context, coa);
-                            },
-                            onDelete: () async {
-                              await messageHapus(coa.acId, coa.namaRekening);
-                            },
-                            showOptionsOnTap: true),
-                        AppTableCell(
+              Obx(
+                () => Expanded(
+                    child: AppTable(
+                  onSearch: (filterValue) =>
+                      controller.updateFilterValue(filterValue),
+                  onChangePageNo: (pageNo) => controller.updatePageNo(pageNo),
+                  onChangePageRow: (pageRow) =>
+                      controller.updatePageRow(pageRow),
+                  pageNo: controller.pageNo.value,
+                  pageRow: controller.pageRow.value,
+                  titles: [
+                    AppTableTitle(value: "Kode "),
+                    AppTableTitle(value: "Nama "),
+                    AppTableTitle(value: "jenis"),
+                    AppTableTitle(value: "D/K"),
+                    AppTableTitle(value: "TM"),
+                    AppTableTitle(value: "Aksi"),
+                  ],
+                  data: List.generate(controller.coaHeader.length, (int i) {
+                    var coa = controller.coaHeader[i];
+                    return [
+                      AppTableCell(
+                          value: coa.acId,
                           index: i,
+                          onEdit: () {
+                            goTo(context, coa);
+                          },
                           onDelete: () async {
                             await messageHapus(coa.acId, coa.namaRekening);
                           },
-                          value: "", // Ganti dengan URL gambar jika ada
-                          isEdit: true,
-                          isDelete: true,
+                          showOptionsOnTap: true),
+                      AppTableCell(
+                          value: coa.namaRekening,
+                          index: i,
                           onEdit: () {
-                            Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(
-                                    builder: (context) => AddEditCoa(
-                                          coa: coa,
-                                        )),
-                                (route) => false);
+                            goTo(context, coa);
                           },
-                        ),
-                      ];
-                    }),
-                    onRefresh: () => controller.fetchProducts(),
-                    isRefreshing: controller.isLoading.value,
-                  )))
+                          onDelete: () async {
+                            await messageHapus(coa.acId, coa.namaRekening);
+                          },
+                          showOptionsOnTap: true),
+                      AppTableCell(
+                          value: coa.jenisRek,
+                          index: i,
+                          onEdit: () {
+                            goTo(context, coa);
+                          },
+                          onDelete: () async {
+                            await messageHapus(coa.acId, coa.namaRekening);
+                          },
+                          showOptionsOnTap: true),
+                      AppTableCell(
+                          value: coa.flagDk,
+                          index: i,
+                          onEdit: () {
+                            goTo(context, coa);
+                          },
+                          onDelete: () async {
+                            await messageHapus(coa.acId, coa.namaRekening);
+                          },
+                          showOptionsOnTap: true),
+                      AppTableCell(
+                          value: coa.flagTm!,
+                          index: i,
+                          onEdit: () {
+                            goTo(context, coa);
+                          },
+                          onDelete: () async {
+                            await messageHapus(coa.acId, coa.namaRekening);
+                          },
+                          showOptionsOnTap: true),
+                      AppTableCell(
+                        index: i,
+                        onDelete: () async {
+                          await messageHapus(coa.acId, coa.namaRekening);
+                        },
+                        value: "", // Ganti dengan URL gambar jika ada
+                        isEdit: true,
+                        isDelete: true,
+                        onEdit: () {
+                          Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(
+                                  builder: (context) => AddEditCoa(
+                                        coa: coa,
+                                      )),
+                              (route) => false);
+                        },
+                      ),
+                    ];
+                  }),
+                  onRefresh: () => controller.fetchProducts(),
+                  isRefreshing: controller.isLoading.value,
+                )),
+              )
             ],
           ),
         ),

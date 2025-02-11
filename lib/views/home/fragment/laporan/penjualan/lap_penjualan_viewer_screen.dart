@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
-import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_screen.dart';
+import 'package:xhalona_pos/views/home/home_screen.dart';
 
 class LapPenjualanViewerScreen extends StatefulWidget {
   final String pdfUrl;
@@ -70,7 +70,7 @@ class _LapPenjualanViewerScreenState extends State<LapPenjualanViewerScreen> {
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => LapPenjualanScreen()),
+            MaterialPageRoute(builder: (context) => HomeScreen()),
             (route) => false); // Navigasi kembali ke halaman sebelumnya
         return false; // Mencegah navigasi bawaan
       },

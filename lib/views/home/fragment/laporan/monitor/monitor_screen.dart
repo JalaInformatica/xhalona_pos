@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/models/dao/product.dart';
 import 'package:xhalona_pos/models/dao/kategori.dart';
 import 'package:xhalona_pos/models/dao/kustomer.dart';
@@ -8,9 +9,13 @@ import 'package:xhalona_pos/models/dao/karyawan.dart';
 import 'package:xhalona_pos/widgets/app_bottombar.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/laporan/monitor/monitor_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/karyawan_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/kategori/kategori_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_viewer_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplier_kustomer_controller.dart';
 
 class MonitorScreen extends StatefulWidget {
@@ -23,6 +28,9 @@ class _MonitorScreenState extends State<MonitorScreen> {
   final KustomerController controllerKus = Get.put(KustomerController());
   final ProductController controllerProduct = Get.put(ProductController());
   final KategoriController controllerKat = Get.put(KategoriController());
+  final MonitorController controller = Get.put(MonitorController());
+  final LapPenjualanController controllerLap =
+      Get.put(LapPenjualanController());
 
   final TextEditingController _startDateController = TextEditingController();
   final TextEditingController _endDateController = TextEditingController();
@@ -33,6 +41,7 @@ class _MonitorScreenState extends State<MonitorScreen> {
   String _reportType = 'Detail';
   String _shift = 'Semua';
   String _salesFormat = 'Harian';
+  final _formKey = GlobalKey<FormState>();
 
   Future<void> _selectDate(
       BuildContext context, TextEditingController controller) async {
@@ -51,6 +60,25 @@ class _MonitorScreenState extends State<MonitorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Future<void> handleMonitorPdf(String template) async {
+      if (_formKey.currentState!.validate()) {
+        controllerLap
+            .printLapPenjualan(
+                template,
+                _startDateController.text,
+                _endDateController.text,
+                'PDF',
+                _reportType == 'Detail' ? '1' : '0')
+            .then((url) async {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+                builder: (context) => LapPenjualanViewerScreen(url, 'Monitor')),
+            (route) => false,
+          );
+        });
+      }
+    }
+
     final screenWidth = MediaQuery.of(context).size.width;
     return WillPopScope(
       onWillPop: () async {
@@ -70,161 +98,234 @@ class _MonitorScreenState extends State<MonitorScreen> {
         ),
         body: SingleChildScrollView(
           padding: EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _startDateController,
-                      readOnly: true,
-                      decoration: InputDecoration(
-                        labelText: '20-01-2025',
-                        suffixIcon: IconButton(
-                          icon: Icon(Icons.calendar_today),
-                          onPressed: () =>
-                              _selectDate(context, _startDateController),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _startDateController,
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          labelText: '20-01-2025',
+                          suffixIcon: IconButton(
+                            icon: Icon(Icons.calendar_today),
+                            onPressed: () =>
+                                _selectDate(context, _startDateController),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(width: 8.0),
-                  Expanded(
-                    child: TextField(
-                      controller: _endDateController,
-                      readOnly: true,
-                      decoration: InputDecoration(
-                        labelText: 'End Date',
-                        suffixIcon: IconButton(
-                          icon: Icon(Icons.calendar_today),
-                          onPressed: () =>
-                              _selectDate(context, _endDateController),
+                    SizedBox(width: 8.0),
+                    Expanded(
+                      child: TextField(
+                        controller: _endDateController,
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          labelText: 'End Date',
+                          suffixIcon: IconButton(
+                            icon: Icon(Icons.calendar_today),
+                            onPressed: () =>
+                                _selectDate(context, _endDateController),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
-              buildTypeAheadFieldTerapis(
-                  "Filter Terapis", controllerKar.karyawanHeader, (value) {
-                setState(() {
-                  _selectedTherapist = value;
-                });
-              }, controllerKar.updateFilterValue),
-              SizedBox(height: 16),
-              buildTypeAheadFieldCustomer(
-                  "Filter Customer", controllerKus.kustomerHeader, (value) {
-                setState(() {
-                  _selectedCustomer = value;
-                });
-              }, controllerKus.updateMonitorValue),
-              SizedBox(height: 16),
-              buildTypeAheadFieldProduct(
-                  "Filter Product", controllerProduct.productHeader, (value) {
-                setState(() {
-                  _selectedProduct = value;
-                });
-              }, controllerProduct.updateFilterValue),
-              SizedBox(height: 16),
-              buildTypeAheadFieldKategori(
-                  "Filter Kategori", controllerKat.kategoriGlobalHeader,
-                  (value) {
-                setState(() {
-                  _selectedCategory = value;
-                });
-              }, controllerKat.updateFilterValue),
-              SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      decoration: InputDecoration(labelText: 'Type'),
-                      value: _reportType,
-                      items: ['Detail', 'Rekap', 'Subtotal']
-                          .map((type) => DropdownMenuItem(
-                                value: type,
-                                child: Text(type,
-                                    style: AppTextStyle.textTitleStyle()),
-                              ))
-                          .toList(),
+                  ],
+                ),
+                SizedBox(height: 16),
+                buildTypeAheadFieldTerapis(
+                    "Filter Terapis", controllerKar.karyawanHeader, (value) {
+                  setState(() {
+                    _selectedTherapist = value;
+                  });
+                }, controllerKar.updateFilterValue),
+                SizedBox(height: 16),
+                buildTypeAheadFieldCustomer(
+                    "Filter Customer", controllerKus.kustomerHeader, (value) {
+                  setState(() {
+                    _selectedCustomer = value;
+                  });
+                }, controllerKus.updateMonitorValue),
+                SizedBox(height: 16),
+                buildTypeAheadFieldProduct(
+                    "Filter Product", controllerProduct.productHeader, (value) {
+                  setState(() {
+                    _selectedProduct = value;
+                  });
+                }, controllerProduct.updateFilterValue),
+                SizedBox(height: 16),
+                buildTypeAheadFieldKategori(
+                    "Filter Kategori", controllerKat.kategoriGlobalHeader,
+                    (value) {
+                  setState(() {
+                    _selectedCategory = value;
+                  });
+                }, controllerKat.updateFilterValue),
+                SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        decoration: InputDecoration(labelText: 'Type'),
+                        value: _reportType,
+                        items: ['Detail', 'Rekap', 'Subtotal']
+                            .map((type) => DropdownMenuItem(
+                                  value: type,
+                                  child: Text(type,
+                                      style: AppTextStyle.textTitleStyle()),
+                                ))
+                            .toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _reportType = value!;
+                          });
+                        },
+                      ),
+                    ),
+                    SizedBox(width: 8.0),
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        decoration: InputDecoration(labelText: 'Shift'),
+                        value: _shift,
+                        items: ['Semua', 'Pagi', 'Siang']
+                            .map((shift) => DropdownMenuItem(
+                                  value: shift,
+                                  child: Text(shift,
+                                      style: AppTextStyle.textTitleStyle()),
+                                ))
+                            .toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _shift = value!;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                Text('Format Penjualan By:',
+                    style: AppTextStyle.textTitleStyle()),
+                Column(
+                  children: [
+                    RadioListTile(
+                      title:
+                          Text('Harian', style: AppTextStyle.textTitleStyle()),
+                      value: 'Harian',
+                      groupValue: _salesFormat,
                       onChanged: (value) {
                         setState(() {
-                          _reportType = value!;
+                          _salesFormat = value.toString();
                         });
                       },
                     ),
-                  ),
-                  SizedBox(width: 8.0),
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      decoration: InputDecoration(labelText: 'Shift'),
-                      value: _shift,
-                      items: ['Semua', 'Pagi', 'Siang']
-                          .map((shift) => DropdownMenuItem(
-                                value: shift,
-                                child: Text(shift,
-                                    style: AppTextStyle.textTitleStyle()),
-                              ))
-                          .toList(),
+                    RadioListTile(
+                      title:
+                          Text('Kasir', style: AppTextStyle.textTitleStyle()),
+                      value: 'Kasir',
+                      groupValue: _salesFormat,
                       onChanged: (value) {
                         setState(() {
-                          _shift = value!;
+                          _salesFormat = value.toString();
                         });
                       },
                     ),
+                    RadioListTile(
+                      title:
+                          Text('Terapis', style: AppTextStyle.textTitleStyle()),
+                      value: 'Terapis',
+                      groupValue: _salesFormat,
+                      onChanged: (value) {
+                        setState(() {
+                          _salesFormat = value.toString();
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    masterButton(() => handleMonitorPdf('Lap_Penjualan'),
+                        "Laporan", Icons.book),
+                    masterButton(() => handleMonitorPdf('Lap_Penjualan_Kasir'),
+                        "Laporan Kasir", Icons.menu_book),
+                  ],
+                ),
+                SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  height: 500.h,
+                  child: Obx(
+                    () => AppTable(
+                      onSearch: (filterValue) =>
+                          controller.updateFilterValue(filterValue),
+                      onChangePageNo: (pageNo) =>
+                          controller.updatePageNo(pageNo),
+                      onChangePageRow: (pageRow) =>
+                          controller.updatePageRow(pageRow),
+                      pageNo: controller.pageNo.value,
+                      pageRow: controller.pageRow.value,
+                      titles: [
+                        AppTableTitle(value: "Tanggal "),
+                        AppTableTitle(value: "Shift "),
+                        AppTableTitle(value: "No Trx"),
+                        AppTableTitle(value: "Customer"),
+                        AppTableTitle(value: "Produk"),
+                        // AppTableTitle(value: "Kategori "),
+                        // AppTableTitle(value: "Qty "),
+                        // AppTableTitle(value: "Harga"),
+                        // AppTableTitle(value: "Total"),
+                        // AppTableTitle(value: "Diskon"),
+                        // AppTableTitle(value: "Tagihan "),
+                        // AppTableTitle(value: "Metode Bayar "),
+                        // AppTableTitle(value: "Komp/Vch"),
+                        // AppTableTitle(value: "Penerimaan"),
+                        // AppTableTitle(value: "Cash"),
+                        // AppTableTitle(value: "Trf/Qris "),
+                        // AppTableTitle(value: "Hutang "),
+                        // AppTableTitle(value: "Titipan"),
+                        // AppTableTitle(value: "Terapis"),
+                      ],
+                      data: List.generate(controller.monitorHeader.length,
+                          (int i) {
+                        var monitor = controller.monitorHeader[i];
+                        return [
+                          AppTableCell(
+                            value: monitor.createDate,
+                            index: i,
+                          ),
+                          AppTableCell(
+                            value: monitor.shiftId,
+                            index: i,
+                          ),
+                          AppTableCell(
+                            value: monitor.salesId,
+                            index: i,
+                          ),
+                          AppTableCell(
+                            value: monitor.supplierName,
+                            index: i,
+                          ),
+                          AppTableCell(
+                            value: monitor.partName,
+                            index: i,
+                          ),
+                        ];
+                      }),
+                      onRefresh: () => controller.fetchProducts(),
+                      isRefreshing: controller.isLoading.value,
+                    ),
                   ),
-                ],
-              ),
-              SizedBox(height: 16),
-              Text('Format Penjualan By:',
-                  style: AppTextStyle.textTitleStyle()),
-              Column(
-                children: [
-                  RadioListTile(
-                    title: Text('Harian', style: AppTextStyle.textTitleStyle()),
-                    value: 'Harian',
-                    groupValue: _salesFormat,
-                    onChanged: (value) {
-                      setState(() {
-                        _salesFormat = value.toString();
-                      });
-                    },
-                  ),
-                  RadioListTile(
-                    title: Text('Kasir', style: AppTextStyle.textTitleStyle()),
-                    value: 'Kasir',
-                    groupValue: _salesFormat,
-                    onChanged: (value) {
-                      setState(() {
-                        _salesFormat = value.toString();
-                      });
-                    },
-                  ),
-                  RadioListTile(
-                    title:
-                        Text('Terapis', style: AppTextStyle.textTitleStyle()),
-                    value: 'Terapis',
-                    groupValue: _salesFormat,
-                    onChanged: (value) {
-                      setState(() {
-                        _salesFormat = value.toString();
-                      });
-                    },
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  masterButton(() {}, "Laporan", Icons.book),
-                  masterButton(() {}, "Laporan Kasir", Icons.menu_book),
-                ],
-              ),
-              SizedBox(height: 70),
-            ],
+                ),
+                SizedBox(height: 70),
+              ],
+            ),
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -441,35 +542,6 @@ class _MonitorScreenState extends State<MonitorScreen> {
           },
         ),
       ],
-    );
-  }
-
-  Widget masterButton(VoidCallback onPressed, String label, IconData icon) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-        decoration: BoxDecoration(
-          color: AppColor.secondaryColor, // Background color
-          borderRadius: BorderRadius.circular(8), // Rounded corners
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 4,
-              offset: Offset(0, 2), // Shadow position
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: Colors.white),
-            SizedBox(width: 8),
-            Text(label,
-                style: AppTextStyle.textTitleStyle(color: Colors.white)),
-          ],
-        ),
-      ),
     );
   }
 }
