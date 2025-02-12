@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
@@ -39,12 +40,13 @@ class _MonitorScreenState extends State<MonitorScreen> {
   String? _selectedProduct;
   String? _selectedCategory;
   String _reportType = 'Detail';
-  String _shift = 'Semua';
+  String _shift = 'SEMUA';
+  String? _shiftAll;
   String _salesFormat = 'Harian';
   final _formKey = GlobalKey<FormState>();
 
-  Future<void> _selectDate(
-      BuildContext context, TextEditingController controller) async {
+  Future<void> _selectDate(BuildContext context,
+      TextEditingController controllerText, int tanda) async {
     DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -53,7 +55,8 @@ class _MonitorScreenState extends State<MonitorScreen> {
     );
     if (picked != null) {
       setState(() {
-        controller.text = "${picked.day}-${picked.month}-${picked.year}";
+        controllerText.text = DateFormat('yyyy-MM-dd').format(picked);
+        controller.updateFilterDate(controllerText.text, tanda);
       });
     }
   }
@@ -79,6 +82,7 @@ class _MonitorScreenState extends State<MonitorScreen> {
       }
     }
 
+    controller.fetchProducts();
     final screenWidth = MediaQuery.of(context).size.width;
     return WillPopScope(
       onWillPop: () async {
@@ -113,8 +117,9 @@ class _MonitorScreenState extends State<MonitorScreen> {
                           labelText: '20-01-2025',
                           suffixIcon: IconButton(
                             icon: Icon(Icons.calendar_today),
-                            onPressed: () =>
-                                _selectDate(context, _startDateController),
+                            onPressed: () {
+                              _selectDate(context, _startDateController, 0);
+                            },
                           ),
                         ),
                       ),
@@ -128,8 +133,9 @@ class _MonitorScreenState extends State<MonitorScreen> {
                           labelText: 'End Date',
                           suffixIcon: IconButton(
                             icon: Icon(Icons.calendar_today),
-                            onPressed: () =>
-                                _selectDate(context, _endDateController),
+                            onPressed: () {
+                              _selectDate(context, _endDateController, 1);
+                            },
                           ),
                         ),
                       ),
@@ -191,7 +197,7 @@ class _MonitorScreenState extends State<MonitorScreen> {
                       child: DropdownButtonFormField<String>(
                         decoration: InputDecoration(labelText: 'Shift'),
                         value: _shift,
-                        items: ['Semua', 'Pagi', 'Siang']
+                        items: ['SEMUA', 'PAGI', 'SIANG']
                             .map((shift) => DropdownMenuItem(
                                   value: shift,
                                   child: Text(shift,
@@ -200,7 +206,11 @@ class _MonitorScreenState extends State<MonitorScreen> {
                             .toList(),
                         onChanged: (value) {
                           setState(() {
-                            _shift = value!;
+                            if (value == 'SEMUA') {
+                              _shiftAll = '';
+                            } else {
+                              _shiftAll = value!;
+                            }
                           });
                         },
                       ),
@@ -215,33 +225,60 @@ class _MonitorScreenState extends State<MonitorScreen> {
                     RadioListTile(
                       title:
                           Text('Harian', style: AppTextStyle.textTitleStyle()),
-                      value: 'Harian',
+                      value: 'SALES_DATE',
                       groupValue: _salesFormat,
                       onChanged: (value) {
                         setState(() {
                           _salesFormat = value.toString();
+                          controller.updateFormat(value.toString());
                         });
                       },
                     ),
                     RadioListTile(
                       title:
                           Text('Kasir', style: AppTextStyle.textTitleStyle()),
-                      value: 'Kasir',
+                      value: 'SETTLE_BY, SALES_DATE',
                       groupValue: _salesFormat,
                       onChanged: (value) {
                         setState(() {
                           _salesFormat = value.toString();
+                          controller.updateFormat(value.toString());
                         });
                       },
                     ),
                     RadioListTile(
                       title:
                           Text('Terapis', style: AppTextStyle.textTitleStyle()),
-                      value: 'Terapis',
+                      value: 'EMPLOYEE_ID, SALES_DATE',
                       groupValue: _salesFormat,
                       onChanged: (value) {
                         setState(() {
                           _salesFormat = value.toString();
+                          controller.updateFormat(value.toString());
+                        });
+                      },
+                    ),
+                    RadioListTile(
+                      title: Text('Customer',
+                          style: AppTextStyle.textTitleStyle()),
+                      value: 'SUPPLIER_ID, SALES_DATE',
+                      groupValue: _salesFormat,
+                      onChanged: (value) {
+                        setState(() {
+                          _salesFormat = value.toString();
+                          controller.updateFormat(value.toString());
+                        });
+                      },
+                    ),
+                    RadioListTile(
+                      title:
+                          Text('Produk', style: AppTextStyle.textTitleStyle()),
+                      value: 'PART_ID, SALES_DATE',
+                      groupValue: _salesFormat,
+                      onChanged: (value) {
+                        setState(() {
+                          _salesFormat = value.toString();
+                          controller.updateFormat(value.toString());
                         });
                       },
                     ),
@@ -277,45 +314,80 @@ class _MonitorScreenState extends State<MonitorScreen> {
                         AppTableTitle(value: "No Trx"),
                         AppTableTitle(value: "Customer"),
                         AppTableTitle(value: "Produk"),
-                        // AppTableTitle(value: "Kategori "),
-                        // AppTableTitle(value: "Qty "),
-                        // AppTableTitle(value: "Harga"),
-                        // AppTableTitle(value: "Total"),
-                        // AppTableTitle(value: "Diskon"),
-                        // AppTableTitle(value: "Tagihan "),
-                        // AppTableTitle(value: "Metode Bayar "),
-                        // AppTableTitle(value: "Komp/Vch"),
-                        // AppTableTitle(value: "Penerimaan"),
-                        // AppTableTitle(value: "Cash"),
-                        // AppTableTitle(value: "Trf/Qris "),
-                        // AppTableTitle(value: "Hutang "),
-                        // AppTableTitle(value: "Titipan"),
-                        // AppTableTitle(value: "Terapis"),
+                        AppTableTitle(value: "Kategori "),
+                        AppTableTitle(value: "Qty "),
+                        AppTableTitle(value: "Harga"),
+                        AppTableTitle(value: "Total"),
+                        AppTableTitle(value: "Diskon"),
+                        AppTableTitle(value: "Tagihan "),
+                        AppTableTitle(value: "Metode Bayar "),
+                        AppTableTitle(value: "Komp/Vch"),
+                        AppTableTitle(value: "Penerimaan"),
+                        AppTableTitle(value: "Cash"),
+                        AppTableTitle(value: "Trf/Qris "),
+                        AppTableTitle(value: "Hutang "),
+                        AppTableTitle(value: "Titipan"),
+                        AppTableTitle(value: "Terapis"),
                       ],
-                      data: List.generate(controller.monitorHeader.length,
-                          (int i) {
-                        var monitor = controller.monitorHeader[i];
+                      data: List.generate(
+                          controller.monitorHeader.where((monitor) {
+                            return (_selectedCategory == null ||
+                                    monitor.ketAnalisa == _selectedCategory) &&
+                                (_shiftAll == null ||
+                                    monitor.shiftId == _shiftAll) &&
+                                (_selectedTherapist == null ||
+                                    monitor.empId == _selectedTherapist) &&
+                                (_selectedCustomer == null ||
+                                    monitor.supplierId == _selectedCustomer) &&
+                                (_selectedProduct == null ||
+                                    monitor.partId == _selectedProduct);
+                          }).length, (int i) {
+                        var monitor = controller.monitorHeader.where((monitor) {
+                          return (_selectedCategory == null ||
+                                  monitor.ketAnalisa == _selectedCategory) &&
+                              (_shiftAll == null ||
+                                  monitor.shiftId == _shiftAll) &&
+                              (_selectedTherapist == null ||
+                                  monitor.empId == _selectedTherapist) &&
+                              (_selectedCustomer == null ||
+                                  monitor.supplierId == _selectedCustomer) &&
+                              (_selectedProduct == null ||
+                                  monitor.partId == _selectedProduct);
+                        }).toList()[i];
                         return [
                           AppTableCell(
-                            value: monitor.createDate,
-                            index: i,
-                          ),
+                              value: monitor.createDate.split("T").first,
+                              index: i),
+                          AppTableCell(value: monitor.shiftId, index: i),
+                          AppTableCell(value: monitor.salesId, index: i),
+                          AppTableCell(value: monitor.supplierName, index: i),
+                          AppTableCell(value: monitor.partName, index: i),
+                          AppTableCell(value: monitor.ketAnalisa, index: i),
+                          AppTableCell(value: monitor.qty.toString(), index: i),
                           AppTableCell(
-                            value: monitor.shiftId,
-                            index: i,
-                          ),
+                              value: monitor.price.toString(), index: i),
                           AppTableCell(
-                            value: monitor.salesId,
-                            index: i,
-                          ),
+                              value: monitor.totalPrice.toString(), index: i),
                           AppTableCell(
-                            value: monitor.supplierName,
-                            index: i,
-                          ),
+                              value: monitor.discVal.toString(), index: i),
                           AppTableCell(
-                            value: monitor.partName,
-                            index: i,
-                          ),
+                              value: monitor.totalCompliment.toString(),
+                              index: i),
+                          AppTableCell(
+                              value: monitor.settlePaymentMethod, index: i),
+                          AppTableCell(
+                              value: monitor.feeEmpVal.toString(), index: i),
+                          AppTableCell(
+                              value: monitor.nettoValD.toString(), index: i),
+                          AppTableCell(
+                              value: monitor.totalCash.toString(), index: i),
+                          AppTableCell(
+                              value: monitor.totalNonCash.toString(), index: i),
+                          AppTableCell(
+                              value: monitor.totalHutang.toString(), index: i),
+                          AppTableCell(
+                              value: monitor.addCostVal.toString(), index: i),
+                          AppTableCell(value: monitor.fullName, index: i),
                         ];
                       }),
                       onRefresh: () => controller.fetchProducts(),
@@ -323,6 +395,47 @@ class _MonitorScreenState extends State<MonitorScreen> {
                     ),
                   ),
                 ),
+                SizedBox(height: 5),
+                Obx(() {
+                  if (controller.monitorHeader.isEmpty) {
+                    return SizedBox(); // Jika tidak ada data, tidak perlu menampilkan card
+                  }
+                  return Card(
+                    color: AppColor.primaryColor,
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Grand Total',
+                            style: AppTextStyle.textTitleStyle(
+                                color: Colors.white),
+                          ),
+                          const Divider(color: Colors.white54, thickness: 1),
+                          _buildSummaryRow(
+                              'Tagihan', controller.sumTagihan.value),
+                          _buildSummaryRow('Penerimaan',
+                              formatCurrency(controller.sumAcc.value)),
+                          _buildSummaryRow(
+                              'Cash', formatCurrency(controller.sumCash.value)),
+                          _buildSummaryRow('Diskon', controller.sumDisc.value),
+                          _buildSummaryRow(
+                              'Hutang', controller.sumHutang.value),
+                          _buildSummaryRow('Tf/Qris',
+                              formatCurrency(controller.sumQris.value)),
+                          _buildSummaryRow(
+                              'Titipan', controller.sumTitipan.value),
+                          _buildSummaryRow('Komp/Vch', controller.sumVch.value),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
                 SizedBox(height: 70),
               ],
             ),
@@ -331,6 +444,29 @@ class _MonitorScreenState extends State<MonitorScreen> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: buildFloatingActionButton(context, screenWidth),
         bottomNavigationBar: buildBottomNavigationBar(context),
+      ),
+    );
+  }
+
+  Widget _buildSummaryRow(String title, dynamic value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: AppTextStyle.textTitleStyle(
+              color: Colors.white70,
+            ),
+          ),
+          Text(
+            value.toString(),
+            style: AppTextStyle.textTitleStyle(
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -538,7 +674,7 @@ class _MonitorScreenState extends State<MonitorScreen> {
           onSelected: (KategoriDAO suggestion) {
             controller.text = suggestion.ketAnalisa
                 .toString(); // Tampilkan nama produk di field
-            onChanged(suggestion.analisaId); // Simpan ID produk di _product
+            onChanged(suggestion.ketAnalisa); // Simpan ID produk di _product
           },
         ),
       ],

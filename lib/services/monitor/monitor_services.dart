@@ -26,7 +26,7 @@ class MonitorServices {
         "TRANSACTION_ID": "",
         "MODULE_ID": "POS",
         "SUBMODULE_ID": "ORDER",
-        "SORT_ORDER_BY": "$format, SALES_DATE",
+        "SORT_ORDER_BY": "$format",
         "SORT_ORDER_TYPE": "DESC",
         "BULAN": "",
         "TAHUN": "",
