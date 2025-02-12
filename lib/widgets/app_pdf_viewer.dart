@@ -9,7 +9,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:open_filex/open_filex.dart';
-import 'package:file_picker/file_picker.dart';
 
 class AppPDFViewer extends StatefulWidget {
   final String pdfUrl;
@@ -88,21 +87,11 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
   }
 
   try {
-    // Let user select a directory
-    String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
-    
-    if (selectedDirectory == null) {
-      _showMessage("No directory selected.");
-      return;
-    }
-
-    // Define the file path
-    final filePath = '$selectedDirectory/downloaded.pdf';
+    final directory = await getDownloadsDirectory(); // Automatically get Downloads folder
+    final filePath = '${directory!.path}/downloaded.pdf';
     final file = File(filePath);
 
-    // Save the file
     await file.writeAsBytes(pdfBytes!);
-    
     _showMessage("PDF saved successfully at: $filePath");
   } catch (e) {
     _showMessage("Error saving PDF: $e");
@@ -134,6 +123,7 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
   void _showMessage(String message) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));
+    print(message);
   }
 
   Future<void> _openPdfExternally() async {
