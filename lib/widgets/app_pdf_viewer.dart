@@ -80,14 +80,31 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
     }
   }
 
+  Future<void> _savePdfToDevice() async {
+    if (pdfBytes == null) {
+      _showMessage("PDF is not loaded yet.");
+      return;
+    }
+
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final filePath = '${directory.path}/downloaded.pdf';
+      final file = File(filePath);
+      await file.writeAsBytes(pdfBytes!);
+      _showMessage("PDF saved successfully at: $filePath");
+    } catch (e) {
+      _showMessage("Error saving PDF: $e");
+    }
+  }
+
   // Print the converted image
   Future<void> _print() async {
     final device = await FlutterBluetoothPrinter.selectDevice(context);
     if (device != null && imageBytes != null) {
       bool success = await FlutterBluetoothPrinter.printImageSingle(
         address: device.address,
-        imageWidth: pageWidth!, // Use extracted width
-        imageHeight: pageHeight!, // Use extracted height
+        imageWidth: pageWidth!,
+        imageHeight: pageHeight!,
         imageBytes: imageBytes!,
         keepConnected: true,
       );
@@ -140,6 +157,11 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
             icon: Icon(Icons.open_in_new),
             onPressed: _openPdfExternally,
             tooltip: "Open with External PDF Viewer",
+          ),
+          IconButton(
+            icon: Icon(Icons.download),
+            onPressed: _savePdfToDevice,
+            tooltip: "Save PDF",
           ),
         ],
       ),
