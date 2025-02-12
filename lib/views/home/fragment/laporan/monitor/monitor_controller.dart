@@ -14,8 +14,18 @@ class MonitorController extends GetxController {
   DateTime dateNow = DateTime.now();
   late RxString fDateFrom = DateFormat('yyyy-MM-dd').format(dateNow).obs;
   late RxString fDateTo = DateFormat('yyyy-MM-dd').format(dateNow).obs;
-  var format = "SETTLE_BY".obs;
+  var format = "SALES_DATE".obs;
   var total = "".obs;
+
+  RxDouble sumTotal = 0.0.obs;
+  RxDouble sumTagihan = 0.0.obs;
+  RxDouble sumDisc = 0.0.obs;
+  RxDouble sumVch = 0.0.obs;
+  RxDouble sumAcc = 0.0.obs;
+  RxDouble sumQris = 0.0.obs;
+  RxDouble sumCash = 0.0.obs;
+  RxDouble sumHutang = 0.0.obs;
+  RxDouble sumTitipan = 0.0.obs;
 
   var pageNo = 1.obs;
   var pageRow = 10.obs;
@@ -40,6 +50,22 @@ class MonitorController extends GetxController {
     fetchProducts();
   }
 
+  void updateFormat(String newFormat) {
+    format.value = newFormat;
+    fetchProducts();
+  }
+
+  void updateFilterDate(String newFormat, int tanda) {
+    if (tanda == 1) {
+      fDateTo.value = newFormat;
+    }
+    if (tanda == 0) {
+      fDateFrom.value = newFormat;
+    }
+
+    fetchProducts();
+  }
+
   void updatePageNo(int newFilterValue) {
     pageNo.value = newFilterValue;
     fetchProducts();
@@ -55,13 +81,32 @@ class MonitorController extends GetxController {
       isLoading.value = true;
 
       final result = await _monitorRepository.getMonitor(
-        fDateFrom: '2025-01-01',
+        fDateFrom: fDateFrom.value,
         filterValue: filterValue.value,
         fDateTo: fDateTo.value,
         format: format.value,
       );
 
       monitorHeader.value = result;
+
+      sumTotal.value =
+          result.fold(0.0, (sum, item) => sum + (item.nettoVal ?? 0.0));
+      sumTagihan.value =
+          result.fold(0.0, (sum, item) => sum + (item.totalCompliment ?? 0.0));
+      sumAcc.value =
+          result.fold(0.0, (sum, item) => sum + (item.nettoValD ?? 0.0));
+      sumCash.value =
+          result.fold(0.0, (sum, item) => sum + (item.totalCash ?? 0.0));
+      sumDisc.value =
+          result.fold(0.0, (sum, item) => sum + (item.discVal ?? 0.0));
+      sumHutang.value =
+          result.fold(0.0, (sum, item) => sum + (item.totalHutang ?? 0.0));
+      sumQris.value =
+          result.fold(0.0, (sum, item) => sum + (item.totalNonCash ?? 0.0));
+      sumTitipan.value =
+          result.fold(0.0, (sum, item) => sum + (item.addCostVal ?? 0.0));
+      sumVch.value =
+          result.fold(0.0, (sum, item) => sum + (item.feeEmpVal ?? 0.0));
     } finally {
       isLoading.value = false;
     }
