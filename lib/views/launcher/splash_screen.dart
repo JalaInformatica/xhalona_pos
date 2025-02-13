@@ -122,7 +122,10 @@ class _SplashScreen extends State<SplashScreen> {
     return Scaffold(
         backgroundColor: AppColor.whiteColor,
         body: Center(
-          child: SvgPicture.asset("assets/logo-name.svg"),
+          child: SvgPicture.asset(
+            "assets/logo-only-pink.svg",
+            color: AppColor.primaryColor,
+          ),
         ));
   }
 }

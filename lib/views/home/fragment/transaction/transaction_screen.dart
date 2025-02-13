@@ -48,7 +48,7 @@ class TransactionScreen extends StatelessWidget {
                               SmartDialog.show(builder: (context) {
                                 return AppDialog(
                                     content: SizedBox(
-                                        width: double.maxFinite,
+                                        width: 100,
                                         child: Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
