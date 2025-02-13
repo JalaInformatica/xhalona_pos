@@ -118,7 +118,7 @@ class MasterPaketScreen extends StatelessWidget {
                       var paket = controller.paketHeader[i];
                       return [
                         AppTableCell(
-                            value: paket.cpartName ?? '',
+                            value: paket.cpartName!,
                             index: i,
                             onEdit: () {
                               goTo(context, paket,
@@ -130,7 +130,7 @@ class MasterPaketScreen extends StatelessWidget {
                             },
                             showOptionsOnTap: true),
                         AppTableCell(
-                            value: paket.comValue.toString() ?? '',
+                            value: paket.comValue.toString(),
                             index: i,
                             onEdit: () {
                               goTo(context, paket,
@@ -142,7 +142,7 @@ class MasterPaketScreen extends StatelessWidget {
                             },
                             showOptionsOnTap: true),
                         AppTableCell(
-                            value: formatCurrency(paket.comUnitPrice) ?? '',
+                            value: formatCurrency(paket.comUnitPrice),
                             index: i,
                             onEdit: () {
                               goTo(context, paket,

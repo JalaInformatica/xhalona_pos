@@ -15,6 +15,7 @@ import 'package:xhalona_pos/repositories/product/product_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/master_product_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/kategori/kategori_controller.dart';
+// ignore_for_file: unused_field
 
 // ignore: must_be_immutable
 class AddEditProduct extends StatefulWidget {
@@ -71,6 +72,7 @@ class _AddEditProductState extends State<AddEditProduct> {
       chipStatus['Stock'] = widget.product?.isStock ?? false;
       chipStatus['Promo'] = widget.product?.isPromo ?? false;
       chipStatus['Tak Dijual'] = widget.product?.isFixPrice ?? false;
+      profileImageUrl = widget.product?.thumbImage;
     }
   }
 
@@ -138,7 +140,7 @@ class _AddEditProductState extends State<AddEditProduct> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            "Tambah/Edit Data Product",
+            "Tambah/Edit Data Product ",
             style: AppTextStyle.textTitleStyle(color: Colors.white),
           ),
           backgroundColor: AppColor.secondaryColor,
@@ -240,7 +242,7 @@ class _AddEditProductState extends State<AddEditProduct> {
                               ),
                               child: CachedNetworkImage(
                                 imageUrl:
-                                    'https://dreadnought.core-erp.com/XHALONA/${profileImageUrl}',
+                                    'https://dreadnought.core-erp.com/XHALONA/${profileImageUrl ?? '${widget.product?.thumbImage}'}',
                                 imageBuilder: (context, imageProvider) =>
                                     Container(
                                   decoration: BoxDecoration(
@@ -284,7 +286,7 @@ class _AddEditProductState extends State<AddEditProduct> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Satuan & Harga',
+                          'Satuan & Harga ',
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         SizedBox(height: 16.0),
@@ -304,7 +306,7 @@ class _AddEditProductState extends State<AddEditProduct> {
                           keyboardType: TextInputType.number,
                           inputFormatters: [CurrencyInputFormatter()],
                           onChanged: (value) =>
-                              productPrice = double.tryParse(value ?? '0'),
+                              productPrice = double.tryParse(value),
                         ),
                         SizedBox(height: 16.0),
                         TextFormField(
@@ -316,7 +318,7 @@ class _AddEditProductState extends State<AddEditProduct> {
                           initialValue: widget.product?.discountPct.toString(),
                           keyboardType: TextInputType.number,
                           onChanged: (value) => productDiscountPercentage =
-                              double.tryParse(value ?? '0'),
+                              double.tryParse(value),
                         ),
                         SizedBox(height: 16.0),
                         TextFormField(

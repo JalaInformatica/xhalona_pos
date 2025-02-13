@@ -41,14 +41,14 @@ class _AddEditRekeningState extends State<AddEditRekening> {
     Inisialisasi();
     if (widget.rekening != null) {
       // Inisialisasi data dari karyawan jika tersedia
-      _kdRekeningController.text = widget.rekening!.acId ?? '';
-      _nameRekeningController.text = widget.rekening!.namaAc ?? '';
-      _noRekeningController.text = widget.rekening!.acNoReff ?? '';
-      _nameBankController.text = widget.rekening!.bankName ?? '';
-      _atasNamaController.text = widget.rekening!.bankAcName ?? '';
-      _coaController.text = widget.rekening!.acGL ?? '';
-      _groupController.text = widget.rekening!.acGroupId ?? '';
-      _userAccesController.text = widget.rekening!.accesToUserId ?? '';
+      _kdRekeningController.text = widget.rekening!.acId;
+      _nameRekeningController.text = widget.rekening!.namaAc;
+      _noRekeningController.text = widget.rekening!.acNoReff!;
+      _nameBankController.text = widget.rekening!.bankName!;
+      _atasNamaController.text = widget.rekening!.bankAcName!;
+      _coaController.text = widget.rekening!.acGL!;
+      _groupController.text = widget.rekening!.acGroupId!;
+      _userAccesController.text = widget.rekening!.accesToUserId!;
       _isActive = widget.rekening!.isActive == '1' ? true : false;
     }
   }

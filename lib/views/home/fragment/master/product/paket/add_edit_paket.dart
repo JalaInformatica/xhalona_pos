@@ -37,8 +37,8 @@ class _AddEditPaketState extends State<AddEditPaket> {
     Inisialisasi();
     if (widget.paket != null) {
       // Inisialisasi data dari karyawan jika tersedia
-      _hargaController.text = widget.paket!.comUnitPrice.toString() ?? '';
-      _qtyController.text = widget.paket!.comValue.toString() ?? '';
+      _hargaController.text = widget.paket!.comUnitPrice.toString();
+      _qtyController.text = widget.paket!.comValue.toString();
     }
   }
 

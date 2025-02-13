@@ -1,4 +1,3 @@
-import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
@@ -68,10 +67,12 @@ class _RegisterCompanyScreen extends State<RegisterCompanyScreen> {
       backgroundColor: AppColor.whiteColor,
       body: ListView(
         children: [
-          SizedBox(height: 10.h,),
+          SizedBox(
+            height: 10.h,
+          ),
           Center(
-            child: Text("Daftarkan Salon",
-              style: AppTextStyle.textTitleStyle()),
+            child:
+                Text("Daftarkan Salon", style: AppTextStyle.textTitleStyle()),
           ),
           Form(
             key: _formkey,
@@ -81,7 +82,9 @@ class _RegisterCompanyScreen extends State<RegisterCompanyScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Text("Deskripsi Salon", style: AppTextStyle.textSubtitleStyle(),),
-                  SizedBox(height: 10.h,),
+                  SizedBox(
+                    height: 10.h,
+                  ),
                   AppTextFormField(
                     context: context,
                     textEditingController: storeIdController,
@@ -142,7 +145,9 @@ class _RegisterCompanyScreen extends State<RegisterCompanyScreen> {
                   //     ),
                   //   ),
                   // ),
-                  SizedBox(height: 10.h,),
+                  SizedBox(
+                    height: 10.h,
+                  ),
                   SizedBox(
                       width: double.infinity,
                       child: AppLoadingButton(
@@ -163,7 +168,10 @@ class _RegisterCompanyScreen extends State<RegisterCompanyScreen> {
                           style: AppTextStyle.textBodyStyle()),
                       TextButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginScreen()));
                         },
                         child: Text(
                           "Masuk",

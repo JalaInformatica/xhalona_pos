@@ -7,7 +7,6 @@ import 'package:xhalona_pos/repositories/kategori_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/kategori/kategori_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/kategori/master_kategori_screen.dart';
 
-
 // ignore: must_be_immutable
 class AddEditKategori extends StatefulWidget {
   KategoriDAO? kategori;
@@ -32,7 +31,7 @@ class _AddEditKategoriState extends State<AddEditKategori> {
     Inisialisasi();
     if (widget.kategori != null) {
       // Inisialisasi data dari karyawan jika tersedia
-      _nameKategoriController.text = widget.kategori!.ketAnalisa ?? '';
+      _nameKategoriController.text = widget.kategori!.ketAnalisa;
       _isActive = widget.kategori!.isActive == 1 ? true : false;
     }
   }

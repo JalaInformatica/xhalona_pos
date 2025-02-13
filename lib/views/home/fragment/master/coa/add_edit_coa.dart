@@ -26,6 +26,7 @@ class _AddEditCoaState extends State<AddEditCoa> {
   final _jenisRekController = TextEditingController();
   String? _flagDk;
   String? _flagTm;
+  // ignore: unused_field
   String? _coa;
   bool _isActive = true; // Status Aktif/Non-Aktif
   bool _isLoading = true;
@@ -39,11 +40,11 @@ class _AddEditCoaState extends State<AddEditCoa> {
     Inisialisasi();
     if (widget.coa != null) {
       // Inisialisasi data dari coa jika tersedia
-      _kodeRekController.text = widget.coa!.acId ?? '';
-      _nameController.text = widget.coa!.namaRekening ?? '';
-      _jenisRekController.text = widget.coa!.jenisRek ?? '';
-      _flagDk = widget.coa!.flagDk ?? '';
-      _flagTm = widget.coa!.flagTm ?? '';
+      _kodeRekController.text = widget.coa!.acId;
+      _nameController.text = widget.coa!.namaRekening;
+      _jenisRekController.text = widget.coa!.jenisRek;
+      _flagDk = widget.coa!.flagDk;
+      _flagTm = widget.coa!.flagTm;
       _isActive = widget.coa!.isActive == 1 ? true : false;
     }
   }

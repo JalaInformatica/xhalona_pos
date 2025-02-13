@@ -13,6 +13,7 @@ import 'package:xhalona_pos/services/user/user_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:xhalona_pos/views/home/fragment/profile/ubah%20profile/editname_page.dart';
 import 'package:xhalona_pos/views/home/fragment/profile/ubah%20profile/editemail_page.dart';
+// ignore_for_file: unnecessary_null_comparison
 
 // ignore: must_be_immutable
 class ProfileScreen extends StatefulWidget {
@@ -513,9 +514,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         title: const Text('Nama'),
                         subtitle: Text(
                             controller.profileData.value.userName != null
-                                ? name ??
-                                    controller.profileData.value.userName ??
-                                    'Atur Sekarang'
+                                ? name ?? controller.profileData.value.userName
                                 : 'Atur Sekarang'),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () {
@@ -533,8 +532,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     null
                                 ? prefs.getString('datePicker') ??
                                     controller
-                                        .profileData.value.profileBirthDate ??
-                                    'Atur Sekarang'
+                                        .profileData.value.profileBirthDate
                                 : 'Atur Sekarang'),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: _selectDate,
@@ -551,8 +549,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         subtitle: Text(
                             controller.profileData.value.emailAddress != null
                                 ? email ??
-                                    controller.profileData.value.emailAddress ??
-                                    'Atur Sekarang'
+                                    controller.profileData.value.emailAddress
                                 : 'Atur Sekarang'),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () {

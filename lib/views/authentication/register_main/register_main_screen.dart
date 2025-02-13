@@ -1,17 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xhalona_pos/core/constant/local_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/models/dao/authentication.dart';
-import 'package:xhalona_pos/repositories/authentication/authentication_repository.dart';
-import 'package:xhalona_pos/views/authentication/login/login_screen.dart';
-import 'package:xhalona_pos/views/authentication/register_company/register_company_screen.dart';
-import 'package:xhalona_pos/views/authentication/register_user/register_user_screen.dart';
-import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/widgets/app_elevated_button.dart';
-import 'package:xhalona_pos/widgets/app_loading_button.dart';
-import 'package:xhalona_pos/widgets/app_text_form_field.dart';
+import 'package:xhalona_pos/views/authentication/login/login_screen.dart';
+import 'package:xhalona_pos/views/authentication/register_user/register_user_screen.dart';
+import 'package:xhalona_pos/views/authentication/register_company/register_company_screen.dart';
 
 class RegisterMainScreen extends StatefulWidget {
   @override
@@ -55,15 +48,19 @@ class _RegisterMainScreen extends State<RegisterMainScreen> {
               width: double.maxFinite,
               child: AppElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>RegisterCompanyScreen()));
-                  }, child: Text("Daftarkan Salon"))),
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => RegisterCompanyScreen()));
+                  },
+                  child: Text("Daftarkan Salon"))),
           Container(
               padding: EdgeInsets.symmetric(horizontal: 10.w),
               width: double.maxFinite,
               child: AppElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>RegisterUserScreen()));  
-                  }, child: Text("Daftar Sebagai Karyawan Salon"))),
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => RegisterUserScreen()));
+                  },
+                  child: Text("Daftar Sebagai Karyawan Salon"))),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

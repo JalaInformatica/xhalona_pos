@@ -33,8 +33,8 @@ class _AddEditDeptState extends State<AddEditDept> {
     Inisialisasi();
     if (widget.dept != null) {
       // Inisialisasi data dari karyawan jika tersedia
-      _kdDeptController.text = widget.dept!.kdDept ?? '';
-      _nameDeptController.text = widget.dept!.namaDept ?? '';
+      _kdDeptController.text = widget.dept!.kdDept;
+      _nameDeptController.text = widget.dept!.namaDept;
     }
   }
 
@@ -108,7 +108,7 @@ class _AddEditDeptState extends State<AddEditDept> {
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Text(
-                            _kdDeptController.text ?? 'Tidak perlu diisi',
+                            _kdDeptController.text,
                             style: TextStyle(fontSize: 18),
                           ),
                         ),

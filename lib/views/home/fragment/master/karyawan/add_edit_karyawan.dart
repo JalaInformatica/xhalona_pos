@@ -47,17 +47,16 @@ class _AddEditKaryawanState extends State<AddEditKaryawan> {
     Inisialisasi();
     if (widget.karyawan != null) {
       // Inisialisasi data dari karyawan jika tersedia
-      _nikController.text = widget.karyawan!.empId ?? '';
-      _nameController.text = widget.karyawan!.fullName ?? '';
-      _joinDateController.text = widget.karyawan!.dateIn.split("T").first ?? '';
-      _bpjsKesController.text = widget.karyawan!.bpjsNo ?? '';
-      _bpjsKetController.text = widget.karyawan!.bpjsTk ?? '';
-      _birthDateController.text =
-          widget.karyawan!.birthDate!.split("T").first ?? '';
-      _birthPlaceController.text = widget.karyawan!.birthPlace ?? '';
-      _addressController.text = widget.karyawan!.alamat ?? '';
-      _bonusController.text = widget.karyawan!.bonusAmount?.toString() ?? '';
-      _targetController.text = widget.karyawan!.bonusTarget?.toString() ?? '';
+      _nikController.text = widget.karyawan!.empId;
+      _nameController.text = widget.karyawan!.fullName;
+      _joinDateController.text = widget.karyawan!.dateIn.split("T").first;
+      _bpjsKesController.text = widget.karyawan!.bpjsNo;
+      _bpjsKetController.text = widget.karyawan!.bpjsTk!;
+      _birthDateController.text = widget.karyawan!.birthDate!.split("T").first;
+      _birthPlaceController.text = widget.karyawan!.birthPlace!;
+      _addressController.text = widget.karyawan!.alamat!;
+      _bonusController.text = widget.karyawan!.bonusAmount!.toString();
+      _targetController.text = widget.karyawan!.bonusTarget!.toString();
       _gender = widget.karyawan!.gender == 1 ? "Laki-laki" : "Perempuan";
       _department = widget.karyawan!.kd_dept;
       _isActive = widget.karyawan!.isActive == 1 ? true : false;

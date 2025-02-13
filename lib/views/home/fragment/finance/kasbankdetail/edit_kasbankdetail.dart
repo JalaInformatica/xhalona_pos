@@ -35,7 +35,6 @@ class _AddEditKasBankDetailState extends State<AddEditKasBankDetail> {
   final _qtyController = TextEditingController();
   String? _flagDK;
   String? _kasbankdetail;
-  String? _coa;
   bool _isLoading = true;
 
   final List<String> flagDK = ['D', 'K'];
@@ -45,19 +44,17 @@ class _AddEditKasBankDetailState extends State<AddEditKasBankDetail> {
     super.initState();
     Inisialisasi();
 
-    _noTrxController.text = widget.noTrx ?? '';
-    _ketController.text = widget.ket ?? '';
+    _noTrxController.text = widget.noTrx!;
+    _ketController.text = widget.ket!;
 
     if (widget.kasbankdetail != null) {
       _hargaController.text = widget.kasbankdetail!.priceUnit.toString();
       _qtyController.text = widget.kasbankdetail!.qty.toString();
-      _flagDK = widget.kasbankdetail!.flagDK ?? '';
-      _coa = widget.kasbankdetail!.acId ?? '';
+      _flagDK = widget.kasbankdetail!.flagDK;
     } else {
       _hargaController.text = '';
       _qtyController.text = '';
       _flagDK = '';
-      _coa = '';
     }
   }
 

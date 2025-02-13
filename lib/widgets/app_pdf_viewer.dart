@@ -1,14 +1,14 @@
-import 'dart:typed_data';
 import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter_bluetooth_printer/flutter_bluetooth_printer.dart';
+import 'dart:typed_data';
 import 'package:pdfx/pdfx.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
-import 'package:open_filex/open_filex.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:flutter_bluetooth_printer/flutter_bluetooth_printer.dart';
 
 class AppPDFViewer extends StatefulWidget {
   final String pdfUrl;
@@ -103,8 +103,8 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
     if (device != null && imageBytes != null) {
       bool success = await FlutterBluetoothPrinter.printImageSingle(
         address: device.address,
-        imageWidth: pageWidth!,
-        imageHeight: pageHeight!,
+        imageWidth: pageWidth,
+        imageHeight: pageHeight,
         imageBytes: imageBytes!,
         keepConnected: true,
       );

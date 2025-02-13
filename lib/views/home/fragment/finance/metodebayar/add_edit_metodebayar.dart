@@ -39,8 +39,8 @@ class _AddEditMetodeBayarState extends State<AddEditMetodeBayar> {
     Inisialisasi();
     if (widget.metodebayar != null) {
       // Inisialisasi data dari metodebayar jika tersedia
-      _kodeRekController.text = widget.metodebayar!.payMetodeGroup ?? '';
-      _nameController.text = widget.metodebayar!.payMetodeName ?? '';
+      _kodeRekController.text = widget.metodebayar!.payMetodeGroup;
+      _nameController.text = widget.metodebayar!.payMetodeName;
       _isActive = widget.metodebayar!.isActive;
       _isCash = widget.metodebayar!.isCash;
       _isCard = widget.metodebayar!.isCard;

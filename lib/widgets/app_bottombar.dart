@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/views/home/home_controller.dart';
-import 'package:xhalona_pos/views/authentication/login/login_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/coa/master_coa_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/laporan/monitor/monitor_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/laporan/finance/lap_finance_screen.dart';

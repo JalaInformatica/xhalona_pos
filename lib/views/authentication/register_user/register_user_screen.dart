@@ -1,7 +1,6 @@
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/services/api_service.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xhalona_pos/models/dao/authentication.dart';

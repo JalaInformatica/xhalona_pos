@@ -7,7 +7,6 @@ import 'package:xhalona_pos/repositories/kustomer/kustomer_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplier_kustomer_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/master_kustomer_supplier_screen.dart';
 
-
 // ignore: must_be_immutable
 class AddEditKustomer extends StatefulWidget {
   KustomerDAO? kustomer;
@@ -40,12 +39,12 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
     Inisialisasi();
     if (widget.kustomer != null) {
       // Inisialisasi data dari karyawan jika tersedia
-      _kdKustomerController.text = widget.kustomer!.suplierId ?? '';
-      _nameKustomerController.text = widget.kustomer!.suplierName ?? '';
-      _telpKustomerController.text = widget.kustomer!.telp ?? '';
-      _emailKustomerController.text = widget.kustomer!.emailAdress ?? '';
-      _address1KustomerController.text = widget.kustomer!.address1 ?? '';
-      _address2KustomerController.text = widget.kustomer!.address2 ?? '';
+      _kdKustomerController.text = widget.kustomer!.suplierId;
+      _nameKustomerController.text = widget.kustomer!.suplierName;
+      _telpKustomerController.text = widget.kustomer!.telp;
+      _emailKustomerController.text = widget.kustomer!.emailAdress;
+      _address1KustomerController.text = widget.kustomer!.address1;
+      _address2KustomerController.text = widget.kustomer!.address2;
     }
   }
 
