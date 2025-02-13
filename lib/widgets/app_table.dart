@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:intl/intl.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
@@ -230,8 +229,39 @@ class AppTableCell extends StatelessWidget {
   final bool isBahan;
   final bool isModalPaket;
   final bool isModalBahan;
-  final bool isVarian;
   final bool showOptionsOnTap;
+  final bool isVarian;
+  final bool isRejectReschedule;
+  final bool isAccReschedule;
+  final bool isPrint;
+  final bool isStatusOnline;
+  final bool isOnFinishStore;
+  final bool isOnWorkingStore;
+  final bool isCancelTrx;
+  final bool isOnDestination;
+  final bool isOnArrived;
+  final bool isCheckout;
+  final bool isModalRejectReschedule;
+  final bool isModalAccReschedule;
+  final bool isModalPrint;
+  final bool isModalStatusOnline;
+  final bool isModalOnFinishStore;
+  final bool isModalOnWorkingStore;
+  final bool isModalCancelTrx;
+  final bool isModalOnDestination;
+  final bool isModalOnArrived;
+  final bool isModalCheckout;
+  final bool isTrxMenu;
+  final VoidCallback? onArrived;
+  final VoidCallback? onCheckout;
+  final VoidCallback? onDestination;
+  final VoidCallback? onCancelTrx;
+  final VoidCallback? onWorkingStore;
+  final VoidCallback? onFinishStore;
+  final VoidCallback? onStatusOnline;
+  final VoidCallback? onPrint;
+  final VoidCallback? onRejectReschedule;
+  final VoidCallback? onAccReschedule;
   final VoidCallback? onPOS;
   final VoidCallback? onBahan;
   final VoidCallback? onVarian;
@@ -254,13 +284,44 @@ class AppTableCell extends StatelessWidget {
     this.isModalPaket = false,
     this.isModalBahan = false,
     this.isVarian = false,
+    this.isAccReschedule = false,
+    this.isCancelTrx = false,
+    this.isOnArrived = false,
+    this.isOnDestination = false,
+    this.isOnFinishStore = false,
+    this.isOnWorkingStore = false,
+    this.isTrxMenu = false,
+    this.isPrint = false,
+    this.isCheckout = false,
+    this.isRejectReschedule = false,
+    this.isStatusOnline = false,
+    this.isModalAccReschedule = false,
+    this.isModalCancelTrx = false,
+    this.isModalOnArrived = false,
+    this.isModalOnDestination = false,
+    this.isModalOnFinishStore = false,
+    this.isModalOnWorkingStore = false,
+    this.isModalPrint = false,
+    this.isModalCheckout = false,
+    this.isModalRejectReschedule = false,
+    this.isModalStatusOnline = false,
     this.showOptionsOnTap = false,
+    this.onAccReschedule,
     this.onPOS,
     this.onBahan,
+    this.onCheckout,
     this.onVarian,
     this.onEdit,
     this.onDelete,
     this.onPaket,
+    this.onCancelTrx,
+    this.onArrived,
+    this.onDestination,
+    this.onFinishStore,
+    this.onWorkingStore,
+    this.onPrint,
+    this.onRejectReschedule,
+    this.onStatusOnline,
   }) : super(key: key);
 
   AppTableCell copyWithWidth(double newWidth) {
@@ -275,9 +336,40 @@ class AppTableCell extends StatelessWidget {
       isDelete: isDelete,
       isPaket: isPaket,
       isBahan: isBahan,
+      isTrxMenu: isTrxMenu,
       isModalPaket: isModalPaket,
       isModalBahan: isModalBahan,
       isVarian: isVarian,
+      isAccReschedule: isAccReschedule,
+      isCancelTrx: isCancelTrx,
+      isCheckout: isCheckout,
+      isOnArrived: isOnArrived,
+      isOnDestination: isOnDestination,
+      isOnFinishStore: isOnFinishStore,
+      isOnWorkingStore: isOnWorkingStore,
+      isPrint: isPrint,
+      isRejectReschedule: isRejectReschedule,
+      isStatusOnline: isStatusOnline,
+      isModalAccReschedule: isModalAccReschedule,
+      isModalCancelTrx: isModalCancelTrx,
+      isModalCheckout: isModalCheckout,
+      isModalOnArrived: isModalOnArrived,
+      isModalOnDestination: isModalOnDestination,
+      isModalOnFinishStore: isModalOnFinishStore,
+      isModalOnWorkingStore: isModalOnWorkingStore,
+      isModalPrint: isModalPrint,
+      isModalRejectReschedule: isModalRejectReschedule,
+      isModalStatusOnline: isModalStatusOnline,
+      onAccReschedule: onAccReschedule,
+      onArrived: onArrived,
+      onCancelTrx: onCancelTrx,
+      onCheckout: onCheckout,
+      onDestination: onDestination,
+      onFinishStore: onFinishStore,
+      onPrint: onPrint,
+      onRejectReschedule: onRejectReschedule,
+      onStatusOnline: onStatusOnline,
+      onWorkingStore: onWorkingStore,
       showOptionsOnTap: showOptionsOnTap,
       onBahan: onBahan,
       onVarian: onVarian,
@@ -319,11 +411,28 @@ class AppTableCell extends StatelessWidget {
                   style: TextStyle(fontSize: 14, color: Colors.black),
                 ),
               ),
-            if (isEdit || isDelete || isPaket || isBahan || isVarian)
+            if (isEdit ||
+                isDelete ||
+                isPaket ||
+                isBahan ||
+                isVarian ||
+                isAccReschedule ||
+                isCancelTrx ||
+                isOnArrived ||
+                isOnDestination ||
+                isOnDestination ||
+                isOnFinishStore ||
+                isOnWorkingStore ||
+                isCheckout ||
+                isPrint ||
+                isRejectReschedule ||
+                isStatusOnline)
               Positioned(
                 right: 0,
                 top: 0,
-                child: Row(
+                child: Wrap(
+                  spacing: 4.0,
+                  runSpacing: 4.0,
                   children: _buildIcons(),
                 ),
               ),
@@ -335,15 +444,83 @@ class AppTableCell extends StatelessWidget {
 
   List<Widget> _buildIcons() {
     return [
-      if (isOpenPOS)(
-        _buildIconContainer(
-          icon: Icons.open_in_new, 
-          color: AppColor.primaryColor, 
-          tooltip: 'Buka di POS', 
-          onPressed: onPOS, 
-          backgroundColor: AppColor.primaryColor.withAlpha(100)
-        )
-      ),
+      if (isCheckout)
+        (_buildIconContainer(
+            icon: Icons.payment, // Ikon pembayaran
+            color: AppColor.primaryColor,
+            tooltip: 'Pembayaran/Checkout',
+            onPressed: onCheckout,
+            backgroundColor: AppColor.primaryColor.withAlpha(100))),
+      if (isOnArrived)
+        (_buildIconContainer(
+            icon: Icons.location_on, // Ikon tiba di lokasi
+            color: AppColor.primaryColor,
+            tooltip: 'Tiba di Lokasi',
+            onPressed: onArrived,
+            backgroundColor: AppColor.primaryColor.withAlpha(100))),
+      if (isOnDestination)
+        (_buildIconContainer(
+            icon: Icons.directions, // Ikon menuju lokasi
+            color: AppColor.primaryColor,
+            tooltip: 'Menuju Lokasi',
+            onPressed: onDestination,
+            backgroundColor: AppColor.primaryColor.withAlpha(100))),
+      if (isCancelTrx)
+        (_buildIconContainer(
+            icon: Icons.cancel, // Ikon batal transaksi
+            color: AppColor.primaryColor,
+            tooltip: 'Membatalkan Transaksi',
+            onPressed: onCancelTrx,
+            backgroundColor: AppColor.primaryColor.withAlpha(100))),
+      if (isOnWorkingStore)
+        (_buildIconContainer(
+            icon: Icons.build, // Ikon mengerjakan pesanan
+            color: AppColor.primaryColor,
+            tooltip: 'Kerjakan Pesanan',
+            onPressed: onWorkingStore,
+            backgroundColor: AppColor.primaryColor.withAlpha(100))),
+      if (isOnFinishStore)
+        (_buildIconContainer(
+            icon: Icons.check_circle, // Ikon pesanan selesai
+            color: AppColor.primaryColor,
+            tooltip: 'Pesanan Selesai',
+            onPressed: onFinishStore,
+            backgroundColor: AppColor.primaryColor.withAlpha(100))),
+      if (isStatusOnline)
+        (_buildIconContainer(
+            icon: Icons.shopping_cart, // Ikon konfirmasi pesanan
+            color: AppColor.primaryColor,
+            tooltip: 'Konfirmasi Pesanan',
+            onPressed: onStatusOnline,
+            backgroundColor: AppColor.primaryColor.withAlpha(100))),
+      if (isAccReschedule)
+        (_buildIconContainer(
+            icon: Icons.event_available, // Ikon setuju penjadwalan ulang
+            color: AppColor.primaryColor,
+            tooltip: 'Setujui Penjadwalan Ulang',
+            onPressed: onAccReschedule,
+            backgroundColor: AppColor.primaryColor.withAlpha(100))),
+      if (isRejectReschedule)
+        (_buildIconContainer(
+            icon: Icons.event_busy, // Ikon tolak penjadwalan ulang
+            color: AppColor.primaryColor,
+            tooltip: 'Tolak Penjadwalan Ulang',
+            onPressed: onRejectReschedule,
+            backgroundColor: AppColor.primaryColor.withAlpha(100))),
+      if (isPrint)
+        (_buildIconContainer(
+            icon: Icons.print, // Ikon cetak tetap sama
+            color: AppColor.primaryColor,
+            tooltip: 'Print',
+            onPressed: onPrint,
+            backgroundColor: AppColor.primaryColor.withAlpha(100))),
+      if (isOpenPOS)
+        (_buildIconContainer(
+            icon: Icons.open_in_new,
+            color: AppColor.primaryColor,
+            tooltip: 'Buka di POS',
+            onPressed: onPOS,
+            backgroundColor: AppColor.primaryColor.withAlpha(100))),
       if (isEdit)
         _buildIconContainer(
           icon: Icons.edit,
@@ -414,55 +591,175 @@ class AppTableCell extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
+      isScrollControlled: true,
       builder: (context) {
+        // Mengumpulkan semua opsi yang akan ditampilkan
+        List<Widget> options = [];
+
+        if (isTrxMenu) {
+          options.add(_buildBottomSheetOption(
+            icon: Icons.open_in_new,
+            text: 'Buka di POS',
+            onTap: () {
+              Navigator.pop(context);
+              if (onPOS != null) onPOS!();
+            },
+          ));
+        }
+        options.add(_buildBottomSheetOption(
+          icon: Icons.edit,
+          text: 'Edit',
+          onTap: () {
+            Navigator.pop(context);
+            if (onEdit != null) onEdit!();
+          },
+        ));
+        options.add(_buildBottomSheetOption(
+          icon: Icons.delete,
+          text: 'Delete',
+          onTap: () {
+            Navigator.pop(context);
+            if (onDelete != null) onDelete!();
+          },
+        ));
+        if (isModalPaket) {
+          options.add(_buildBottomSheetOption(
+            icon: Icons.local_offer,
+            text: 'Paket',
+            onTap: () {
+              Navigator.pop(context);
+              if (onPaket != null) onPaket!();
+            },
+          ));
+        }
+        if (isModalBahan) {
+          options.add(_buildBottomSheetOption(
+            icon: Icons.kitchen,
+            text: 'Bahan',
+            onTap: () {
+              Navigator.pop(context);
+              if (onBahan != null) onBahan!();
+            },
+          ));
+        }
+        if (isModalAccReschedule) {
+          options.add(_buildBottomSheetOption(
+            icon: Icons.payment,
+            text: 'Pembayaran/Checkout',
+            onTap: () {
+              Navigator.pop(context);
+              if (onCheckout != null) onCheckout!();
+            },
+          ));
+        }
+        if (isModalOnArrived) {
+          options.add(_buildBottomSheetOption(
+            icon: Icons.location_on,
+            text: 'Tiba di Lokasi',
+            onTap: () {
+              Navigator.pop(context);
+              if (onArrived != null) onArrived!();
+            },
+          ));
+        }
+        if (isModalOnDestination) {
+          options.add(_buildBottomSheetOption(
+            icon: Icons.directions,
+            text: 'Menuju Lokasi',
+            onTap: () {
+              Navigator.pop(context);
+              if (onDestination != null) onDestination!();
+            },
+          ));
+        }
+        if (isModalCancelTrx) {
+          options.add(_buildBottomSheetOption(
+            icon: Icons.cancel,
+            text: 'Membatalkan Transaksi',
+            onTap: () {
+              Navigator.pop(context);
+              if (onCancelTrx != null) onCancelTrx!();
+            },
+          ));
+        }
+        if (isModalOnWorkingStore) {
+          options.add(_buildBottomSheetOption(
+            icon: Icons.build,
+            text: 'Kerjakan Pesanan',
+            onTap: () {
+              Navigator.pop(context);
+              if (onWorkingStore != null) onWorkingStore!();
+            },
+          ));
+        }
+        if (isModalOnFinishStore) {
+          options.add(_buildBottomSheetOption(
+            icon: Icons.check_circle,
+            text: 'Pesanan Selesai',
+            onTap: () {
+              Navigator.pop(context);
+              if (onFinishStore != null) onFinishStore!();
+            },
+          ));
+        }
+        if (isModalStatusOnline) {
+          options.add(_buildBottomSheetOption(
+            icon: Icons.shopping_cart,
+            text: 'Konfirmasi Pesanan',
+            onTap: () {
+              Navigator.pop(context);
+              if (onStatusOnline != null) onStatusOnline!();
+            },
+          ));
+        }
+        if (isModalAccReschedule) {
+          options.add(_buildBottomSheetOption(
+            icon: Icons.event_available,
+            text: 'Setujui Penjadwalan Ulang',
+            onTap: () {
+              Navigator.pop(context);
+              if (onAccReschedule != null) onAccReschedule!();
+            },
+          ));
+        }
+        if (isModalRejectReschedule) {
+          options.add(_buildBottomSheetOption(
+            icon: Icons.event_busy,
+            text: 'Tolak Penjadwalan Ulang',
+            onTap: () {
+              Navigator.pop(context);
+              if (onRejectReschedule != null) onRejectReschedule!();
+            },
+          ));
+        }
+        if (isModalPrint) {
+          options.add(_buildBottomSheetOption(
+            icon: Icons.print,
+            text: 'Print Nota',
+            onTap: () {
+              Navigator.pop(context);
+              if (onPrint != null) onPrint!();
+            },
+          ));
+        }
+
         return Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildBottomSheetOption(
-                icon: Icons.open_in_new, 
-                text: 'Buka di POS', 
-                onTap: (){
-                  Navigator.pop(context);
-                  if (onPOS != null) onPOS!();
-                },
-              ),
-              _buildBottomSheetOption(
-                icon: Icons.edit,
-                text: 'Edit',
-                onTap: () {
-                  Navigator.pop(context);
-                  if (onEdit != null) onEdit!();
-                },
-              ),
-              _buildBottomSheetOption(
-                icon: Icons.delete,
-                text: 'Delete',
-                onTap: () {
-                  Navigator.pop(context);
-                  if (onDelete != null) onDelete!();
-                },
-              ),
-              if (isModalPaket)
-                _buildBottomSheetOption(
-                  icon: Icons.local_offer,
-                  text: 'Paket',
-                  onTap: () {
-                    Navigator.pop(context);
-                    if (onPaket != null) onPaket!();
-                  },
-                ),
-              if (isModalBahan)
-                _buildBottomSheetOption(
-                  icon: Icons.kitchen,
-                  text: 'Bahan',
-                  onTap: () {
-                    Navigator.pop(context);
-                    if (onBahan != null) onBahan!();
-                  },
-                ),
-            ],
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.6,
+            ),
+            child: options.length > 5
+                ? SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: options,
+                    ),
+                  )
+                : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: options,
+                  ),
           ),
         );
       },

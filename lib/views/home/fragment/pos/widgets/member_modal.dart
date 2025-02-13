@@ -1,18 +1,16 @@
 import 'dart:async';
-
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/kustomer.dart';
-import 'package:xhalona_pos/views/home/fragment/pos/widgets/member_modal_controller.dart';
-import 'package:xhalona_pos/widgets/app_elevated_button.dart';
-import 'package:xhalona_pos/widgets/app_normal_button.dart';
 import 'package:xhalona_pos/widgets/app_text_field.dart';
-import 'package:xhalona_pos/widgets/app_text_form_field.dart';
+import 'package:xhalona_pos/widgets/app_normal_button.dart';
+import 'package:xhalona_pos/widgets/app_elevated_button.dart';
+import 'package:xhalona_pos/views/home/fragment/pos/widgets/member_modal_controller.dart';
 
+// ignore: must_be_immutable
 class MemberModal extends StatelessWidget {
   final MemberModalController controller = Get.put(MemberModalController());
-  final _formkey = GlobalKey<FormState>();
   // BuildContext context;
   Timer? _debounce;
   Function(KustomerDAO) onMemberSelected;

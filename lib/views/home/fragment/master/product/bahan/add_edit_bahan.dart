@@ -12,7 +12,6 @@ import 'package:xhalona_pos/views/home/fragment/master/product/m_all/mAll_contro
 import 'package:xhalona_pos/views/home/fragment/master/product/bahan/bahan_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/bahan/master_bahan_screen.dart';
 
-
 // ignore: must_be_immutable
 class AddEditBahan extends StatefulWidget {
   BahanDAO? kategori;
@@ -41,7 +40,7 @@ class _AddEditBahanState extends State<AddEditBahan> {
     Inisialisasi();
     if (widget.kategori != null) {
       // Inisialisasi data dari karyawan jika tersedia
-      _nameBahanController.text = widget.kategori!.bomPartName ?? '';
+      _nameBahanController.text = widget.kategori!.bomPartName;
     }
   }
 

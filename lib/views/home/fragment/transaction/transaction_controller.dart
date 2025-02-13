@@ -77,9 +77,9 @@ class TransactionController extends GetxController {
           statusCategory:
               getTransactionStatusCategoryStr(trxStatusCategory.value),
           sourceId: isOnline.value ? "ONLINE" : "",
-          filterDay: filterDay?.value,
-          filterMonth: filterMonth?.value,
-          filterYear: filterYear?.value,
+          filterDay: filterDay.value,
+          filterMonth: filterMonth.value,
+          filterYear: filterYear.value,
           filterValue: filterValue.value,
           pageNo: pageNo.value,
           pageRow: pageRow.value);

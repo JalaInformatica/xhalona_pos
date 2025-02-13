@@ -1,13 +1,12 @@
 import 'package:get/get.dart';
-import 'package:xhalona_pos/models/dao/transaction.dart';
 import 'package:xhalona_pos/models/dao/user.dart';
 import 'package:xhalona_pos/models/dao/structure.dart';
+import 'package:xhalona_pos/models/dao/transaction.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xhalona_pos/core/constant/local_storage.dart';
-import 'package:xhalona_pos/repositories/transaction/transaction_repository.dart';
 import 'package:xhalona_pos/repositories/user/user_repository.dart';
 import 'package:xhalona_pos/repositories/structure/structure_repository.dart';
-import 'package:xhalona_pos/views/home/fragment/pos/pos_controller.dart';
+import 'package:xhalona_pos/repositories/transaction/transaction_repository.dart';
 
 class HomeController extends GetxController {
   final StructureRepository _structureRepository = StructureRepository();

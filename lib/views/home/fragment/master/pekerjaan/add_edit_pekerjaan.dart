@@ -7,7 +7,6 @@ import 'package:xhalona_pos/repositories/pekerjaan/pekerjaan_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/pekerjaan/pekerjaan_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/pekerjaan/master_pekerjaan_screen.dart';
 
-
 // ignore: must_be_immutable
 class AddEditPekerjaan extends StatefulWidget {
   PekerjaanDAO? pekerjaan;
@@ -32,8 +31,8 @@ class _AddEditPekerjaanState extends State<AddEditPekerjaan> {
     Inisialisasi();
     if (widget.pekerjaan != null) {
       // Inisialisasi data dari karyawan jika tersedia
-      _kdPekerjaanController.text = widget.pekerjaan!.jobId ?? '';
-      _namePekerjaanController.text = widget.pekerjaan!.jobDesc ?? '';
+      _kdPekerjaanController.text = widget.pekerjaan!.jobId;
+      _namePekerjaanController.text = widget.pekerjaan!.jobDesc;
     }
   }
 

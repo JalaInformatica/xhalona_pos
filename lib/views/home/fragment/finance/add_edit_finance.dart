@@ -48,13 +48,12 @@ class _AddEditFinanceState extends State<AddEditFinance> {
     Inisialisasi();
     if (widget.finance != null) {
       // Inisialisasi data dari finance jika tersedia
-      _noTrxController.text = widget.finance!.voucherNo ?? '';
-      _ketController.text = widget.finance!.ket ?? '';
-      _tanggalController.text =
-          widget.finance!.voucherDate.split("T").first ?? '';
-      _jmlBayarController.text = widget.finance!.jmlBayar.toString() ?? '';
-      _jenisTrx = widget.finance!.jenisAc ?? '';
-      _kustomer = widget.finance!.refName ?? '';
+      _noTrxController.text = widget.finance!.voucherNo;
+      _ketController.text = widget.finance!.ket;
+      _tanggalController.text = widget.finance!.voucherDate.split("T").first;
+      _jmlBayarController.text = widget.finance!.jmlBayar.toString();
+      _jenisTrx = widget.finance!.jenisAc;
+      _kustomer = widget.finance!.refName;
     }
   }
 

@@ -8,7 +8,6 @@ import 'package:xhalona_pos/views/home/fragment/master/product/m_all/mAll_contro
 import 'package:xhalona_pos/views/home/fragment/pos/widgets/employee_modal_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/m_all/master_mAll_screen.dart';
 
-
 // ignore: must_be_immutable
 class AddEditMasAll extends StatefulWidget {
   MasAllDAO? pekerjaan;
@@ -35,8 +34,8 @@ class _AddEditMasAllState extends State<AddEditMasAll> {
     Inisialisasi();
     if (widget.pekerjaan != null) {
       // Inisialisasi data dari karyawan jika tersedia
-      _kdMasAllController.text = widget.pekerjaan!.masterId ?? '';
-      _nameMasAllController.text = widget.pekerjaan!.masCategory ?? '';
+      _kdMasAllController.text = widget.pekerjaan!.masterId;
+      _nameMasAllController.text = widget.pekerjaan!.masCategory;
     }
   }
 

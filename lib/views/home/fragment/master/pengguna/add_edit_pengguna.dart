@@ -9,7 +9,6 @@ import 'package:xhalona_pos/views/home/fragment/master/pengguna/pengguna_control
 import 'package:xhalona_pos/views/home/fragment/master/pengguna/master_pengguna_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/departemen_controller.dart';
 
-
 // ignore: must_be_immutable
 class AddEditPengguna extends StatefulWidget {
   PenggunaDAO? pengguna;
@@ -48,8 +47,8 @@ class _AddEditPenggunaState extends State<AddEditPengguna> {
     Inisialisasi();
     if (widget.pengguna != null) {
       // Inisialisasi data dari karyawan jika tersedia
-      _usernameController.text = widget.pengguna!.userName ?? '';
-      _emailController.text = widget.pengguna!.emailAddress ?? '';
+      _usernameController.text = widget.pengguna!.userName;
+      _emailController.text = widget.pengguna!.emailAddress;
     }
   }
 
