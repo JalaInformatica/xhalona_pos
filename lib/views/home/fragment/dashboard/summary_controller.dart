@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import 'package:xhalona_pos/models/dao/summary.dart';
 import 'package:xhalona_pos/repositories/summary/summary_repository.dart';
 
-class SummaryController extends GetxController {
+class DashboardController extends GetxController {
   SummaryRepository _summaryRepository = SummaryRepository();
 
   var summaryHeader = <SummaryDAO>[].obs;
@@ -49,7 +49,6 @@ class SummaryController extends GetxController {
     try {
       isLoading.value = true;
 
-      // Ambil tanggal sekarang
       DateTime now = DateTime.now();
       String fYear = now.year.toString(); // Tahun dalam format "2025"
       String fMonth =

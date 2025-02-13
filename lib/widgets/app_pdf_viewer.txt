@@ -1,14 +1,13 @@
-import 'dart:io';
 import 'dart:typed_data';
-import 'package:pdfx/pdfx.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:open_filex/open_filex.dart';
+import 'package:flutter_bluetooth_printer/flutter_bluetooth_printer.dart';
+import 'package:pdfx/pdfx.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
-import 'package:flutter_bluetooth_printer/flutter_bluetooth_printer.dart';
+import 'package:open_filex/open_filex.dart';
 
 class AppPDFViewer extends StatefulWidget {
   final String pdfUrl;
@@ -20,10 +19,14 @@ class AppPDFViewer extends StatefulWidget {
 }
 
 class _AppPDFViewerState extends State<AppPDFViewer> {
+  FlutterBluetoothPrinter bluetoothPrinter = FlutterBluetoothPrinter();
+  BluetoothDevice? selectedPrinter;
   Uint8List? pdfBytes;
   Uint8List? imageBytes; // Store extracted image
   late int pageWidth; // Extracted width
   late int pageHeight; // Extracted height
+  ImageProvider? pdfImage;
+  PdfPageImage? pageImage;
 
   @override
   void initState() {
@@ -47,55 +50,56 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
   }
 
   // Convert PDF to Image with Dynamic Page Size
-  // Convert PDF to Image with Dynamic Page Size
   Future<void> _convertPdfToImage() async {
+    if (pdfBytes == null) return;
+
+    final doc = await PdfDocument.openData(pdfBytes!);
+    final page = await doc.getPage(1);
+    pageWidth=page.width.toInt();
+    pageHeight=page.height.toInt();
+    double scale = 1;
+    pageImage = await page.render(
+        width: page.width*scale, height: page.height*scale);
+    pdfImage = MemoryImage(pageImage!.bytes);
+    imageBytes = pageImage!.bytes;
+    await _saveImageToFile();
+    await page.close();
+    await doc.close();
+  }
+
+  Future<String> _saveImageToFile() async {
     try {
-      final tempDir = await getTemporaryDirectory();
-      final pdfFile = File('${tempDir.path}/temp.pdf');
-      await pdfFile.writeAsBytes(pdfBytes!);
+      final directory = await getExternalStorageDirectory();
+      final imagePath = '${directory!.path}/pdf_image.png';
+      final file = File(imagePath);
 
-      final document = await PdfDocument.openFile(pdfFile.path);
-      final page = await document.getPage(1); // Get the first page
+      await file.writeAsBytes(imageBytes!);
+      _showMessage("Image saved to: $imagePath");
 
-      // ✅ Get actual page dimensions
-      pageWidth = page.width.toInt();
-      pageHeight = page.height.toInt();
-
-      final pageImage = await page.render(
-        width: pageWidth.toDouble(), // Use extracted width
-        height: pageHeight.toDouble(), // Use extracted height
-        format: PdfPageImageFormat.png,
-      );
-
-      if (pageImage != null) {
-        setState(() {
-          imageBytes = pageImage.bytes; // Store converted image
-        });
-      }
-
-      await page.close();
-      await document.close();
+      return imagePath;
     } catch (e) {
-      _showMessage("Error converting PDF to image: $e");
+      _showMessage("Error saving image: $e");
+      return "";
     }
   }
 
   Future<void> _savePdfToDevice() async {
     if (pdfBytes == null) {
-    _showMessage("PDF is not loaded yet.");
-    return;
-  }
+      _showMessage("PDF is not loaded yet.");
+      return;
+    }
 
-  try {
-    final directory = await getDownloadsDirectory(); // Automatically get Downloads folder
-    final filePath = '${directory!.path}/downloaded.pdf';
-    final file = File(filePath);
+    try {
+      final directory =
+          await getDownloadsDirectory(); // Automatically get Downloads folder
+      final filePath = '${directory!.path}/downloaded.pdf';
+      final file = File(filePath);
 
-    await file.writeAsBytes(pdfBytes!);
-    _showMessage("PDF saved successfully at: $filePath");
-  } catch (e) {
-    _showMessage("Error saving PDF: $e");
-  }
+      await file.writeAsBytes(pdfBytes!);
+      _showMessage("PDF saved successfully at: $filePath");
+    } catch (e) {
+      _showMessage("Error saving PDF: $e");
+    }
   }
 
   // Print the converted image
@@ -127,11 +131,11 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
   }
 
   Future<void> _openPdfExternally() async {
-    if (pdfBytes != null) {
+    if (imageBytes != null) {
       try {
         final tempDir = await getTemporaryDirectory();
-        final pdfFile = File('${tempDir.path}/temp.pdf');
-        await pdfFile.writeAsBytes(pdfBytes!);
+        final pdfFile = File('${tempDir.path}/temp.png');
+        await pdfFile.writeAsBytes(imageBytes!);
 
         // Open the PDF with an external app
         await OpenFilex.open(pdfFile.path);
@@ -167,13 +171,11 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
           ),
         ],
       ),
-      body: pdfBytes == null
+      body: pdfImage == null
           ? Center(
               child: AppDialog(
-                shadowColor: AppColor.blackColor,
-                content: Column(
-                  spacing: 10.h, 
-                  children: [
+                  shadowColor: AppColor.blackColor,
+                  content: Column(spacing: 10.h, children: [
                     Text(
                       "Tunggu Sebentar",
                       style: AppTextStyle.textSubtitleStyle(
@@ -182,18 +184,10 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
                     CircularProgressIndicator(
                       color: AppColor.primaryColor,
                     )
-                  ]
-                )
-              )
-            )
-          : PDFView(
-              pdfData: pdfBytes,
-              enableSwipe: true,
-              swipeHorizontal: false,
-              autoSpacing: false,
-              pageFling: true,
-              onError: (error) => _showMessage("Error: $error"),
-            ),
+                  ])))
+          : Image(
+            image: pdfImage!,
+          ),
     );
   }
 }
