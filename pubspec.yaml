@@ -63,6 +63,7 @@ dependencies:
   pdfx: ^2.8.0
   open_filex: ^4.6.0
   file_picker: ^8.3.5
+  fl_chart: ^0.70.2
   
 
 dev_dependencies:

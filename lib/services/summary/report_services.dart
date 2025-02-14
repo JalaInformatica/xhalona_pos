@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:xhalona_pos/services/response_handler.dart';
 import 'package:xhalona_pos/services/api_service.dart' as api;
 
-class SummaryServices {
+class ReportServices {
   Future<String> getSummary({
     String? fDay,
     String? fMonth,
@@ -35,6 +35,45 @@ class SummaryServices {
     });
     var response =
         await api.post(url, headers: await api.requestHeaders(), body: body);
+
+    return ResponseHandler.handle(response);
+  }
+
+  Future<String> getReport({
+    required String actionId,
+    String? startDate,
+    String? endDate,
+    int? bulan,
+    int? tahun,
+  }) async {
+    await api.fetchUserSessionInfo();
+    var url = '/SALES/report';
+    var body = jsonEncode({
+      "rq": {
+        "ACTION_ID": actionId,
+        "IP": api.ip,
+        "COMPANY_ID": api.companyId,
+        "USER_ID": api.userId,
+        "SITE_ID": "",
+        "SESSION_LOGIN_ID": api.sessionId,
+        "FILTER_DATE_FROM": startDate ?? '',
+        "FILTER_DATE_TO": endDate ?? '',
+        "FILTER_FIELD": "",
+        "FILTER_VALUE": '',
+        "TRANSACTION_ID": "",
+        "MODULE_ID": "POS",
+        "SUBMODULE_ID": "ORDER",
+        "SORT_ORDER_BY": "SALES_DATE",
+        "SORT_ORDER_TYPE": "ASC",
+        "BULAN": bulan ?? "",
+        "TAHUN": tahun ?? "",
+      }
+    });
+    var response = await api.post(
+      url,
+      headers: await api.requestHeaders(),
+      body: body,
+    );
 
     return ResponseHandler.handle(response);
   }

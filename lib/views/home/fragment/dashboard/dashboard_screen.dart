@@ -1,10 +1,11 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/helper/global_helper.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:shimmer/shimmer.dart'; // Tambahkan package shimmer
-import 'package:xhalona_pos/views/home/fragment/dashboard/summary_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/dashboard/dashboard_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/transaction/transaction_controller.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -12,7 +13,7 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    controller.fetchProducts();
+    controller.fetchData();
 
     return Scaffold(
       backgroundColor: AppColor.whiteColor,
@@ -33,11 +34,11 @@ class DashboardScreen extends StatelessWidget {
                 Obx(() => Expanded(
                     child: _buildSummaryCard(
                         'Pendapatan Bersih',
-                        formatToRupiah(int.parse(controller.total.value)),
+                        formatToRupiah(controller.nettoValDToday.value),
                         Colors.green))),
                 Obx(()=> Expanded(
                     child: _buildSummaryCard('Transaksi',
-                        controller.total.value.toString(), Colors.blue))),
+                        controller.totalTrxToday.value.toString(), Colors.blue))),
               ],
             ),
             SizedBox(height: 5.h,),
@@ -52,13 +53,62 @@ class DashboardScreen extends StatelessWidget {
                 Obx(() => Expanded(
                     child: _buildSummaryCard(
                         'Pendapatan Bersih',
-                        formatToRupiah(int.parse(controller.total.value)),
+                        formatToRupiah(controller.nettoValDThisMonth.value),
                         Colors.green))),
                 Obx(()=> Expanded(
                     child: _buildSummaryCard('Transaksi',
-                        controller.total.value.toString(), Colors.blue))),
+                        controller.totalTrxThisMonth.value.toString(), Colors.blue))),
               ],
             ),
+            Text(
+              'Penjualan Bulan Ini',
+              style: AppTextStyle.textSubtitleStyle(),
+            ),
+            SizedBox(height: 5,),
+            Expanded(child: 
+            Obx(()=> controller.dataNetPerMonthValue.isNotEmpty? LineChart(
+              LineChartData(
+                minY: 0,
+                gridData: FlGridData(
+                  show: true,
+
+                ),
+                titlesData: FlTitlesData(
+                  rightTitles: AxisTitles(sideTitles: SideTitles()),
+                  topTitles: AxisTitles(sideTitles: SideTitles()),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      getTitlesWidget: (value, meta) => Text(
+                        value.toString(), 
+                        style: AppTextStyle.textCaptionStyle(),
+                      ),
+                    )
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      getTitlesWidget: (value, meta) {
+                        return Text(
+                          controller.dataNetPerMonthLabel[value.toInt()].toString());
+                      },
+                      interval: 1,
+                    ),
+                  ),
+                ),
+                borderData: FlBorderData(
+                  show: true,
+                  border: Border(bottom: BorderSide(), left: BorderSide())
+                ),
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: controller.dataNetPerMonthValue,
+                    color: const Color(0xFF4BC0C0),
+                    barWidth: 4,
+                  ),
+                ],
+              ),
+            ): SizedBox.shrink()))
           ],
         ),
       ),

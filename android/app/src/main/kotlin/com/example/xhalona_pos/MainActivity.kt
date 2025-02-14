@@ -1,4 +1,4 @@
-package com.example.xhalona_pos
+package com.jalainformatica.xhalona_pos
 
 import io.flutter.embedding.android.FlutterActivity
 

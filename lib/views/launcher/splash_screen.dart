@@ -121,11 +121,19 @@ class _SplashScreen extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: AppColor.whiteColor,
-        body: Center(
-          child: SvgPicture.asset(
+        body: Center(child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 10.h,
+          children: [
+            SvgPicture.asset(
             "assets/logo-only-pink.svg",
+            width: 250,
+            height: 250,
             color: AppColor.primaryColor,
-          ),
-        ));
+            ),
+            Text("XHALONA", style: AppTextStyle.textTitleStyle().copyWith(fontSize: 30),),
+            Text("Point Of Sales", style: AppTextStyle.textBodyStyle().copyWith(fontSize: 20),)
+          ],
+        )));
   }
 }
