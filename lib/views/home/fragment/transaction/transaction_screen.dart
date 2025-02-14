@@ -4,21 +4,60 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/widgets/app_calendar.dart';
+import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/core/constant/transaction.dart';
 import 'package:xhalona_pos/widgets/app_normal_button.dart';
 import 'package:xhalona_pos/views/home/home_controller.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/transaction/form/trx_form.dart';
+import 'package:xhalona_pos/repositories/transaction/transaction_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/transaction/transaction_widget.dart';
 import 'package:xhalona_pos/views/home/fragment/transaction/transaction_controller.dart';
 
+// ignore: must_be_immutable
 class TransactionScreen extends StatelessWidget {
   TransactionScreen({super.key});
 
   final TransactionController controller = Get.put(TransactionController());
+  TransactionRepository _trxRepository = TransactionRepository();
+  bool paidBooking = false;
+  bool onWorking = false;
+  bool onDestination = false;
+  bool reschedule = false;
+  bool accBooking = false;
+  bool arrivedDestination = false;
+  bool finish = false;
+  bool cancelByStore = false;
+  bool toHome = false;
+  bool newOrder = false;
 
   @override
   Widget build(BuildContext context) {
+    handleOnTrx({String? actionId, String? salesId, String? statusDesc}) async {
+      String result = await _trxRepository.onTransactionHeader(
+        actionId: actionId,
+        salesId: salesId,
+        statusDesc: statusDesc,
+      );
+
+      bool isSuccess = result == "1";
+      if (isSuccess) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Data gagal disimpan!')),
+        );
+      } else {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+          (route) => false,
+        );
+        controller.fetchTransactions();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Data berhasil disimpan!')),
+        );
+      }
+    }
+
     return Scaffold(
         backgroundColor: AppColor.whiteColor,
         body: Padding(
@@ -168,11 +207,41 @@ class TransactionScreen extends StatelessWidget {
                         AppTableTitle(value: "Pembayaran"),
                         AppTableTitle(value: "Total Bayar"),
                         AppTableTitle(value: "Hutang"),
-                        AppTableTitle(value: "")
+                        AppTableTitle(value: ""),
+                        AppTableTitle(value: ""),
+                        AppTableTitle(value: ""),
+                        AppTableTitle(value: ""),
+                        AppTableTitle(value: ""),
+                        AppTableTitle(value: ""),
                       ],
                       data: List.generate(controller.transactionHeader.length,
                           (int i) {
                         var transaction = controller.transactionHeader[i];
+                        paidBooking =
+                            transaction.statusCategory == 'PROGRESS' &&
+                                transaction.statusIdDesc == 'PAID BOOKING';
+                        onWorking = transaction.statusCategory == 'PROGRESS' &&
+                            transaction.statusIdDesc == 'ON WORKING';
+                        onDestination =
+                            transaction.statusCategory == 'PROGRESS' &&
+                                transaction.statusIdDesc == 'ON DESTINATION';
+                        reschedule = transaction.statusCategory == 'PROGRESS' &&
+                            transaction.statusIdDesc == 'RESCHEDULE';
+                        newOrder = transaction.statusCategory == 'PROGRESS' &&
+                            transaction.statusIdDesc == 'NEW ORDER';
+                        accBooking = transaction.statusCategory == 'PROGRESS' &&
+                            transaction.statusIdDesc == 'ACCEPT BOOKING';
+                        arrivedDestination =
+                            transaction.statusCategory == 'PROGRESS' &&
+                                transaction.statusIdDesc ==
+                                    'ARRIVED AT DESTINATION';
+                        finish = transaction.statusCategory == 'PROGRESS' &&
+                            transaction.statusIdDesc == 'FINISH';
+                        cancelByStore = transaction.statusCategory ==
+                                'PROGRESS' &&
+                            transaction.statusIdDesc == 'CANCEL BY STORE (OFF)';
+                        toHome = transaction.bookingType == 'TO HOME';
+
                         return [
                           AppTableCell(
                             onPOS: () {
@@ -188,17 +257,74 @@ class TransactionScreen extends StatelessWidget {
                             value: transaction.salesId
                                 .substring(transaction.salesId.length - 4),
                             index: i,
+                            onEdit: () {},
+                            isModalCheckout: newOrder || finish,
+                            isModalPrint: cancelByStore,
+                            isModalRejectReschedule: reschedule,
+                            isModalAccReschedule:
+                                reschedule || toHome || accBooking,
+                            isModalStatusOnline: paidBooking,
+                            isModalOnFinishStore: finish,
+                            isModalOnWorkingStore: onWorking,
+                            isModalCancelTrx: cancelByStore,
+                            isModalOnDestination: onDestination,
+                            isModalOnArrived: arrivedDestination,
                             isTrxMenu: true,
                             onCheckout: () {},
                             onPrint: () {},
-                            onRejectReschedule: () {},
-                            onAccReschedule: () {},
-                            onStatusOnline: () {},
-                            onFinishStore: () {},
-                            onWorkingStore: () {},
+                            onRejectReschedule: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                    builder: (context) => TrxFormScreen(
+                                          actionId: 'RESCHEDULE_REJECTED',
+                                          salesId: transaction.salesId,
+                                        )),
+                                (route) => false,
+                              );
+                            },
+                            onAccReschedule: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                    builder: (context) => TrxFormScreen(
+                                          actionId: 'RESCHEDULE_APPROVED',
+                                          salesId: transaction.salesId,
+                                        )),
+                                (route) => false,
+                              );
+                            },
+                            onStatusOnline: () => handleOnTrx(
+                              actionId: 'ONWORKING',
+                              salesId: transaction.salesId,
+                            ),
+                            onFinishStore: () => handleOnTrx(
+                              actionId: 'ONFINISH_STORE',
+                              salesId: transaction.salesId,
+                            ),
+                            onWorkingStore: () => handleOnTrx(
+                              actionId: 'ONWORKING',
+                              salesId: transaction.salesId,
+                            ),
                             onCancelTrx: () {},
-                            onDestination: () {},
-                            onArrived: () {},
+                            onDestination: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                    builder: (context) => TrxFormScreen(
+                                          actionId: 'ONDESTINATION',
+                                          salesId: transaction.salesId,
+                                        )),
+                                (route) => false,
+                              );
+                            },
+                            onArrived: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                    builder: (context) => TrxFormScreen(
+                                          actionId: 'ONARRIVED',
+                                          salesId: transaction.salesId,
+                                        )),
+                                (route) => false,
+                              );
+                            },
                             showOptionsOnTap: true,
                             isOpenPOS: true,
                           ),
@@ -209,17 +335,74 @@ class TransactionScreen extends StatelessWidget {
                               },
                               value: transaction.salesDate.split("T")[0],
                               index: i,
+                              onEdit: () {},
+                              isModalCheckout: newOrder || finish,
+                              isModalPrint: cancelByStore,
+                              isModalRejectReschedule: reschedule,
+                              isModalAccReschedule:
+                                  reschedule || toHome || accBooking,
+                              isModalStatusOnline: paidBooking,
+                              isModalOnFinishStore: finish,
+                              isModalOnWorkingStore: onWorking,
+                              isModalCancelTrx: cancelByStore,
+                              isModalOnDestination: onDestination,
+                              isModalOnArrived: arrivedDestination,
                               isTrxMenu: true,
                               onCheckout: () {},
                               onPrint: () {},
-                              onRejectReschedule: () {},
-                              onAccReschedule: () {},
-                              onStatusOnline: () {},
-                              onFinishStore: () {},
-                              onWorkingStore: () {},
+                              onRejectReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_REJECTED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onAccReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_APPROVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onStatusOnline: () => handleOnTrx(
+                                    actionId: 'ONCONFIRM',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onFinishStore: () => handleOnTrx(
+                                    actionId: 'ONFINISH_STORE',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onWorkingStore: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
                               onCancelTrx: () {},
-                              onDestination: () {},
-                              onArrived: () {},
+                              onDestination: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONDESTINATION',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onArrived: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONARRIVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
                               isOpenPOS: true,
                               showOptionsOnTap: true),
                           AppTableCell(
@@ -230,17 +413,74 @@ class TransactionScreen extends StatelessWidget {
                               value: transaction.cashierBy,
                               isOpenPOS: true,
                               index: i,
+                              onEdit: () {},
+                              isModalCheckout: newOrder || finish,
+                              isModalPrint: cancelByStore,
+                              isModalRejectReschedule: reschedule,
+                              isModalAccReschedule:
+                                  reschedule || toHome || accBooking,
+                              isModalStatusOnline: paidBooking,
+                              isModalOnFinishStore: finish,
+                              isModalOnWorkingStore: onWorking,
+                              isModalCancelTrx: cancelByStore,
+                              isModalOnDestination: onDestination,
+                              isModalOnArrived: arrivedDestination,
                               isTrxMenu: true,
                               onCheckout: () {},
                               onPrint: () {},
-                              onRejectReschedule: () {},
-                              onAccReschedule: () {},
-                              onStatusOnline: () {},
-                              onFinishStore: () {},
-                              onWorkingStore: () {},
+                              onRejectReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_REJECTED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onAccReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_APPROVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onStatusOnline: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onFinishStore: () => handleOnTrx(
+                                    actionId: 'ONFINISH_STORE',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onWorkingStore: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
                               onCancelTrx: () {},
-                              onDestination: () {},
-                              onArrived: () {},
+                              onDestination: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONDESTINATION',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onArrived: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONARRIVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
                               showOptionsOnTap: true),
                           AppTableCell(
                               isOpenPOS: true,
@@ -250,17 +490,74 @@ class TransactionScreen extends StatelessWidget {
                               },
                               value: transaction.supplierName,
                               index: i,
+                              onEdit: () {},
+                              isModalCheckout: newOrder || finish,
+                              isModalPrint: cancelByStore,
+                              isModalRejectReschedule: reschedule,
+                              isModalAccReschedule:
+                                  reschedule || toHome || accBooking,
+                              isModalStatusOnline: paidBooking,
+                              isModalOnFinishStore: finish,
+                              isModalOnWorkingStore: onWorking,
+                              isModalCancelTrx: cancelByStore,
+                              isModalOnDestination: onDestination,
+                              isModalOnArrived: arrivedDestination,
                               isTrxMenu: true,
                               onCheckout: () {},
                               onPrint: () {},
-                              onRejectReschedule: () {},
-                              onAccReschedule: () {},
-                              onStatusOnline: () {},
-                              onFinishStore: () {},
-                              onWorkingStore: () {},
+                              onRejectReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_REJECTED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onAccReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_APPROVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onStatusOnline: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onFinishStore: () => handleOnTrx(
+                                    actionId: 'ONFINISH_STORE',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onWorkingStore: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
                               onCancelTrx: () {},
-                              onDestination: () {},
-                              onArrived: () {},
+                              onDestination: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONDESTINATION',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onArrived: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONARRIVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
                               showOptionsOnTap: true),
                           AppTableCell(
                               isOpenPOS: true,
@@ -270,17 +567,74 @@ class TransactionScreen extends StatelessWidget {
                               },
                               value: transaction.queueNumber.toString(),
                               index: i,
+                              onEdit: () {},
+                              isModalCheckout: newOrder || finish,
+                              isModalPrint: cancelByStore,
+                              isModalRejectReschedule: reschedule,
+                              isModalAccReschedule:
+                                  reschedule || toHome || accBooking,
+                              isModalStatusOnline: paidBooking,
+                              isModalOnFinishStore: finish,
+                              isModalOnWorkingStore: onWorking,
+                              isModalCancelTrx: cancelByStore,
+                              isModalOnDestination: onDestination,
+                              isModalOnArrived: arrivedDestination,
                               isTrxMenu: true,
                               onCheckout: () {},
                               onPrint: () {},
-                              onRejectReschedule: () {},
-                              onAccReschedule: () {},
-                              onStatusOnline: () {},
-                              onFinishStore: () {},
-                              onWorkingStore: () {},
+                              onRejectReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_REJECTED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onAccReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_APPROVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onStatusOnline: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onFinishStore: () => handleOnTrx(
+                                    actionId: 'ONFINISH_STORE',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onWorkingStore: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
                               onCancelTrx: () {},
-                              onDestination: () {},
-                              onArrived: () {},
+                              onDestination: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONDESTINATION',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onArrived: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONARRIVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
                               showOptionsOnTap: true),
                           AppTableCell(
                               isOpenPOS: true,
@@ -290,17 +644,74 @@ class TransactionScreen extends StatelessWidget {
                               },
                               value: transaction.sourceId,
                               index: i,
+                              onEdit: () {},
+                              isModalCheckout: newOrder || finish,
+                              isModalPrint: cancelByStore,
+                              isModalRejectReschedule: reschedule,
+                              isModalAccReschedule:
+                                  reschedule || toHome || accBooking,
+                              isModalStatusOnline: paidBooking,
+                              isModalOnFinishStore: finish,
+                              isModalOnWorkingStore: onWorking,
+                              isModalCancelTrx: cancelByStore,
+                              isModalOnDestination: onDestination,
+                              isModalOnArrived: arrivedDestination,
                               isTrxMenu: true,
                               onCheckout: () {},
                               onPrint: () {},
-                              onRejectReschedule: () {},
-                              onAccReschedule: () {},
-                              onStatusOnline: () {},
-                              onFinishStore: () {},
-                              onWorkingStore: () {},
+                              onRejectReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_REJECTED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onAccReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_APPROVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onStatusOnline: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onFinishStore: () => handleOnTrx(
+                                    actionId: 'ONFINISH_STORE',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onWorkingStore: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
                               onCancelTrx: () {},
-                              onDestination: () {},
-                              onArrived: () {},
+                              onDestination: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONDESTINATION',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onArrived: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONARRIVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
                               showOptionsOnTap: true),
                           AppTableCell(
                               isOpenPOS: true,
@@ -310,17 +721,74 @@ class TransactionScreen extends StatelessWidget {
                               },
                               value: transaction.statusDesc,
                               index: i,
+                              onEdit: () {},
+                              isModalCheckout: newOrder || finish,
+                              isModalPrint: cancelByStore,
+                              isModalRejectReschedule: reschedule,
+                              isModalAccReschedule:
+                                  reschedule || toHome || accBooking,
+                              isModalStatusOnline: paidBooking,
+                              isModalOnFinishStore: finish,
+                              isModalOnWorkingStore: onWorking,
+                              isModalCancelTrx: cancelByStore,
+                              isModalOnDestination: onDestination,
+                              isModalOnArrived: arrivedDestination,
                               isTrxMenu: true,
                               onCheckout: () {},
                               onPrint: () {},
-                              onRejectReschedule: () {},
-                              onAccReschedule: () {},
-                              onStatusOnline: () {},
-                              onFinishStore: () {},
-                              onWorkingStore: () {},
+                              onRejectReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_REJECTED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onAccReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_APPROVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onStatusOnline: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onFinishStore: () => handleOnTrx(
+                                    actionId: 'ONFINISH_STORE',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onWorkingStore: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
                               onCancelTrx: () {},
-                              onDestination: () {},
-                              onArrived: () {},
+                              onDestination: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONDESTINATION',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onArrived: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONARRIVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
                               showOptionsOnTap: true),
                           AppTableCell(
                               isOpenPOS: true,
@@ -330,17 +798,74 @@ class TransactionScreen extends StatelessWidget {
                               },
                               value: transaction.bookingType,
                               index: i,
+                              onEdit: () {},
+                              isModalCheckout: newOrder || finish,
+                              isModalPrint: cancelByStore,
+                              isModalRejectReschedule: reschedule,
+                              isModalAccReschedule:
+                                  reschedule || toHome || accBooking,
+                              isModalStatusOnline: paidBooking,
+                              isModalOnFinishStore: finish,
+                              isModalOnWorkingStore: onWorking,
+                              isModalCancelTrx: cancelByStore,
+                              isModalOnDestination: onDestination,
+                              isModalOnArrived: arrivedDestination,
                               isTrxMenu: true,
                               onCheckout: () {},
                               onPrint: () {},
-                              onRejectReschedule: () {},
-                              onAccReschedule: () {},
-                              onStatusOnline: () {},
-                              onFinishStore: () {},
-                              onWorkingStore: () {},
+                              onRejectReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_REJECTED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onAccReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_APPROVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onStatusOnline: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onFinishStore: () => handleOnTrx(
+                                    actionId: 'ONFINISH_STORE',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onWorkingStore: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
                               onCancelTrx: () {},
-                              onDestination: () {},
-                              onArrived: () {},
+                              onDestination: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONDESTINATION',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onArrived: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONARRIVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
                               showOptionsOnTap: true),
                           AppTableCell(
                               isOpenPOS: true,
@@ -350,17 +875,74 @@ class TransactionScreen extends StatelessWidget {
                               },
                               value: transaction.nettoVal.toString(),
                               index: i,
+                              onEdit: () {},
+                              isModalCheckout: newOrder || finish,
+                              isModalPrint: cancelByStore,
+                              isModalRejectReschedule: reschedule,
+                              isModalAccReschedule:
+                                  reschedule || toHome || accBooking,
+                              isModalStatusOnline: paidBooking,
+                              isModalOnFinishStore: finish,
+                              isModalOnWorkingStore: onWorking,
+                              isModalCancelTrx: cancelByStore,
+                              isModalOnDestination: onDestination,
+                              isModalOnArrived: arrivedDestination,
                               isTrxMenu: true,
                               onCheckout: () {},
                               onPrint: () {},
-                              onRejectReschedule: () {},
-                              onAccReschedule: () {},
-                              onStatusOnline: () {},
-                              onFinishStore: () {},
-                              onWorkingStore: () {},
+                              onRejectReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_REJECTED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onAccReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_APPROVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onStatusOnline: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onFinishStore: () => handleOnTrx(
+                                    actionId: 'ONFINISH_STORE',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onWorkingStore: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
                               onCancelTrx: () {},
-                              onDestination: () {},
-                              onArrived: () {},
+                              onDestination: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONDESTINATION',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onArrived: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONARRIVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
                               showOptionsOnTap: true),
                           AppTableCell(
                               isOpenPOS: true,
@@ -370,17 +952,74 @@ class TransactionScreen extends StatelessWidget {
                               },
                               value: transaction.settlePaymentMethod,
                               index: i,
+                              onEdit: () {},
+                              isModalCheckout: newOrder || finish,
+                              isModalPrint: cancelByStore,
+                              isModalRejectReschedule: reschedule,
+                              isModalAccReschedule:
+                                  reschedule || toHome || accBooking,
+                              isModalStatusOnline: paidBooking,
+                              isModalOnFinishStore: finish,
+                              isModalOnWorkingStore: onWorking,
+                              isModalCancelTrx: cancelByStore,
+                              isModalOnDestination: onDestination,
+                              isModalOnArrived: arrivedDestination,
                               isTrxMenu: true,
                               onCheckout: () {},
                               onPrint: () {},
-                              onRejectReschedule: () {},
-                              onAccReschedule: () {},
-                              onStatusOnline: () {},
-                              onFinishStore: () {},
-                              onWorkingStore: () {},
+                              onRejectReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_REJECTED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onAccReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_APPROVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onStatusOnline: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onFinishStore: () => handleOnTrx(
+                                    actionId: 'ONFINISH_STORE',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onWorkingStore: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
                               onCancelTrx: () {},
-                              onDestination: () {},
-                              onArrived: () {},
+                              onDestination: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONDESTINATION',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onArrived: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONARRIVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
                               showOptionsOnTap: true),
                           AppTableCell(
                               isOpenPOS: true,
@@ -390,17 +1029,74 @@ class TransactionScreen extends StatelessWidget {
                               },
                               value: transaction.paymentVal.toString(),
                               index: i,
+                              onEdit: () {},
+                              isModalCheckout: newOrder || finish,
+                              isModalPrint: cancelByStore,
+                              isModalRejectReschedule: reschedule,
+                              isModalAccReschedule:
+                                  reschedule || toHome || accBooking,
+                              isModalStatusOnline: paidBooking,
+                              isModalOnFinishStore: finish,
+                              isModalOnWorkingStore: onWorking,
+                              isModalCancelTrx: cancelByStore,
+                              isModalOnDestination: onDestination,
+                              isModalOnArrived: arrivedDestination,
                               isTrxMenu: true,
                               onCheckout: () {},
                               onPrint: () {},
-                              onRejectReschedule: () {},
-                              onAccReschedule: () {},
-                              onStatusOnline: () {},
-                              onFinishStore: () {},
-                              onWorkingStore: () {},
+                              onRejectReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_REJECTED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onAccReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_APPROVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onStatusOnline: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onFinishStore: () => handleOnTrx(
+                                    actionId: 'ONFINISH_STORE',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onWorkingStore: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
                               onCancelTrx: () {},
-                              onDestination: () {},
-                              onArrived: () {},
+                              onDestination: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONDESTINATION',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onArrived: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONARRIVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
                               showOptionsOnTap: true),
                           AppTableCell(
                               onPOS: () {
@@ -410,17 +1106,199 @@ class TransactionScreen extends StatelessWidget {
                               isOpenPOS: true,
                               value: transaction.totalHutang.toString(),
                               index: i,
+                              onEdit: () {},
+                              isModalCheckout: newOrder || finish,
+                              isModalPrint: cancelByStore,
+                              isModalRejectReschedule: reschedule,
+                              isModalAccReschedule:
+                                  reschedule || toHome || accBooking,
+                              isModalStatusOnline: paidBooking,
+                              isModalOnFinishStore: finish,
+                              isModalOnWorkingStore: onWorking,
+                              isModalCancelTrx: cancelByStore,
+                              isModalOnDestination: onDestination,
+                              isModalOnArrived: arrivedDestination,
                               isTrxMenu: true,
                               onCheckout: () {},
                               onPrint: () {},
-                              onRejectReschedule: () {},
-                              onAccReschedule: () {},
-                              onStatusOnline: () {},
-                              onFinishStore: () {},
-                              onWorkingStore: () {},
+                              onRejectReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_REJECTED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onAccReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_APPROVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onStatusOnline: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onFinishStore: () => handleOnTrx(
+                                    actionId: 'ONFINISH_STORE',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onWorkingStore: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
                               onCancelTrx: () {},
-                              onDestination: () {},
-                              onArrived: () {},
+                              onDestination: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONDESTINATION',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onArrived: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONARRIVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              showOptionsOnTap: true),
+                          AppTableCell(
+                              value: "",
+                              index: i,
+                              onCheckout: () {},
+                              onPrint: () {},
+                              onRejectReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_REJECTED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onAccReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_APPROVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onStatusOnline: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onFinishStore: () => handleOnTrx(
+                                    actionId: 'ONFINISH_STORE',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onWorkingStore: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onCancelTrx: () {},
+                              onDestination: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONDESTINATION',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onArrived: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONARRIVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onEdit: () {},
+                              isStatusOnline: paidBooking,
+                              isOnWorkingStore: onWorking,
+                              showOptionsOnTap: true),
+                          AppTableCell(
+                              value: "",
+                              index: i,
+                              onCheckout: () {},
+                              onPrint: () {},
+                              onRejectReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_REJECTED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onAccReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_APPROVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onStatusOnline: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onFinishStore: () => handleOnTrx(
+                                    actionId: 'ONFINISH_STORE',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onWorkingStore: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onCancelTrx: () {},
+                              onDestination: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONDESTINATION',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onArrived: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONARRIVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onEdit: () {},
+                              isAccReschedule:
+                                  reschedule || toHome || accBooking,
+                              isOnDestination: onDestination,
                               showOptionsOnTap: true),
                           AppTableCell(
                               onPOS: () {
@@ -432,24 +1310,250 @@ class TransactionScreen extends StatelessWidget {
                               index: i,
                               onCheckout: () {},
                               onPrint: () {},
-                              onRejectReschedule: () {},
-                              onAccReschedule: () {},
-                              onStatusOnline: () {},
-                              onFinishStore: () {},
-                              onWorkingStore: () {},
+                              onRejectReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_REJECTED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onAccReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_APPROVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onStatusOnline: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onFinishStore: () => handleOnTrx(
+                                    actionId: 'ONFINISH_STORE',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onWorkingStore: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
                               onCancelTrx: () {},
-                              onDestination: () {},
-                              onArrived: () {},
-                              isCheckout: true,
-                              isPrint: true,
-                              isRejectReschedule: true,
-                              isAccReschedule: true,
-                              isStatusOnline: true,
-                              isOnFinishStore: true,
-                              isOnWorkingStore: true,
-                              isCancelTrx: true,
-                              isOnDestination: true,
-                              isOnArrived: true,
+                              onDestination: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONDESTINATION',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onArrived: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONARRIVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onEdit: () {},
+                              isAccReschedule:
+                                  reschedule || toHome || accBooking,
+                              isOnArrived: arrivedDestination,
+                              showOptionsOnTap: true),
+                          AppTableCell(
+                              value: "",
+                              index: i,
+                              onCheckout: () {},
+                              onPrint: () {},
+                              onRejectReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_REJECTED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onAccReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_APPROVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onStatusOnline: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onFinishStore: () => handleOnTrx(
+                                    actionId: 'ONFINISH_STORE',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onWorkingStore: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onCancelTrx: () {},
+                              onDestination: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONDESTINATION',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onArrived: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONARRIVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onEdit: () {},
+                              isRejectReschedule: reschedule,
+                              isAccReschedule:
+                                  reschedule || toHome || accBooking,
+                              showOptionsOnTap: true),
+                          AppTableCell(
+                              value: "",
+                              index: i,
+                              onCheckout: () {},
+                              onPrint: () {},
+                              onRejectReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_REJECTED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onAccReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_APPROVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onStatusOnline: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onFinishStore: () => handleOnTrx(
+                                    actionId: 'ONFINISH_STORE',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onWorkingStore: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onCancelTrx: () {},
+                              onDestination: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONDESTINATION',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onArrived: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONARRIVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onEdit: () {},
+                              isEdit: newOrder || finish,
+                              isCheckout: newOrder || finish,
+                              showOptionsOnTap: true),
+                          AppTableCell(
+                              value: "",
+                              index: i,
+                              onCheckout: () {},
+                              onPrint: () {},
+                              onRejectReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_REJECTED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onAccReschedule: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'RESCHEDULE_APPROVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onStatusOnline: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onFinishStore: () => handleOnTrx(
+                                    actionId: 'ONFINISH_STORE',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onWorkingStore: () => handleOnTrx(
+                                    actionId: 'ONWORKING',
+                                    salesId: transaction.salesId,
+                                  ),
+                              onCancelTrx: () {},
+                              onDestination: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONDESTINATION',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onArrived: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => TrxFormScreen(
+                                            actionId: 'ONARRIVED',
+                                            salesId: transaction.salesId,
+                                          )),
+                                  (route) => false,
+                                );
+                              },
+                              onEdit: () {},
+                              isOnFinishStore: finish,
+                              isCancelTrx: cancelByStore,
                               showOptionsOnTap: true),
                         ];
                       }),
