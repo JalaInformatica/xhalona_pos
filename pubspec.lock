@@ -5,10 +5,10 @@ packages:
     dependency: transitive
     description:
       name: archive
-      sha256: "6199c74e3db4fbfbd04f66d739e72fe11c8a8957d5f219f1f4482dbde6420b5a"
+      sha256: cb6a278ef2dbb298455e1a713bda08524a175630ec643a242c399c932a0a1f7d
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.2"
+    version: "3.6.1"
   args:
     dependency: transitive
     description:
@@ -97,6 +97,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.6"
+  csslib:
+    dependency: transitive
+    description:
+      name: csslib
+      sha256: "09bad715f418841f976c77db72d5398dc1253c21fb9c0c7f0b0b985860b2d58e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -153,6 +161,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.7"
+  esc_pos_utils:
+    dependency: "direct main"
+    description:
+      name: esc_pos_utils
+      sha256: "8ec0013d7a7f1e790ced6b09b95ce3bf2c6f9468a3e2bc49ece000761d86c6f8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   extension:
     dependency: transitive
     description:
@@ -246,38 +262,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_bluetooth_printer:
-    dependency: "direct main"
-    description:
-      name: flutter_bluetooth_printer
-      sha256: aa1a290722ab261154e06689444fd89e7361f7fa72ef87fe88ebf0f4413af620
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.17.1"
-  flutter_bluetooth_printer_macos:
-    dependency: transitive
-    description:
-      name: flutter_bluetooth_printer_macos
-      sha256: "795769a4c6ba8307dcbc4e3d4abed83d544f676330fbea26d53d3bb2d4fc9927"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.3.0"
-  flutter_bluetooth_printer_platform_interface:
-    dependency: transitive
-    description:
-      name: flutter_bluetooth_printer_platform_interface
-      sha256: cd7e13841edd55ce5fe89358baf66f7f7ef0748e9a878d1110c47861e2ebdc85
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.7"
-  flutter_bluetooth_printer_web:
-    dependency: transitive
-    description:
-      name: flutter_bluetooth_printer_web
-      sha256: b259c038051f49fee4b9fbb6e8dfb3f9a168a558dd3bbecc876fee138057ebb1
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.1"
   flutter_cache_manager:
     dependency: transitive
     description:
@@ -464,6 +448,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  gbk_codec:
+    dependency: transitive
+    description:
+      name: gbk_codec
+      sha256: "3af5311fc9393115e3650ae6023862adf998051a804a08fb804f042724999f61"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.0"
   get:
     dependency: "direct main"
     description:
@@ -472,6 +464,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.6.6"
+  hex:
+    dependency: transitive
+    description:
+      name: hex
+      sha256: "4e7cd54e4b59ba026432a6be2dd9d96e4c5205725194997193bf871703b82c4a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0"
   horizontal_data_table:
     dependency: "direct main"
     description:
@@ -480,6 +480,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.3.1"
+  html:
+    dependency: transitive
+    description:
+      name: html
+      sha256: "1fc58edeaec4307368c60d59b7e15b9d658b57d7f3125098b6294153c75337ec"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.15.5"
   http:
     dependency: "direct main"
     description:
@@ -500,10 +508,10 @@ packages:
     dependency: "direct main"
     description:
       name: image
-      sha256: "8346ad4b5173924b5ddddab782fc7d8a6300178c8b1dc427775405a01701c4a6"
+      sha256: "8e9d133755c3e84c73288363e6343157c383a0c6c56fc51afcc5d4d7180306d6"
       url: "https://pub.dev"
     source: hosted
-    version: "4.5.2"
+    version: "3.3.0"
   image_picker:
     dependency: "direct main"
     description:
@@ -880,14 +888,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.10.2+1"
-  posix:
-    dependency: transitive
+  print_bluetooth_thermal:
+    dependency: "direct main"
     description:
-      name: posix
-      sha256: a0117dc2167805aa9125b82eee515cc891819bac2f538c83646d355b16f58b9a
+      name: print_bluetooth_thermal
+      sha256: b83bb176b984fbb35a75f888f1ca8fb2c4015f01f9a6ef9504b7406692ff4264
       url: "https://pub.dev"
     source: hosted
-    version: "6.0.1"
+    version: "1.1.5"
   provider:
     dependency: "direct main"
     description:
@@ -1253,6 +1261,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.5"
+  win_ble:
+    dependency: transitive
+    description:
+      name: win_ble
+      sha256: "2a867e13c4b355b101fc2c6e2ac85eeebf965db34eca46856f8b478e93b41e96"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.1"
   xdg_directories:
     dependency: transitive
     description:

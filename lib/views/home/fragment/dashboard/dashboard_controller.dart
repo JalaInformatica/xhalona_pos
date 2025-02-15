@@ -19,6 +19,7 @@ class DashboardController extends GetxController {
   List<ReportDAO> salesThisMonth = [];
 
   var dataNetPerMonthValue = <FlSpot>[].obs;
+  var dataTrxPerMonthValue = <FlSpot>[].obs;
 
   @override
   void onInit() {
@@ -63,10 +64,11 @@ class DashboardController extends GetxController {
     await fetchGraph();
   }
 
-  var dataNetPerMonthLabel = <int>[].obs;
+  var dataPerMonthLabel = <int>[].obs;
 
   Future<void> fetchGraph() async {
     Map<int, double> dataNetPerMonth = {};
+    Map<int, int> dataTrxPerMonth = {};
 
     for (var sale in salesThisMonth) {
       DateTime saleDate = DateTime.parse(sale.salesDate);
@@ -75,17 +77,31 @@ class DashboardController extends GetxController {
       if (!dataNetPerMonth.containsKey(dayNumber)) {
         dataNetPerMonth[dayNumber] = 0;
       }
+      if (!dataTrxPerMonth.containsKey(dayNumber)) {
+        dataTrxPerMonth[dayNumber] = 0;
+      }
+
       dataNetPerMonth[dayNumber] =
           (dataNetPerMonth[dayNumber] ?? 0) + sale.nettoValD;
+
+      dataTrxPerMonth[dayNumber] = (dataTrxPerMonth[dayNumber] ?? 0) + 1;
     }
 
     dataNetPerMonthValue.value = dataNetPerMonth.entries
-      .toList()
-      .asMap()
-      .entries
-      .map((entry) => FlSpot(entry.key.toDouble(), entry.value.value))
-      .toList();
+        .toList()
+        .asMap()
+        .entries
+        .map((entry) => FlSpot(entry.key.toDouble(), entry.value.value))
+        .toList();
 
-    dataNetPerMonthLabel.value = dataNetPerMonth.entries.map((entry)=>entry.key).toList();
+    dataTrxPerMonthValue.value = dataTrxPerMonth.entries
+        .toList()
+        .asMap()
+        .entries
+        .map((entry) => FlSpot(entry.key.toDouble(), entry.value.value.toDouble()))
+        .toList();
+
+    dataPerMonthLabel.value =
+        dataNetPerMonth.entries.map((entry) => entry.key).toList();
   }
 }
