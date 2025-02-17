@@ -61,12 +61,6 @@ class MasterKustomerScreen extends StatelessWidget {
         return false; // Mencegah navigasi bawaan
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Master $islabel",
-            style: AppTextStyle.textTitleStyle(),
-          ),
-        ),
         backgroundColor: AppColor.whiteColor,
         body: Padding(
           padding: EdgeInsets.symmetric(
@@ -217,9 +211,6 @@ class MasterKustomerScreen extends StatelessWidget {
             ],
           ),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: buildFloatingActionButton(context, screenWidth),
-        bottomNavigationBar: buildBottomNavigationBar(context),
       ),
     );
   }

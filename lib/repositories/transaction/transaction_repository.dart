@@ -105,6 +105,11 @@ class TransactionRepository extends AppRepository {
     getResponseTrxData(result);
   }
 
+  Future<void> editTransactionDetail(TransactionDetailDTO transaction) async {
+    var result = await _transactionService.editTransactionDetail(transaction);
+    getResponseTrxData(result);
+  }
+
   Future<void> deleteTransactionDetail(
       {required String salesId, required String rowId}) async {
     var result =

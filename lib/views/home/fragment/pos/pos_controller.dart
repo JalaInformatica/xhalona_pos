@@ -37,14 +37,43 @@ class PosController extends GetxController {
     isNoteVisible[rowId] = !(isNoteVisible[rowId] ?? false);
   }
 
-  Timer? _debounce;
+  Timer? _debounceProduk;
+  Timer? _debounceDiscount;
 
   void updateProductFilterValue(String newFilterValue) {
-    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    if (_debounceProduk?.isActive ?? false) _debounceProduk!.cancel();
 
-    _debounce = Timer(const Duration(seconds: 1), () {
+    _debounceProduk = Timer(const Duration(seconds: 1), () {
       productFilterValue.value = newFilterValue;
       fetchProducts();
+    });
+  }
+
+  void updateProductDiscount(TransactionDetailDAO trxDetail) {
+    if (_debounceProduk?.isActive ?? false) _debounceProduk!.cancel();
+
+    _debounceProduk = Timer(const Duration(seconds: 1), () async {
+      await _transactionRepository.editTransactionDetail(
+       TransactionDetailDTO(
+        rowId: trxDetail.rowId,
+        salesId: trxDetail.salesId,
+        partId: trxDetail.partId,
+        qty: trxDetail.qty,
+        isFreePick: trxDetail.isFreePick? 1 : 0,
+        deductionPct: trxDetail.deductionPct,
+        deductionVal: trxDetail.deductionVal,
+        addCostPct: trxDetail.addCostPct,
+        addCostVal: trxDetail.addCostVal,
+        employeeId: trxDetail.employeeId,
+        employeeId2: trxDetail.employeeId2,
+        employeeId3: trxDetail.employeeId3,
+        employeeId4: trxDetail.employeeId4,
+        price: trxDetail.price,
+        detNote: trxDetail.detNote
+       ) 
+      );
+      currentTransaction.value = (await _transactionRepository
+        .getTransactionHeader(transactionId: currentTransactionId.value)).first;
     });
   }
 
