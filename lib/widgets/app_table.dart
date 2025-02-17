@@ -431,8 +431,8 @@ class AppTableCell extends StatelessWidget {
                 right: 0,
                 top: 0,
                 child: Wrap(
-                  spacing: 4.0,
-                  runSpacing: 4.0,
+                  spacing: 2.0,
+                  runSpacing: 2.0,
                   children: _buildIcons(),
                 ),
               ),
@@ -525,7 +525,7 @@ class AppTableCell extends StatelessWidget {
         _buildIconContainer(
           icon: Icons.edit,
           color: Colors.blue,
-          tooltip: 'Edit2',
+          tooltip: 'Edit',
           onPressed: onEdit,
           backgroundColor: Colors.blue.withOpacity(0.1),
         ),
@@ -572,15 +572,20 @@ class AppTableCell extends StatelessWidget {
     required Color backgroundColor,
   }) {
     return Container(
+      width: 35, // Ukuran container diperkecil
+      height: 35,
       margin: const EdgeInsets.symmetric(horizontal: 2),
       decoration: BoxDecoration(
         color: backgroundColor,
         shape: BoxShape.circle,
       ),
       child: IconButton(
-        icon: Icon(icon, color: color, size: 16),
+        icon: Icon(icon, color: color, size: 15), // Ukuran ikon diperkecil
         onPressed: onPressed,
         tooltip: tooltip,
+        padding: EdgeInsets.zero, // Mengurangi padding bawaan IconButton
+        constraints:
+            const BoxConstraints(), // Menghindari ukuran default yang lebih besar
       ),
     );
   }
@@ -642,7 +647,7 @@ class AppTableCell extends StatelessWidget {
             },
           ));
         }
-        if (isModalAccReschedule) {
+        if (isModalCheckout) {
           options.add(_buildBottomSheetOption(
             icon: Icons.payment,
             text: 'Pembayaran/Checkout',
