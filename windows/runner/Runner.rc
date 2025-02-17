@@ -89,11 +89,11 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.example" "\0"
+            VALUE "CompanyName", "com.jalainformatica" "\0"
             VALUE "FileDescription", "xhalona_pos" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "xhalona_pos" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2025 com.example. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2025 com.jalainformatica. All rights reserved." "\0"
             VALUE "OriginalFilename", "xhalona_pos.exe" "\0"
             VALUE "ProductName", "xhalona_pos" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"

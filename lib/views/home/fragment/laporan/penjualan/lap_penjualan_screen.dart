@@ -1,3 +1,4 @@
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,9 @@ import 'package:xhalona_pos/widgets/app_bottombar.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_viewer_screen.dart';
+import 'package:xhalona_pos/widgets/app_calendar.dart';
+import 'package:xhalona_pos/widgets/app_dialog.dart';
+import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 
 class LapPenjualanScreen extends StatefulWidget {
   @override
@@ -24,17 +28,24 @@ class _ReportFormPageState extends State<LapPenjualanScreen> {
 
   Future<void> _selectDate(
       BuildContext context, TextEditingController controller) async {
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-    if (picked != null) {
-      setState(() {
-        controller.text = DateFormat('dd-MM-yyyy').format(picked);
-      });
-    }
+    SmartDialog.show(builder: (context) {
+      return AppDialog(
+          content: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  height: MediaQuery.of(context).size.height * 0.5,
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                AppCalendar(
+                  focusedDay: DateTime.now(),
+                  onDaySelected: (selectedDay, _) {
+                    setState(() {
+                      controller.text =
+                          DateFormat('dd-MM-yyyy').format(selectedDay);
+                    });
+                    SmartDialog.dismiss();
+                  },
+                ),
+              ])));
+    });
   }
 
   @override
@@ -71,14 +82,7 @@ class _ReportFormPageState extends State<LapPenjualanScreen> {
         return false; // Mencegah navigasi bawaan
       },
       child: Scaffold(
-        appBar: AppBar(
-          iconTheme: IconThemeData(color: Colors.white),
-          title: Text(
-            "Lap. Penjualan",
-            style: AppTextStyle.textTitleStyle(color: Colors.white),
-          ),
-          backgroundColor: AppColor.secondaryColor,
-        ),
+        backgroundColor: AppColor.whiteColor,
         body: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,17 +94,14 @@ class _ReportFormPageState extends State<LapPenjualanScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TextFormField(
-                        controller: _startDateController,
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _startDateController,
                         readOnly: true,
-                        decoration: InputDecoration(
-                          labelText: 'Tanggal Dari',
-                          suffixIcon: IconButton(
-                            icon: Icon(Icons.calendar_today),
-                            onPressed: () =>
-                                _selectDate(context, _startDateController),
-                          ),
-                        ),
+                        icon: Icon(Icons.calendar_today),
+                        onTap: () => _selectDate(context, _startDateController),
+                        labelText: "Tanggal Dari",
+                        style: AppTextStyle.textSubtitleStyle(),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Tanggal dari tidak boleh kosong';
@@ -109,20 +110,16 @@ class _ReportFormPageState extends State<LapPenjualanScreen> {
                         },
                       ),
                       SizedBox(height: 16),
-                      TextFormField(
-                        controller: _endDateController,
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _endDateController,
                         readOnly: true,
-                        decoration: InputDecoration(
-                          labelText: 'Tanggal Sampai',
-                          suffixIcon: IconButton(
-                            icon: Icon(Icons.calendar_today),
-                            onPressed: () =>
-                                _selectDate(context, _endDateController),
-                          ),
-                          errorText: _endDateController.text.isEmpty
-                              ? 'Tanggal harus diisi.'
-                              : null,
-                        ),
+                        icon: Icon(Icons.calendar_today),
+                        onTap: (){
+                          _selectDate(context, _endDateController);
+                        },
+                        labelText: "Tanggal Sampai",
+                        style: AppTextStyle.textSubtitleStyle(),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Tanggal Sampai tidak boleh kosong';
@@ -132,11 +129,11 @@ class _ReportFormPageState extends State<LapPenjualanScreen> {
                       ),
                       SizedBox(height: 16),
                       Text('Jenis Laporan:',
-                          style: AppTextStyle.textTitleStyle()),
+                          style: AppTextStyle.textSubtitleStyle()),
                       ListTile(
                         title: Text(
                           'Lap. Penjualan',
-                          style: AppTextStyle.textTitleStyle(),
+                          style: AppTextStyle.textSubtitleStyle(),
                         ),
                         leading: Radio(
                           value: 'Lap_Penjualan',
@@ -150,7 +147,7 @@ class _ReportFormPageState extends State<LapPenjualanScreen> {
                       ),
                       ListTile(
                         title: Text('Lap. Terapis',
-                            style: AppTextStyle.textTitleStyle()),
+                            style: AppTextStyle.textSubtitleStyle()),
                         leading: Radio(
                           value: 'Lap_Penjualan_By_Terapis',
                           groupValue: _selectedReportType,
@@ -163,7 +160,7 @@ class _ReportFormPageState extends State<LapPenjualanScreen> {
                       ),
                       ListTile(
                         title: Text('Lap. Kasir',
-                            style: AppTextStyle.textTitleStyle()),
+                            style: AppTextStyle.textSubtitleStyle()),
                         leading: Radio(
                           value: 'Lap_Penjualan_Kasir',
                           groupValue: _selectedReportType,
@@ -176,10 +173,10 @@ class _ReportFormPageState extends State<LapPenjualanScreen> {
                       ),
                       SizedBox(height: 16),
                       Text('Detail Laporan:',
-                          style: AppTextStyle.textTitleStyle()),
+                          style: AppTextStyle.textSubtitleStyle()),
                       ListTile(
                         title: Text('Detail',
-                            style: AppTextStyle.textTitleStyle()),
+                            style: AppTextStyle.textSubtitleStyle()),
                         leading: Radio(
                           value: '1',
                           groupValue: _detailOption,
@@ -191,8 +188,8 @@ class _ReportFormPageState extends State<LapPenjualanScreen> {
                         ),
                       ),
                       ListTile(
-                        title:
-                            Text('Rekap', style: AppTextStyle.textTitleStyle()),
+                        title: Text('Rekap',
+                            style: AppTextStyle.textSubtitleStyle()),
                         leading: Radio(
                           value: '0',
                           groupValue: _detailOption,
@@ -204,10 +201,10 @@ class _ReportFormPageState extends State<LapPenjualanScreen> {
                         ),
                       ),
                       SizedBox(height: 16),
-                      Text('Format:', style: AppTextStyle.textTitleStyle()),
+                      Text('Format:', style: AppTextStyle.textSubtitleStyle()),
                       ListTile(
-                        title:
-                            Text('PDF', style: AppTextStyle.textTitleStyle()),
+                        title: Text('PDF',
+                            style: AppTextStyle.textSubtitleStyle()),
                         leading: Radio(
                           value: 'PDF',
                           groupValue: _formatOption,
@@ -219,8 +216,8 @@ class _ReportFormPageState extends State<LapPenjualanScreen> {
                         ),
                       ),
                       ListTile(
-                        title:
-                            Text('EXCEL', style: AppTextStyle.textTitleStyle()),
+                        title: Text('EXCEL',
+                            style: AppTextStyle.textSubtitleStyle()),
                         leading: Radio(
                           value: 'EXCEL',
                           groupValue: _formatOption,
@@ -235,7 +232,6 @@ class _ReportFormPageState extends State<LapPenjualanScreen> {
                       Center(
                           child: masterButton(
                               handleLapPenjualan, "Cetak", Icons.print)),
-                      SizedBox(height: 70),
                     ],
                   ),
                 ),
@@ -243,9 +239,6 @@ class _ReportFormPageState extends State<LapPenjualanScreen> {
             ],
           ),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: buildFloatingActionButton(context, screenWidth),
-        bottomNavigationBar: buildBottomNavigationBar(context),
       ),
     );
   }
@@ -272,7 +265,7 @@ class _ReportFormPageState extends State<LapPenjualanScreen> {
             Icon(icon, color: Colors.white),
             SizedBox(width: 8),
             Text(label,
-                style: AppTextStyle.textTitleStyle(color: Colors.white)),
+                style: AppTextStyle.textSubtitleStyle(color: Colors.white)),
           ],
         ),
       ),

@@ -271,20 +271,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-          iconTheme: const IconThemeData(color: Colors.white),
-          backgroundColor: AppColor.primaryColor,
-          title: const Text(
-            'Profile Saya',
-            style: TextStyle(color: Colors.white),
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.check),
-              onPressed: () {},
-            ),
-          ],
-        ),
         backgroundColor: Colors.white,
         body: isLoading // Periksa apakah data masih dimuat
             ? Shimmer.fromColors(
