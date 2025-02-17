@@ -233,7 +233,10 @@ class _AppTableState extends State<AppTable2> {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: widget.titles.map((title) => title).toList()),
+        Container(
+        height: 40,
+          color: AppColor.primaryColor,
+          child: Row(children: widget.titles.map((title) => title).toList())),
         SizedBox(height: 5),
         ...List.generate(
           2,
@@ -241,13 +244,17 @@ class _AppTableState extends State<AppTable2> {
             return Shimmer.fromColors(
               baseColor: Colors.grey[300]!,
               highlightColor: Colors.grey[100]!,
-              child: Row(
-                  children: widget.titles.map((title) {
-                return Padding(
-                    padding: EdgeInsets.only(bottom: 5),
-                    child: title);
-              }).toList()),
-            );
+              child: Container(
+                  height: 40,
+                  margin: EdgeInsets.only(bottom: 5),
+                  color: AppColor.whiteColor, 
+                  child: Row(
+                    children: widget.titles.map((title) {
+                    return Padding(
+                        padding: EdgeInsets.only(bottom: 5),
+                        child: title);
+                  }).toList()),
+            ));
           },
         ),
       ]),

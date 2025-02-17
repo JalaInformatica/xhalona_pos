@@ -57,11 +57,43 @@ class HomeScreen extends StatelessWidget {
       case "master_product":
         screen = MasterProductScreen();
         break;
+      case "master_karyawan":
+        screen = MasterKaryawanScreen();
+        break;
+      case "master_coa":
+        screen = MasterCoaScreen();
+        break;
+      case "master_pengguna":
+        screen = MasterPenggunaScreen();
+        break;
+      case "master_pekerjaan":
+        screen = MasterPekerjaanScreen();
+        break;
+      case "master_rekening":
+        screen = MasterRekeningScreen();
+        break;
+      case "master_customer":
+        screen = MasterKustomerScreen();
+        break;
+      case "master_supplier":
+        controllerKus.isSuplier.value = "1";
+        controllerKus.fetchProducts();
+        screen = MasterKustomerScreen();
+        break;
       case "laporan_penjualan":
         screen = LapPenjualanScreen();
         break;
+      case "laporan_monitor_penjualan":
+        screen = MonitorScreen();
+        break;
+      // case "laporan_stock":
+        // screen = MonitorScreen();
+        // break;
+      case "laporan_finance":
+        screen = FinanceScreen();
+        break;
       default:
-        return previousScreen ?? TransactionScreen();
+        return TransactionScreen();
     }
 
     previousScreen = screen; // Simpan halaman terakhir sebelum berpindah
@@ -102,10 +134,79 @@ class HomeScreen extends StatelessWidget {
     }
     return Obx(() => GestureDetector(
         onTap: () {
-          if(menuName!="laporan"){
+          if(menuName!="laporan" && menuName!="master"){
           controller.selectedMenuName.value = menuName;
           }
-          else {
+          else if(menuName=="master"){
+            SmartDialog.show(
+              builder: (context){
+                return AppDialog(
+                  content: Column(
+                    spacing: 10.h,
+                    children: [
+                      masterButton(
+                      () {
+                        controller.selectedMenuName.value="master_product";
+                      },
+                      "Produk",
+                      Icons.shopping_bag,
+                    ),
+                    masterButton(
+                      () {
+                        controller.selectedMenuName.value="master_karyawan";
+                      },
+                      "Karyawan",
+                      Icons.account_circle,
+                    ),
+                    masterButton(
+                      () {
+                        controller.selectedMenuName.value="master_coa";
+                      },
+                      "COA",
+                      Icons.account_balance,
+                    ),
+                    masterButton(
+                      () {
+                        controller.selectedMenuName.value="master_pengguna";
+                      },
+                      "Pengguna",
+                      Icons.person,
+                    ),
+                    masterButton(
+                      () {
+                        controller.selectedMenuName.value="master_pekerjaan";
+                      },
+                      "Pekerjaan",
+                      Icons.work,
+                    ),
+                    masterButton(
+                      () {
+                        controller.selectedMenuName.value="master_rekening";
+                      },
+                      "Rekening",
+                      Icons.account_balance_wallet,
+                    ),
+                    masterButton(
+                      () {
+                        controller.selectedMenuName.value="master_kustomer";
+                      },
+                      "Kustomer",
+                      Icons.people,
+                    ),
+                    masterButton(
+                      () {
+                        controller.selectedMenuName.value="master_supplier";
+                      },
+                      "Supplier",
+                      Icons.store,
+                    ),
+                    ],
+                  ),
+                );
+              }
+            );
+          }
+          else if(menuName=="laporan"){
             SmartDialog.show(
               builder: (context){
                 return AppDialog(
