@@ -1,8 +1,10 @@
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
+import 'package:xhalona_pos/widgets/app_elevated_button.dart';
 import 'fragment/laporan/monitor/monitor_screen.dart';
 import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:xhalona_pos/views/home/home_controller.dart';
@@ -52,8 +54,12 @@ class HomeScreen extends StatelessWidget {
       case "profil":
         screen = ProfileScreen();
         break;
-      // case "profil"
-      //   return
+      case "master_product":
+        screen = MasterProductScreen();
+        break;
+      case "laporan_penjualan":
+        screen = LapPenjualanScreen();
+        break;
       default:
         return previousScreen ?? TransactionScreen();
     }
@@ -65,7 +71,7 @@ class HomeScreen extends StatelessWidget {
   Widget menuComponent(String menuName, BuildContext context) {
     menuName = menuName.toLowerCase();
     String iconPath = "assets/images/menu/";
-    Color iconColor = menuName != controller.selectedMenuName.value
+    Color iconColor = !controller.selectedMenuName.value.contains(menuName)
         ? AppColor.grey500
         : AppColor.primaryColor;
     switch (menuName) {
@@ -96,8 +102,62 @@ class HomeScreen extends StatelessWidget {
     }
     return Obx(() => GestureDetector(
         onTap: () {
+          if(menuName!="laporan"){
           controller.selectedMenuName.value = menuName;
-        },
+          }
+          else {
+            SmartDialog.show(
+              builder: (context){
+                return AppDialog(
+                  content: Column(
+                    spacing: 10.h,
+                    children: [
+                      masterButton(
+                      () {
+                        controller.selectedMenuName.value="laporan_penjualan";
+                      },
+                      "Laporan Penjualan",
+                      Icons.graphic_eq_sharp,
+                    ),
+                    masterButton(
+                      () {
+                        Navigator.of(context)
+                            .pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                MonitorScreen(),
+                          ),
+                          (route) => false,
+                        );
+                      },
+                      "Monitor Penjualan",
+                      Icons.monitor,
+                    ),
+                    masterButton(
+                      () {},
+                      "Laporan Stock",
+                      Icons.inventory,
+                    ),
+                    masterButton(
+                      () {
+                        Navigator.of(context)
+                            .pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                LapFinanceScreen(),
+                          ),
+                          (route) => false,
+                        );
+                      },
+                      "Laporan Finance",
+                      Icons.monetization_on,
+                    ),
+                    ],
+                  ),
+                );
+              }
+            );
+          }},
         child: Container(
             padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
             decoration: BoxDecoration(
@@ -109,7 +169,7 @@ class HomeScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: AppColor.whiteColor,
-                      border: menuName != controller.selectedMenuName.value
+                      border: !controller.selectedMenuName.value.contains(menuName)
                           ? null
                           : Border.all(color: AppColor.primaryColor)),
                   child: Image.asset(
@@ -123,10 +183,10 @@ class HomeScreen extends StatelessWidget {
                     ? menuName[0].toUpperCase() + menuName.substring(1)
                     : menuName.toUpperCase(),
                 style: AppTextStyle.textCaptionStyle(
-                    color: menuName != controller.selectedMenuName.value
+                    color: !controller.selectedMenuName.value.contains(menuName)
                         ? AppColor.blackColor
                         : AppColor.primaryColor,
-                    fontWeight: menuName != controller.selectedMenuName.value
+                    fontWeight: !controller.selectedMenuName.value.contains(menuName)
                         ? FontWeight.normal
                         : FontWeight.bold),
               )
@@ -231,34 +291,24 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget masterButton(VoidCallback onPressed, String label, IconData icon) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-        decoration: BoxDecoration(
-          color: AppColor.secondaryColor, // Background color
-          borderRadius: BorderRadius.circular(8), // Rounded corners
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 4,
-              offset: Offset(0, 2), // Shadow position
-            ),
-          ],
-        ),
-        child: Row(
+    return AppElevatedButton(
+      onPressed: (){
+        onPressed();
+        SmartDialog.dismiss();
+      },
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 15.h),
+      child: Row(
           children: [
             Icon(
               icon,
-              color: Colors.white,
+              color: AppColor.primaryColor,
               size: 20,
             ),
             SizedBox(width: 8),
             Text(label,
-                style: AppTextStyle.textTitleStyle(color: Colors.white)),
+                style: AppTextStyle.textSubtitleStyle(color: AppColor.primaryColor)),
           ],
         ),
-      ),
     );
   }
 
@@ -310,14 +360,7 @@ class HomeScreen extends StatelessWidget {
                                     SizedBox(width: screenWidth * 0.02),
                                     masterButton(
                                       () {
-                                        Navigator.of(context)
-                                            .pushAndRemoveUntil(
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                MasterProductScreen(),
-                                          ),
-                                          (route) => false,
-                                        );
+                                        controller.selectedMenuName.value="master_product";                                      
                                       },
                                       "Master Produk",
                                       Icons.shopping_bag,
@@ -434,77 +477,6 @@ class HomeScreen extends StatelessWidget {
                                       },
                                       "Master Supplier",
                                       Icons.store,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          )
-                        : SizedBox.shrink()
-                    : SizedBox.shrink(),
-                controller.selectedMenuName.value.toLowerCase() == "laporan"
-                    ? !controller.isOpenLaporan.value
-                        ? Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Container(
-                              height: 47,
-                              width: double.infinity,
-                              color: Colors.white,
-                              padding: EdgeInsets.symmetric(vertical: 5),
-                              child: Scrollbar(
-                                child: ListView(
-                                  scrollDirection: Axis.horizontal,
-                                  children: [
-                                    SizedBox(width: screenWidth * 0.02),
-                                    masterButton(
-                                      () {
-                                        Navigator.of(context)
-                                            .pushAndRemoveUntil(
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                LapPenjualanScreen(),
-                                          ),
-                                          (route) => false,
-                                        );
-                                      },
-                                      "Lap. Penjualan",
-                                      Icons.graphic_eq_sharp,
-                                    ),
-                                    SizedBox(width: screenWidth * 0.02),
-                                    masterButton(
-                                      () {
-                                        Navigator.of(context)
-                                            .pushAndRemoveUntil(
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                MonitorScreen(),
-                                          ),
-                                          (route) => false,
-                                        );
-                                      },
-                                      "Monitor Penjualan",
-                                      Icons.monitor,
-                                    ),
-                                    SizedBox(width: screenWidth * 0.02),
-                                    masterButton(
-                                      () {},
-                                      "Lap. Stock",
-                                      Icons.inventory,
-                                    ),
-                                    SizedBox(width: screenWidth * 0.02),
-                                    masterButton(
-                                      () {
-                                        Navigator.of(context)
-                                            .pushAndRemoveUntil(
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                LapFinanceScreen(),
-                                          ),
-                                          (route) => false,
-                                        );
-                                      },
-                                      "Lap. Finance",
-                                      Icons.monetization_on,
                                     ),
                                   ],
                                 ),

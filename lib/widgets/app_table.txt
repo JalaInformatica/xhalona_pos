@@ -1,0 +1,326 @@
+import 'dart:async';
+import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:flutter/material.dart';
+import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/widgets/app_text_field.dart';
+import 'package:xhalona_pos/widgets/app_icon_button.dart';
+import 'package:horizontal_data_table/horizontal_data_table.dart';
+
+// Flexible(
+//                 child: HorizontalDataTable(
+//                   leftHandSideColumnWidth: columnWidth,
+//                   rightHandSideColumnWidth:
+//                       columnWidth * (widget.titles.length - 1),
+//                   isFixedHeader: true,
+//                   headerWidgets: widget.titles
+//                       .map((title) => title.copyWithWidth(columnWidth))
+//                       .toList(),
+//                   leftSideItemBuilder: (context, index) {
+//                     return widget.data[index][0].copyWithWidth(columnWidth);
+//                   },
+//                   rightSideItemBuilder: (context, index) {
+//                     return Row(
+//                       children: widget.data[index]
+//                           .map<Widget>(
+//                             (cell) => cell.copyWithWidth(columnWidth),
+//                           )
+//                           .skip(1)
+//                           .toList(),
+//                     );
+//                   },
+//                   itemCount: widget.data.length,
+//                 ),
+//               )
+
+// ignore: must_be_immutable
+class AppTable extends StatefulWidget {
+  final List<AppTableTitle> titles;
+  final List<List<AppTableCell>> data;
+  final VoidCallback onRefresh;
+  final bool isRefreshing;
+  final Function(String) onSearch;
+  final Function(int) onChangePageRow;
+  final Function(int) onChangePageNo;
+  int pageNo;
+  int pageRow;
+
+  AppTable({
+    super.key,
+    required this.titles,
+    required this.data,
+    required this.onRefresh,
+    required this.isRefreshing,
+    required this.onSearch,
+    required this.onChangePageRow,
+    required this.onChangePageNo,
+    this.pageNo = 1,
+    this.pageRow = 10,
+  });
+
+  @override
+  State<AppTable> createState() => _AppTableState();
+}
+
+class _AppTableState extends State<AppTable> {
+  final TextEditingController searchController = TextEditingController();
+  Timer? _debounce;
+
+  final List<String> dropdownItems = [
+    '10/page',
+    '20/page',
+    '50/page',
+  ];
+
+  void _onChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(seconds: 1), () {
+      widget.onSearch(query);
+    });
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  Widget customTable({
+    required AppTableTitle leftHandSideTitle,
+    required List<AppTableCell> Function(int index) leftHandSideBuilder,
+    required List<AppTableTitle> rightHandSideTitles,
+    required List<List<AppTableCell>> rightHandSideData,
+    required int itemCount,
+  }) {
+    return Expanded(
+        child: SingleChildScrollView(
+            child: Row(
+      children: [
+        DataTable(
+            columnSpacing: 0,
+            horizontalMargin: 0,
+            dividerThickness: 0,
+            headingRowHeight: 40,
+            dataRowMinHeight: 40,
+            dataRowMaxHeight: 40,
+            headingRowColor: WidgetStateProperty.resolveWith<Color?>(
+              (Set<WidgetState> states) {
+                return AppColor.primaryColor;
+              },
+            ),
+            columns: [DataColumn(label: leftHandSideTitle)],
+            rows: List.generate(itemCount, 
+              (index){
+                return DataRow(
+                  color: WidgetStateProperty.resolveWith<Color?>(
+                  (Set<WidgetState> states) {
+                    return index % 2 == 0 ? Colors.white : Colors.grey.shade200;
+                    },
+                  ),
+                  cells: leftHandSideBuilder(index).map(
+                    (cell) => DataCell(cell)
+                  ).toList()
+                );
+              }),
+          )
+        // Flexible(
+        //   child: SingleChildScrollView(
+        //     scrollDirection: Axis.horizontal,
+        //     child: DataTable(
+        //       columns:
+        //         rightHandSideTitles.map(
+        //           (columns) => DataColumn(label: columns),
+        //         ).toList(),
+        //       rows: rightHandSideData.map(
+        //           (row) => DataRow(
+        //             cells: row.map(
+        //               (data)=>DataCell(data)).toList()
+        //             )
+        //         ).toList(),
+        //     )
+        //   )
+        // ),
+      ],
+    )));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: SizedBox(
+                  height: 42,
+                  child: AppTextField(
+                    context: context,
+                    textEditingController: searchController,
+                    hintText: "Cari",
+                    onChanged: _onChanged,
+                    prefixIcon: Icon(Icons.search),
+                    contentPadding: EdgeInsets.all(0),
+                  )),
+            ),
+          ],
+        ),
+        SizedBox(height: 5),
+        !widget.isRefreshing
+            ? customTable(
+              itemCount: widget.data.length,
+                leftHandSideTitle: widget.titles.first,
+                leftHandSideBuilder: (index) {
+                  return widget.data[index];
+                },
+                rightHandSideTitles: widget.titles.skip(1).toList(),
+                rightHandSideData: widget.data.skip(1).toList())
+            : Flexible(child: _buildShimmerTable(100)),
+        SizedBox(height: 5),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            AppIconButton(
+              onPressed: () {
+                widget.onChangePageNo(widget.pageNo - 1);
+              },
+              icon: Icon(Icons.arrow_back_ios_rounded),
+            ),
+            Container(
+              width: 25,
+              decoration: BoxDecoration(
+                  border: Border.all(), borderRadius: BorderRadius.circular(5)),
+              child: Text(
+                "${widget.pageNo}",
+                style: AppTextStyle.textBodyStyle(),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            AppIconButton(
+              onPressed: () {
+                widget.onChangePageNo(widget.pageNo + 1);
+              },
+              icon: Icon(Icons.arrow_forward_ios_rounded),
+            ),
+            Container(
+                decoration: BoxDecoration(
+                    border: Border.all(color: AppColor.grey500),
+                    borderRadius: BorderRadius.circular(5)),
+                child: DropdownButton<String>(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  value: "${widget.pageRow}/page",
+                  onChanged: (String? newValue) {
+                    widget.onChangePageRow(
+                        int.parse((newValue ?? "10/page").split("/")[0]));
+                  },
+                  icon: Icon(Icons.arrow_drop_down),
+                  isDense: true,
+                  dropdownColor: AppColor.whiteColor,
+                  items: dropdownItems
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                        value,
+                        style: AppTextStyle.textBodyStyle(),
+                      ),
+                    );
+                  }).toList(),
+                  elevation: 8,
+                )),
+          ],
+        )
+      ],
+    );
+  }
+
+  Widget _buildShimmerTable(double columnWidth) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: widget.titles.map((title) => title).toList()),
+        SizedBox(height: 5),
+        ...List.generate(
+          2,
+          (index) {
+            return Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: Row(
+                  children: widget.titles.map((title) {
+                return Padding(
+                    padding: EdgeInsets.only(bottom: 5),
+                    child: title);
+              }).toList()),
+            );
+          },
+        ),
+      ]),
+    );
+  }
+}
+
+class AppTableRow extends DataRow {
+  AppTableRow({
+    required int index,
+    required List<DataCell> cells,
+  }) : super(
+        color: WidgetStateProperty.resolveWith<Color?>(
+          (Set<WidgetState> states) => index.isEven ? Colors.white : Colors.grey.shade200,
+        ),
+      cells: cells,
+  );
+}
+
+
+class AppTableCell extends StatelessWidget {
+  final String value;
+  final double width;
+  
+  const AppTableCell({
+    super.key,
+    required this.value,
+    this.width = 100,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: width,
+      child: Center(
+        child: Text(
+          value,
+          style: AppTextStyle.textBodyStyle(),
+        ),
+      ),
+    );
+  }
+}
+
+class AppTableTitle extends StatelessWidget {
+  final String value;
+  final double width;
+  final double height;
+
+  AppTableTitle(
+      {Key? key, required this.value, this.width = 100, this.height = 35})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      alignment: Alignment.center,
+      color: AppColor.secondaryColor,
+      child: Text(
+        value,
+        style: AppTextStyle.textSubtitleStyle(
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+}

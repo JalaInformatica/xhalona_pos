@@ -242,32 +242,36 @@ class _CheckoutScreen extends State<CheckoutScreen> {
                     spacing: 5.w,
                     children: [
                       Expanded(
-                          flex: 1,
-                          child: Obx(() => DropdownButton<String>(
-                              dropdownColor: AppColor.whiteColor,
-                              value: _controller.metodeNonTunai1.value != ""
-                                  ? _controller.metodeNonTunai1.value
-                                  : "Non-tunai",
-                              items: [
-                                DropdownMenuItem(
-                                    value: "Non-tunai",
-                                    child: Text(
-                                      "Non-tunai",
-                                      style: AppTextStyle.textBodyStyle(
-                                          color: AppColor.grey500),
-                                    )),
-                                ..._controller.metodeBayar.map(
-                                  (item) => DropdownMenuItem(
-                                      value: item.payMetodeId,
-                                      child: Text(
-                                        item.payMetodeName,
-                                        style: AppTextStyle.textBodyStyle(),
-                                      )),
+                        flex: 1,
+                        child: Obx(() => DropdownButton<String>(
+                            dropdownColor: AppColor.whiteColor,
+                            value: _controller.metodeNonTunai1.value != ""
+                                ? _controller.metodeNonTunai1.value
+                                : "Non-tunai",
+                            items: [
+                              DropdownMenuItem(
+                                value: "Non-tunai",
+                                child: Text(
+                                  "Non-tunai",
+                                  style: AppTextStyle.textBodyStyle(
+                                      color: AppColor.grey500),
                                 )
-                              ],
-                              onChanged: (val) {
-                                _controller.metodeNonTunai1.value = val!;
-                              }))),
+                              ),
+                              ..._controller.metodeBayar.map(
+                                (item) => DropdownMenuItem(
+                                    value: item.payMetodeId,
+                                    child: Text(
+                                      item.payMetodeName,
+                                      style: AppTextStyle.textBodyStyle(),
+                                    )),
+                              )
+                            ],
+                            onChanged: (val) {
+                              _controller.metodeNonTunai1.value = val!;
+                            }))),
+                      // Expanded(
+                      // flex: 1, child: AppIconButton(onPressed: (){}, 
+                      // icon: Icon(Icons.credit_card))),
                       Expanded(
                           flex: 2,
                           child: Obx(() => AppTextField(
@@ -576,20 +580,19 @@ class _CheckoutScreen extends State<CheckoutScreen> {
                                 hutangVal: _controller.hutang.value,
                                 kembalian: _controller.kembalian.value,
                                 titipanVal: _controller.titipan.value,
-                              ))
-                                  .then((val) {
+                              )).then((val) {
                                 _controller
                                     .printNota(widget.salesId)
                                     .then((url) => Navigator.of(context)
-                                            .push(
+                                            .pushReplacement(
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 AppPDFViewer(pdfUrl: url),
                                           ),
-                                        )
-                                            .then((_) {
-                                          Get.reload<PosController>();
-                                        }));
+                                        ).then((_) {
+                                          PosController controller = Get.find<PosController>();
+                                          controller.newTransaction();
+                                }));
                               });
                             },
                             child: Text(

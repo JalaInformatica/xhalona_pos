@@ -3,6 +3,8 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 
 class AppTextFormField extends TextFormField {
   AppTextFormField({super.key, 
+    super.onTap,
+    super.readOnly,
     required BuildContext context,
     super.validator,
     super.onFieldSubmitted,

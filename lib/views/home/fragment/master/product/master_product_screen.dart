@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/widgets/app_elevated_button.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/models/dao/product.dart';
 import 'package:xhalona_pos/widgets/app_bottombar.dart';
@@ -44,35 +45,22 @@ class MasterProductScreen extends StatelessWidget {
   }
 
   Widget mButton(
-      VoidCallback onTap, String label, IconData icon, double? width) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-        decoration: BoxDecoration(
-          color: AppColor.secondaryColor, // Background color
-          borderRadius: BorderRadius.circular(8), // Rounded corners
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 4,
-              offset: Offset(0, 2), // Shadow position
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: Colors.white,
-              size: 20,
-            ),
-            SizedBox(width: 8),
-            Text(label,
-                style: AppTextStyle.textTitleStyle(color: Colors.white)),
-          ],
-        ),
+      VoidCallback onTap, String label, IconData icon,) {
+    return AppElevatedButton(
+      padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 15.h),
+      onPressed: onTap,
+      foregroundColor: AppColor.primaryColor,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            color: AppColor.primaryColor,
+            size: 20,
+          ),
+          SizedBox(width: 8),
+          Text(label, style: AppTextStyle.textSubtitleStyle(color: AppColor.primaryColor)),
+        ],
       ),
     );
   }
@@ -88,12 +76,6 @@ class MasterProductScreen extends StatelessWidget {
         return false; // Mencegah navigasi bawaan
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Master Product",
-            style: AppTextStyle.textTitleStyle(),
-          ),
-        ),
         backgroundColor: AppColor.whiteColor,
         body: Padding(
           padding: EdgeInsets.symmetric(
@@ -105,24 +87,13 @@ class MasterProductScreen extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.all(5.0),
-                child: Container(
-                  height: 47,
-                  width: double.infinity,
-                  color: Colors.white,
-                  padding: EdgeInsets.symmetric(vertical: 5),
-                  child: Scrollbar(
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
+                child: Row(
                       children: [
-                        mButton(() {
-                          Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                              builder: (context) => MasterVarianGroupScreen(),
-                            ),
-                            (route) => false,
-                          );
-                        }, "Master Varian", Icons.layers,
-                            170), // Ikon untuk varian
+                        mButton(
+                          (){},
+                          "Varian",                        
+                          Icons.layers
+                        ),
                         SizedBox(width: screenWidth * 0.02),
                         mButton(() {
                           Navigator.of(context).pushAndRemoveUntil(
@@ -131,8 +102,8 @@ class MasterProductScreen extends StatelessWidget {
                             ),
                             (route) => false,
                           );
-                        }, "Master Kategori", Icons.category,
-                            170), // Ikon kategori
+                        }, "Kategori", Icons.category,
+                        ), // Ikon kategori
 
                         SizedBox(width: screenWidth * 0.02),
                         mButton(() {
@@ -142,21 +113,33 @@ class MasterProductScreen extends StatelessWidget {
                             ),
                             (route) => false,
                           );
-                        }, "Master All", Icons.apps,
-                            170), // Ikon untuk semua item
+                        }, "Semua", Icons.apps,
+                        ), // Ikon untuk semua item
                       ],
-                    ),
                   ),
-                ),
               ),
               SizedBox(
                 height: 5.h,
               ),
-              mButton(() {
-                Navigator.of(context).pushAndRemoveUntil(
+              AppElevatedButton(
+                onPressed: (){
+                  Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => AddEditProduct()),
                     (route) => false);
-              }, "Add Product", Icons.add, double.infinity),
+                },
+                foregroundColor: AppColor.primaryColor,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.add,
+                      color: AppColor.primaryColor,
+                      size: 20,
+                    ),
+                    SizedBox(width: 8),
+                    Text("Add Product", style: AppTextStyle.textSubtitleStyle(color: AppColor.primaryColor)),
+                  ],
+              )),
               SizedBox(
                 height: 5.h,
               ),
@@ -781,7 +764,6 @@ class MasterProductScreen extends StatelessWidget {
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: buildFloatingActionButton(context, screenWidth),
-        bottomNavigationBar: buildBottomNavigationBar(context),
       ),
     );
   }

@@ -18,9 +18,6 @@ class DashboardController extends GetxController {
   var totalTrxToday = 0.obs;
   List<ReportDAO> salesThisMonth = [];
 
-  var dataNetPerMonthValue = <FlSpot>[].obs;
-  var dataTrxPerMonthValue = <FlSpot>[].obs;
-
   @override
   void onInit() {
     super.onInit();
@@ -65,6 +62,16 @@ class DashboardController extends GetxController {
   }
 
   var dataPerMonthLabel = <int>[].obs;
+  var dataNetPerMonthValue = <FlSpot>[].obs;
+  var dataTrxPerMonthValue = <FlSpot>[].obs;
+
+  var dataNetPerTerapisLabel = <String>[].obs;
+  var dataNetPerTerapisValue = <FlSpot>[].obs;
+  var dataTrxPerTerapisLabel = <String>[].obs;
+  var dataTrxPerTerapisValue = <FlSpot>[].obs;
+
+  var dataNetPerProdukLabel = <String>[].obs;
+  var dataNetPerProdukValue = <FlSpot>[].obs;
 
   Future<void> fetchGraph() async {
     Map<int, double> dataNetPerMonth = {};
@@ -98,10 +105,95 @@ class DashboardController extends GetxController {
         .toList()
         .asMap()
         .entries
-        .map((entry) => FlSpot(entry.key.toDouble(), entry.value.value.toDouble()))
+        .map((entry) =>
+            FlSpot(entry.key.toDouble(), entry.value.value.toDouble()))
         .toList();
 
     dataPerMonthLabel.value =
         dataNetPerMonth.entries.map((entry) => entry.key).toList();
+
+    Map<String, double> dataNetPerTerapis = {};
+    Map<String, int> dataTrxPerTerapis = {};
+
+    for (var sale in salesThisMonth) {
+      String employeeName = sale.fullName;
+      if (employeeName.isEmpty) {
+        continue;
+      }
+
+      if (!dataNetPerTerapis.containsKey(employeeName)) {
+        dataNetPerTerapis[employeeName] = 0;
+      }
+      if (!dataTrxPerTerapis.containsKey(employeeName)) {
+        dataTrxPerTerapis[employeeName] = 0;
+      }
+
+      dataNetPerTerapis[employeeName] =
+          (dataNetPerTerapis[employeeName] ?? 0) + sale.nettoValD;
+
+      dataTrxPerTerapis[employeeName] =
+          (dataTrxPerTerapis[employeeName] ?? 0) + 1;
+    }
+
+    List<MapEntry<String, double>> sortedDataNetPerTerapis =
+        dataNetPerTerapis.entries.toList();
+    sortedDataNetPerTerapis.sort((a, b) => b.value.compareTo(a.value));
+
+    dataNetPerTerapisValue.value = sortedDataNetPerTerapis
+        .take(5)
+        .toList()
+        .asMap()
+        .entries
+        .map((entry) => FlSpot(entry.key.toDouble(), entry.value.value))
+        .toList();
+
+    List<MapEntry<String, int>> sortedDataTrxPerTerapis =
+        dataTrxPerTerapis.entries.toList();
+    sortedDataTrxPerTerapis.sort((a, b) => b.value.compareTo(a.value));
+
+    dataTrxPerTerapisValue.value = sortedDataTrxPerTerapis
+        .take(5)
+        .toList()
+        .asMap()
+        .entries
+        .map((entry) =>
+            FlSpot(entry.key.toDouble(), entry.value.value.toDouble()))
+        .toList();
+
+    dataTrxPerTerapisLabel.value =
+        dataTrxPerTerapis.entries.map((entry) => entry.key).toList();
+
+    dataNetPerTerapisLabel.value =
+        dataNetPerTerapis.entries.map((entry) => entry.key).toList();
+
+    Map<String, double> dataNetPerProduk = {};
+    for (var sale in salesThisMonth) {
+      String partName = sale.partName;
+      if (partName.isEmpty) {
+        continue;
+      }
+
+      if (!dataNetPerProduk.containsKey(partName)) {
+        dataNetPerProduk[partName] = 0;
+      }
+
+      dataNetPerProduk[partName] =
+          (dataNetPerProduk[partName] ?? 0) + sale.nettoValD;
+    }
+
+    List<MapEntry<String, double>> sortedDataNetPerProduk =
+        dataNetPerProduk.entries.toList();
+    sortedDataNetPerProduk.sort((a, b) => b.value.compareTo(a.value));
+
+    dataNetPerProdukValue.value = sortedDataNetPerProduk
+        .take(5)
+        .toList()
+        .asMap()
+        .entries
+        .map((entry) => FlSpot(entry.key.toDouble(), entry.value.value))
+        .toList();
+
+    dataNetPerProdukLabel.value =
+        dataNetPerProduk.entries.map((entry) => entry.key).toList();
   }
 }

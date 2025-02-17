@@ -121,28 +121,29 @@ class PosScreen extends StatelessWidget {
               ),
               Obx(() {
                 if (controller.isLoading.value) {
-                  return Padding(
-                      padding: EdgeInsets.only(top: 15.h),
-                      child: Column(children: [
-                        Wrap(
-                          alignment: WrapAlignment.center,
-                          spacing: 15.w,
-                          runSpacing: 15.h,
-                          children: List.generate(
-                            4,
-                            (index) {
-                              return Shimmer.fromColors(
-                                  child: Container(
-                                    width: 165.w,
-                                    height: 185.h,
-                                    color: AppColor.whiteColor,
-                                  ),
-                                  baseColor: AppColor.grey300,
-                                  highlightColor: AppColor.grey100);
-                            },
-                          ),
-                        )
-                      ]));
+                  return Expanded(
+                      child: SingleChildScrollView(
+                          padding: EdgeInsets.only(top: 15.h),
+                          child: Column(children: [
+                            Wrap(
+                              alignment: WrapAlignment.center,
+                              spacing: 15.w,
+                              runSpacing: 15.h,
+                              children: List.generate(
+                                4,
+                                (index) {
+                                  return Shimmer.fromColors(
+                                      child: Container(
+                                        width: 165.w,
+                                        height: 185.h,
+                                        color: AppColor.whiteColor,
+                                      ),
+                                      baseColor: AppColor.grey300,
+                                      highlightColor: AppColor.grey100);
+                                },
+                              ),
+                            )
+                          ])));
                 } else {
                   return Expanded(
                       child:
@@ -153,9 +154,10 @@ class PosScreen extends StatelessWidget {
                     padding:
                         EdgeInsets.symmetric(horizontal: 5.w, vertical: 15.h),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Wrap(
-                          alignment: WrapAlignment.center,
+                          alignment: WrapAlignment.start,
                           spacing: 15.w,
                           runSpacing: 15.h,
                           children: List.generate(
@@ -315,7 +317,9 @@ class PosScreen extends StatelessWidget {
                                 controller.currentTransaction.value.discVal,
                             nettoVal:
                                 controller.currentTransaction.value.nettoVal)))
-                    .then((_) => Get.delete<CheckoutController>());
+                    .then((_) {
+                      Get.delete<CheckoutController>();
+                    });
               }))
         ]),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

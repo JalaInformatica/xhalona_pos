@@ -1,6 +1,10 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:xhalona_pos/core/helper/global_helper.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/models/dao/transaction.dart';
+import 'package:xhalona_pos/widgets/app_elevated_button.dart';
+import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/widgets/app_calendar.dart';
@@ -11,15 +15,120 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/transaction/transaction_widget.dart';
 import 'package:xhalona_pos/views/home/fragment/transaction/transaction_controller.dart';
+import 'package:xhalona_pos/widgets/app_table2.dart';
 
 class TransactionScreen extends StatelessWidget {
   TransactionScreen({super.key});
 
   final TransactionController controller = Get.put(TransactionController());
 
+  void actions(TransactionHeaderDAO transaction){
+    SmartDialog.show(
+      builder: (context){
+        return AppDialog(
+          content: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width*0.5,
+              maxHeight: MediaQuery.of(context).size.height*0.5,
+            ),
+            child: SingleChildScrollView(child: Column(
+              spacing: 5.h,
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text("Transaksi ${transaction.salesId}", style: AppTextStyle.textSubtitleStyle(),)),
+                Row(
+                  spacing: 5.w,
+                  children: [
+                    Expanded(
+                      child: AspectRatio(aspectRatio: 1, child: Container(
+                        decoration: BoxDecoration(
+                          color: AppColor.blueColor,
+                          borderRadius: BorderRadius.circular(5)
+                        ),
+                        child: Column(
+                          spacing: 5.h,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.edit, color: AppColor.whiteColor,),
+                            Text("Edit", style: AppTextStyle.textSubtitleStyle(color: AppColor.whiteColor),)
+                          ],
+                        ),
+                      )
+                    )),
+                    Expanded(
+                      child: AspectRatio(aspectRatio: 1, child: Container(
+                        decoration: BoxDecoration(
+                          color: AppColor.dangerColor,
+                          borderRadius: BorderRadius.circular(5)
+                        ),
+                        child: Column(
+                          spacing: 5.h,
+                          mainAxisAlignment: MainAxisAlignment.center,                                              children: [
+                            Icon(Icons.delete, color: AppColor.whiteColor,),
+                            Text("Batal", style: AppTextStyle.textSubtitleStyle(color: AppColor.whiteColor,),)                                              ],
+                        ),
+                      )
+                    )),
+                  ],
+                ),
+                Row(
+                  spacing: 5.w,
+                  children: [
+                    Expanded(
+                      child: AspectRatio(aspectRatio: 1, child: AppElevatedButton(
+                        onPressed: (){
+                          var controller = Get.find<PosController>();
+                          var homeController = Get.find<HomeController>();
+                          controller.reinitTransaction(transaction).then(
+                            (_)=>homeController.selectedMenuName.value="pos"
+                          );
+                          SmartDialog.dismiss();
+                        },
+                        borderColor: AppColor.doneColor,
+                        backgroundColor: AppColor.doneColor,
+                        child: Column(
+                          spacing: 5.h,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,                                              children: [
+                            Icon(Icons.open_in_new, color: AppColor.whiteColor,),
+                            Text("Buka di POS", 
+                            textAlign: TextAlign.center,
+                              style: AppTextStyle.textSubtitleStyle(
+                              color: AppColor.whiteColor, overflow: TextOverflow.visible),)                                              ],
+                        ),
+                      )
+                    )),
+                    Expanded(
+                      child: AspectRatio(aspectRatio: 1, child: Container(
+                        decoration: BoxDecoration(
+                          color: AppColor.purpleColor,
+                          borderRadius: BorderRadius.circular(5)
+                        ),
+                        child: Column(
+                          spacing: 5.h,
+                          mainAxisAlignment: MainAxisAlignment.center,                                              children: [
+                            Icon(Icons.print, color: AppColor.whiteColor,),
+                            Text("Nota", style: AppTextStyle.textSubtitleStyle(color: AppColor.whiteColor,),)                                              ],
+                        ),
+                      )
+                    )),
+                  ],
+                ),
+              ],
+            ),
+          )
+        )
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
         backgroundColor: AppColor.whiteColor,
         body: Padding(
             padding: EdgeInsets.symmetric(
@@ -48,7 +157,7 @@ class TransactionScreen extends StatelessWidget {
                               SmartDialog.show(builder: (context) {
                                 return AppDialog(
                                     content: SizedBox(
-                                        width: 100,
+                                        width: double.maxFinite,
                                         child: Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
@@ -146,7 +255,7 @@ class TransactionScreen extends StatelessWidget {
                   height: 5.h,
                 ),
                 Obx(() => Expanded(
-                        child: AppTable(
+                        child: AppTable2(
                       onSearch: (filterValue) =>
                           controller.updateFilterValue(filterValue),
                       onChangePageNo: (pageNo) =>
@@ -156,301 +265,123 @@ class TransactionScreen extends StatelessWidget {
                       pageNo: controller.pageNo.value,
                       pageRow: controller.pageRow.value,
                       titles: [
-                        AppTableTitle(value: "Trx"),
-                        AppTableTitle(value: "Tanggal"),
-                        AppTableTitle(value: "Kasir"),
-                        AppTableTitle(value: "Nama"),
-                        AppTableTitle(value: "Antrian"),
-                        AppTableTitle(value: "Status"),
-                        AppTableTitle(value: "Keterangan"),
-                        AppTableTitle(value: "Pemesanan"),
-                        AppTableTitle(value: "Total"),
-                        AppTableTitle(value: "Pembayaran"),
-                        AppTableTitle(value: "Total Bayar"),
-                        AppTableTitle(value: "Hutang"),
-                        AppTableTitle(value: "")
+                        AppTableTitle2(value: "Trx"),
+                        AppTableTitle2(value: "Tanggal"),
+                        AppTableTitle2(value: "Kasir"),
+                        AppTableTitle2(value: "Nama"),
+                        AppTableTitle2(value: "Antrian"),
+                        AppTableTitle2(value: "Status"),
+                        AppTableTitle2(value: "Keterangan"),
+                        AppTableTitle2(value: "Pemesanan"),
+                        AppTableTitle2(
+                          textAlign: TextAlign.end,
+                          value: "Total"),
+                        AppTableTitle2(value: "Pembayaran"),
+                        AppTableTitle2(
+                          textAlign: TextAlign.end,
+                          value: "Total Bayar"
+                        ),
+                        AppTableTitle2(
+                          textAlign: TextAlign.end,
+                          value: "Hutang"),
+                        AppTableTitle2(
+                          width: 200,
+                          value: "Aksi")
                       ],
                       data: List.generate(controller.transactionHeader.length,
                           (int i) {
                         var transaction = controller.transactionHeader[i];
                         return [
-                          AppTableCell(
-                            onPOS: () {
-                              var controller = Get.find<PosController>();
-                              var homeController = Get.find<HomeController>();
-                              controller
-                                  .reinitTransaction(transaction)
-                                  .then((value) {
-                                controller.isOpenTransaksi.value = true;
-                                homeController.selectedMenuName.value = "pos";
-                              });
-                            },
+                          AppTableCell2(
+                            action: () => actions(transaction),
                             value: transaction.salesId
                                 .substring(transaction.salesId.length - 4),
-                            index: i,
-                            isTrxMenu: true,
-                            onCheckout: () {},
-                            onPrint: () {},
-                            onRejectReschedule: () {},
-                            onAccReschedule: () {},
-                            onStatusOnline: () {},
-                            onFinishStore: () {},
-                            onWorkingStore: () {},
-                            onCancelTrx: () {},
-                            onDestination: () {},
-                            onArrived: () {},
-                            showOptionsOnTap: true,
-                            isOpenPOS: true,
                           ),
-                          AppTableCell(
-                              onPOS: () {
-                                var controller = Get.find<PosController>();
-                                controller.reinitTransaction(transaction);
-                              },
-                              value: transaction.salesDate.split("T")[0],
-                              index: i,
-                              isTrxMenu: true,
-                              onCheckout: () {},
-                              onPrint: () {},
-                              onRejectReschedule: () {},
-                              onAccReschedule: () {},
-                              onStatusOnline: () {},
-                              onFinishStore: () {},
-                              onWorkingStore: () {},
-                              onCancelTrx: () {},
-                              onDestination: () {},
-                              onArrived: () {},
-                              isOpenPOS: true,
-                              showOptionsOnTap: true),
-                          AppTableCell(
-                              onPOS: () {
-                                var controller = Get.find<PosController>();
-                                controller.reinitTransaction(transaction);
-                              },
-                              value: transaction.cashierBy,
-                              isOpenPOS: true,
-                              index: i,
-                              isTrxMenu: true,
-                              onCheckout: () {},
-                              onPrint: () {},
-                              onRejectReschedule: () {},
-                              onAccReschedule: () {},
-                              onStatusOnline: () {},
-                              onFinishStore: () {},
-                              onWorkingStore: () {},
-                              onCancelTrx: () {},
-                              onDestination: () {},
-                              onArrived: () {},
-                              showOptionsOnTap: true),
-                          AppTableCell(
-                              isOpenPOS: true,
-                              onPOS: () {
-                                var controller = Get.find<PosController>();
-                                controller.reinitTransaction(transaction);
-                              },
-                              value: transaction.supplierName,
-                              index: i,
-                              isTrxMenu: true,
-                              onCheckout: () {},
-                              onPrint: () {},
-                              onRejectReschedule: () {},
-                              onAccReschedule: () {},
-                              onStatusOnline: () {},
-                              onFinishStore: () {},
-                              onWorkingStore: () {},
-                              onCancelTrx: () {},
-                              onDestination: () {},
-                              onArrived: () {},
-                              showOptionsOnTap: true),
-                          AppTableCell(
-                              isOpenPOS: true,
-                              onPOS: () {
-                                var controller = Get.find<PosController>();
-                                controller.reinitTransaction(transaction);
-                              },
-                              value: transaction.queueNumber.toString(),
-                              index: i,
-                              isTrxMenu: true,
-                              onCheckout: () {},
-                              onPrint: () {},
-                              onRejectReschedule: () {},
-                              onAccReschedule: () {},
-                              onStatusOnline: () {},
-                              onFinishStore: () {},
-                              onWorkingStore: () {},
-                              onCancelTrx: () {},
-                              onDestination: () {},
-                              onArrived: () {},
-                              showOptionsOnTap: true),
-                          AppTableCell(
-                              isOpenPOS: true,
-                              onPOS: () {
-                                var controller = Get.find<PosController>();
-                                controller.reinitTransaction(transaction);
-                              },
-                              value: transaction.sourceId,
-                              index: i,
-                              isTrxMenu: true,
-                              onCheckout: () {},
-                              onPrint: () {},
-                              onRejectReschedule: () {},
-                              onAccReschedule: () {},
-                              onStatusOnline: () {},
-                              onFinishStore: () {},
-                              onWorkingStore: () {},
-                              onCancelTrx: () {},
-                              onDestination: () {},
-                              onArrived: () {},
-                              showOptionsOnTap: true),
-                          AppTableCell(
-                              isOpenPOS: true,
-                              onPOS: () {
-                                var controller = Get.find<PosController>();
-                                controller.reinitTransaction(transaction);
-                              },
-                              value: transaction.statusDesc,
-                              index: i,
-                              isTrxMenu: true,
-                              onCheckout: () {},
-                              onPrint: () {},
-                              onRejectReschedule: () {},
-                              onAccReschedule: () {},
-                              onStatusOnline: () {},
-                              onFinishStore: () {},
-                              onWorkingStore: () {},
-                              onCancelTrx: () {},
-                              onDestination: () {},
-                              onArrived: () {},
-                              showOptionsOnTap: true),
-                          AppTableCell(
-                              isOpenPOS: true,
-                              onPOS: () {
-                                var controller = Get.find<PosController>();
-                                controller.reinitTransaction(transaction);
-                              },
-                              value: transaction.bookingType,
-                              index: i,
-                              isTrxMenu: true,
-                              onCheckout: () {},
-                              onPrint: () {},
-                              onRejectReschedule: () {},
-                              onAccReschedule: () {},
-                              onStatusOnline: () {},
-                              onFinishStore: () {},
-                              onWorkingStore: () {},
-                              onCancelTrx: () {},
-                              onDestination: () {},
-                              onArrived: () {},
-                              showOptionsOnTap: true),
-                          AppTableCell(
-                              isOpenPOS: true,
-                              onPOS: () {
-                                var controller = Get.find<PosController>();
-                                controller.reinitTransaction(transaction);
-                              },
-                              value: transaction.nettoVal.toString(),
-                              index: i,
-                              isTrxMenu: true,
-                              onCheckout: () {},
-                              onPrint: () {},
-                              onRejectReschedule: () {},
-                              onAccReschedule: () {},
-                              onStatusOnline: () {},
-                              onFinishStore: () {},
-                              onWorkingStore: () {},
-                              onCancelTrx: () {},
-                              onDestination: () {},
-                              onArrived: () {},
-                              showOptionsOnTap: true),
-                          AppTableCell(
-                              isOpenPOS: true,
-                              onPOS: () {
-                                var controller = Get.find<PosController>();
-                                controller.reinitTransaction(transaction);
-                              },
-                              value: transaction.settlePaymentMethod,
-                              index: i,
-                              isTrxMenu: true,
-                              onCheckout: () {},
-                              onPrint: () {},
-                              onRejectReschedule: () {},
-                              onAccReschedule: () {},
-                              onStatusOnline: () {},
-                              onFinishStore: () {},
-                              onWorkingStore: () {},
-                              onCancelTrx: () {},
-                              onDestination: () {},
-                              onArrived: () {},
-                              showOptionsOnTap: true),
-                          AppTableCell(
-                              isOpenPOS: true,
-                              onPOS: () {
-                                var controller = Get.find<PosController>();
-                                controller.reinitTransaction(transaction);
-                              },
-                              value: transaction.paymentVal.toString(),
-                              index: i,
-                              isTrxMenu: true,
-                              onCheckout: () {},
-                              onPrint: () {},
-                              onRejectReschedule: () {},
-                              onAccReschedule: () {},
-                              onStatusOnline: () {},
-                              onFinishStore: () {},
-                              onWorkingStore: () {},
-                              onCancelTrx: () {},
-                              onDestination: () {},
-                              onArrived: () {},
-                              showOptionsOnTap: true),
-                          AppTableCell(
-                              onPOS: () {
-                                var controller = Get.find<PosController>();
-                                controller.reinitTransaction(transaction);
-                              },
-                              isOpenPOS: true,
-                              value: transaction.totalHutang.toString(),
-                              index: i,
-                              isTrxMenu: true,
-                              onCheckout: () {},
-                              onPrint: () {},
-                              onRejectReschedule: () {},
-                              onAccReschedule: () {},
-                              onStatusOnline: () {},
-                              onFinishStore: () {},
-                              onWorkingStore: () {},
-                              onCancelTrx: () {},
-                              onDestination: () {},
-                              onArrived: () {},
-                              showOptionsOnTap: true),
-                          AppTableCell(
-                              onPOS: () {
-                                var controller = Get.find<PosController>();
-                                controller.reinitTransaction(transaction);
-                              },
-                              isOpenPOS: true,
-                              value: "",
-                              index: i,
-                              onCheckout: () {},
-                              onPrint: () {},
-                              onRejectReschedule: () {},
-                              onAccReschedule: () {},
-                              onStatusOnline: () {},
-                              onFinishStore: () {},
-                              onWorkingStore: () {},
-                              onCancelTrx: () {},
-                              onDestination: () {},
-                              onArrived: () {},
-                              isCheckout: true,
-                              isPrint: true,
-                              isRejectReschedule: true,
-                              isAccReschedule: true,
-                              isStatusOnline: true,
-                              isOnFinishStore: true,
-                              isOnWorkingStore: true,
-                              isCancelTrx: true,
-                              isOnDestination: true,
-                              isOnArrived: true,
-                              showOptionsOnTap: true),
+                          AppTableCell2(
+                            action: () => actions(transaction),
+                            value: transaction.salesDate.split("T")[0],
+                          ),
+                          AppTableCell2(
+                            action: () => actions(transaction),
+                            value: transaction.cashierBy,
+                          ),
+                          AppTableCell2(
+                            action: () => actions(transaction),
+                            value: transaction.supplierName,
+                          ),
+                          AppTableCell2(
+                            action: () => actions(transaction),
+                            value: transaction.queueNumber.toString(),
+                          ),
+                          AppTableCell2(
+                            action: () => actions(transaction),
+                            value: transaction.sourceId,
+                          ),
+                          AppTableCell2(
+                            action: () => actions(transaction),
+                            value: transaction.statusDesc,
+                          ),
+                          AppTableCell2(
+                            action: () => actions(transaction),
+                            value: transaction.bookingType,
+                          ),
+                          AppTableCell2(
+                            action: () => actions(transaction),
+                            textAlign: TextAlign.end,
+                            value: formatThousands(transaction.nettoVal.toString()),
+                          ),
+                          AppTableCell2(
+                            action: () => actions(transaction),
+                            value: transaction.settlePaymentMethod,
+                          ),
+                          AppTableCell2(
+                            action: () => actions(transaction),
+                            textAlign: TextAlign.end,
+                            value: formatThousands(transaction.paymentVal.toString()),
+                          ),
+                          AppTableCell2(
+                            action: () => actions(transaction),
+                            textAlign: TextAlign.end,
+                            value: formatThousands(transaction.totalHutang.toString()),
+                          ),
+                          AppTableCell2(
+                            width: 200,
+                            customWidget: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                AppIconButton(
+                                  onPressed: (){
+                                    print("b");
+                                  }, 
+                                  icon: Icon(
+                                    Icons.edit,
+                                  )
+                                ),
+                                AppIconButton(
+                                  onPressed: (){
+                                    print("b");
+                                  }, 
+                                  icon: Icon(Icons.delete)
+                                ),
+                                AppIconButton(
+                                  onPressed: (){
+                                    var controller = Get.find<PosController>();
+                                    var homeController = Get.find<HomeController>();
+                                    controller.reinitTransaction(transaction).then(
+                                      (_)=>homeController.selectedMenuName.value="pos"
+                                    );
+                                  }, 
+                                  icon: Icon(Icons.open_in_new)
+                                ),
+                                AppIconButton(
+                                  onPressed: (){
+                                  }, 
+                                  icon: Icon(Icons.print)
+                                )
+                              ],
+                            ),
+                          ),
                         ];
                       }),
                       onRefresh: () => controller.fetchTransactions(),
