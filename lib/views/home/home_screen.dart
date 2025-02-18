@@ -62,7 +62,6 @@ class HomeScreen extends StatelessWidget {
         break;
       case "master_coa":
         screen = MasterCoaScreen();
-        
         break;
       case "master_pengguna":
         screen = MasterPenggunaScreen();

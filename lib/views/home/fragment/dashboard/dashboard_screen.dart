@@ -257,7 +257,7 @@ class DashboardScreen extends StatelessWidget {
                 spacing: 15.h,
                 children: [
                   Text(
-                    'Netto Per Terapis',
+                    'Netto Per Terapis (Bulan)',
                     style: AppTextStyle.textBodyStyle(),
                   ),
                   Obx(() => controller.dataTrxPerMonthValue.isNotEmpty
@@ -348,7 +348,7 @@ class DashboardScreen extends StatelessWidget {
                 spacing: 15.h,
                 children: [
                   Text(
-                    'Transaksi Per Terapis',
+                    'Transaksi Per Terapis (Bulan)',
                     style: AppTextStyle.textBodyStyle(),
                   ),
                   Obx(() => controller.dataTrxPerMonthValue.isNotEmpty
@@ -441,7 +441,7 @@ class DashboardScreen extends StatelessWidget {
                 spacing: 15.h,
                 children: [
                   Text(
-                    'Netto Per Terapis',
+                    'Netto Per Produk',
                     style: AppTextStyle.textBodyStyle(),
                   ),
                   Obx(() => controller.dataTrxPerMonthValue.isNotEmpty

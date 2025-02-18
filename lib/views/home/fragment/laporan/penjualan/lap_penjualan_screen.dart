@@ -10,6 +10,7 @@ import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_
 import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_viewer_screen.dart';
 import 'package:xhalona_pos/widgets/app_calendar.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
+import 'package:xhalona_pos/widgets/app_pdf_viewer.dart';
 import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 
 class LapPenjualanScreen extends StatefulWidget {
@@ -26,27 +27,6 @@ class _ReportFormPageState extends State<LapPenjualanScreen> {
   String _formatOption = 'PDF';
   final _formKey = GlobalKey<FormState>();
 
-  Future<void> _selectDate(
-      BuildContext context, TextEditingController controller) async {
-    SmartDialog.show(builder: (context) {
-      return AppDialog(
-          content: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.5,
-                  height: MediaQuery.of(context).size.height * 0.5,
-              child: Column(mainAxisSize: MainAxisSize.min, children: [
-                AppCalendar(
-                  focusedDay: DateTime.now(),
-                  onDaySelected: (selectedDay, _) {
-                    setState(() {
-                      controller.text =
-                          DateFormat('dd-MM-yyyy').format(selectedDay);
-                    });
-                    SmartDialog.dismiss();
-                  },
-                ),
-              ])));
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,11 +41,10 @@ class _ReportFormPageState extends State<LapPenjualanScreen> {
             await launchUrl(Uri.parse(url));
           } else {
             // Jika format PDF, tampilkan di PDF viewer
-            Navigator.of(context).pushAndRemoveUntil(
+            Navigator.of(context).push(
               MaterialPageRoute(
                   builder: (context) =>
-                      LapPenjualanViewerScreen(url, _selectedReportType!)),
-              (route) => false,
+                      AppPDFViewer(pdfUrl: url)),
             );
           }
         });
@@ -94,38 +73,73 @@ class _ReportFormPageState extends State<LapPenjualanScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AppTextFormField(
-                        context: context,
-                        textEditingController: _startDateController,
-                        readOnly: true,
-                        icon: Icon(Icons.calendar_today),
-                        onTap: () => _selectDate(context, _startDateController),
-                        labelText: "Tanggal Dari",
-                        style: AppTextStyle.textSubtitleStyle(),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Tanggal dari tidak boleh kosong';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 16),
-                      AppTextFormField(
-                        context: context,
-                        textEditingController: _endDateController,
-                        readOnly: true,
-                        icon: Icon(Icons.calendar_today),
-                        onTap: (){
-                          _selectDate(context, _endDateController);
-                        },
-                        labelText: "Tanggal Sampai",
-                        style: AppTextStyle.textSubtitleStyle(),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Tanggal Sampai tidak boleh kosong';
-                          }
-                          return null;
-                        },
+                      Row(
+                        spacing: 10.w,
+                        children: [
+                          Expanded(child: Obx(()=> AppTextFormField(
+                            context: context,
+                            textEditingController: _startDateController..text=controller.startDate.value,
+                            readOnly: true,
+                            icon: Icon(Icons.calendar_today),
+                            onTap: () =>
+                            SmartDialog.show(builder: (context) {
+                              return AppDialog(
+                                  content: SizedBox(
+                                      width: MediaQuery.of(context).size.width * 0.5,
+                                      height: MediaQuery.of(context).size.height * 0.5,
+                                      child: Column(mainAxisSize: MainAxisSize.min, children: [
+                                        AppCalendar(
+                                          focusedDay: DateFormat("dd-MM-yyyy").parse(controller.startDate.value),
+                                          onDaySelected: (selectedDay, _) {
+                                            controller.startDate.value =
+                                                  DateFormat('dd-MM-yyyy').format(selectedDay);
+                                            SmartDialog.dismiss();
+                                          },
+                                        ),
+                                      ])));
+                            }),
+                            labelText: "Tanggal Dari",
+                            style: AppTextStyle.textBodyStyle(),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Tanggal dari tidak boleh kosong';
+                              }
+                              return null;
+                            },
+                          ))),
+                          Expanded(child: Obx(()=> AppTextFormField(
+                            context: context,
+                            textEditingController: _endDateController..text=controller.endDate.value,
+                            readOnly: true,
+                            icon: Icon(Icons.calendar_today),
+                            onTap: () {
+                              SmartDialog.show(builder: (context) {
+                                return AppDialog(
+                                    content: SizedBox(
+                                        width: MediaQuery.of(context).size.width * 0.5,
+                                        height: MediaQuery.of(context).size.height * 0.5,
+                                        child: Column(mainAxisSize: MainAxisSize.min, children: [
+                                          AppCalendar(
+                                            focusedDay: DateFormat("dd-MM-yyyy").parse(controller.endDate.value),
+                                            onDaySelected: (selectedDay, _) {
+                                              controller.endDate.value =
+                                                    DateFormat('dd-MM-yyyy').format(selectedDay);
+                                              SmartDialog.dismiss();
+                                            },
+                                          ),
+                                        ])));
+                              });
+                            },
+                            labelText: "Tanggal Sampai",
+                            style: AppTextStyle.textBodyStyle(),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Tanggal Sampai tidak boleh kosong';
+                              }
+                              return null;
+                            },
+                          ))),
+                        ],
                       ),
                       SizedBox(height: 16),
                       Text('Jenis Laporan:',
