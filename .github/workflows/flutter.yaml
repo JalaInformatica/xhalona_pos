@@ -13,11 +13,11 @@ jobs:
       - name: Ambil kode
         uses: actions/checkout@v4
 
-      - name: Siapkan JDK 11
+      - name: Siapkan JDK 11 LTS (Microsoft Distribution)
         uses: actions/setup-java@v3
         with:
           distribution: 'microsoft'
-          java-version: '11'
+          java-version: '11.0.26'
 
       - name: Install Flutter
         uses: flutter-actions/setup-flutter@v4
@@ -30,6 +30,9 @@ jobs:
 
       - name: Bersihkan build artifacts
         run: flutter clean
+
+      - name: Bersihkan Flutter Pub Cache
+        run: flutter pub cache repair
 
       - name: Install dependensi
         run: flutter pub get
