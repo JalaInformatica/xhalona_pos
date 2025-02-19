@@ -19,6 +19,7 @@ class PosController extends GetxController {
   var isOpenTransaksi = false.obs;
 
   var productFilterValue = "".obs;
+  var productFilterCategory = "".obs;
 
   var currentTransactionId = "".obs;
 
@@ -39,6 +40,7 @@ class PosController extends GetxController {
 
   Timer? _debounceProduk;
   Timer? _debounceDiscount;
+  Timer? _debounceNote;
 
   void updateProductFilterValue(String newFilterValue) {
     if (_debounceProduk?.isActive ?? false) _debounceProduk!.cancel();
@@ -49,10 +51,43 @@ class PosController extends GetxController {
     });
   }
 
-  void updateProductDiscount(TransactionDetailDAO trxDetail) {
-    if (_debounceProduk?.isActive ?? false) _debounceProduk!.cancel();
+  void updateProductFilterKategori(String newFilterKategori) {
+    productFilterCategory.value = newFilterKategori;
+    fetchProducts();
+  }
 
-    _debounceProduk = Timer(const Duration(seconds: 1), () async {
+  void updateProductDiscount(TransactionDetailDAO trxDetail) {
+    if (_debounceDiscount?.isActive ?? false) _debounceDiscount!.cancel();
+
+    _debounceDiscount = Timer(const Duration(seconds: 1), () async {
+      await _transactionRepository.editTransactionDetail(
+       TransactionDetailDTO(
+        rowId: trxDetail.rowId,
+        salesId: trxDetail.salesId,
+        partId: trxDetail.partId,
+        qty: trxDetail.qty,
+        isFreePick: trxDetail.isFreePick? 1 : 0,
+        deductionPct: trxDetail.deductionPct,
+        deductionVal: trxDetail.deductionVal,
+        addCostPct: trxDetail.addCostPct,
+        addCostVal: trxDetail.addCostVal,
+        employeeId: trxDetail.employeeId,
+        employeeId2: trxDetail.employeeId2,
+        employeeId3: trxDetail.employeeId3,
+        employeeId4: trxDetail.employeeId4,
+        price: trxDetail.price,
+        detNote: trxDetail.detNote
+       ) 
+      );
+      currentTransaction.value = (await _transactionRepository
+        .getTransactionHeader(transactionId: currentTransactionId.value)).first;
+    });
+  }
+
+  void updateProductNote(TransactionDetailDAO trxDetail) {
+    if (_debounceNote?.isActive ?? false) _debounceNote!.cancel();
+
+    _debounceNote = Timer(const Duration(seconds: 3), () async {
       await _transactionRepository.editTransactionDetail(
        TransactionDetailDTO(
         rowId: trxDetail.rowId,
@@ -87,7 +122,12 @@ class PosController extends GetxController {
     try {
       isLoading.value = true;
       final result = await _productRepository.getProducts(
-          pageRow: 24, isActive: "1", filterField: "PART_NAME", filterValue: productFilterValue.value);
+          pageRow: 24, 
+          isActive: "1", 
+          filterField: "PART_NAME", 
+          filterValue: productFilterValue.value,
+          analisaId: productFilterCategory.value
+      );
       products.value = result;
     } finally {
       isLoading.value = false;

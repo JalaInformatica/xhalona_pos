@@ -441,8 +441,15 @@ Widget transaction(
                                                   currentTrxDetail.rowId] ??
                                               false)
                                           ? AppTextField(
+                                              textEditingController: TextEditingController()..text=currentTrxDetail.detNote,
+                                              labelText: "Catatan",
                                               context: context,
-                                              maxLines: 3,
+                                              maxLines: 2,
+                                              onChanged: (val){
+                                                controller.updateProductNote(
+                                                  currentTrxDetail..detNote=val
+                                                );
+                                              },
                                             )
                                           : SizedBox.shrink()),
                                       Divider(
