@@ -42,12 +42,17 @@ jobs:
           git config --local user.name "GitHub Action"
           git commit -am "Naikkan versi ke $VERSION+$NEW_CODE" || echo "Tidak ada perubahan untuk dikomit"
 
+      - name: Cek Perubahan Versi
+        run: |
+            git diff --exit-code || { echo "Tidak ada perubahan versi"; exit 1; }
+            cat pubspec.yaml
+
       # Bangun Android
       - name: Bangun Bundel Aplikasi Android
         if: vars.PLATFORM == 'android'
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > my-release-key.jks
-          flutter build appbundle --release --flavor prod
+          flutter build appbundle --release --verbose
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
