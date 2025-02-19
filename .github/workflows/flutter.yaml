@@ -54,6 +54,14 @@ jobs:
       - name: Install dependensi
         run: flutter pub get
 
+      # Perbarui gradle.properties
+      - name: Perbarui gradle.properties
+        run: |
+            sed -i '/^org.gradle.watching.enabled=/d' android/gradle.properties
+            echo "org.gradle.watching.enabled=false" >> android/gradle.properties
+            sed -i '/^org.gradle.jvmargs=/d' android/gradle.properties
+            echo "org.gradle.jvmargs=-Xmx2048m -XX:MaxPermSize=512m" >> android/gradle.properties
+
       # Perbarui versi gradle
       - name: Pasang Gradle versi 8.0
         run: |
