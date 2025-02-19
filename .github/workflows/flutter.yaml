@@ -63,14 +63,32 @@ jobs:
       - name: Perbarui Versi
         id: update_version
         run: |
-          CURRENT_VERSION=$(grep 'version: ' pubspec.yaml | sed 's/version: //')
-          IFS='+' read -r VERSION CODE <<< "$CURRENT_VERSION"
-          NEW_CODE=$((CODE + 1))
-          sed -i '' "s/version: $CURRENT_VERSION/version: $VERSION+$NEW_CODE/" pubspec.yaml
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git commit -am "Naikkan versi ke $VERSION+$NEW_CODE" || echo "Tidak ada perubahan untuk dikomit"
-          echo "::set-output name=version::${VERSION}+$NEW_CODE"
+            CURRENT_VERSION=$(grep 'version: ' pubspec.yaml | sed 's/version: //')
+            IFS='+' read -r VERSION CODE <<< "$CURRENT_VERSION"
+            NEW_CODE=$((CODE + 1))
+
+            echo "Updating version from $CURRENT_VERSION to $VERSION+$NEW_CODE"
+
+            # Check if pubspec.yaml exists
+            if [ ! -f pubspec.yaml ]; then
+            echo "pubspec.yaml file does not exist."
+            exit 1
+            fi
+
+            # Update version in pubspec.yaml
+            sed -i "s/version: $CURRENT_VERSION/version: $VERSION+$NEW_CODE/" pubspec.yaml || {
+            echo "Failed to update version in pubspec.yaml"
+            exit 1
+            }
+
+            # Configure Git
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+
+            # Commit changes
+            git commit -m "Update version to $VERSION+$NEW_CODE" || echo "No changes to commit."
+
+            echo "::set-output name=version::${VERSION}+$NEW_CODE"
 
       # Bangun Android
       - name: Bangun Bundel Aplikasi Android
