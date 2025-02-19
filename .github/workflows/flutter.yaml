@@ -44,7 +44,7 @@ jobs:
     outputs:
       version: ${{ steps.update_version.outputs.version }}
       current_version: ${{ steps.update_version.outputs.current_version }}
-      project_root: ${{ steps.find_project_root.outputs.project_root }}
+      project_root: ${{ steps.find_project_root.outputs.root }}
     steps:
       - name: Siapkan JDK 17 (Microsoft Distribution)
         uses: actions/setup-java@v3
@@ -63,37 +63,41 @@ jobs:
       - name: Cek Versi Flutter
         run: flutter --version
 
-      # Automatically detect the project root
+      # Auto-detect project root
       - name: Find Project Root
         id: find_project_root
         run: |
-          ROOT_DIR=$(git rev-parse --show-toplevel)
-          PROJECT_DIR=$(find "$ROOT_DIR" -name pubspec.yaml -exec dirname {} \; | head -n 1)
-          echo "Project root detected at: $PROJECT_DIR"
-          echo "::set-output name=project_root::$PROJECT_DIR"
+          ROOT_DIR=$(find . -name "pubspec.yaml" -exec dirname {} \; | head -n 1)
+          echo "Project root detected at: $ROOT_DIR"
+          echo "::set-output name=root::$ROOT_DIR"
 
       # Install dependensi flutter
       - name: Install dependensi
         run: flutter pub get
-        working-directory: ${{ steps.find_project_root.outputs.project_root }}
+        working-directory: ${{ steps.find_project_root.outputs.root }}
 
       # Perbarui versi gradle
       - name: Pasang Gradle versi 8.0
         run: |
-            sed -i 's|distributionUrl=.*|distributionUrl=https://services.gradle.org/distributions/gradle-8.0-all.zip|' ${{ steps.find_project_root.outputs.project_root }}/android/gradle/wrapper/gradle-wrapper.properties
+            sed -i 's|distributionUrl=.*|distributionUrl=https://services.gradle.org/distributions/gradle-8.0-all.zip|' ${{ steps.find_project_root.outputs.root }}/android/gradle/wrapper/gradle-wrapper.properties
 
       # Perbarui versi aplikasi flutter
       - name: Perbarui Versi
         id: update_version
         run: |
-            CURRENT_VERSION=$(grep 'version: ' ${{ steps.find_project_root.outputs.project_root }}/pubspec.yaml | sed 's/version: //')
+            CURRENT_VERSION=$(grep 'version: ' ${{ steps.find_project_root.outputs.root }}/pubspec.yaml | sed 's/version: //')
             IFS='+' read -r VERSION CODE <<< "$CURRENT_VERSION"
             NEW_CODE=$((CODE + 1))
             NEW_VERSION="$VERSION+$NEW_CODE"
 
             echo "Updating version from $CURRENT_VERSION to $NEW_VERSION"
 
-            sed -i "s/version: $CURRENT_VERSION/version: $NEW_VERSION/" ${{ steps.find_project_root.outputs.project_root }}/pubspec.yaml || {
+            if [ ! -f ${{ steps.find_project_root.outputs.root }}/pubspec.yaml ]; then
+                echo "Error: pubspec.yaml file does not exist."
+                exit 1
+            fi
+
+            sed -i "s/version: $CURRENT_VERSION/version: $NEW_VERSION/" ${{ steps.find_project_root.outputs.root }}/pubspec.yaml || {
                 echo "Error: Failed to update version in pubspec.yaml"
                 exit 1
             }
@@ -159,7 +163,7 @@ jobs:
           name: aplikasi-ios
           path: build/ios/iphoneos/*.app
 
-  notifications:
+  cleanup:
     runs-on: ubuntu-latest
     needs: [build_android, build_ios]
     steps:
