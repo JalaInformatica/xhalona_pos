@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/models/dao/employee.dart';
 import 'package:xhalona_pos/widgets/app_calendar.dart';
 import 'package:xhalona_pos/widgets/app_checkbox.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
@@ -192,45 +193,51 @@ class MonitorScreen extends StatelessWidget {
                     ],),
                 ],)
               ),
-              Column(children: [
-                // Visibility(
-                //   visible: true,
-                //   // visible: controller.isFilterByProduct.value,
-                  // child: 
-                  Obx(()=> AppTypeahead<ProductDAO>(
-                    label: "Product", 
-                    controller: controller.productController.value,
-                    onChanged: (selectedPartId){
-                      controller.filterTableByProduct.value = selectedPartId ?? "";
-                      print(selectedPartId);
-                      print("wix");
-                      controller.productController.value = (TextEditingController()..text=selectedPartId??"");
-                    }, 
-                    updateFilterValue: (newValue) async{
-                      await controller.fetchProducts(newValue);
-                      return controller.productHeader;
-                    }, 
-                    displayText: (product)=>product.partName, 
-                    getId: (product)=>product.partName
-                  ),
-                // )
+              Column(children: [                
+                Obx(()=> Visibility(
+                    visible: controller.isFilterByTerapis.value,
+                    child: AppTypeahead<EmployeeDAO>(
+                      label: "Terapis", 
+                      controller: controller.employeeController,
+                      onSelected: (selectedPartId){
+                        controller.filterTableByProduct.value = selectedPartId ?? "";
+                        controller.productController.text = selectedPartId??"";
+                      }, 
+                      updateFilterValue: (newValue) async{
+                        await controller.fetchTerapis(newValue);
+                        return controller.terapisHeader;
+                      }, 
+                      displayText: (terapis)=>terapis.fullName, 
+                      getId: (terapis)=>terapis.fullName
+                    ),
+                  )
                 ),
-                // Obx(()=> Visibility(
-                //   visible: controller.isFilterByCustomer.value,
-                //   child: )),
-                // Obx(()=> Visibility(
-                //   visible: controller.isFilterByProduct.value,
-                //   child: buildTypeAheadFieldProduct(
-                //     "Filter Product", controllerProduct.productHeader, (value) {
-                //     _selectedProduct = value;
-                // }, controllerProduct.updateFilterValue))),
-                // Obx(()=> Visibility(
-                //   visible: controller.isFilterByKategori.value,
-                //   child: buildTypeAheadFieldKategori(
-                //     "Filter Kategori", controllerKat.kategoriGlobalHeader,
-                //     (value) {
-                //     _selectedCategory = value;
-                // }, controllerKat.updateFilterValue))),
+                Obx(()=> Visibility(
+                    visible: controller.isFilterByProduct.value,
+                    child: AppTypeahead<ProductDAO>(
+                      label: "Product", 
+                      controller: controller.productController,
+                      onSelected: (selectedPartId){
+                        controller.filterTableByProduct.value = selectedPartId ?? "";
+                        controller.productController.text = selectedPartId??"";
+                      }, 
+                      updateFilterValue: (newValue) async{
+                        await controller.fetchProducts(newValue);
+                        return controller.productHeader;
+                      }, 
+                      onTapOutside: (){
+                        if(controller.productController.text!=controller.filterTableByProduct.value){
+                          controller.filterTableByProduct.value="";
+                          controller.productController.clear();
+                          print('a');
+                        }
+                        print('b');
+                      },
+                      displayText: (product)=>product.partName, 
+                      getId: (product)=>product.partName
+                    ),
+                  )
+                ),
               ],),
               Row(
                 children: [
