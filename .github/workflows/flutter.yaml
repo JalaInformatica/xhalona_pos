@@ -1,0 +1,110 @@
+name: Bangun Aplikasi Xhalona
+
+on:
+  push:
+    branches:
+      - main # Ganti dengan branch yang Anda gunakan
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ambil kode
+        uses: actions/checkout@v2
+
+      - name: Siapkan JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: '11'
+
+      - name: Install dependensi
+        run: flutter pub get
+
+      - name: Dapatkan Versi Flutter
+        id: flutter-version
+        run: |
+          echo "FLUTTER_VERSION=$(grep 'sdk:' pubspec.yaml | awk '{ print $2 }' | sed 's/ //g' | sed 's/^">*//; s/".*$//')" >> $GITHUB_ENV
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      # Perbarui Versi
+      - name: Perbarui Versi
+        run: |
+          CURRENT_VERSION=$(grep 'version: ' pubspec.yaml | sed 's/version: //')
+          IFS='+' read -r VERSION CODE <<< "$CURRENT_VERSION"
+          NEW_CODE=$((CODE + 1))
+          echo "version: $VERSION+$NEW_CODE" > pubspec.yaml
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -am "Naikkan versi ke $VERSION+$NEW_CODE" || echo "Tidak ada perubahan untuk dikomit"
+
+      # Bangun Android
+      - name: Bangun Bundel Aplikasi Android
+        if: env.PLATFORM == 'android'
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > my-release-key.jks
+          flutter build appbundle --release --flavor prod
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_ALIAS_PASSWORD: ${{ secrets.KEY_ALIAS_PASSWORD }}
+
+      - name: Unggah Bundel Aplikasi Android
+        if: env.PLATFORM == 'android'
+        uses: actions/upload-artifact@v2
+        with:
+          name: bundel-aplikasi-android
+          path: build/app/outputs/bundle/release/app-release.aab
+
+      # Bangun iOS
+      - name: Dekode Sertifikat iOS
+        if: env.PLATFORM == 'ios'
+        run: |
+          echo "${{ secrets.IOS_CERTIFICATE }}" | base64 --decode > ios_certificate.p12
+
+      - name: Install Sertifikat iOS
+        if: env.PLATFORM == 'ios'
+        run: |
+          security create-keychain -p "" build.keychain
+          security import ios_certificate.p12 -k build.keychain -P "${{ secrets.CERT_PASSWORD }}" -T /usr/bin/codesign
+          security list-keychains -s build.keychain
+          security unlock-keychain -p "" build.keychain
+
+      - name: Bangun Aplikasi iOS
+        if: env.PLATFORM == 'ios'
+        run: flutter build ios --release --no-codesign
+
+      - name: Unggah Aplikasi iOS
+        if: env.PLATFORM == 'ios'
+        uses: actions/upload-artifact@v2
+        with:
+          name: aplikasi-ios
+          path: build/ios/iphoneos/*.app
+
+      # Kirim notifikasi email jika gagal
+      - name: Kirim notifikasi email jika gagal
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          from: ${{ secrets.SMTP_FROM }}
+          to: ${{ env.SMTP_RECIPIENT }}
+          subject: 'Build Gagal'
+          body: |
+            Build telah gagal untuk commit ${{ github.sha }} di branch ${{ github.ref }}.
+            Silakan cek detailnya di ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}.
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USER }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+
+      # Unggah log jika build gagal
+      - name: Unggah log
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: log-build
+          path: build/logs/
