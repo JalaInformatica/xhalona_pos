@@ -30,6 +30,9 @@ android {
         versionName = flutter.versionName
     }
 
+    println "Keystore Password: ${System.getenv("KEYSTORE_PASSWORD")}"
+    println "Key Alias: ${System.getenv("KEY_ALIAS")}"
+
     signingConfigs {
         release {
             storeFile file('my-release-key.jks')

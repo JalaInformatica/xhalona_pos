@@ -90,6 +90,12 @@ jobs:
 
             echo "::set-output name=version::${VERSION}+$NEW_CODE"
 
+      - name: Check environment variables
+        run: |
+            echo "Using key alias: $KEYSTORE_PASSWORD"
+            echo "Using key alias: $KEY_ALIAS"
+            echo "Using key alias: $KEY_ALIAS_PASSWORD"
+
       # Bangun Android
       - name: Bangun Bundel Aplikasi Android
         if: vars.PLATFORM == 'android'
