@@ -4,254 +4,263 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/widgets/app_bottombar.dart';
-import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_viewer_screen.dart';
 import 'package:xhalona_pos/widgets/app_calendar.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
+import 'package:xhalona_pos/widgets/app_elevated_button.dart';
 import 'package:xhalona_pos/widgets/app_pdf_viewer.dart';
 import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 
-class LapPenjualanScreen extends StatefulWidget {
-  @override
-  _ReportFormPageState createState() => _ReportFormPageState();
-}
-
-class _ReportFormPageState extends State<LapPenjualanScreen> {
+class LapPenjualanScreen extends StatelessWidget {
   final LapPenjualanController controller = Get.put(LapPenjualanController());
   final TextEditingController _startDateController = TextEditingController();
   final TextEditingController _endDateController = TextEditingController();
-  String? _selectedReportType = 'Lap_Penjualan';
-  String _detailOption = '1';
-  String _formatOption = 'PDF';
   final _formKey = GlobalKey<FormState>();
 
+  void handleLapPenjualan(BuildContext context) async {
+    if (_formKey.currentState!.validate()) {
+      controller.printLapPenjualan()
+      .then((url) async {
+        if (controller.formatOption.value == 'EXCEL') {
+          // Jika format EXCEL, unduh file
+          await launchUrl(Uri.parse(url));
+        } else {
+          // Jika format PDF, tampilkan di PDF viewer
+          Navigator.of(context).push(
+            MaterialPageRoute(
+                builder: (context) => AppPDFViewer(pdfUrl: url)),
+          );
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    void handleLapPenjualan() async {
-      if (_formKey.currentState!.validate()) {
-        controller
-            .printLapPenjualan(_selectedReportType, _startDateController.text,
-                _endDateController.text, _formatOption, _detailOption)
-            .then((url) async {
-          if (_formatOption == 'EXCEL') {
-            // Jika format EXCEL, unduh file
-            await launchUrl(Uri.parse(url));
-          } else {
-            // Jika format PDF, tampilkan di PDF viewer
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                  builder: (context) =>
-                      AppPDFViewer(pdfUrl: url)),
-            );
-          }
-        });
-      }
-    }
-
-    final screenWidth = MediaQuery.of(context).size.width;
-
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
-            (route) => false); // Navigasi kembali ke halaman sebelumnya
-        return false; // Mencegah navigasi bawaan
-      },
-      child: Scaffold(
-        backgroundColor: AppColor.whiteColor,
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        spacing: 10.w,
-                        children: [
-                          Expanded(child: Obx(()=> AppTextFormField(
-                            context: context,
-                            textEditingController: _startDateController..text=controller.startDate.value,
-                            readOnly: true,
-                            icon: Icon(Icons.calendar_today),
-                            onTap: () =>
-                            SmartDialog.show(builder: (context) {
-                              return AppDialog(
-                                  content: SizedBox(
-                                      width: MediaQuery.of(context).size.width * 0.5,
-                                      height: MediaQuery.of(context).size.height * 0.5,
-                                      child: Column(mainAxisSize: MainAxisSize.min, children: [
-                                        AppCalendar(
-                                          focusedDay: DateFormat("dd-MM-yyyy").parse(controller.startDate.value),
-                                          onDaySelected: (selectedDay, _) {
-                                            controller.startDate.value =
-                                                  DateFormat('dd-MM-yyyy').format(selectedDay);
-                                            SmartDialog.dismiss();
-                                          },
-                                        ),
-                                      ])));
-                            }),
-                            labelText: "Tanggal Dari",
-                            style: AppTextStyle.textBodyStyle(),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Tanggal dari tidak boleh kosong';
-                              }
-                              return null;
-                            },
-                          ))),
-                          Expanded(child: Obx(()=> AppTextFormField(
-                            context: context,
-                            textEditingController: _endDateController..text=controller.endDate.value,
-                            readOnly: true,
-                            icon: Icon(Icons.calendar_today),
-                            onTap: () {
-                              SmartDialog.show(builder: (context) {
-                                return AppDialog(
-                                    content: SizedBox(
-                                        width: MediaQuery.of(context).size.width * 0.5,
-                                        height: MediaQuery.of(context).size.height * 0.5,
-                                        child: Column(mainAxisSize: MainAxisSize.min, children: [
-                                          AppCalendar(
-                                            focusedDay: DateFormat("dd-MM-yyyy").parse(controller.endDate.value),
-                                            onDaySelected: (selectedDay, _) {
-                                              controller.endDate.value =
-                                                    DateFormat('dd-MM-yyyy').format(selectedDay);
-                                              SmartDialog.dismiss();
-                                            },
-                                          ),
-                                        ])));
-                              });
-                            },
-                            labelText: "Tanggal Sampai",
-                            style: AppTextStyle.textBodyStyle(),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Tanggal Sampai tidak boleh kosong';
-                              }
-                              return null;
-                            },
-                          ))),
-                        ],
+    return Scaffold(
+      backgroundColor: AppColor.whiteColor,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      spacing: 10.w,
+                      children: [
+                        Expanded(
+                            child: Obx(() => AppTextFormField(
+                                  context: context,
+                                  textEditingController: _startDateController
+                                    ..text = controller.startDate.value,
+                                  readOnly: true,
+                                  icon: Icon(Icons.calendar_today),
+                                  onTap: () =>
+                                      SmartDialog.show(builder: (context) {
+                                    return AppDialog(
+                                        content: SizedBox(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.5,
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.5,
+                                            child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  AppCalendar(
+                                                    focusedDay:
+                                                        DateFormat("dd-MM-yyyy")
+                                                            .parse(controller
+                                                                .startDate
+                                                                .value),
+                                                    onDaySelected:
+                                                        (selectedDay, _) {
+                                                      controller.startDate
+                                                          .value = DateFormat(
+                                                              'dd-MM-yyyy')
+                                                          .format(selectedDay);
+                                                      SmartDialog.dismiss();
+                                                    },
+                                                  ),
+                                                ])));
+                                  }),
+                                  labelText: "Tanggal Dari",
+                                  style: AppTextStyle.textBodyStyle(),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Tanggal dari tidak boleh kosong';
+                                    }
+                                    return null;
+                                  },
+                                ))),
+                        Expanded(
+                            child: Obx(() => AppTextFormField(
+                                  context: context,
+                                  textEditingController: _endDateController
+                                    ..text = controller.endDate.value,
+                                  readOnly: true,
+                                  icon: Icon(Icons.calendar_today),
+                                  onTap: () {
+                                    SmartDialog.show(builder: (context) {
+                                      return AppDialog(
+                                          content: SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.5,
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.5,
+                                              child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    AppCalendar(
+                                                      focusedDay: DateFormat(
+                                                              "dd-MM-yyyy")
+                                                          .parse(controller
+                                                              .endDate.value),
+                                                      onDaySelected:
+                                                          (selectedDay, _) {
+                                                        controller.endDate
+                                                            .value = DateFormat(
+                                                                'dd-MM-yyyy')
+                                                            .format(
+                                                                selectedDay);
+                                                        SmartDialog.dismiss();
+                                                      },
+                                                    ),
+                                                  ])));
+                                    });
+                                  },
+                                  labelText: "Tanggal Sampai",
+                                  style: AppTextStyle.textBodyStyle(),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Tanggal Sampai tidak boleh kosong';
+                                    }
+                                    return null;
+                                  },
+                                ))),
+                      ],
+                    ),
+                    SizedBox(height: 16),
+                    Text('Jenis Laporan:',
+                        style: AppTextStyle.textSubtitleStyle()),
+                    ListTile(
+                      title: Text(
+                        'Lap. Penjualan',
+                        style: AppTextStyle.textBodyStyle(),
                       ),
-                      SizedBox(height: 16),
-                      Text('Jenis Laporan:',
-                          style: AppTextStyle.textSubtitleStyle()),
-                      ListTile(
-                        title: Text(
-                          'Lap. Penjualan',
-                          style: AppTextStyle.textSubtitleStyle(),
-                        ),
-                        leading: Radio(
-                          value: 'Lap_Penjualan',
-                          groupValue: _selectedReportType,
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedReportType = value.toString();
-                            });
-                          },
-                        ),
+                      leading: Obx(() => Radio(
+                        value: 'Lap_Penjualan',
+                        groupValue: controller.selectedReportType.value,
+                        onChanged: (value) {
+                          controller.selectedReportType.value = value.toString();
+                        },
+                      )),
+                    ),
+                    ListTile(
+                      title: Text('Lap. Terapis',
+                          style: AppTextStyle.textBodyStyle()),
+                      leading: Obx(() => Radio(
+                        value: 'Lap_Penjualan_By_Terapis',
+                        groupValue: controller.selectedReportType.value,
+                        onChanged: (value) {
+                          controller.selectedReportType.value = value.toString();
+                        },
+                      )),
+                    ),
+                    ListTile(
+                      title: Text('Lap. Kasir',
+                          style: AppTextStyle.textBodyStyle()),
+                      leading: Obx(() => Radio(
+                        value: 'Lap_Penjualan_Kasir',
+                        groupValue: controller.selectedReportType.value,
+                        onChanged: (value) {
+                          controller.selectedReportType.value = value.toString();
+                        },
+                      )),
+                    ),
+                    SizedBox(height: 16),
+                    Text('Detail Laporan:',
+                        style: AppTextStyle.textSubtitleStyle()),
+                    ListTile(
+                      title: Text('Detail',
+                          style: AppTextStyle.textBodyStyle()),
+                      leading: Obx(() => Radio(
+                        value: '1',
+                        groupValue: controller.detailOption.value,
+                        onChanged: (value) {
+                          controller.detailOption.value = value.toString();
+                        },
+                      )),
+                    ),
+                    ListTile(
+                      title: Text('Rekap',
+                          style: AppTextStyle.textBodyStyle()),
+                      leading: Obx(() => Radio(
+                        value: '0',
+                        groupValue: controller.detailOption.value,
+                        onChanged: (value) {
+                          controller.detailOption.value = value.toString();
+                        },
+                      )),
+                    ),
+                    SizedBox(height: 16),
+                    Text('Format:', style: AppTextStyle.textSubtitleStyle()),
+                    ListTile(
+                      title:
+                          Text('PDF', style: AppTextStyle.textBodyStyle()),
+                      leading: Obx(() => Radio(
+                        value: 'PDF',
+                        groupValue: controller.formatOption.value,
+                        onChanged: (value) {
+                          controller.formatOption.value = value.toString();
+                        },
+                      )),
+                    ),
+                    ListTile(
+                      title: Text('EXCEL',
+                          style: AppTextStyle.textBodyStyle()),
+                      leading: Obx(() => Radio(
+                        value: 'EXCEL',
+                        groupValue: controller.formatOption.value,
+                        onChanged: (value) {
+                          controller.formatOption.value = value.toString();
+                        },
+                      )),
+                    ),
+                    SizedBox(height: 24),
+                    Center(
+                        child: AppElevatedButton(
+                          size: AppElevatedButtonSize.big,
+                          backgroundColor: AppColor.primaryColor,
+                          onPressed: ()=>handleLapPenjualan(context), 
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            spacing: 10.w,
+                            children: [
+                              Icon(Icons.print, color: AppColor.whiteColor,),
+                              Text("Cetak", style: AppTextStyle.textSubtitleStyle(color: AppColor.whiteColor),),
+                            ],
+                          )
+                        )
                       ),
-                      ListTile(
-                        title: Text('Lap. Terapis',
-                            style: AppTextStyle.textSubtitleStyle()),
-                        leading: Radio(
-                          value: 'Lap_Penjualan_By_Terapis',
-                          groupValue: _selectedReportType,
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedReportType = value.toString();
-                            });
-                          },
-                        ),
-                      ),
-                      ListTile(
-                        title: Text('Lap. Kasir',
-                            style: AppTextStyle.textSubtitleStyle()),
-                        leading: Radio(
-                          value: 'Lap_Penjualan_Kasir',
-                          groupValue: _selectedReportType,
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedReportType = value.toString();
-                            });
-                          },
-                        ),
-                      ),
-                      SizedBox(height: 16),
-                      Text('Detail Laporan:',
-                          style: AppTextStyle.textSubtitleStyle()),
-                      ListTile(
-                        title: Text('Detail',
-                            style: AppTextStyle.textSubtitleStyle()),
-                        leading: Radio(
-                          value: '1',
-                          groupValue: _detailOption,
-                          onChanged: (value) {
-                            setState(() {
-                              _detailOption = value.toString();
-                            });
-                          },
-                        ),
-                      ),
-                      ListTile(
-                        title: Text('Rekap',
-                            style: AppTextStyle.textSubtitleStyle()),
-                        leading: Radio(
-                          value: '0',
-                          groupValue: _detailOption,
-                          onChanged: (value) {
-                            setState(() {
-                              _detailOption = value.toString();
-                            });
-                          },
-                        ),
-                      ),
-                      SizedBox(height: 16),
-                      Text('Format:', style: AppTextStyle.textSubtitleStyle()),
-                      ListTile(
-                        title: Text('PDF',
-                            style: AppTextStyle.textSubtitleStyle()),
-                        leading: Radio(
-                          value: 'PDF',
-                          groupValue: _formatOption,
-                          onChanged: (value) {
-                            setState(() {
-                              _formatOption = value.toString();
-                            });
-                          },
-                        ),
-                      ),
-                      ListTile(
-                        title: Text('EXCEL',
-                            style: AppTextStyle.textSubtitleStyle()),
-                        leading: Radio(
-                          value: 'EXCEL',
-                          groupValue: _formatOption,
-                          onChanged: (value) {
-                            setState(() {
-                              _formatOption = value.toString();
-                            });
-                          },
-                        ),
-                      ),
-                      SizedBox(height: 24),
-                      Center(
-                          child: masterButton(
-                              handleLapPenjualan, "Cetak", Icons.print)),
-                    ],
-                  ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -279,7 +288,7 @@ class _ReportFormPageState extends State<LapPenjualanScreen> {
             Icon(icon, color: Colors.white),
             SizedBox(width: 8),
             Text(label,
-                style: AppTextStyle.textSubtitleStyle(color: Colors.white)),
+                style: AppTextStyle.textBodyStyle(color: Colors.white)),
           ],
         ),
       ),

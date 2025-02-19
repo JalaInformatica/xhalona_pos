@@ -94,102 +94,92 @@ class _AddEditRekeningState extends State<AddEditRekening> {
       }
     }
 
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => MasterRekeningScreen()),
-            (route) => false); // Navigasi kembali ke halaman sebelumnya
-        return false; // Mencegah navigasi bawaan
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Tambah/Edit Data Rekening",
-            style: AppTextStyle.textTitleStyle(color: Colors.white),
-          ),
-          backgroundColor: AppColor.secondaryColor,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Tambah/Edit Data Rekening",
+          style: AppTextStyle.textTitleStyle(color: Colors.white),
         ),
-        body: _isLoading
-            ? buildShimmerLoading()
-            : SingleChildScrollView(
-                padding: EdgeInsets.all(16),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      buildDropdownFieldJK("Jenis Rek.", jenisAc, (value) {
+        backgroundColor: AppColor.secondaryColor,
+      ),
+      body: _isLoading
+          ? buildShimmerLoading()
+          : SingleChildScrollView(
+              padding: EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    buildDropdownFieldJK("Jenis Rek.", jenisAc, (value) {
+                      setState(() {
+                        _jenisAc = value;
+                      });
+                    }),
+                    SizedBox(height: 16),
+                    // Field NIK
+                    buildTextField("Kode Rekening", "Masukkan nama Rekening",
+                        _kdRekeningController),
+                    SizedBox(height: 16),
+
+                    // Field Nama
+                    buildTextField("Nama Rekening", "Masukkan nama Rekening",
+                        _nameRekeningController),
+                    SizedBox(height: 16),
+
+                    buildTextField("No Rekening", "Masukkan no Rekening",
+                        _noRekeningController),
+                    SizedBox(height: 16),
+
+                    buildTextField(
+                        "Nama Bank", "Masukkan nama Bank", _nameBankController),
+                    SizedBox(height: 16),
+
+                    buildTextField(
+                        "Atas Nama", "Masukkan atas nama", _atasNamaController),
+                    SizedBox(height: 16),
+
+                    buildTextField("COA ", "Masukkan coa", _coaController),
+                    SizedBox(height: 16),
+
+                    buildTextField("Group", "Masukkan group", _groupController),
+                    SizedBox(height: 16),
+
+                    buildTextField("User Access", "Masukkan user access",
+                        _userAccesController),
+                    SizedBox(height: 16),
+
+                    SwitchListTile(
+                      title: Text("Status Aktif"),
+                      subtitle: Text(
+                          "Tentukan apakah karyawan saat ini aktif atau tidak aktif"),
+                      value: _isActive,
+                      onChanged: (value) {
                         setState(() {
-                          _jenisAc = value;
+                          _isActive = value;
                         });
-                      }),
-                      SizedBox(height: 16),
-                      // Field NIK
-                      buildTextField("Kode Rekening", "Masukkan nama Rekening",
-                          _kdRekeningController),
-                      SizedBox(height: 16),
+                      },
+                    ),
+                    SizedBox(height: 32),
 
-                      // Field Nama
-                      buildTextField("Nama Rekening", "Masukkan nama Rekening",
-                          _nameRekeningController),
-                      SizedBox(height: 16),
-
-                      buildTextField("No Rekening", "Masukkan no Rekening",
-                          _noRekeningController),
-                      SizedBox(height: 16),
-
-                      buildTextField("Nama Bank", "Masukkan nama Bank",
-                          _nameBankController),
-                      SizedBox(height: 16),
-
-                      buildTextField("Atas Nama", "Masukkan atas nama",
-                          _atasNamaController),
-                      SizedBox(height: 16),
-
-                      buildTextField("COA ", "Masukkan coa", _coaController),
-                      SizedBox(height: 16),
-
-                      buildTextField(
-                          "Group", "Masukkan group", _groupController),
-                      SizedBox(height: 16),
-
-                      buildTextField("User Access", "Masukkan user access",
-                          _userAccesController),
-                      SizedBox(height: 16),
-
-                      SwitchListTile(
-                        title: Text("Status Aktif"),
-                        subtitle: Text(
-                            "Tentukan apakah karyawan saat ini aktif atau tidak aktif"),
-                        value: _isActive,
-                        onChanged: (value) {
-                          setState(() {
-                            _isActive = value;
-                          });
-                        },
-                      ),
-                      SizedBox(height: 32),
-
-                      // Action Buttons
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          masterButton(
-                              handleAddEditRekening, "Simpan", Icons.add),
-                          masterButton(() {
-                            Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        MasterRekeningScreen()),
-                                (route) => false);
-                          }, "Batal", Icons.refresh),
-                        ],
-                      ),
-                    ],
-                  ),
+                    // Action Buttons
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        masterButton(
+                            handleAddEditRekening, "Simpan", Icons.add),
+                        masterButton(() {
+                          Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(
+                                  builder: (context) => MasterRekeningScreen()),
+                              (route) => false);
+                        }, "Batal", Icons.refresh),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-      ),
+            ),
     );
   }
 }

@@ -66,12 +66,7 @@ class DashboardScreen extends StatelessWidget {
               SizedBox(
                 height: 5,
               ),
-              Row(
-                spacing: 10.w,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Expanded(
-                    child: Column(
+              Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       spacing: 15.h,
@@ -82,7 +77,7 @@ class DashboardScreen extends StatelessWidget {
                         ),
                         Obx(() => controller.dataNetPerMonthValue.isNotEmpty
                             ? AspectRatio(
-                                aspectRatio: 1,
+                                aspectRatio: 3,
                                 child: LineChart(
                                   LineChartData(
                                     minY: 0,
@@ -158,9 +153,8 @@ class DashboardScreen extends StatelessWidget {
                             : SizedBox.shrink()),
                       ],
                     ),
-                  ),
-                  Expanded(
-                    child: Column(
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       spacing: 15.h,
                       children: [
@@ -170,7 +164,7 @@ class DashboardScreen extends StatelessWidget {
                         ),
                         Obx(() => controller.dataTrxPerMonthValue.isNotEmpty
                             ? AspectRatio(
-                                aspectRatio: 1,
+                                aspectRatio: 3,
                                 child: LineChart(
                                   LineChartData(
                                     minY: 0,
@@ -246,9 +240,7 @@ class DashboardScreen extends StatelessWidget {
                             : SizedBox.shrink())
                       ],
                     ),
-                  ),
-                ],
-              ),
+              
 
               // TERAPIS
               Column(
@@ -441,7 +433,7 @@ class DashboardScreen extends StatelessWidget {
                 spacing: 15.h,
                 children: [
                   Text(
-                    'Netto Per Produk',
+                    'Netto Per Produk (Bulan)',
                     style: AppTextStyle.textBodyStyle(),
                   ),
                   Obx(() => controller.dataTrxPerMonthValue.isNotEmpty

@@ -17,6 +17,8 @@ class AppTextField extends TextField{
     bool isThousand = false,
     Function(String)? onChanged,
     super.autofocus,
+    super.onTap,
+    super.focusNode,
     bool readOnly = false,
     super.textAlign,
     super.maxLines,

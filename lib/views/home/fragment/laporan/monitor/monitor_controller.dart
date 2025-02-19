@@ -2,19 +2,33 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:xhalona_pos/models/dao/monitor.dart';
 import 'package:xhalona_pos/repositories/monitor/monitor_repository.dart';
+import 'package:xhalona_pos/repositories/crystal_report/lap_penjualan_repository.dart';
 
 class MonitorController extends GetxController {
   MonitorRepository _monitorRepository = MonitorRepository();
+  var startDate = DateFormat("dd-MM-yyyy").format(DateTime.now()).obs;
+  var endDate = DateFormat("dd-MM-yyyy").format(DateTime.now()).obs;
+  
+  var isFilterByTerapis = false.obs;
+  var isFilterByCustomer = false.obs;
+  var isFilterByProduct = false.obs;
+  var isFilterByKategori = false.obs;
+
+  var filterTerapisValue = "".obs;
+  var filterCustomerValue = "".obs;
+  var filterProductValue = "".obs;
+  var filterKategoriValue = "".obs;
 
   var monitorHeader = <MonitorDAO>[].obs;
   var isLoading = true.obs;
-  // var trxStatusCategory = ProductStatusCategory.progress.obs;
   var isActive = false.obs;
   var filterValue = "".obs;
-  DateTime dateNow = DateTime.now();
-  late RxString fDateFrom = DateFormat('yyyy-MM-dd').format(dateNow).obs;
-  late RxString fDateTo = DateFormat('yyyy-MM-dd').format(dateNow).obs;
+
+  var type = "Detail".obs;
+  var shift = "".obs;
+
   var format = "SALES_DATE".obs;
+
   var total = "".obs;
 
   RxDouble sumTotal = 0.0.obs;
@@ -33,61 +47,58 @@ class MonitorController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchProducts();
+    fetchData();
   }
 
   void updateFilterActive() async {
     isActive.value = !isActive.value;
     pageNo.value = 1;
     pageRow.value = 10;
-    fetchProducts();
+    fetchData();
   }
 
   void updateFilterValue(String newFilterValue) {
     filterValue.value = newFilterValue;
-    pageNo.value = 1;
-    pageRow.value = 10;
-    fetchProducts();
+    fetchData();
   }
 
   void updateFormat(String newFormat) {
     format.value = newFormat;
-    fetchProducts();
+    fetchData();
   }
 
-  void updateFilterDate(String newFormat, int tanda) {
-    if (tanda == 1) {
-      fDateTo.value = newFormat;
-    }
-    if (tanda == 0) {
-      fDateFrom.value = newFormat;
-    }
-
-    fetchProducts();
+  Future<String> printLapPenjualan(
+    String? template,
+    String? format,
+    String? detail,
+  ) async {
+    return await LapPenjualanCrystalReportRepository().printLapPenjualan(
+      template: template,
+      dateFrom: DateFormat("yyyy-MM-dd").format(DateFormat("dd-MM-yyyy").parse(startDate.value)),
+      dateTo: DateFormat("yyyy-MM-dd").format(DateFormat("dd-MM-yyyy").parse(endDate.value)),
+      format: format,
+      detail: detail
+    );
   }
 
-  void updatePageNo(int newFilterValue) {
-    pageNo.value = newFilterValue;
-    fetchProducts();
-  }
-
-  void updatePageRow(int newFilterValue) {
-    pageRow.value = newFilterValue;
-    fetchProducts();
-  }
-
-  Future<void> fetchProducts() async {
+  Future<void> fetchData() async {
     try {
       isLoading.value = true;
 
       final result = await _monitorRepository.getMonitor(
-        fDateFrom: fDateFrom.value,
+        fDateFrom: DateFormat("yyyy-MM-dd").format(DateFormat("dd-MM-yyyy").parse(startDate.value)),
         filterValue: filterValue.value,
-        fDateTo: fDateTo.value,
+        fDateTo: DateFormat("yyyy-MM-dd").format(DateFormat("dd-MM-yyyy").parse(endDate.value)),
         format: format.value,
       );
 
-      monitorHeader.value = result;
+      monitorHeader.value = result.where((monitor) =>
+        (filterKategoriValue.value.isEmpty || monitor.ketAnalisa == filterKategoriValue.value) &&
+        (shift.value=="SEMUA" || monitor.shiftId == shift.value) &&
+        (filterTerapisValue.value.isEmpty || monitor.empId == filterTerapisValue.value) &&
+        (filterCustomerValue.value.isEmpty || monitor.supplierName == filterCustomerValue.value) &&
+        (filterProductValue.value.isEmpty || monitor.partId == filterProductValue.value)
+      ).toList();
 
       sumTotal.value =
           result.fold(0.0, (sum, item) => sum + (item.nettoVal ?? 0.0));

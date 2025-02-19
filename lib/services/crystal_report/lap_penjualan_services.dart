@@ -12,10 +12,11 @@ class LapPenjualanCrystalReportService {
   }) async {
     await api.fetchUserSessionInfo();
     var url = '/SALES/lap_sales';
+    print(template);
     var body = jsonEncode({
       "rq": {
         if (template == 'Lap_Penjualan_Kasir') "ACTION_ID": "LAP_KASIR",
-        if (template == 'Lap_Penjualan') "ACTION_ID": "LAP_PENJUALAN",
+        if (template == 'Lap_Penjualan' || template == 'Lap_Penjualan_By_Terapis') "ACTION_ID": "LAP_PENJUALAN",
         "IP": api.ip,
         "COMPANY_ID": api.companyId,
         "SITE_ID": "",

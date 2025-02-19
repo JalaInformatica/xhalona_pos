@@ -173,8 +173,7 @@ class _AddEditFinanceState extends State<AddEditFinance> {
             }, '', Icons.settings),
             SizedBox(width: 5),
             widget.finance != null
-                ? masterButton(handlePrint, 'Print', Icons.print,
-                    color: Colors.deepOrange)
+                ? masterButton(handlePrint, 'Print', Icons.print,)
                 : SizedBox(),
             SizedBox(width: 5),
           ],
@@ -273,8 +272,7 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                                       widget.finance!.isApproved == true
                                   ? 'UnPost'
                                   : 'Post',
-                              Icons.post_add,
-                              color: Colors.deepOrange),
+                              Icons.post_add,),
                           masterButton(() {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(

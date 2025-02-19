@@ -15,6 +15,7 @@ class UserDAO {
   String profileKecamatan;
   String profileProvinsi;
   String profilePostalCode;
+  String companyId;
 
   UserDAO({
     this.userId = "",
@@ -33,6 +34,7 @@ class UserDAO {
     this.profileKecamatan = '',
     this.profileProvinsi = "",
     this.profilePostalCode = "",
+    this.companyId = ""
   });
 
   UserDAO.fromJson(Map<String, dynamic> json)
@@ -51,7 +53,8 @@ class UserDAO {
         profileKelurahan = json['PROFILE_KELURAHAN'] ?? "",
         profileKecamatan = json['PROFILE_KECAMATAN'] ?? "",
         profileProvinsi = json['PROFILE_PROVINSI'] ?? "",
-        profilePostalCode = json['PROFILE_POSTAL_CODE'] ?? "";
+        profilePostalCode = json['PROFILE_POSTAL_CODE'] ?? "",
+        companyId = json['COMPANY_ID'] ?? "";
 
   Map<String, dynamic> toJson() {
     return {
@@ -71,6 +74,7 @@ class UserDAO {
       'PROFILE_KECAMATAN': profileKecamatan,
       'PROFILE_PROVINSI': profileProvinsi,
       'PROFILE_POSTAL_CODE': profilePostalCode,
+      'COMPANY_ID': companyId
     };
   }
 }

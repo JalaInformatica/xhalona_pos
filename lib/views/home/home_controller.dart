@@ -21,6 +21,8 @@ class HomeController extends GetxController {
   var isOpenMaster = false.obs;
   var isOpenLaporan = false.obs;
 
+  var subMenuName = "".obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -33,11 +35,16 @@ class HomeController extends GetxController {
     await _userRepository.logoutProfile();
     await prefs.remove(LocalStorageConst.userId);
     await prefs.remove(LocalStorageConst.sessionLoginId);
+    await prefs.remove(LocalStorageConst.userName);
+    await prefs.remove(LocalStorageConst.ip);
+    await prefs.remove(LocalStorageConst.companyId);
+    await prefs.remove(LocalStorageConst.defCompanyId);
   }
 
   Future<void> fetchMenu() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();  
     menuData.value = await _structureRepository.getMenus();
-    profileData.value = await _userRepository.getUserProfile();
+    profileData.value = await _userRepository.getUserProfile()..companyId=prefs.getString(LocalStorageConst.companyId) ?? "";
     isMenuLoading.value = false;
   }
 
