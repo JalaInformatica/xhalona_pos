@@ -18,13 +18,17 @@ jobs:
         with:
           java-version: '11'
 
+      - name: Dapatkan Versi Flutter
+        id: flutter-version
+        run: |
+          echo "FLUTTER_VERSION=$(grep 'sdk:' pubspec.yaml | awk '{ print $2 }' | sed 's/ //g' | sed 's/^">*//; s/".*$//')" >> $GITHUB_ENV
+
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
-          flutter-version: pubspec.yaml
+          flutter-version: ${{ env.FLUTTER_VERSION }}
 
-      - name: Install dependensi Flutter
+      - name: Install dependensi
         run: flutter pub get
 
       # Perbarui Versi
