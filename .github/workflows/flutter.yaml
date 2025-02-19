@@ -24,6 +24,9 @@ jobs:
           channel: stable
           version: latest
 
+      - name: Bersihkan build artifacts
+        run: flutter clean
+
       - name: Install dependensi
         run: flutter pub get
 
