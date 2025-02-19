@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/varian/master_varian_screen.dart';
 import 'package:xhalona_pos/widgets/app_elevated_button.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/models/dao/product.dart';
@@ -90,28 +91,32 @@ class MasterProductScreen extends StatelessWidget {
                 child: Row(
                       children: [
                         mButton(
-                          (){},
+                          (){
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => MasterVarianScreen(),
+                              )
+                            );  
+                          },
                           "Varian",                        
                           Icons.layers
                         ),
                         SizedBox(width: screenWidth * 0.02),
                         mButton(() {
-                          Navigator.of(context).pushAndRemoveUntil(
+                          Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => MasterKategoriScreen(),
-                            ),
-                            (route) => false,
+                            )
                           );
                         }, "Kategori", Icons.category,
                         ), // Ikon kategori
 
                         SizedBox(width: screenWidth * 0.02),
                         mButton(() {
-                          Navigator.of(context).pushAndRemoveUntil(
+                          Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => MasterMasAllScreen(),
                             ),
-                            (route) => false,
                           );
                         }, "Semua", Icons.apps,
                         ), // Ikon untuk semua item
@@ -123,9 +128,8 @@ class MasterProductScreen extends StatelessWidget {
               ),
               AppElevatedButton(
                 onPressed: (){
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => AddEditProduct()),
-                    (route) => false);
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => AddEditProduct()));
                 },
                 foregroundColor: AppColor.primaryColor,
                 child: Row(
@@ -207,21 +211,19 @@ class MasterProductScreen extends StatelessWidget {
                           isModalBahan: product.isFixQty == true ? true : false,
                           isModalPaket: product.isPacket == true ? true : false,
                           onPaket: () {
-                            Navigator.of(context).pushAndRemoveUntil(
+                            Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => MasterPaketScreen(),
                               ),
-                              (route) => false,
                             );
                             controllerPaket.filterPartId.value = product.partId;
                             controllerPaket.fetchProducts();
                           },
                           onBahan: () {
-                            Navigator.of(context).pushAndRemoveUntil(
+                            Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => MasterBahanScreen(),
                               ),
-                              (route) => false,
                             );
                             controllerBahan.filterPartId.value = product.partId;
                             controllerBahan.fetchProducts();

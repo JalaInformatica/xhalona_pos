@@ -333,6 +333,7 @@ class HomeScreen extends StatelessWidget {
                   ).then((value) {
                     if (value == "logout") {
                       controller.logout();
+                      Get.reset();
                       Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(
                               builder: (context) => LoginScreen()),
