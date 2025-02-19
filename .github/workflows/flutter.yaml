@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Ambil kode
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for all branches
 
       - name: Siapkan JDK 11
         uses: actions/setup-java@v1
