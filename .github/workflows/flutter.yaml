@@ -71,14 +71,14 @@ jobs:
 
             # Check if pubspec.yaml exists
             if [ ! -f pubspec.yaml ]; then
-            echo "pubspec.yaml file does not exist."
-            exit 1
+                echo "pubspec.yaml file does not exist."
+                exit 1
             fi
 
             # Update version in pubspec.yaml
             sed -i "s/version: $CURRENT_VERSION/version: $VERSION+$NEW_CODE/" pubspec.yaml || {
-            echo "Failed to update version in pubspec.yaml"
-            exit 1
+                echo "Failed to update version in pubspec.yaml"
+                exit 1
             }
 
             # Configure Git
@@ -89,12 +89,6 @@ jobs:
             git commit -m "Update version to $VERSION+$NEW_CODE" || echo "No changes to commit."
 
             echo "::set-output name=version::${VERSION}+$NEW_CODE"
-
-      - name: Check environment variables
-        run: |
-            echo "Using key alias: $KEYSTORE_PASSWORD"
-            echo "Using key alias: $KEY_ALIAS"
-            echo "Using key alias: $KEY_ALIAS_PASSWORD"
 
       # Bangun Android
       - name: Bangun Bundel Aplikasi Android
@@ -113,6 +107,17 @@ jobs:
         with:
           name: bundel-aplikasi-android
           path: build/app/outputs/bundle/release/app-release.aab
+
+      - name: Tanda Tangan Bundel Aplikasi Android
+        if: vars.PLATFORM == 'android'
+        uses: r0adkll/sign-android-release@v1
+        id: sign_app
+        with:
+            releaseDirectory: build/app/outputs/bundle/release/
+            signingKeyBase64: ${{ secrets.KEYSTORE_BASE64 }}
+            alias: ${{ secrets.KEY_ALIAS }}
+            keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+            keyPassword: ${{ secrets.KEY_ALIAS_PASSWORD }}
 
       # Bangun iOS
       - name: Dekode Sertifikat iOS
