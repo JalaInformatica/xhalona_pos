@@ -12,18 +12,11 @@ jobs:
     steps:
       - name: Ambil kode
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Fetch all history for all branches
 
       - name: Siapkan JDK 11
         uses: actions/setup-java@v1
         with:
           java-version: '11'
-
-      - name: Install Flutter
-        run: |
-          git clone https://github.com/flutter/flutter.git --depth 1 -b stable
-          echo "${{ github.workspace }}/flutter/bin" >> $GITHUB_PATH
 
       - name: Install dependensi
         run: flutter pub get
@@ -32,6 +25,12 @@ jobs:
         id: flutter-version
         run: |
           echo "FLUTTER_VERSION=$(grep 'sdk:' pubspec.yaml | awk '{ print $2 }' | sed 's/ //g' | sed 's/^">*//; s/".*$//')" >> $GITHUB_ENV
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
 
       # Perbarui Versi
       - name: Perbarui Versi
