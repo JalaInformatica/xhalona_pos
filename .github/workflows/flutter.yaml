@@ -31,22 +31,6 @@ jobs:
       - name: Install dependensi
         run: flutter pub get
 
-      # Perbarui Versi
-      - name: Perbarui Versi
-        run: |
-          CURRENT_VERSION=$(grep 'version: ' pubspec.yaml | sed 's/version: //')
-          IFS='+' read -r VERSION CODE <<< "$CURRENT_VERSION"
-          NEW_CODE=$((CODE + 1))
-          echo "version: $VERSION+$NEW_CODE" > pubspec.yaml
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git commit -am "Naikkan versi ke $VERSION+$NEW_CODE" || echo "Tidak ada perubahan untuk dikomit"
-
-      - name: Cek Perubahan Versi
-        run: |
-            git diff --exit-code || { echo "Tidak ada perubahan versi"; exit 1; }
-            cat pubspec.yaml
-
       # Bangun Android
       - name: Bangun Bundel Aplikasi Android
         if: vars.PLATFORM == 'android'
