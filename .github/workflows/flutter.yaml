@@ -8,39 +8,27 @@ on:
 permissions:
   contents: write
 
-env:
-  ROOT_DIR: ${{ github.workspace }}
-
 jobs:
   checkout:
     runs-on: ubuntu-latest
     steps:
-      # Ambil kode repositori
       - name: Ambil kode
         uses: actions/checkout@v4
 
   cache:
     runs-on: ubuntu-latest
+    needs: checkout
     steps:
-      # Cache untuk Java
-      - name: Restore Java cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: java-${{ runner.os }}-build-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            java-${{ runner.os }}-build-
-
-      # Cache untuk Flutter
-      - name: Restore Flutter cache
+      - name: Restore Cache
         uses: actions/cache@v3
         with:
           path: |
+            ~/.m2/repository
             ~/.pub-cache
             build
-          key: flutter-${{ runner.os }}-build-${{ hashFiles('pubspec.yaml') }}
+          key: cache-${{ runner.os }}-${{ hashFiles('**/pom.xml', 'pubspec.yaml') }}
           restore-keys: |
-            flutter-${{ runner.os }}-build-
+            cache-${{ runner.os }}-
 
   setup:
     runs-on: ubuntu-latest
@@ -55,56 +43,31 @@ jobs:
           distribution: 'microsoft'
           java-version: '17'
 
-      # Install Flutter
       - name: Install Flutter
         uses: flutter-actions/setup-flutter@v4
         with:
           channel: stable
           version: 3.27.0
 
-      # Cek versi flutter
       - name: Cek Versi Flutter
         run: flutter --version
 
-      # Install dependensi flutter
       - name: Install dependensi
-        run: |
-          cd ${{ env.ROOT_DIR }}
-          flutter pub get
+        run: flutter pub get
 
-      # Perbarui versi gradle
-      - name: Pasang Gradle versi 8.0
-        run: |
-            sed -i 's|distributionUrl=.*|distributionUrl=https://services.gradle.org/distributions/gradle-8.0-all.zip|' ${{ env.ROOT_DIR }}/android/gradle/wrapper/gradle-wrapper.properties
-
-      # Perbarui versi aplikasi flutter
       - name: Perbarui Versi
         id: update_version
         run: |
-            CURRENT_VERSION=$(grep 'version: ' ${{ env.ROOT_DIR }}/pubspec.yaml | sed 's/version: //')
+            CURRENT_VERSION=$(grep 'version: ' pubspec.yaml | sed 's/version: //')
             IFS='+' read -r VERSION CODE <<< "$CURRENT_VERSION"
             NEW_CODE=$((CODE + 1))
             NEW_VERSION="$VERSION+$NEW_CODE"
-
-            echo "Updating version from $CURRENT_VERSION to $NEW_VERSION"
-
-            if [ ! -f ${{ env.ROOT_DIR }}/pubspec.yaml ]; then
-                echo "Error: pubspec.yaml file does not exist."
-                exit 1
-            fi
-
-            sed -i "s/version: $CURRENT_VERSION/version: $NEW_VERSION/" ${{ env.ROOT_DIR }}/pubspec.yaml || {
-                echo "Error: Failed to update version in pubspec.yaml"
-                exit 1
-            }
 
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action"
 
             if ! git diff --quiet; then
                 git commit -m "Update version to $NEW_VERSION"
-            else
-                echo "No changes to commit."
             fi
 
             echo "version=$NEW_VERSION" >> $GITHUB_ENV
@@ -124,30 +87,18 @@ jobs:
           name: bundel-aplikasi-android
           path: build/app/outputs/bundle/release/app-release.aab
 
-      - name: Tanda Tangan Bundel Aplikasi Android
-        uses: r0adkll/sign-android-release@v1
-        id: sign_app
-        with:
-          releaseDirectory: build/app/outputs/bundle/release/
-          signingKeyBase64: ${{ secrets.KEYSTORE_BASE64 }}
-          alias: ${{ secrets.KEY_ALIAS }}
-          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
-          keyPassword: ${{ secrets.KEY_ALIAS_PASSWORD }}
-
   build_ios:
     runs-on: ubuntu-latest
     needs: [setup]
     if: vars.PLATFORM == 'ios'
     steps:
       - name: Dekode Sertifikat iOS
-        run: |
-          echo "${{ secrets.IOS_CERTIFICATE }}" | base64 --decode > ios_certificate.p12
+        run: echo "${{ secrets.IOS_CERTIFICATE }}" | base64 --decode > ios_certificate.p12
 
       - name: Install Sertifikat iOS
         run: |
           security create-keychain -p "" build.keychain
           security import ios_certificate.p12 -k build.keychain -P "${{ secrets.CERT_PASSWORD }}" -T /usr/bin/codesign
-          security list-keychains -s build.keychain
           security unlock-keychain -p "" build.keychain
 
       - name: Build Aplikasi iOS
@@ -163,17 +114,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build_android, build_ios, setup]
     steps:
-      # Buat tag untuk rilis
       - name: Buat Tag Rilis
         run: |
           TAG_NAME="${{ needs.setup.outputs.version }}"
-          echo "Creating release tag: $TAG_NAME"
           git tag "$TAG_NAME"
           git push origin "$TAG_NAME"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Rilis Aplikasi Android
       - name: Rilis Aplikasi Android
         if: vars.PLATFORM == 'android' && needs.setup.outputs.version != needs.setup.outputs.current_version
         uses: softprops/action-gh-release@v1
@@ -183,7 +131,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Rilis Aplikasi iOS
       - name: Rilis Aplikasi iOS
         if: vars.PLATFORM == 'ios' && needs.setup.outputs.version != needs.setup.outputs.current_version
         uses: softprops/action-gh-release@v1
@@ -197,7 +144,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [release]
     steps:
-      # Kirim notifikasi email jika gagal
       - name: Kirim notifikasi email jika gagal
         if: failure()
         uses: dawidd6/action-send-mail@v3
@@ -220,6 +166,7 @@ jobs:
           name: log-build
           path: build/logs/
 
+      # Bersihkan cache jika gagal
       - name: Bersihkan cache jika gagal
         if: failure()
         run: |
