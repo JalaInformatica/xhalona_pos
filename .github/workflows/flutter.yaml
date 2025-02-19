@@ -13,23 +13,64 @@ jobs:
       - name: Ambil kode
         uses: actions/checkout@v4
 
+      # Cache untuk Java
+      - name: Restore Java cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: java-${{ runner.os }}-build-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            java-${{ runner.os }}-build-
+
       - name: Siapkan JDK 17 (Microsoft Distribution)
         uses: actions/setup-java@v3
         with:
           distribution: 'microsoft'
           java-version: '17'
 
+      # Cache untuk Flutter
+      - name: Restore Flutter cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pub-cache
+            build
+          key: flutter-${{ runner.os }}-build-${{ hashFiles('pubspec.yaml') }}
+          restore-keys: |
+            flutter-${{ runner.os }}-build-
+
+      # Install flutter
       - name: Install Flutter
         uses: flutter-actions/setup-flutter@v4
         with:
-            channel: stable
-            version: 3.27.0
+          channel: stable
+          version: 3.27.0
 
+      # Cek versi flutter
       - name: Cek Versi Flutter
         run: flutter --version
 
+      # Install dependensi flutter
       - name: Install dependensi
         run: flutter pub get
+
+      # Perbarui versi gradle
+      - name: Pasang Gradle versi 7.6
+        run: |
+            sed -i 's|distributionUrl=.*|distributionUrl=https://services.gradle.org/distributions/gradle-7.6-bin.zip|' gradle/wrapper/gradle-wrapper.properties
+
+      # Perbarui versi aplikasi flutter
+      - name: Perbarui Versi
+        id: update_version
+        run: |
+          CURRENT_VERSION=$(grep 'version: ' pubspec.yaml | sed 's/version: //')
+          IFS='+' read -r VERSION CODE <<< "$CURRENT_VERSION"
+          NEW_CODE=$((CODE + 1))
+          sed -i '' "s/version: $CURRENT_VERSION/version: $VERSION+$NEW_CODE/" pubspec.yaml
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -am "Naikkan versi ke $VERSION+$NEW_CODE" || echo "Tidak ada perubahan untuk dikomit"
+          echo "::set-output name=version::${VERSION}+$NEW_CODE"
 
       # Bangun Android
       - name: Bangun Bundel Aplikasi Android
@@ -98,18 +139,26 @@ jobs:
           name: log-build
           path: build/logs/
 
+      # Bersihkan cache jika gagal
+      - name: Bersihkan cache jika gagal
+        if: failure()
+        run: |
+          echo "Cleaning up cache..."
+          # Tindakan pembersihan bisa ditambahkan di sini jika diperlukan
+
       # Buat tag untuk rilis
       - name: Buat Tag Rilis
         run: |
-          git tag "v$VERSION+$NEW_CODE"
-          git push origin "v$VERSION+$NEW_CODE"
+          TAG_NAME="${{ steps.update_version.outputs.version }}"
+          git tag "$TAG_NAME"
+          git push origin "$TAG_NAME"
 
       # Rilis Aplikasi Android
       - name: Rilis Aplikasi Android
         if: vars.PLATFORM == 'android'
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: "v$VERSION+$NEW_CODE"
+          tag_name: "$TAG_NAME"
           files: build/app/outputs/bundle/release/app-release.aab
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -119,7 +168,23 @@ jobs:
         if: vars.PLATFORM == 'ios'
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: "v$VERSION+$NEW_CODE"
+          tag_name: "$TAG_NAME"
           files: build/ios/iphoneos/*.app
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Kirim notifikasi email jika sukses
+      - name: Kirim notifikasi email jika sukses
+        if: success() && github.ref == 'refs/heads/main'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          from: ${{ secrets.SMTP_FROM }}
+          to: ${{ vars.SMTP_RECIPIENT }}
+          subject: 'Build Sukses'
+          body: |
+            Build telah berhasil untuk commit ${{ github.sha }} di branch ${{ github.ref }}.
+            Aplikasi telah dirilis. Silakan cek detailnya di ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}.
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USER }}
+          password: ${{ secrets.SMTP_PASSWORD }}
