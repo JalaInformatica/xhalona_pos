@@ -8,23 +8,27 @@ on:
 permissions:
   contents: write
 
+defaults:
+  run:
+    working-directory: xhalona_pos
+
+env:
+  ROOT_DIR: ${{ github.workspace }}
+
 jobs:
   checkout:
     runs-on: ubuntu-latest
-    outputs:
-      project_root: ${{ steps.set_project_root.outputs.root }}
     steps:
       # Ambil kode repositori
       - name: Ambil kode
         uses: actions/checkout@v4
 
-      # Set root proyek
-      - name: Siapkan Root Proyek
-        id: set_project_root
+      - name: List files in the root directory
         run: |
-          ROOT_DIR="${{ github.workspace }}"
-          echo "Project root detected at: $ROOT_DIR"
-          echo "root=$ROOT_DIR" >> $GITHUB_ENV
+          echo "Current directory:"
+          pwd
+          echo "Contents of the root directory:"
+          ls -la /
 
   cache:
     runs-on: ubuntu-latest
@@ -76,30 +80,29 @@ jobs:
       # Install dependensi flutter
       - name: Install dependensi
         run: flutter pub get
-        working-directory: ${{ needs.checkout.outputs.project_root }}
 
       # Perbarui versi gradle
       - name: Pasang Gradle versi 8.0
         run: |
-            sed -i 's|distributionUrl=.*|distributionUrl=https://services.gradle.org/distributions/gradle-8.0-all.zip|' ${{ needs.checkout.outputs.project_root }}/android/gradle/wrapper/gradle-wrapper.properties
+            sed -i 's|distributionUrl=.*|distributionUrl=https://services.gradle.org/distributions/gradle-8.0-all.zip|' ${{ env.ROOT_DIR }}/android/gradle/wrapper/gradle-wrapper.properties
 
       # Perbarui versi aplikasi flutter
       - name: Perbarui Versi
         id: update_version
         run: |
-            CURRENT_VERSION=$(grep 'version: ' ${{ needs.checkout.outputs.project_root }}/pubspec.yaml | sed 's/version: //')
+            CURRENT_VERSION=$(grep 'version: ' ${{ env.ROOT_DIR }}/pubspec.yaml | sed 's/version: //')
             IFS='+' read -r VERSION CODE <<< "$CURRENT_VERSION"
             NEW_CODE=$((CODE + 1))
             NEW_VERSION="$VERSION+$NEW_CODE"
 
             echo "Updating version from $CURRENT_VERSION to $NEW_VERSION"
 
-            if [ ! -f ${{ needs.checkout.outputs.project_root }}/pubspec.yaml ]; then
+            if [ ! -f ${{ env.ROOT_DIR }}/pubspec.yaml ]; then
                 echo "Error: pubspec.yaml file does not exist."
                 exit 1
             fi
 
-            sed -i "s/version: $CURRENT_VERSION/version: $NEW_VERSION/" ${{ needs.checkout.outputs.project_root }}/pubspec.yaml || {
+            sed -i "s/version: $CURRENT_VERSION/version: $NEW_VERSION/" ${{ env.ROOT_DIR }}/pubspec.yaml || {
                 echo "Error: Failed to update version in pubspec.yaml"
                 exit 1
             }
