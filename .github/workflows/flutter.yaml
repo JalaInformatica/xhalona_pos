@@ -42,8 +42,9 @@ jobs:
     outputs:
       version: ${{ steps.update_version.outputs.version }}
       current_version: ${{ steps.update_version.outputs.current_version }}
-    env:
-      ROOT_DIR: ${{ github.workspace }}
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}
     steps:
       - name: Siapkan JDK 17 (Microsoft Distribution)
         uses: actions/setup-java@v3.10.0
@@ -60,16 +61,12 @@ jobs:
       - name: Cek Versi Flutter
         run: flutter --version
 
-      - name: Set Working Directory
-        run: cd ${{ env.ROOT_DIR }}
-
       - name: Install dependensi
         run: flutter pub get
-        working-directory: ${{ env.ROOT_DIR }}
 
       - name: Pasang Gradle versi 8.0
         run: |
-          sed -i 's|distributionUrl=.*|distributionUrl=https://services.gradle.org/distributions/gradle-8.0-all.zip|' ${{ env.ROOT_DIR }}/android/gradle/wrapper/gradle-wrapper.properties
+          sed -i 's|distributionUrl=.*|distributionUrl=https://services.gradle.org/distributions/gradle-8.0-all.zip|' android/gradle/wrapper/gradle-wrapper.properties
 
       - name: Perbarui Versi
         id: update_version
