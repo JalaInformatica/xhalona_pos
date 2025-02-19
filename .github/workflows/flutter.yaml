@@ -94,7 +94,7 @@ jobs:
       - name: Bangun Bundel Aplikasi Android
         if: vars.PLATFORM == 'android'
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > my-release-key.jks
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/my-release-key.jks
           flutter build appbundle --release
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
