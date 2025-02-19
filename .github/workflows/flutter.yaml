@@ -28,12 +28,6 @@ jobs:
       - name: Cek Versi Flutter
         run: flutter --version
 
-      - name: Bersihkan build artifacts
-        run: flutter clean
-
-      - name: Bersihkan Flutter Pub Cache
-        run: flutter pub cache repair
-
       - name: Install dependensi
         run: flutter pub get
 
