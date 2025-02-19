@@ -1,11 +1,24 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:xhalona_pos/models/dao/employee.dart';
+import 'package:xhalona_pos/models/dao/kategori.dart';
+import 'package:xhalona_pos/models/dao/kustomer.dart';
 import 'package:xhalona_pos/models/dao/monitor.dart';
+import 'package:xhalona_pos/models/dao/product.dart';
+import 'package:xhalona_pos/repositories/employee/employee_repository.dart';
+import 'package:xhalona_pos/repositories/kustomer/kustomer_repository.dart';
 import 'package:xhalona_pos/repositories/monitor/monitor_repository.dart';
 import 'package:xhalona_pos/repositories/crystal_report/lap_penjualan_repository.dart';
+import 'package:xhalona_pos/repositories/product/product_repository.dart';
+import 'package:xhalona_pos/views/home/fragment/master/karyawan/karyawan_controller.dart';
 
 class MonitorController extends GetxController {
   MonitorRepository _monitorRepository = MonitorRepository();
+  EmployeeRepository _employeeRepository = EmployeeRepository();
+  KustomerRepository _kustomerRepository = KustomerRepository();
+  ProductRepository _productRepository = ProductRepository();
+
   var startDate = DateFormat("dd-MM-yyyy").format(DateTime.now()).obs;
   var endDate = DateFormat("dd-MM-yyyy").format(DateTime.now()).obs;
   
@@ -14,10 +27,28 @@ class MonitorController extends GetxController {
   var isFilterByProduct = false.obs;
   var isFilterByKategori = false.obs;
 
-  var filterTerapisValue = "".obs;
-  var filterCustomerValue = "".obs;
-  var filterProductValue = "".obs;
-  var filterKategoriValue = "".obs;
+  var terapisHeader = <EmployeeDAO>[].obs;
+  var filterTableByTerapis = "".obs;
+
+  var productController = TextEditingController().obs;
+
+  var kustomerHeader = <KustomerDAO>[].obs;
+  var filterTableByCustomer = "".obs;
+
+  var productHeader = <ProductDAO>[].obs;
+  var filterTableByProduct = "".obs;
+
+  Future<void>fetchProducts(String? filter) async {
+    productHeader.value = await _productRepository.getProducts(
+      pageRow: 5,
+      filterValue: filter
+    );
+    // print("abc");
+          
+  }
+
+  var kategoriHeader = <KategoriDAO>[].obs;
+  var filterTableByKategori = "".obs;
 
   var monitorHeader = <MonitorDAO>[].obs;
   var isLoading = true.obs;
@@ -93,11 +124,11 @@ class MonitorController extends GetxController {
       );
 
       monitorHeader.value = result.where((monitor) =>
-        (filterKategoriValue.value.isEmpty || monitor.ketAnalisa == filterKategoriValue.value) &&
+        (filterTableByKategori.value.isEmpty || monitor.ketAnalisa == filterTableByKategori.value) &&
         (shift.value=="SEMUA" || monitor.shiftId == shift.value) &&
-        (filterTerapisValue.value.isEmpty || monitor.empId == filterTerapisValue.value) &&
-        (filterCustomerValue.value.isEmpty || monitor.supplierName == filterCustomerValue.value) &&
-        (filterProductValue.value.isEmpty || monitor.partId == filterProductValue.value)
+        (filterTableByTerapis.value.isEmpty || monitor.empId == filterTableByTerapis.value) &&
+        (filterTableByCustomer.value.isEmpty || monitor.supplierName == filterTableByCustomer.value) &&
+        (filterTableByProduct.value.isEmpty || monitor.partId == filterTableByProduct.value)
       ).toList();
 
       sumTotal.value =

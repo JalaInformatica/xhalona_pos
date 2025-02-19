@@ -24,12 +24,14 @@ import 'package:xhalona_pos/views/home/fragment/master/product/kategori/kategori
 import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_viewer_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplier_kustomer_controller.dart';
 import 'package:xhalona_pos/widgets/app_text_field.dart';
+import 'package:xhalona_pos/widgets/app_typeahead.dart';
 
 class MonitorScreen extends StatelessWidget {
   final MonitorController controller = Get.put(MonitorController());
   final TextEditingController _startDateController = TextEditingController();
   final TextEditingController _endDateController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  TextEditingController productController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -47,15 +49,11 @@ class MonitorScreen extends StatelessWidget {
         });
       }
     }
-
-    controller.fetchData();
     return Scaffold(
       backgroundColor: AppColor.whiteColor,
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
+        child: Column(
             spacing: 10.h,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -195,18 +193,31 @@ class MonitorScreen extends StatelessWidget {
                 ],)
               ),
               Column(children: [
-                // Obx(()=> Visibility(
-                //   visible: controller.isFilterByTerapis.value,
-                //   child: buildTypeAheadFieldTerapis(
-                //     "Filter Terapis", controllerKar.karyawanHeader, (value) {
-                //     _selectedTherapist = value;
-                // }, controllerKar.updateFilterValue))),
+                // Visibility(
+                //   visible: true,
+                //   // visible: controller.isFilterByProduct.value,
+                  // child: 
+                  Obx(()=> AppTypeahead<ProductDAO>(
+                    label: "Product", 
+                    controller: controller.productController.value,
+                    onChanged: (selectedPartId){
+                      controller.filterTableByProduct.value = selectedPartId ?? "";
+                      print(selectedPartId);
+                      print("wix");
+                      controller.productController.value = (TextEditingController()..text=selectedPartId??"");
+                    }, 
+                    updateFilterValue: (newValue) async{
+                      await controller.fetchProducts(newValue);
+                      return controller.productHeader;
+                    }, 
+                    displayText: (product)=>product.partName, 
+                    getId: (product)=>product.partName
+                  ),
+                // )
+                ),
                 // Obx(()=> Visibility(
                 //   visible: controller.isFilterByCustomer.value,
-                //   child: buildTypeAheadFieldCustomer(
-                //     "Filter Customer", controllerKus.kustomerHeader, (value) {
-                //     _selectedCustomer = value;
-                // }, controllerKus.updateMonitorValue))),
+                //   child: )),
                 // Obx(()=> Visibility(
                 //   visible: controller.isFilterByProduct.value,
                 //   child: buildTypeAheadFieldProduct(
@@ -240,22 +251,22 @@ class MonitorScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: 8.0),
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      decoration: InputDecoration(labelText: 'Shift'),
-                      value: controller.shift.value,
-                      items: ['SEMUA', 'PAGI', 'SIANG']
-                          .map((shift) => DropdownMenuItem(
-                                value: shift,
-                                child: Text(shift,
-                                    style: AppTextStyle.textBodyStyle()),
-                              ))
-                          .toList(),
-                      onChanged: (value) {
-                          controller.shift.value = value!;
-                      },
-                    ),
-                  ),
+                  // Expanded(
+                  //   child: DropdownButtonFormField<String>(
+                  //     decoration: InputDecoration(labelText: 'Shift'),
+                  //     value: controller.shift.value,
+                  //     items: ['SEMUA', 'PAGI', 'SIANG']
+                  //         .map((shift) => DropdownMenuItem(
+                  //               value: shift,
+                  //               child: Text(shift,
+                  //                   style: AppTextStyle.textBodyStyle()),
+                  //             ))
+                  //         .toList(),
+                  //     onChanged: (value) {
+                  //         controller.shift.value = value!;
+                  //     },
+                  //   ),
+                  // ),
                 ],
               ),
               Text('Format Penjualan By:', style: AppTextStyle.textBodyStyle()),
@@ -467,8 +478,7 @@ class MonitorScreen extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildSummaryRow(String title, dynamic value) {
