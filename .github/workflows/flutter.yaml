@@ -8,10 +8,6 @@ on:
 permissions:
   contents: write
 
-defaults:
-  run:
-    working-directory: xhalona_pos
-
 env:
   ROOT_DIR: ${{ github.workspace }}
 
