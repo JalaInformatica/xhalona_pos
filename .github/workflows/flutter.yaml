@@ -68,7 +68,9 @@ jobs:
 
       # Install dependensi flutter
       - name: Install dependensi
-        run: flutter pub get
+        run: |
+          cd ${{ env.ROOT_DIR }}
+          flutter pub get
 
       # Perbarui versi gradle
       - name: Pasang Gradle versi 8.0
