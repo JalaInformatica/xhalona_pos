@@ -63,7 +63,11 @@ jobs:
       # Perbarui versi gradle
       - name: Pasang Gradle versi 8.0
         run: |
-            sed -i 's|distributionUrl=.*|distributionUrl=https://services.gradle.org/distributions/gradle-8.0-all.zip|' android/gradle/wrapper/gradle-wrapper.properties
+            if grep -q  "^org.gradle.watching.enabled=" android/gradle.properties; then
+             sed -i "s/^org.gradle.watching.enabled=.*/org.gradle.watching.enabled=false/" android/gradle.properties
+else
+             echo "org.gradle.watching.enabled=false" >> android/gradle.properties
+fi
 
       # Perbarui versi aplikasi flutter
       - name: Perbarui Versi
