@@ -16,14 +16,14 @@ jobs:
       - name: Siapkan JDK 11 LTS (Microsoft Distribution)
         uses: actions/setup-java@v3
         with:
-          distribution: 'microsoft'
-          java-version: '11'
+          distribution: 'oracle'
+          java-version: '17'
 
-      - name: Install Flutter
-        uses: flutter-actions/setup-flutter@v4
+      - name: Set Up Flutter
+        uses: subosito/flutter-action@v2
         with:
-          channel: stable
-          version: latest
+            flutter-version: '3.22.2'
+            channel: 'stable'
 
       - name: Cek Versi Flutter
         run: flutter --version
