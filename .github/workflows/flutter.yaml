@@ -57,7 +57,7 @@ jobs:
       # Perbarui versi gradle
       - name: Pasang Gradle versi 7.6
         run: |
-            sed -i 's|distributionUrl=.*|distributionUrl=https://services.gradle.org/distributions/gradle-7.6-bin.zip|' gradle/wrapper/gradle-wrapper.properties
+            sed -i 's|distributionUrl=.*|distributionUrl=https://services.gradle.org/distributions/gradle-7.6-bin.zip|' android/gradle/wrapper/gradle-wrapper.properties
 
       # Perbarui versi aplikasi flutter
       - name: Perbarui Versi
