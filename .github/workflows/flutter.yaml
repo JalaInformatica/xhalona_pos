@@ -22,8 +22,8 @@ jobs:
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
-            flutter-version: '3.6.0'
             channel: 'stable'
+            flutter-version-file: pubspec.yaml
 
       - name: Cek Versi Flutter
         run: flutter --version
@@ -114,3 +114,29 @@ jobs:
         with:
           name: log-build
           path: build/logs/
+
+      # Buat tag untuk rilis
+      - name: Buat Tag Rilis
+        run: |
+          git tag "v$VERSION+$NEW_CODE"
+          git push origin "v$VERSION+$NEW_CODE"
+
+      # Rilis Aplikasi Android
+      - name: Rilis Aplikasi Android
+        if: vars.PLATFORM == 'android'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "v$VERSION+$NEW_CODE"
+          files: build/app/outputs/bundle/release/app-release.aab
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Rilis Aplikasi iOS
+      - name: Rilis Aplikasi iOS
+        if: vars.PLATFORM == 'ios'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "v$VERSION+$NEW_CODE"
+          files: build/ios/iphoneos/*.app
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
