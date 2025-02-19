@@ -60,8 +60,12 @@ jobs:
       - name: Cek Versi Flutter
         run: flutter --version
 
+      - name: Set Working Directory
+        run: cd ${{ env.ROOT_DIR }}
+
       - name: Install dependensi
         run: flutter pub get
+        working-directory: ${{ env.ROOT_DIR }}
 
       - name: Pasang Gradle versi 8.0
         run: |
