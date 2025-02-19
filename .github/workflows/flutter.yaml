@@ -1,26 +1,23 @@
-name: Bangun Aplikasi Xhalona
+name: Build Aplikasi Xhalona
 
 on:
   push:
     branches:
-      - main # Ganti dengan branch yang Anda gunakan
+      - main
 
 permissions:
   contents: write
 
 jobs:
-  build:
+  checkout:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Debug
-        run: |
-            vars | sort
-            secrets | sort
-
       - name: Ambil kode
         uses: actions/checkout@v4
 
+  cache:
+    runs-on: ubuntu-latest
+    steps:
       # Cache untuk Java
       - name: Restore Java cache
         uses: actions/cache@v3
@@ -29,12 +26,6 @@ jobs:
           key: java-${{ runner.os }}-build-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             java-${{ runner.os }}-build-
-
-      - name: Siapkan JDK 17 (Microsoft Distribution)
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'microsoft'
-          java-version: '17'
 
       # Cache untuk Flutter
       - name: Restore Flutter cache
@@ -47,7 +38,20 @@ jobs:
           restore-keys: |
             flutter-${{ runner.os }}-build-
 
-      # Install flutter
+  setup:
+    runs-on: ubuntu-latest
+    needs: [checkout, cache]
+    outputs:
+      version: ${{ steps.update_version.outputs.version }}
+      current_version: ${{ steps.update_version.outputs.current_version }}
+    steps:
+      - name: Siapkan JDK 17 (Microsoft Distribution)
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'microsoft'
+          java-version: '17'
+
+      # Install Flutter
       - name: Install Flutter
         uses: flutter-actions/setup-flutter@v4
         with:
@@ -74,84 +78,85 @@ jobs:
             CURRENT_VERSION=$(grep 'version: ' pubspec.yaml | sed 's/version: //')
             IFS='+' read -r VERSION CODE <<< "$CURRENT_VERSION"
             NEW_CODE=$((CODE + 1))
+            NEW_VERSION="$VERSION+$NEW_CODE"
 
-            echo "Updating version from $CURRENT_VERSION to $VERSION+$NEW_CODE"
+            echo "Updating version from $CURRENT_VERSION to $NEW_VERSION"
 
-            # Check if pubspec.yaml exists
             if [ ! -f pubspec.yaml ]; then
-                echo "pubspec.yaml file does not exist."
+                echo "Error: pubspec.yaml file does not exist."
                 exit 1
             fi
 
-            # Update version in pubspec.yaml
-            sed -i "s/version: $CURRENT_VERSION/version: $VERSION+$NEW_CODE/" pubspec.yaml || {
-                echo "Failed to update version in pubspec.yaml"
+            sed -i "s/version: $CURRENT_VERSION/version: $NEW_VERSION/" pubspec.yaml || {
+                echo "Error: Failed to update version in pubspec.yaml"
                 exit 1
             }
 
-            # Configure Git
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action"
 
-            # Commit changes
-            git commit -m "Update version to $VERSION+$NEW_CODE" || echo "No changes to commit."
+            if ! git diff --quiet; then
+                git commit -m "Update version to $NEW_VERSION"
+            else
+                echo "No changes to commit."
+            fi
 
-            echo "::set-output name=version::${VERSION}+$NEW_CODE"
+            echo "::set-output name=version::$NEW_VERSION"
+            echo "::set-output name=current_version::$CURRENT_VERSION"
 
-      # Bangun Android
-      - name: Bangun Bundel Aplikasi Android
-        if: vars.PLATFORM == 'android'
-        run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/my-release-key.jks
-          flutter build appbundle --release
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_ALIAS_PASSWORD: ${{ secrets.KEY_ALIAS_PASSWORD }}
+  build_android:
+    runs-on: ubuntu-latest
+    needs: [setup]
+    if: vars.PLATFORM == 'android'
+    steps:
+      - name: Build Bundel Aplikasi Android
+        run: flutter build appbundle --release
 
       - name: Unggah Bundel Aplikasi Android
-        if: vars.PLATFORM == 'android'
         uses: actions/upload-artifact@v4
         with:
           name: bundel-aplikasi-android
           path: build/app/outputs/bundle/release/app-release.aab
 
       - name: Tanda Tangan Bundel Aplikasi Android
-        if: vars.PLATFORM == 'android'
         uses: r0adkll/sign-android-release@v1
         id: sign_app
         with:
-            releaseDirectory: build/app/outputs/bundle/release/
-            signingKeyBase64: ${{ secrets.KEYSTORE_BASE64 }}
-            alias: ${{ secrets.KEY_ALIAS }}
-            keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
-            keyPassword: ${{ secrets.KEY_ALIAS_PASSWORD }}
+          releaseDirectory: build/app/outputs/bundle/release/
+          signingKeyBase64: ${{ secrets.KEYSTORE_BASE64 }}
+          alias: ${{ secrets.KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_ALIAS_PASSWORD }}
 
-      # Bangun iOS
+  build_ios:
+    runs-on: ubuntu-latest
+    needs: [setup]
+    if: vars.PLATFORM == 'ios'
+    steps:
       - name: Dekode Sertifikat iOS
-        if: vars.PLATFORM == 'ios'
         run: |
           echo "${{ secrets.IOS_CERTIFICATE }}" | base64 --decode > ios_certificate.p12
 
       - name: Install Sertifikat iOS
-        if: vars.PLATFORM == 'ios'
         run: |
           security create-keychain -p "" build.keychain
           security import ios_certificate.p12 -k build.keychain -P "${{ secrets.CERT_PASSWORD }}" -T /usr/bin/codesign
           security list-keychains -s build.keychain
           security unlock-keychain -p "" build.keychain
 
-      - name: Bangun Aplikasi iOS
-        if: vars.PLATFORM == 'ios'
+      - name: Build Aplikasi iOS
         run: flutter build ios --release --no-codesign
 
       - name: Unggah Aplikasi iOS
-        if: vars.PLATFORM == 'ios'
         uses: actions/upload-artifact@v4
         with:
           name: aplikasi-ios
           path: build/ios/iphoneos/*.app
 
+  notifications:
+    runs-on: ubuntu-latest
+    needs: [build_android, build_ios]
+    steps:
       # Kirim notifikasi email jika gagal
       - name: Kirim notifikasi email jika gagal
         if: failure()
@@ -168,7 +173,6 @@ jobs:
           username: ${{ secrets.SMTP_USER }}
           password: ${{ secrets.SMTP_PASSWORD }}
 
-      # Unggah log jika build gagal
       - name: Unggah log
         if: failure()
         uses: actions/upload-artifact@v4
@@ -176,41 +180,14 @@ jobs:
           name: log-build
           path: build/logs/
 
-      # Bersihkan cache jika gagal
       - name: Bersihkan cache jika gagal
         if: failure()
         run: |
           echo "Cleaning up cache..."
-          # Tindakan pembersihan bisa ditambahkan di sini jika diperlukan
-
-      # Buat tag untuk rilis
-      - name: Buat Tag Rilis
-        run: |
-          TAG_NAME="${{ steps.update_version.outputs.version }}"
-          git tag "$TAG_NAME"
-          git push origin "$TAG_NAME"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Rilis Aplikasi Android
-      - name: Rilis Aplikasi Android
-        if: vars.PLATFORM == 'android'
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.ref }}
-          files: build/app/outputs/bundle/release/app-release.aab
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Rilis Aplikasi iOS
-      - name: Rilis Aplikasi iOS
-        if: vars.PLATFORM == 'ios'
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.ref }}
-          files: build/ios/iphoneos/*.app
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          [ -d ~/.m2/repository ] && rm -rf ~/.m2/repository
+          [ -d ~/.pub-cache ] && rm -rf ~/.pub-cache
+          [ -d build ] && rm -rf build/*
+          [ -d build/logs ] && rm -rf build/logs/*
 
       # Kirim notifikasi email jika sukses
       - name: Kirim notifikasi email jika sukses
@@ -227,3 +204,37 @@ jobs:
           server_port: ${{ secrets.SMTP_PORT }}
           username: ${{ secrets.SMTP_USER }}
           password: ${{ secrets.SMTP_PASSWORD }}
+
+  release:
+    runs-on: ubuntu-latest
+    needs: [build_android, build_ios, setup]
+    steps:
+      # Buat tag untuk rilis
+      - name: Buat Tag Rilis
+        run: |
+          TAG_NAME="${{ needs.setup.outputs.version }}"
+          echo "Creating release tag: $TAG_NAME"
+          git tag "$TAG_NAME"
+          git push origin "$TAG_NAME"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Rilis Aplikasi Android
+      - name: Rilis Aplikasi Android
+        if: vars.PLATFORM == 'android' && needs.setup.outputs.version != needs.setup.outputs.current_version
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.setup.outputs.version }}
+          files: build/app/outputs/bundle/release/app-release.aab
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Rilis Aplikasi iOS
+      - name: Rilis Aplikasi iOS
+        if: vars.PLATFORM == 'ios' && needs.setup.outputs.version != needs.setup.outputs.current_version
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.setup.outputs.version }}
+          files: build/ios/iphoneos/*.app
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
