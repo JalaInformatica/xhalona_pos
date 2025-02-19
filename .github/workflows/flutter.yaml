@@ -23,13 +23,6 @@ jobs:
       - name: Ambil kode
         uses: actions/checkout@v4
 
-      - name: List files in the root directory
-        run: |
-          echo "Current directory:"
-          pwd
-          echo "Contents of the root directory:"
-          ls -la /
-
   cache:
     runs-on: ubuntu-latest
     steps:
