@@ -20,10 +20,10 @@ jobs:
           java-version: '17'
 
       - name: Install Flutter
-        uses: subosito/flutter-action@v2
+        uses: flutter-actions/setup-flutter@v4
         with:
-            channel: 'main'
-            flutter-version-file: pubspec.yaml
+            channel: stable
+            version: 3.27.0
 
       - name: Cek Versi Flutter
         run: flutter --version
