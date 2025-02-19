@@ -30,7 +30,15 @@ class MonitorController extends GetxController {
   var terapisHeader = <EmployeeDAO>[].obs;
   var filterTableByTerapis = "".obs;
 
-  var productController = TextEditingController().obs;
+  Future<void>fetchTerapis(String? filter) async {
+    terapisHeader.value = await _employeeRepository.getEmployees(
+      pageRow: 5,
+      filterValue: filter
+    );          
+  }
+
+  TextEditingController productController = TextEditingController();
+  TextEditingController employeeController = TextEditingController();
 
   var kustomerHeader = <KustomerDAO>[].obs;
   var filterTableByCustomer = "".obs;
@@ -42,9 +50,7 @@ class MonitorController extends GetxController {
     productHeader.value = await _productRepository.getProducts(
       pageRow: 5,
       filterValue: filter
-    );
-    // print("abc");
-          
+    );          
   }
 
   var kategoriHeader = <KategoriDAO>[].obs;
@@ -128,7 +134,7 @@ class MonitorController extends GetxController {
         (shift.value=="SEMUA" || monitor.shiftId == shift.value) &&
         (filterTableByTerapis.value.isEmpty || monitor.empId == filterTableByTerapis.value) &&
         (filterTableByCustomer.value.isEmpty || monitor.supplierName == filterTableByCustomer.value) &&
-        (filterTableByProduct.value.isEmpty || monitor.partId == filterTableByProduct.value)
+        (filterTableByProduct.value.isEmpty || monitor.partName.contains(filterTableByProduct.value))
       ).toList();
 
       sumTotal.value =

@@ -7,10 +7,11 @@ class AppTypeahead<T> extends TypeAheadField<T> {
     super.key,
     required String label,
     required TextEditingController controller,
-    required ValueChanged<String?> onChanged,
+    required ValueChanged<String?> onSelected,
     required Future<List<T>> Function(String newFilterValue) updateFilterValue,
     required String Function(T) displayText,
     required String Function(T) getId,
+    VoidCallback? onTapOutside,
   }) : super(
        controller: controller,
        suggestionsCallback: (pattern) {
@@ -22,6 +23,7 @@ class AppTypeahead<T> extends TypeAheadField<T> {
             textEditingController: textEditingController,
             focusNode: focusNode,
             labelText: label,
+            onTapOutside: (_) => onTapOutside,
           );
         },
         itemBuilder: (context, T suggestion) {
@@ -29,9 +31,10 @@ class AppTypeahead<T> extends TypeAheadField<T> {
             title: Text(displayText(suggestion)),
           );
         },
+        
         onSelected: (T suggestion) {
           // controller.text = displayText(suggestion);
-          onChanged(getId(suggestion));
+          onSelected(getId(suggestion));
         },
       );
 }
