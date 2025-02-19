@@ -5,11 +5,17 @@ on:
     branches:
       - main # Ganti dengan branch yang Anda gunakan
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Debug
+        run: env | sort
+
       - name: Ambil kode
         uses: actions/checkout@v4
 
@@ -181,6 +187,8 @@ jobs:
           TAG_NAME="${{ steps.update_version.outputs.version }}"
           git tag "$TAG_NAME"
           git push origin "$TAG_NAME"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Rilis Aplikasi Android
       - name: Rilis Aplikasi Android
