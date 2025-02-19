@@ -40,7 +40,7 @@ jobs:
 
       # Bangun Android
       - name: Bangun Bundel Aplikasi Android
-        if: env.PLATFORM == 'android'
+        if: vars.PLATFORM == 'android'
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > my-release-key.jks
           flutter build appbundle --release --flavor prod
@@ -50,7 +50,7 @@ jobs:
           KEY_ALIAS_PASSWORD: ${{ secrets.KEY_ALIAS_PASSWORD }}
 
       - name: Unggah Bundel Aplikasi Android
-        if: env.PLATFORM == 'android'
+        if: vars.PLATFORM == 'android'
         uses: actions/upload-artifact@v4
         with:
           name: bundel-aplikasi-android
@@ -58,12 +58,12 @@ jobs:
 
       # Bangun iOS
       - name: Dekode Sertifikat iOS
-        if: env.PLATFORM == 'ios'
+        if: vars.PLATFORM == 'ios'
         run: |
           echo "${{ secrets.IOS_CERTIFICATE }}" | base64 --decode > ios_certificate.p12
 
       - name: Install Sertifikat iOS
-        if: env.PLATFORM == 'ios'
+        if: vars.PLATFORM == 'ios'
         run: |
           security create-keychain -p "" build.keychain
           security import ios_certificate.p12 -k build.keychain -P "${{ secrets.CERT_PASSWORD }}" -T /usr/bin/codesign
@@ -71,11 +71,11 @@ jobs:
           security unlock-keychain -p "" build.keychain
 
       - name: Bangun Aplikasi iOS
-        if: env.PLATFORM == 'ios'
+        if: vars.PLATFORM == 'ios'
         run: flutter build ios --release --no-codesign
 
       - name: Unggah Aplikasi iOS
-        if: env.PLATFORM == 'ios'
+        if: vars.PLATFORM == 'ios'
         uses: actions/upload-artifact@v4
         with:
           name: aplikasi-ios
@@ -87,7 +87,7 @@ jobs:
         uses: dawidd6/action-send-mail@v3
         with:
           from: ${{ secrets.SMTP_FROM }}
-          to: "ichlaswardy26@gmail.com"
+          to: ${{ vars.SMTP_RECIPIENT }}
           subject: 'Build Gagal'
           body: |
             Build telah gagal untuk commit ${{ github.sha }} di branch ${{ github.ref }}.
