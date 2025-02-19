@@ -18,14 +18,14 @@ jobs:
         with:
           java-version: '11'
 
-      - name: Install dependensi
-        run: flutter pub get
-
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           flutter-version: pubspec.yaml
+
+      - name: Install dependensi Flutter
+        run: flutter pub get
 
       # Perbarui Versi
       - name: Perbarui Versi
