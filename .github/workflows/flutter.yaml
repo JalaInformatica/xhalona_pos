@@ -113,11 +113,6 @@ jobs:
           # Code signing
           codesign -f -s "${{ secrets.IOS_CERTIFICATE_NAME }}" --deep --timestamp --options=runtime ${{ env.build_path }}/*.app
 
-      # Debug Artifact Path
-      - name: Debug Artifact Path
-        run: |
-          echo "Artifact Path: ${{ env.artifact_path }}"
-
       # Upload Artifact
       - name: Upload Artifact
         id: upload_artifact
