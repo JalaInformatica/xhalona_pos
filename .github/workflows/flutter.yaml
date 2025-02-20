@@ -18,20 +18,6 @@ jobs:
         with:
           show-progress: true
 
-      # Setup Node.js for semantic-release
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 'latest'
-
-      # Clear npm cache
-      - name: Clear npm cache
-        run: npm cache clean --force
-
-      # Install dependensi node untuk semantic-release
-      - name: Install Dependencies
-        run: npm install
-
       # Setup JDK 17
       - name: Siapkan JDK 17 (Microsoft Distribution)
         uses: actions/setup-java@v3.10.0
@@ -50,15 +36,32 @@ jobs:
       - name: Cek Versi Flutter
         run: flutter --version
 
+      # Install pubspec_version_cli
+      - name: Install pubspec_version_cli
+        run: flutter pub global activate pubspec_version_cli
+
+      # Ambil versi saat ini
+      - name: Get current version
+        id: get_version
+        run: |
+          CURRENT_VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //;s/+.*//')
+          echo "CURRENT_VERSION=${CURRENT_VERSION}" >> $GITHUB_ENV
+
+      # Increment versi
+      - name: Increment version
+        run: |
+          NEW_BUILD=$(( $(echo $CURRENT_VERSION | awk -F '+' '{print $2}') + 1 ))
+          NEW_VERSION=$(echo $CURRENT_VERSION | awk -F '+' '{print $1}')+"$NEW_BUILD"
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+      # Ubah versi di pubspec.yaml
+      - name: Change version in pubspec.yaml
+        run: |
+          pubspec_version change --version "$NEW_VERSION"
+
       # Install dependensi flutter
       - name: Install dependensi
         run: flutter pub get
-
-      # Jalankan jalankan semantic-release
-      - name: Run Semantic Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
 
       # Build bundel aplikasi Android
       - name: Build Bundel Aplikasi Android
