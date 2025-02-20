@@ -22,7 +22,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 'lts/Hydrogen'
+          node-version: 'latest'
 
       # Clear npm cache
       - name: Clear npm cache
