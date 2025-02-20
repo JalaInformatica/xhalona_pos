@@ -63,11 +63,12 @@ jobs:
       - name: Manage Versioning
         id: version
         run: |
-          CURRENT_VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //;s/+.*//')
-          NEW_BUILD=$(( $(echo $CURRENT_VERSION | awk -F '+' '{print $2}') + 1 ))
-          NEW_VERSION=$(echo $CURRENT_VERSION | awk -F '+' '{print $1}')+"$NEW_BUILD"
+          set -e  # Exit immediately if a command exits with a non-zero status
+          CURRENT_VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //;s/+.*//') || { echo "Failed to read version"; exit 1; }
+          NEW_BUILD=$(( $(echo $CURRENT_VERSION | awk -F '+' '{print $2}') + 1 )) || { echo "Failed to calculate new build number"; exit 1; }
+          NEW_VERSION=$(echo $CURRENT_VERSION | awk -F '+' '{print $1}')+"$NEW_BUILD" || { echo "Failed to create new version string"; exit 1; }
           echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
-          pubspec_version change --version "$NEW_VERSION"
+          pubspec_version change --version "$NEW_VERSION" || { echo "Failed to update pubspec version"; exit 1; }
 
       # Build based on platform
       - name: Build
@@ -75,11 +76,42 @@ jobs:
         run: |
           if [[ "${{ matrix.platform }}" == "android" ]]; then
             flutter build appbundle --release
+            echo "build_path=build/app/outputs/bundle/release" >> $GITHUB_ENV
             echo "artifact_path=build/app/outputs/bundle/release/app-release.aab" >> $GITHUB_ENV
           else
             flutter build ios --release --no-codesign
+            echo "build_path=build/ios/iphoneos" >> $GITHUB_ENV
             echo "artifact_path=build/ios/iphoneos/*.app" >> $GITHUB_ENV
           fi
+
+      # Sign Android App Bundle
+      - name: Sign Android App Bundle
+        if: matrix.platform == 'android'
+        uses: r0adkll/sign-android-release@v1.0.4
+        with:
+          releaseDirectory: ${{ env.build_path }}
+          signingKeyBase64: ${{ secrets.KEYSTORE_BASE64 }}
+          alias: ${{ secrets.KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_ALIAS_PASSWORD }}
+
+      # Sign iOS App
+      - name: Sign iOS App
+        if: matrix.platform == 'ios'
+        run: |
+          security create-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" build.keychain
+          security unlock-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" build.keychain
+          security set-keychain-settings -t 3600 -l ~/Library/Keychains/build.keychain
+          
+          # Import the provisioning profile
+          echo "${{ secrets.IOS_PROVISIONING_PROFILE }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/my_profile.mobileprovision
+          
+          # Import the certificate
+          echo "${{ secrets.IOS_CERTIFICATE }}" | base64 --decode > certificate.p12
+          security import certificate.p12 -P "${{ secrets.IOS_CERTIFICATE_PASSWORD }}" -T /usr/bin/codesign
+
+          # Code signing
+          codesign -f -s "${{ secrets.IOS_CERTIFICATE_NAME }}" --deep --timestamp --options=runtime ${{ env.build_path }}/*.app
 
       # Debug Artifact Path
       - name: Debug Artifact Path
@@ -98,8 +130,8 @@ jobs:
       - name: Rilis Aplikasi
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref }}
-          files: ${{ steps.build.outputs.artifact_path }}
+          tag_name: ${{ env.NEW_VERSION }}
+          files: ${{ env.artifact_path }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
