@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        platform: [android, ios]
+        platform: ${{ vars.PLATFORM }}
     steps:
       # Ambil kode repositori
       - name: Ambil kode
@@ -38,6 +38,10 @@ jobs:
       # Cek versi flutter
       - name: Cek Versi Flutter
         run: flutter --version
+
+      # Install pubspec_version_cli
+      - name: Install pubspec_version_cli
+        run: flutter pub global activate pubspec_version_cli
 
       # Cache Flutter packages
       - name: Cache Flutter Packages
