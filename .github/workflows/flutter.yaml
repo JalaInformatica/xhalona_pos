@@ -11,9 +11,6 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.update_version.outputs.version }}
-      current_version: ${{ steps.update_version.outputs.current_version }}
     steps:
       # Ambil kode repositori
       - name: Ambil kode
@@ -72,19 +69,18 @@ jobs:
       - name: Perbarui Versi
         id: update_version
         run: |
+            TIMESTAMP=$(date +%Y%m%d%H%M%S)
             CURRENT_VERSION=$(grep 'version: ' pubspec.yaml | sed 's/version: //')
-            IFS='+' read -r VERSION CODE <<< "$CURRENT_VERSION"
-            NEW_CODE=$((CODE + 1))
-            NEW_VERSION="$VERSION+$NEW_CODE"
+            VERSION="${CURRENT_VERSION%+*}+$TIMESTAMP"
 
-            echo "Updating version from $CURRENT_VERSION to $NEW_VERSION"
+            echo "Updating version from $CURRENT_VERSION to $VERSION"
 
             if [ ! -f pubspec.yaml ]; then
                 echo "Error: pubspec.yaml file does not exist."
                 exit 1
             fi
 
-            sed -i "s/version: $CURRENT_VERSION/version: $NEW_VERSION/" pubspec.yaml || {
+            sed -i "s/version: $CURRENT_VERSION/version: $VERSION/" pubspec.yaml || {
                 echo "Error: Failed to update version in pubspec.yaml"
                 exit 1
             }
@@ -94,13 +90,22 @@ jobs:
             git add pubspec.yaml  # Menambahkan file ke staging area
 
             if ! git diff --quiet; then
-                git commit -m "Update version to $NEW_VERSION"
+                git commit -m "Update version to $VERSION"
             else
                 echo "No changes to commit."
             fi
 
-            echo "version=$NEW_VERSION" >> $GITHUB_ENV
+            echo "version=$VERSION" >> $GITHUB_ENV
             echo "current_version=$CURRENT_VERSION" >> $GITHUB_ENV
+
+      # Cek perubahan versi
+      - name: Cek Perubahan Versi
+        run: |
+            echo "${{ env.version }}"
+            echo "${{ env.current_version }}"
+        env:
+          version: ${{ env.version }}
+          current_version: ${{ env.current_version }}
 
       # Build bundel aplikasi Android
       - name: Build Bundel Aplikasi Android
@@ -159,7 +164,7 @@ jobs:
       - name: Buat Tag Rilis
         run: |
           # Mengambil version terbaru dari output build
-          TAG_NAME="${{ steps.update_version.outputs.version }}"
+          TAG_NAME="${{ env.version }}"
           
           # Jika TAG_NAME kosong, ambil dari pubspec.yaml
           if [ -z "$TAG_NAME" ]; then
@@ -174,26 +179,31 @@ jobs:
           git tag "$TAG_NAME"
           git push origin "$TAG_NAME"
         env:
+          version: ${{ env.version }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Rilis Aplikasi Android
       - name: Rilis Aplikasi Android
-        if: vars.PLATFORM == 'android' && steps.update_version.outputs.version != steps.update_version.outputs.current_version
+        if: vars.PLATFORM == 'android' && env.version != env.current_version
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.update_version.outputs.version }}
+          tag_name: ${{ env.version }}
           files: build/app/outputs/bundle/release/app-release.aab
         env:
+          version: ${{ env.version }}
+          current_version: ${{ env.current_version }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Rilis Aplikasi iOS
       - name: Rilis Aplikasi iOS
-        if: vars.PLATFORM == 'ios' && steps.update_version.outputs.version != steps.update_version.outputs.current_version
+        if: vars.PLATFORM == 'ios' && env.version != env.current_version
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.update_version.outputs.version }}
+          tag_name: ${{ env.version }}
           files: build/ios/iphoneos/*.app
         env:
+          version: ${{ env.version }}
+          current_version: ${{ env.current_version }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   cleanup:
