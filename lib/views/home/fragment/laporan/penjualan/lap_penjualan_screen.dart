@@ -1,15 +1,15 @@
-import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_controller.dart';
-import 'package:xhalona_pos/widgets/app_calendar.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
-import 'package:xhalona_pos/widgets/app_elevated_button.dart';
+import 'package:xhalona_pos/widgets/app_calendar.dart';
 import 'package:xhalona_pos/widgets/app_pdf_viewer.dart';
 import 'package:xhalona_pos/widgets/app_text_form_field.dart';
+import 'package:xhalona_pos/widgets/app_elevated_button.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_controller.dart';
 
 class LapPenjualanScreen extends StatelessWidget {
   final LapPenjualanController controller = Get.put(LapPenjualanController());
@@ -19,16 +19,14 @@ class LapPenjualanScreen extends StatelessWidget {
 
   void handleLapPenjualan(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      controller.printLapPenjualan()
-      .then((url) async {
+      controller.printLapPenjualan().then((url) async {
         if (controller.formatOption.value == 'EXCEL') {
           // Jika format EXCEL, unduh file
           await launchUrl(Uri.parse(url));
         } else {
           // Jika format PDF, tampilkan di PDF viewer
           Navigator.of(context).push(
-            MaterialPageRoute(
-                builder: (context) => AppPDFViewer(pdfUrl: url)),
+            MaterialPageRoute(builder: (context) => AppPDFViewer(pdfUrl: url)),
           );
         }
       });
@@ -162,100 +160,105 @@ class LapPenjualanScreen extends StatelessWidget {
                         style: AppTextStyle.textBodyStyle(),
                       ),
                       leading: Obx(() => Radio(
-                        value: 'Lap_Penjualan',
-                        groupValue: controller.selectedReportType.value,
-                        onChanged: (value) {
-                          controller.selectedReportType.value = value.toString();
-                        },
-                      )),
+                            value: 'Lap_Penjualan',
+                            groupValue: controller.selectedReportType.value,
+                            onChanged: (value) {
+                              controller.selectedReportType.value =
+                                  value.toString();
+                            },
+                          )),
                     ),
                     ListTile(
                       title: Text('Lap. Terapis',
                           style: AppTextStyle.textBodyStyle()),
                       leading: Obx(() => Radio(
-                        value: 'Lap_Penjualan_By_Terapis',
-                        groupValue: controller.selectedReportType.value,
-                        onChanged: (value) {
-                          controller.selectedReportType.value = value.toString();
-                        },
-                      )),
+                            value: 'Lap_Penjualan_By_Terapis',
+                            groupValue: controller.selectedReportType.value,
+                            onChanged: (value) {
+                              controller.selectedReportType.value =
+                                  value.toString();
+                            },
+                          )),
                     ),
                     ListTile(
                       title: Text('Lap. Kasir',
                           style: AppTextStyle.textBodyStyle()),
                       leading: Obx(() => Radio(
-                        value: 'Lap_Penjualan_Kasir',
-                        groupValue: controller.selectedReportType.value,
-                        onChanged: (value) {
-                          controller.selectedReportType.value = value.toString();
-                        },
-                      )),
+                            value: 'Lap_Penjualan_Kasir',
+                            groupValue: controller.selectedReportType.value,
+                            onChanged: (value) {
+                              controller.selectedReportType.value =
+                                  value.toString();
+                            },
+                          )),
                     ),
                     SizedBox(height: 16),
                     Text('Detail Laporan:',
                         style: AppTextStyle.textSubtitleStyle()),
                     ListTile(
-                      title: Text('Detail',
-                          style: AppTextStyle.textBodyStyle()),
+                      title:
+                          Text('Detail', style: AppTextStyle.textBodyStyle()),
                       leading: Obx(() => Radio(
-                        value: '1',
-                        groupValue: controller.detailOption.value,
-                        onChanged: (value) {
-                          controller.detailOption.value = value.toString();
-                        },
-                      )),
+                            value: '1',
+                            groupValue: controller.detailOption.value,
+                            onChanged: (value) {
+                              controller.detailOption.value = value.toString();
+                            },
+                          )),
                     ),
                     ListTile(
-                      title: Text('Rekap',
-                          style: AppTextStyle.textBodyStyle()),
+                      title: Text('Rekap', style: AppTextStyle.textBodyStyle()),
                       leading: Obx(() => Radio(
-                        value: '0',
-                        groupValue: controller.detailOption.value,
-                        onChanged: (value) {
-                          controller.detailOption.value = value.toString();
-                        },
-                      )),
+                            value: '0',
+                            groupValue: controller.detailOption.value,
+                            onChanged: (value) {
+                              controller.detailOption.value = value.toString();
+                            },
+                          )),
                     ),
                     SizedBox(height: 16),
                     Text('Format:', style: AppTextStyle.textSubtitleStyle()),
                     ListTile(
-                      title:
-                          Text('PDF', style: AppTextStyle.textBodyStyle()),
+                      title: Text('PDF', style: AppTextStyle.textBodyStyle()),
                       leading: Obx(() => Radio(
-                        value: 'PDF',
-                        groupValue: controller.formatOption.value,
-                        onChanged: (value) {
-                          controller.formatOption.value = value.toString();
-                        },
-                      )),
+                            value: 'PDF',
+                            groupValue: controller.formatOption.value,
+                            onChanged: (value) {
+                              controller.formatOption.value = value.toString();
+                            },
+                          )),
                     ),
                     ListTile(
-                      title: Text('EXCEL',
-                          style: AppTextStyle.textBodyStyle()),
+                      title: Text('EXCEL', style: AppTextStyle.textBodyStyle()),
                       leading: Obx(() => Radio(
-                        value: 'EXCEL',
-                        groupValue: controller.formatOption.value,
-                        onChanged: (value) {
-                          controller.formatOption.value = value.toString();
-                        },
-                      )),
+                            value: 'EXCEL',
+                            groupValue: controller.formatOption.value,
+                            onChanged: (value) {
+                              controller.formatOption.value = value.toString();
+                            },
+                          )),
                     ),
                     SizedBox(height: 24),
                     Center(
                         child: AppElevatedButton(
-                          size: AppElevatedButtonSize.big,
-                          backgroundColor: AppColor.primaryColor,
-                          onPressed: ()=>handleLapPenjualan(context), 
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            spacing: 10.w,
-                            children: [
-                              Icon(Icons.print, color: AppColor.whiteColor,),
-                              Text("Cetak", style: AppTextStyle.textSubtitleStyle(color: AppColor.whiteColor),),
-                            ],
-                          )
-                        )
-                      ),
+                            size: AppElevatedButtonSize.big,
+                            backgroundColor: AppColor.primaryColor,
+                            onPressed: () => handleLapPenjualan(context),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              spacing: 10.w,
+                              children: [
+                                Icon(
+                                  Icons.print,
+                                  color: AppColor.whiteColor,
+                                ),
+                                Text(
+                                  "Cetak",
+                                  style: AppTextStyle.textSubtitleStyle(
+                                      color: AppColor.whiteColor),
+                                ),
+                              ],
+                            ))),
                   ],
                 ),
               ),
@@ -287,8 +290,7 @@ class LapPenjualanScreen extends StatelessWidget {
           children: [
             Icon(icon, color: Colors.white),
             SizedBox(width: 8),
-            Text(label,
-                style: AppTextStyle.textBodyStyle(color: Colors.white)),
+            Text(label, style: AppTextStyle.textBodyStyle(color: Colors.white)),
           ],
         ),
       ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:xhalona_pos/widgets/app_text_field.dart';
 
 class AppTypeahead<T> extends TypeAheadField<T> {
@@ -11,7 +13,8 @@ class AppTypeahead<T> extends TypeAheadField<T> {
     required Future<List<T>> Function(String newFilterValue) updateFilterValue,
     required String Function(T) displayText,
     required String Function(T) getId,
-    VoidCallback? onTapOutside,
+    // required Widget icon,
+    required Function(bool forceClear) onClear,
   }) : super(
        controller: controller,
        suggestionsCallback: (pattern) {
@@ -22,8 +25,19 @@ class AppTypeahead<T> extends TypeAheadField<T> {
             context: context,
             textEditingController: textEditingController,
             focusNode: focusNode,
+            onTapOutside: (e){
+              onClear(false);
+            },
             labelText: label,
-            onTapOutside: (_) => onTapOutside,
+            suffixIcon: AppIconButton(
+              onPressed: (){
+                onClear(true);
+              },
+              icon: Icon(
+                Icons.close,
+                color: AppColor.grey400,
+              )
+            ),
           );
         },
         itemBuilder: (context, T suggestion) {
@@ -33,8 +47,8 @@ class AppTypeahead<T> extends TypeAheadField<T> {
         },
         
         onSelected: (T suggestion) {
-          // controller.text = displayText(suggestion);
           onSelected(getId(suggestion));
+          
         },
       );
 }

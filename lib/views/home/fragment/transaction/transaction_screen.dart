@@ -4,6 +4,7 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/widgets/app_calendar.dart';
+import 'package:xhalona_pos/models/dao/transaction.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/core/constant/transaction.dart';
 import 'package:xhalona_pos/widgets/app_normal_button.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/transaction/form/trx_form.dart';
 import 'package:xhalona_pos/repositories/transaction/transaction_repository.dart';
+import 'package:xhalona_pos/views/home/fragment/transaction/form/ubah_terapis.dart';
 import 'package:xhalona_pos/views/home/fragment/transaction/transaction_widget.dart';
 import 'package:xhalona_pos/views/home/fragment/transaction/transaction_controller.dart';
 
@@ -257,12 +259,45 @@ class TransactionScreen extends StatelessWidget {
                             value: transaction.salesId
                                 .substring(transaction.salesId.length - 4),
                             index: i,
-                            onEdit: () {},
+                            onEdit: () {
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (context) => const Center(
+                                  child: CircularProgressIndicator(
+                                      color: AppColor.primaryColor),
+                                ),
+                              );
+
+                              _trxRepository
+                                  .getTransactionDetail(
+                                      transactionId: transaction.salesId)
+                                  .then((detail) async {
+                                Navigator.of(context)
+                                    .pop(); // Tutup progress indicator
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                    builder: (context) => UbahTerapis(
+                                      trxDetail: detail,
+                                    ),
+                                  ),
+                                  (route) => false,
+                                );
+                              }).catchError((error) {
+                                Navigator.of(context)
+                                    .pop(); // Tutup progress indicator jika ada error
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content:
+                                          Text('Terjadi kesalahan: $error')),
+                                );
+                              });
+                            },
                             isModalCheckout: newOrder || finish,
                             isModalPrint: cancelByStore,
                             isModalRejectReschedule: reschedule,
                             isModalAccReschedule:
-                                reschedule || toHome || accBooking,
+                                reschedule || toHome && accBooking,
                             isModalStatusOnline: paidBooking,
                             isModalOnFinishStore: finish,
                             isModalOnWorkingStore: onWorking,
@@ -335,7 +370,40 @@ class TransactionScreen extends StatelessWidget {
                               },
                               value: transaction.salesDate.split("T")[0],
                               index: i,
-                              onEdit: () {},
+                              onEdit: () {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) => const Center(
+                                    child: CircularProgressIndicator(
+                                        color: AppColor.primaryColor),
+                                  ),
+                                );
+
+                                _trxRepository
+                                    .getTransactionDetail(
+                                        transactionId: transaction.salesId)
+                                    .then((detail) async {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                      builder: (context) => UbahTerapis(
+                                        trxDetail: detail,
+                                      ),
+                                    ),
+                                    (route) => false,
+                                  );
+                                }).catchError((error) {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator jika ada error
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content:
+                                            Text('Terjadi kesalahan: $error')),
+                                  );
+                                });
+                              },
                               isModalCheckout: newOrder || finish,
                               isModalPrint: cancelByStore,
                               isModalRejectReschedule: reschedule,
@@ -413,7 +481,40 @@ class TransactionScreen extends StatelessWidget {
                               value: transaction.cashierBy,
                               isOpenPOS: true,
                               index: i,
-                              onEdit: () {},
+                              onEdit: () {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) => const Center(
+                                    child: CircularProgressIndicator(
+                                        color: AppColor.primaryColor),
+                                  ),
+                                );
+
+                                _trxRepository
+                                    .getTransactionDetail(
+                                        transactionId: transaction.salesId)
+                                    .then((detail) async {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                      builder: (context) => UbahTerapis(
+                                        trxDetail: detail,
+                                      ),
+                                    ),
+                                    (route) => false,
+                                  );
+                                }).catchError((error) {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator jika ada error
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content:
+                                            Text('Terjadi kesalahan: $error')),
+                                  );
+                                });
+                              },
                               isModalCheckout: newOrder || finish,
                               isModalPrint: cancelByStore,
                               isModalRejectReschedule: reschedule,
@@ -490,7 +591,40 @@ class TransactionScreen extends StatelessWidget {
                               },
                               value: transaction.supplierName,
                               index: i,
-                              onEdit: () {},
+                              onEdit: () {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) => const Center(
+                                    child: CircularProgressIndicator(
+                                        color: AppColor.primaryColor),
+                                  ),
+                                );
+
+                                _trxRepository
+                                    .getTransactionDetail(
+                                        transactionId: transaction.salesId)
+                                    .then((detail) async {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                      builder: (context) => UbahTerapis(
+                                        trxDetail: detail,
+                                      ),
+                                    ),
+                                    (route) => false,
+                                  );
+                                }).catchError((error) {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator jika ada error
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content:
+                                            Text('Terjadi kesalahan: $error')),
+                                  );
+                                });
+                              },
                               isModalCheckout: newOrder || finish,
                               isModalPrint: cancelByStore,
                               isModalRejectReschedule: reschedule,
@@ -567,7 +701,40 @@ class TransactionScreen extends StatelessWidget {
                               },
                               value: transaction.queueNumber.toString(),
                               index: i,
-                              onEdit: () {},
+                              onEdit: () {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) => const Center(
+                                    child: CircularProgressIndicator(
+                                        color: AppColor.primaryColor),
+                                  ),
+                                );
+
+                                _trxRepository
+                                    .getTransactionDetail(
+                                        transactionId: transaction.salesId)
+                                    .then((detail) async {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                      builder: (context) => UbahTerapis(
+                                        trxDetail: detail,
+                                      ),
+                                    ),
+                                    (route) => false,
+                                  );
+                                }).catchError((error) {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator jika ada error
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content:
+                                            Text('Terjadi kesalahan: $error')),
+                                  );
+                                });
+                              },
                               isModalCheckout: newOrder || finish,
                               isModalPrint: cancelByStore,
                               isModalRejectReschedule: reschedule,
@@ -644,7 +811,40 @@ class TransactionScreen extends StatelessWidget {
                               },
                               value: transaction.sourceId,
                               index: i,
-                              onEdit: () {},
+                              onEdit: () {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) => const Center(
+                                    child: CircularProgressIndicator(
+                                        color: AppColor.primaryColor),
+                                  ),
+                                );
+
+                                _trxRepository
+                                    .getTransactionDetail(
+                                        transactionId: transaction.salesId)
+                                    .then((detail) async {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                      builder: (context) => UbahTerapis(
+                                        trxDetail: detail,
+                                      ),
+                                    ),
+                                    (route) => false,
+                                  );
+                                }).catchError((error) {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator jika ada error
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content:
+                                            Text('Terjadi kesalahan: $error')),
+                                  );
+                                });
+                              },
                               isModalCheckout: newOrder || finish,
                               isModalPrint: cancelByStore,
                               isModalRejectReschedule: reschedule,
@@ -721,7 +921,40 @@ class TransactionScreen extends StatelessWidget {
                               },
                               value: transaction.statusDesc,
                               index: i,
-                              onEdit: () {},
+                              onEdit: () {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) => const Center(
+                                    child: CircularProgressIndicator(
+                                        color: AppColor.primaryColor),
+                                  ),
+                                );
+
+                                _trxRepository
+                                    .getTransactionDetail(
+                                        transactionId: transaction.salesId)
+                                    .then((detail) async {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                      builder: (context) => UbahTerapis(
+                                        trxDetail: detail,
+                                      ),
+                                    ),
+                                    (route) => false,
+                                  );
+                                }).catchError((error) {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator jika ada error
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content:
+                                            Text('Terjadi kesalahan: $error')),
+                                  );
+                                });
+                              },
                               isModalCheckout: newOrder || finish,
                               isModalPrint: cancelByStore,
                               isModalRejectReschedule: reschedule,
@@ -798,7 +1031,40 @@ class TransactionScreen extends StatelessWidget {
                               },
                               value: transaction.bookingType,
                               index: i,
-                              onEdit: () {},
+                              onEdit: () {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) => const Center(
+                                    child: CircularProgressIndicator(
+                                        color: AppColor.primaryColor),
+                                  ),
+                                );
+
+                                _trxRepository
+                                    .getTransactionDetail(
+                                        transactionId: transaction.salesId)
+                                    .then((detail) async {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                      builder: (context) => UbahTerapis(
+                                        trxDetail: detail,
+                                      ),
+                                    ),
+                                    (route) => false,
+                                  );
+                                }).catchError((error) {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator jika ada error
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content:
+                                            Text('Terjadi kesalahan: $error')),
+                                  );
+                                });
+                              },
                               isModalCheckout: newOrder || finish,
                               isModalPrint: cancelByStore,
                               isModalRejectReschedule: reschedule,
@@ -875,7 +1141,40 @@ class TransactionScreen extends StatelessWidget {
                               },
                               value: transaction.nettoVal.toString(),
                               index: i,
-                              onEdit: () {},
+                              onEdit: () {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) => const Center(
+                                    child: CircularProgressIndicator(
+                                        color: AppColor.primaryColor),
+                                  ),
+                                );
+
+                                _trxRepository
+                                    .getTransactionDetail(
+                                        transactionId: transaction.salesId)
+                                    .then((detail) async {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                      builder: (context) => UbahTerapis(
+                                        trxDetail: detail,
+                                      ),
+                                    ),
+                                    (route) => false,
+                                  );
+                                }).catchError((error) {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator jika ada error
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content:
+                                            Text('Terjadi kesalahan: $error')),
+                                  );
+                                });
+                              },
                               isModalCheckout: newOrder || finish,
                               isModalPrint: cancelByStore,
                               isModalRejectReschedule: reschedule,
@@ -952,7 +1251,40 @@ class TransactionScreen extends StatelessWidget {
                               },
                               value: transaction.settlePaymentMethod,
                               index: i,
-                              onEdit: () {},
+                              onEdit: () {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) => const Center(
+                                    child: CircularProgressIndicator(
+                                        color: AppColor.primaryColor),
+                                  ),
+                                );
+
+                                _trxRepository
+                                    .getTransactionDetail(
+                                        transactionId: transaction.salesId)
+                                    .then((detail) async {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                      builder: (context) => UbahTerapis(
+                                        trxDetail: detail,
+                                      ),
+                                    ),
+                                    (route) => false,
+                                  );
+                                }).catchError((error) {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator jika ada error
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content:
+                                            Text('Terjadi kesalahan: $error')),
+                                  );
+                                });
+                              },
                               isModalCheckout: newOrder || finish,
                               isModalPrint: cancelByStore,
                               isModalRejectReschedule: reschedule,
@@ -1029,7 +1361,40 @@ class TransactionScreen extends StatelessWidget {
                               },
                               value: transaction.paymentVal.toString(),
                               index: i,
-                              onEdit: () {},
+                              onEdit: () {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) => const Center(
+                                    child: CircularProgressIndicator(
+                                        color: AppColor.primaryColor),
+                                  ),
+                                );
+
+                                _trxRepository
+                                    .getTransactionDetail(
+                                        transactionId: transaction.salesId)
+                                    .then((detail) async {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                      builder: (context) => UbahTerapis(
+                                        trxDetail: detail,
+                                      ),
+                                    ),
+                                    (route) => false,
+                                  );
+                                }).catchError((error) {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator jika ada error
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content:
+                                            Text('Terjadi kesalahan: $error')),
+                                  );
+                                });
+                              },
                               isModalCheckout: newOrder || finish,
                               isModalPrint: cancelByStore,
                               isModalRejectReschedule: reschedule,
@@ -1106,7 +1471,40 @@ class TransactionScreen extends StatelessWidget {
                               isOpenPOS: true,
                               value: transaction.totalHutang.toString(),
                               index: i,
-                              onEdit: () {},
+                              onEdit: () {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) => const Center(
+                                    child: CircularProgressIndicator(
+                                        color: AppColor.primaryColor),
+                                  ),
+                                );
+
+                                _trxRepository
+                                    .getTransactionDetail(
+                                        transactionId: transaction.salesId)
+                                    .then((detail) async {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                      builder: (context) => UbahTerapis(
+                                        trxDetail: detail,
+                                      ),
+                                    ),
+                                    (route) => false,
+                                  );
+                                }).catchError((error) {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator jika ada error
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content:
+                                            Text('Terjadi kesalahan: $error')),
+                                  );
+                                });
+                              },
                               isModalCheckout: newOrder || finish,
                               isModalPrint: cancelByStore,
                               isModalRejectReschedule: reschedule,
@@ -1233,7 +1631,40 @@ class TransactionScreen extends StatelessWidget {
                                   (route) => false,
                                 );
                               },
-                              onEdit: () {},
+                              onEdit: () {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) => const Center(
+                                    child: CircularProgressIndicator(
+                                        color: AppColor.primaryColor),
+                                  ),
+                                );
+
+                                _trxRepository
+                                    .getTransactionDetail(
+                                        transactionId: transaction.salesId)
+                                    .then((detail) async {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                      builder: (context) => UbahTerapis(
+                                        trxDetail: detail,
+                                      ),
+                                    ),
+                                    (route) => false,
+                                  );
+                                }).catchError((error) {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator jika ada error
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content:
+                                            Text('Terjadi kesalahan: $error')),
+                                  );
+                                });
+                              },
                               isStatusOnline: paidBooking,
                               isOnWorkingStore: onWorking,
                               showOptionsOnTap: true),
@@ -1295,7 +1726,40 @@ class TransactionScreen extends StatelessWidget {
                                   (route) => false,
                                 );
                               },
-                              onEdit: () {},
+                              onEdit: () {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) => const Center(
+                                    child: CircularProgressIndicator(
+                                        color: AppColor.primaryColor),
+                                  ),
+                                );
+
+                                _trxRepository
+                                    .getTransactionDetail(
+                                        transactionId: transaction.salesId)
+                                    .then((detail) async {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                      builder: (context) => UbahTerapis(
+                                        trxDetail: detail,
+                                      ),
+                                    ),
+                                    (route) => false,
+                                  );
+                                }).catchError((error) {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator jika ada error
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content:
+                                            Text('Terjadi kesalahan: $error')),
+                                  );
+                                });
+                              },
                               isAccReschedule:
                                   reschedule || toHome || accBooking,
                               isOnDestination: onDestination,
@@ -1363,7 +1827,40 @@ class TransactionScreen extends StatelessWidget {
                                   (route) => false,
                                 );
                               },
-                              onEdit: () {},
+                              onEdit: () {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) => const Center(
+                                    child: CircularProgressIndicator(
+                                        color: AppColor.primaryColor),
+                                  ),
+                                );
+
+                                _trxRepository
+                                    .getTransactionDetail(
+                                        transactionId: transaction.salesId)
+                                    .then((detail) async {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                      builder: (context) => UbahTerapis(
+                                        trxDetail: detail,
+                                      ),
+                                    ),
+                                    (route) => false,
+                                  );
+                                }).catchError((error) {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator jika ada error
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content:
+                                            Text('Terjadi kesalahan: $error')),
+                                  );
+                                });
+                              },
                               isAccReschedule:
                                   reschedule || toHome || accBooking,
                               isOnArrived: arrivedDestination,
@@ -1426,7 +1923,40 @@ class TransactionScreen extends StatelessWidget {
                                   (route) => false,
                                 );
                               },
-                              onEdit: () {},
+                              onEdit: () {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) => const Center(
+                                    child: CircularProgressIndicator(
+                                        color: AppColor.primaryColor),
+                                  ),
+                                );
+
+                                _trxRepository
+                                    .getTransactionDetail(
+                                        transactionId: transaction.salesId)
+                                    .then((detail) async {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                      builder: (context) => UbahTerapis(
+                                        trxDetail: detail,
+                                      ),
+                                    ),
+                                    (route) => false,
+                                  );
+                                }).catchError((error) {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator jika ada error
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content:
+                                            Text('Terjadi kesalahan: $error')),
+                                  );
+                                });
+                              },
                               isRejectReschedule: reschedule,
                               isAccReschedule:
                                   reschedule || toHome || accBooking,
@@ -1489,7 +2019,40 @@ class TransactionScreen extends StatelessWidget {
                                   (route) => false,
                                 );
                               },
-                              onEdit: () {},
+                              onEdit: () {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) => const Center(
+                                    child: CircularProgressIndicator(
+                                        color: AppColor.primaryColor),
+                                  ),
+                                );
+
+                                _trxRepository
+                                    .getTransactionDetail(
+                                        transactionId: transaction.salesId)
+                                    .then((detail) async {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                      builder: (context) => UbahTerapis(
+                                        trxDetail: detail,
+                                      ),
+                                    ),
+                                    (route) => false,
+                                  );
+                                }).catchError((error) {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator jika ada error
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content:
+                                            Text('Terjadi kesalahan: $error')),
+                                  );
+                                });
+                              },
                               isEdit: newOrder || finish,
                               isCheckout: newOrder || finish,
                               showOptionsOnTap: true),
@@ -1551,7 +2114,40 @@ class TransactionScreen extends StatelessWidget {
                                   (route) => false,
                                 );
                               },
-                              onEdit: () {},
+                              onEdit: () {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) => const Center(
+                                    child: CircularProgressIndicator(
+                                        color: AppColor.primaryColor),
+                                  ),
+                                );
+
+                                _trxRepository
+                                    .getTransactionDetail(
+                                        transactionId: transaction.salesId)
+                                    .then((detail) async {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                      builder: (context) => UbahTerapis(
+                                        trxDetail: detail,
+                                      ),
+                                    ),
+                                    (route) => false,
+                                  );
+                                }).catchError((error) {
+                                  Navigator.of(context)
+                                      .pop(); // Tutup progress indicator jika ada error
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content:
+                                            Text('Terjadi kesalahan: $error')),
+                                  );
+                                });
+                              },
                               isOnFinishStore: finish,
                               isCancelTrx: cancelByStore,
                               showOptionsOnTap: true),

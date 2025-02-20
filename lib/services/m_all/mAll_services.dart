@@ -7,6 +7,7 @@ class MasAllServices {
     int? pageNo,
     int? pageRow,
     String? filterValue,
+    String? group,
   }) async {
     await api.fetchUserSessionInfo();
     var url = '/SALES/m_all';
@@ -19,6 +20,7 @@ class MasAllServices {
         "SESSION_LOGIN_ID": api.sessionId,
         "FILTER_FIELD": "",
         "FILTER_VALUE": filterValue ?? '',
+        "GROUP_MASTER_ID": group ?? 'UNIT_ID',
         "PAGE_NO": pageNo ?? 1,
         "PAGE_ROW": pageRow ?? 10,
         "SORT_ORDER_BY": "ROW_ID",

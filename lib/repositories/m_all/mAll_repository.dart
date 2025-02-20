@@ -10,9 +10,13 @@ class MasAllRepository extends AppRepository {
     int? pageRow,
     String? isActive,
     String? filterValue,
+    String? group,
   }) async {
     var result = await _MasAllService.getMasAll(
-        pageNo: pageNo, pageRow: pageRow, filterValue: filterValue);
+        pageNo: pageNo,
+        pageRow: pageRow,
+        filterValue: filterValue,
+        group: group);
     List data = getResponseListData(result);
     return data.map((MasAll) => MasAllDAO.fromJson(MasAll)).toList();
   }
