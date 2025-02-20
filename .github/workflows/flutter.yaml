@@ -158,7 +158,18 @@ jobs:
       # Buat tag untuk rilis
       - name: Buat Tag Rilis
         run: |
+          # Mengambil version terbaru dari output build
           TAG_NAME="${{ steps.update_version.outputs.version }}"
+          
+          # Jika TAG_NAME kosong, ambil dari pubspec.yaml
+          if [ -z "$TAG_NAME" ]; then
+              TAG_NAME=$(grep 'version: ' pubspec.yaml | sed 's/version: //;s/+.*//;s/^/v/')
+              if [ -z "$TAG_NAME" ]; then
+                  echo "Error: TAG_NAME is still empty. Cannot create tag."
+                  exit 1
+              fi
+          fi
+          
           echo "Creating release tag: $TAG_NAME"
           git tag "$TAG_NAME"
           git push origin "$TAG_NAME"
