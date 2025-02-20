@@ -306,20 +306,20 @@ class TransactionDetailDAO {
   String salesId;
   String rowId;
   String employeeId;
-  String? fullName;
+  String fullName;
   String partId;
   String partName;
   int qty;
   int price;
-  String? supplierId;
-  String? supplierName;
-  String? parentPartId;
-  String? parentPartName;
+  String supplierId;
+  String supplierName;
+  String parentPartId;
+  String parentPartName;
   String analisaId;
   String? ketAnalisa;
   int deductionPct;
   int deductionVal;
-  String? addCostId;
+  String addCostId;
   int addCostPct;
   int addCostVal;
   int totalPrice;
@@ -335,16 +335,16 @@ class TransactionDetailDAO {
   bool isFreePick;
   String sourceId;
   bool isPacket;
-  String? settleDate;
-  String? settlePaymentMethod;
-  String? employeeId1;
-  String? employeeName1;
-  String? employeeId2;
-  String? employeeName2;
-  String? employeeId3;
-  String? employeeName3;
-  String? employeeId4;
-  String? employeeName4;
+  String settleDate;
+  String settlePaymentMethod;
+  String employeeId1;
+  String employeeName1;
+  String employeeId2;
+  String employeeName2;
+  String employeeId3;
+  String employeeName3;
+  String employeeId4;
+  String employeeName4;
   String createDate;
   String createBy;
   String detNote;
@@ -356,20 +356,20 @@ class TransactionDetailDAO {
     this.salesId = "",
     this.rowId = "",
     this.employeeId = "",
-    this.fullName,
+    this.fullName = "",
     this.partId = "",
     this.partName = "",
     this.qty = 0,
     this.price = 0,
-    this.supplierId,
-    this.supplierName,
-    this.parentPartId,
-    this.parentPartName,
+    this.supplierId = "",
+    this.supplierName = "",
+    this.parentPartId = "",
+    this.parentPartName = "",
     this.analisaId = "",
     this.ketAnalisa,
     this.deductionPct = 0,
     this.deductionVal = 0,
-    this.addCostId,
+    this.addCostId = "",
     this.addCostPct = 0,
     this.addCostVal = 0,
     this.totalPrice = 0,
@@ -385,16 +385,16 @@ class TransactionDetailDAO {
     this.isFreePick = false,
     this.sourceId = "",
     this.isPacket = false,
-    this.settleDate,
-    this.settlePaymentMethod,
-    this.employeeId1,
-    this.employeeName1,
-    this.employeeId2,
-    this.employeeName2,
-    this.employeeId3,
-    this.employeeName3,
-    this.employeeId4,
-    this.employeeName4,
+    this.settleDate = "",
+    this.settlePaymentMethod = "",
+    this.employeeId1 = "",
+    this.employeeName1 = "",
+    this.employeeId2 = "",
+    this.employeeName2 = "",
+    this.employeeId3 = "",
+    this.employeeName3 = "",
+    this.employeeId4 = "",
+    this.employeeName4 = "",
     this.createDate = "",
     this.createBy = "",
     this.detNote = "",
@@ -407,21 +407,21 @@ class TransactionDetailDAO {
       : companyId = json['COMPANY_ID'] ?? "",
         salesId = json['SALES_ID'] ?? "",
         rowId = json['ROW_ID'] ?? "",
-        employeeId = json['EMPLOYEE_ID'],
-        fullName = json['FULL_NAME'],
+        employeeId = json['EMPLOYEE_ID'] ?? "",
+        fullName = json['FULL_NAME'] ?? "",
         partId = json['PART_ID'] ?? "",
         partName = json['PART_NAME'] ?? "",
         qty = json['QTY'] ?? 0,
         price = json['PRICE'] ?? 0,
-        supplierId = json['SUPPLIER_ID'],
-        supplierName = json['SUPPLIER_NAME'],
-        parentPartId = json['PARENT_PART_ID'],
-        parentPartName = json['PARENT_PART_NAME'],
+        supplierId = json['SUPPLIER_ID'] ?? "",
+        supplierName = json['SUPPLIER_NAME'] ?? "",
+        parentPartId = json['PARENT_PART_ID'] ?? "",
+        parentPartName = json['PARENT_PART_NAME'] ?? "",
         analisaId = json['ANALISA_ID'] ?? "",
-        ketAnalisa = json['KET_ANALISA'],
+        ketAnalisa = json['KET_ANALISA'] ?? "",
         deductionPct = json['DEDUCTION_PCT'] ?? 0,
         deductionVal = json['DEDUCTION_VAL'] ?? 0,
-        addCostId = json['ADD_COST_ID'],
+        addCostId = json['ADD_COST_ID'] ?? "",
         addCostPct = json['ADD_COST_PCT'] ?? 0,
         addCostVal = json['ADD_COST_VAL'] ?? 0,
         totalPrice = json['TOTAL_PRICE'] ?? 0,
@@ -437,16 +437,16 @@ class TransactionDetailDAO {
         isFreePick = json['IS_FREE_PICK'] ?? false,
         sourceId = json['SOURCE_ID'] ?? "",
         isPacket = json['IS_PACKET'] ?? false,
-        settleDate = json['SETTLE_DATE'],
-        settlePaymentMethod = json['SETTLE_PAYMENT_METHOD'],
-        employeeId1 = json['EMPLOYEE_ID1'],
-        employeeName1 = json['EMPLOYEE_NAME1'],
-        employeeId2 = json['EMPLOYEE_ID2'],
-        employeeName2 = json['EMPLOYEE_NAME2'],
-        employeeId3 = json['EMPLOYEE_ID3'],
-        employeeName3 = json['EMPLOYEE_NAME3'],
-        employeeId4 = json['EMPLOYEE_ID4'],
-        employeeName4 = json['EMPLOYEE_NAME4'],
+        settleDate = json['SETTLE_DATE'] ?? "",
+        settlePaymentMethod = json['SETTLE_PAYMENT_METHOD'] ?? "",
+        employeeId1 = json['EMPLOYEE_ID1'] ?? "",
+        employeeName1 = json['EMPLOYEE_NAME1'] ?? "",
+        employeeId2 = json['EMPLOYEE_ID2'] ?? "",
+        employeeName2 = json['EMPLOYEE_NAME2'] ?? "",
+        employeeId3 = json['EMPLOYEE_ID3'] ?? "",
+        employeeName3 = json['EMPLOYEE_NAME3'] ?? "",
+        employeeId4 = json['EMPLOYEE_ID4'] ?? "",
+        employeeName4 = json['EMPLOYEE_NAME4'] ?? "",
         createDate = json['CREATEDATE'] ?? "",
         createBy = json['CREATEBY'] ?? "",
         detNote = json['DET_NOTE'] ?? "",

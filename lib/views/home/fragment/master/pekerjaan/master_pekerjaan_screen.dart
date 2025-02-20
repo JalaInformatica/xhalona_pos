@@ -53,20 +53,7 @@ class MasterPekerjaanScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
-            (route) => false); // Navigasi kembali ke halaman sebelumnya
-        return false; // Mencegah navigasi bawaan
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Master Pekerjaan",
-            style: AppTextStyle.textTitleStyle(),
-          ),
-        ),
+    return Scaffold(
         backgroundColor: AppColor.whiteColor,
         body: Padding(
           padding: EdgeInsets.symmetric(
@@ -144,11 +131,7 @@ class MasterPekerjaanScreen extends StatelessWidget {
                   )))
             ],
           ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: buildFloatingActionButton(context, screenWidth),
-        bottomNavigationBar: buildBottomNavigationBar(context),
-      ),
+        )
     );
   }
 

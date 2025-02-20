@@ -130,14 +130,7 @@ class _AddEditProductState extends State<AddEditProduct> {
       }
     }
 
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => MasterProductScreen()),
-            (route) => false); // Navigasi kembali ke halaman sebelumnya
-        return false; // Mencegah navigasi bawaan
-      },
-      child: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           title: Text(
             "Tambah/Edit Data Product ",
@@ -360,8 +353,7 @@ class _AddEditProductState extends State<AddEditProduct> {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 
   Map<String, bool> chipStatus = {

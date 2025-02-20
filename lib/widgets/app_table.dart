@@ -803,7 +803,7 @@ class AppTableTitle extends StatelessWidget {
       width: width,
       height: height,
       alignment: Alignment.center,
-      color: AppColor.secondaryColor,
+      color: AppColor.primaryColor,
       child: Text(
         value,
         style: AppTextStyle.textSubtitleStyle(

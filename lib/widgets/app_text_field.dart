@@ -17,13 +17,18 @@ class AppTextField extends TextField{
     bool isThousand = false,
     Function(String)? onChanged,
     super.autofocus,
+    super.onTap,
+    super.focusNode,
     bool readOnly = false,
     super.textAlign,
     super.maxLines,
+    super.onSubmitted,
     bool disabled = false,
     bool unfocusWhenTapOutside = true,
+    Function(PointerDownEvent)? onTapOutside,
   }) : super(
-      onTapOutside: unfocusWhenTapOutside? (_) {
+      onTapOutside: unfocusWhenTapOutside? (e) {
+        onTapOutside?.call(e);
         FocusScope.of(context).unfocus();
       } : null,
       readOnly: disabled || readOnly,

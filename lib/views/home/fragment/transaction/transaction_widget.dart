@@ -8,7 +8,7 @@ Widget transactionFilterButton({
   required bool isSelected
   }) {
   return AppElevatedButton(
-    backgroundColor: isSelected? AppColor.primaryColor : AppColor.whiteColor,
+    backgroundColor: isSelected? AppColor.secondaryColor : AppColor.whiteColor,
     foregroundColor: isSelected? AppColor.whiteColor : AppColor.primaryColor,
     onPressed: onPressed,
     child: Text(text, style: AppTextStyle.textBodyStyle(),)

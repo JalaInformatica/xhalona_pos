@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppColor {
   static const Color primaryColor = Color.fromARGB(255, 255, 105, 180);
-  static const Color secondaryColor = Color(0xffff6ead);
+  static const Color secondaryColor =Color(0xFFFF94CA);
   static const Color tertiaryColor = Color.fromARGB(255, 255, 241, 248);
   static const Color backgroundColor = Color(0xffF1F1F1);
   static const Color starColor = Color.fromARGB(255, 244, 203, 4);
@@ -203,10 +203,10 @@ class AppTextStyle {
       String? fontFamily,
       List<String>? fontFamilyFallback,
       String? package,
-      TextOverflow? overflow = TextOverflow.ellipsis
+      TextOverflow? overflow = TextOverflow.ellipsis,      
+      FontWeight fontWeight = FontWeight.w500,
     }) {
     double fontSize = 15;
-    FontWeight fontWeight = FontWeight.w500;
 
     return TextStyle(
       inherit: inherit,

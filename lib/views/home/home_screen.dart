@@ -2,6 +2,8 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:xhalona_pos/core/constant/local_storage.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/widgets/app_elevated_button.dart';
@@ -40,58 +42,73 @@ class HomeScreen extends StatelessWidget {
 
     switch (menuName.toLowerCase()) {
       case "pos":
+        controller.subMenuName.value="";
         screen = PosScreen();
         break;
       case "dashboard":
+        controller.subMenuName.value="";
         screen = DashboardScreen();
         break;
       case "transaksi":
+        controller.subMenuName.value="";
         screen = TransactionScreen();
         break;
       case "finance":
+        controller.subMenuName.value="";
         screen = FinanceScreen();
         break;
       case "profil":
+        controller.subMenuName.value="";
         screen = ProfileScreen();
         break;
       case "master_product":
+        controller.subMenuName.value="Produk";
         screen = MasterProductScreen();
         break;
       case "master_karyawan":
+        controller.subMenuName.value="Karyawan";
         screen = MasterKaryawanScreen();
         break;
       case "master_coa":
+        controller.subMenuName.value="COA";
         screen = MasterCoaScreen();
-        
         break;
       case "master_pengguna":
+        controller.subMenuName.value="Pengguna";
         screen = MasterPenggunaScreen();
         break;
       case "master_pekerjaan":
+        controller.subMenuName.value="Pekerjaan";
         screen = MasterPekerjaanScreen();
         break;
       case "master_rekening":
+        controller.subMenuName.value="Rekening";
         screen = MasterRekeningScreen();
         break;
       case "master_customer":
+        controller.subMenuName.value="Customer";
         screen = MasterKustomerScreen();
         break;
       case "master_supplier":
+        controller.subMenuName.value="Supplier";
         controllerKus.isSuplier.value = "1";
         controllerKus.fetchProducts();
         screen = MasterKustomerScreen();
         break;
       case "laporan_penjualan":
+        controller.subMenuName.value="Laporan Penjualan";
         screen = LapPenjualanScreen();
         break;
       case "laporan_monitor_penjualan":
+        controller.subMenuName.value="Monitor Penjualan";
         screen = MonitorScreen();
         break;
       // case "laporan_stock":
         // screen = MonitorScreen();
         // break;
-      case "laporan_finance":
-        screen = FinanceScreen();
+      case "laporan_finansial":
+        controller.subMenuName.value="Laporan Finansial";
+        screen = LapFinanceScreen();
         break;
       default:
         return TransactionScreen();
@@ -145,62 +162,46 @@ class HomeScreen extends StatelessWidget {
                   content: Column(
                     spacing: 10.h,
                     children: [
-                      masterButton(
-                      () {
-                        controller.selectedMenuName.value="master_product";
-                      },
-                      "Produk",
-                      Icons.shopping_bag,
-                    ),
-                    masterButton(
-                      () {
-                        controller.selectedMenuName.value="master_karyawan";
-                      },
-                      "Karyawan",
-                      Icons.account_circle,
-                    ),
-                    masterButton(
-                      () {
-                        controller.selectedMenuName.value="master_coa";
-                      },
-                      "COA",
-                      Icons.account_balance,
-                    ),
-                    masterButton(
-                      () {
-                        controller.selectedMenuName.value="master_pengguna";
-                      },
-                      "Pengguna",
-                      Icons.person,
-                    ),
-                    masterButton(
-                      () {
-                        controller.selectedMenuName.value="master_pekerjaan";
-                      },
-                      "Pekerjaan",
-                      Icons.work,
-                    ),
-                    masterButton(
-                      () {
-                        controller.selectedMenuName.value="master_rekening";
-                      },
-                      "Rekening",
-                      Icons.account_balance_wallet,
-                    ),
-                    masterButton(
-                      () {
-                        controller.selectedMenuName.value="master_kustomer";
-                      },
-                      "Kustomer",
-                      Icons.people,
-                    ),
-                    masterButton(
-                      () {
-                        controller.selectedMenuName.value="master_supplier";
-                      },
-                      "Supplier",
-                      Icons.store,
-                    ),
+                      subMenuButton(
+                        value: "master_product",
+                        label: "Produk",
+                        icon: Icons.shopping_bag,
+                      ),
+                      subMenuButton(
+                        value: "master_karyawan",
+                        label: "Karyawan",
+                        icon: Icons.account_circle,
+                      ),
+                      subMenuButton(
+                        value: "master_coa",
+                        label: "COA",
+                        icon: Icons.account_balance,
+                      ),
+                      subMenuButton(
+                        value: "master_pengguna",
+                        label: "Pengguna",
+                        icon: Icons.person,
+                      ),
+                      subMenuButton(
+                        value: "master_pekerjaan",
+                        label: "Pekerjaan",
+                        icon: Icons.work,
+                      ),
+                      subMenuButton(
+                        value: "master_rekening",
+                        label: "Rekening",
+                        icon: Icons.account_balance_wallet,
+                      ),
+                      subMenuButton(
+                        value: "master_customer",
+                        label: "Kustomer",
+                        icon: Icons.people,
+                      ),
+                      subMenuButton(
+                        value: "master_supplier",
+                        label: "Supplier",
+                        icon: Icons.store,
+                      ),
                     ],
                   ),
                 );
@@ -214,45 +215,25 @@ class HomeScreen extends StatelessWidget {
                   content: Column(
                     spacing: 10.h,
                     children: [
-                      masterButton(
-                      () {
-                        controller.selectedMenuName.value="laporan_penjualan";
-                      },
-                      "Laporan Penjualan",
-                      Icons.graphic_eq_sharp,
+                    subMenuButton(
+                      value: "laporan_penjualan",
+                      label: "Laporan Penjualan",
+                      icon: Icons.graphic_eq_sharp,
                     ),
-                    masterButton(
-                      () {
-                        Navigator.of(context)
-                            .pushAndRemoveUntil(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                MonitorScreen(),
-                          ),
-                          (route) => false,
-                        );
-                      },
-                      "Monitor Penjualan",
-                      Icons.monitor,
+                    subMenuButton(
+                      value: "laporan_monitor_penjualan",
+                      label: "Monitor Penjualan",
+                      icon: Icons.monitor,
                     ),
-                    masterButton(
-                      () {},
-                      "Laporan Stock",
-                      Icons.inventory,
+                    subMenuButton(
+                      label: "Laporan Stock",
+                      value: "laporan_stock",
+                      icon: Icons.inventory,
                     ),
-                    masterButton(
-                      () {
-                        Navigator.of(context)
-                            .pushAndRemoveUntil(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                LapFinanceScreen(),
-                          ),
-                          (route) => false,
-                        );
-                      },
-                      "Laporan Finance",
-                      Icons.monetization_on,
+                    subMenuButton(
+                      value: "laporan_finansial",
+                      label: "Laporan Finance",
+                      icon: Icons.monetization_on,
                     ),
                     ],
                   ),
@@ -295,7 +276,7 @@ class HomeScreen extends StatelessWidget {
             ]))));
   }
 
-  Widget profileInfo(BuildContext context) {
+  Widget profileInfo(BuildContext context){
     return Obx(() => Container(
           width: double.infinity,
           padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10.w),
@@ -309,6 +290,7 @@ class HomeScreen extends StatelessWidget {
                 icon: Icon(Icons.menu),
                 foregroundColor: AppColor.whiteColor,
               ),
+              Text(controller.subMenuName.value, style: AppTextStyle.textSubtitleStyle(color: AppColor.whiteColor),),
               Spacer(),
               AppIconButton(
                 foregroundColor: AppColor.whiteColor,
@@ -351,6 +333,7 @@ class HomeScreen extends StatelessWidget {
                   ).then((value) {
                     if (value == "logout") {
                       controller.logout();
+                      Get.reset();
                       Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(
                               builder: (context) => LoginScreen()),
@@ -373,7 +356,7 @@ class HomeScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      "AMIRA",
+                      controller.profileData.value.companyId,
                       style: AppTextStyle.textBodyStyle(
                         color: AppColor.whiteColor,
                       ),
@@ -392,31 +375,35 @@ class HomeScreen extends StatelessWidget {
         ));
   }
 
-  Widget masterButton(VoidCallback onPressed, String label, IconData icon) {
+  Widget subMenuButton({required String value, required String label, required IconData icon}) {
     return AppElevatedButton(
       onPressed: (){
-        onPressed();
+        controller.selectedMenuName.value=value;
         SmartDialog.dismiss();
       },
+      backgroundColor: controller.selectedMenuName.value!=value? AppColor.whiteColor : AppColor.secondaryColor,
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 15.h),
       child: Row(
-          children: [
-            Icon(
-              icon,
-              color: AppColor.primaryColor,
-              size: 20,
-            ),
-            SizedBox(width: 8),
-            Text(label,
-                style: AppTextStyle.textSubtitleStyle(color: AppColor.primaryColor)),
-          ],
-        ),
+        children: [
+          Icon(
+            icon,
+            color: controller.selectedMenuName.value!=value? AppColor.primaryColor : AppColor.whiteColor,
+            size: 20,
+          ),
+          SizedBox(width: 8),
+          Text(
+            label,
+            style: AppTextStyle.textSubtitleStyle(
+              fontWeight: FontWeight.normal,
+              color: controller.selectedMenuName.value!=value? AppColor.primaryColor : AppColor.whiteColor,
+            )),
+        ],
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Obx(() {
         if (controller.isMenuLoading.value) {
@@ -441,153 +428,6 @@ class HomeScreen extends StatelessWidget {
                 profileInfo(context),
                 Expanded(child: menuScreen(controller.selectedMenuName.value)),
               ],
-            ),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerFloat,
-            floatingActionButton: Obx(
-              () => Column(mainAxisSize: MainAxisSize.min, children: [
-                controller.selectedMenuName.value.toLowerCase() == "master"
-                    ? !controller.isOpenMaster.value
-                        ? Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Container(
-                              height: 47,
-                              width: double.infinity,
-                              color: Colors.white,
-                              padding: EdgeInsets.symmetric(vertical: 5),
-                              child: Scrollbar(
-                                child: ListView(
-                                  scrollDirection: Axis.horizontal,
-                                  children: [
-                                    SizedBox(width: screenWidth * 0.02),
-                                    masterButton(
-                                      () {
-                                        controller.selectedMenuName.value="master_product";                                      
-                                      },
-                                      "Master Produk",
-                                      Icons.shopping_bag,
-                                    ),
-                                    SizedBox(
-                                        width: screenWidth *
-                                            0.02), // Responsive spacing
-                                    masterButton(
-                                      () {
-                                        Navigator.of(context)
-                                            .pushAndRemoveUntil(
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                MasterKaryawanScreen(),
-                                          ),
-                                          (route) => false,
-                                        );
-                                      },
-                                      "Master Karyawan",
-                                      Icons.account_circle,
-                                    ),
-                                    SizedBox(width: screenWidth * 0.02),
-                                    masterButton(
-                                      () {
-                                        Navigator.of(context)
-                                            .pushAndRemoveUntil(
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                MasterCoaScreen(),
-                                          ),
-                                          (route) => false,
-                                        );
-                                      },
-                                      "Master Coa",
-                                      Icons.account_balance,
-                                    ),
-                                    SizedBox(width: screenWidth * 0.02),
-                                    masterButton(
-                                      () {
-                                        Navigator.of(context)
-                                            .pushAndRemoveUntil(
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                MasterPenggunaScreen(),
-                                          ),
-                                          (route) => false,
-                                        );
-                                      },
-                                      "Master Pengguna",
-                                      Icons.person,
-                                    ),
-                                    SizedBox(width: screenWidth * 0.02),
-                                    masterButton(
-                                      () {
-                                        Navigator.of(context)
-                                            .pushAndRemoveUntil(
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                MasterPekerjaanScreen(),
-                                          ),
-                                          (route) => false,
-                                        );
-                                      },
-                                      "Master Pekerjaan",
-                                      Icons.work,
-                                    ),
-                                    SizedBox(width: screenWidth * 0.02),
-                                    masterButton(
-                                      () {
-                                        Navigator.of(context)
-                                            .pushAndRemoveUntil(
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                MasterRekeningScreen(),
-                                          ),
-                                          (route) => false,
-                                        );
-                                      },
-                                      "Master Rekening",
-                                      Icons.account_balance_wallet,
-                                    ),
-                                    SizedBox(width: screenWidth * 0.02),
-                                    masterButton(
-                                      () {
-                                        Navigator.of(context)
-                                            .pushAndRemoveUntil(
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                MasterKustomerScreen(
-                                                    islabel: "Kustomer"),
-                                          ),
-                                          (route) => false,
-                                        );
-                                        controllerKus.isSuplier.value = "0";
-                                        controllerKus.fetchProducts();
-                                      },
-                                      "Master Kustomer",
-                                      Icons.people,
-                                    ),
-                                    SizedBox(width: screenWidth * 0.02),
-                                    masterButton(
-                                      () {
-                                        Navigator.of(context)
-                                            .pushAndRemoveUntil(
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                MasterKustomerScreen(
-                                                    islabel: "Supplier"),
-                                          ),
-                                          (route) => false,
-                                        );
-                                        controllerKus.isSuplier.value = "1";
-                                        controllerKus.fetchProducts();
-                                      },
-                                      "Master Supplier",
-                                      Icons.store,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          )
-                        : SizedBox.shrink()
-                    : SizedBox.shrink(),
-              ]),
             ),
             bottomNavigationBar: Obx(
               () => Container(

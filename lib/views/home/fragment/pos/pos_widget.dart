@@ -19,7 +19,9 @@ AppTextField posTextField(
     required labelText,
     bool isReadOnly = false,
     TextAlign textAlign = TextAlign.start,
-    bool isThousand = false}) {
+    bool isThousand = false,
+    Function(String)? onChanged,
+    }) {
   return AppTextField(
     context: context,
     textEditingController: textEditingController,
@@ -28,6 +30,7 @@ AppTextField posTextField(
     readOnly: isReadOnly,
     textAlign: textAlign,
     isThousand: isThousand,
+    onChanged: onChanged,
   );
 }
 
@@ -408,16 +411,22 @@ Widget transaction(
                                           ),
                                           Expanded(
                                             child: posTextField(
-                                                context: context,
-                                                textEditingController:
-                                                    TextEditingController()
-                                                      ..text = formatThousands(
-                                                          currentTrxDetail
-                                                              .deductionVal
-                                                              .toString()),
-                                                labelText: "Diskon",
-                                                textAlign: TextAlign.end,
-                                                isThousand: true),
+                                              context: context,
+                                              textEditingController:
+                                                  TextEditingController()
+                                                    ..text = formatThousands(
+                                                        currentTrxDetail
+                                                            .deductionVal
+                                                            .toString()),
+                                              labelText: "Diskon",
+                                              textAlign: TextAlign.end,
+                                              isThousand: true,
+                                              onChanged: (val) {
+                                                controller.updateProductDiscount(
+                                                  currentTrxDetail..deductionVal=unFormatThousands(val)
+                                                );                                                
+                                              },
+                                              ),
                                           ),
                                           AppIconButton(
                                               onPressed: () {
@@ -432,8 +441,15 @@ Widget transaction(
                                                   currentTrxDetail.rowId] ??
                                               false)
                                           ? AppTextField(
+                                              textEditingController: TextEditingController()..text=currentTrxDetail.detNote,
+                                              labelText: "Catatan",
                                               context: context,
-                                              maxLines: 3,
+                                              maxLines: 2,
+                                              onChanged: (val){
+                                                controller.updateProductNote(
+                                                  currentTrxDetail..detNote=val
+                                                );
+                                              },
                                             )
                                           : SizedBox.shrink()),
                                       Divider(
@@ -532,7 +548,9 @@ Widget transaction(
                                 foregroundColor: AppColor.purpleColor,
                                 borderColor: AppColor.purpleColor,
                                 padding: EdgeInsets.symmetric(horizontal: 8.w),
-                                onPressed: () {},
+                                onPressed: () {
+
+                                },
                                 child: Text(
                                   "Diskon",
                                   style: AppTextStyle.textBodyStyle(),

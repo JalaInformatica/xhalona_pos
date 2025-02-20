@@ -72,7 +72,7 @@ class UserService {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var url = '/SYSMAN/login';
     var body = jsonEncode({
-      "RESET_PASSWORD": {
+      "rqLogout": {
         "USER_ID": prefs.getString(LocalStorageConst.userId),
         "SESSION_LOGIN_ID": prefs.getString(LocalStorageConst.sessionLoginId),
       }

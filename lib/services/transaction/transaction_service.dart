@@ -88,6 +88,51 @@ class TransactionService {
 
     return ResponseHandler.handle(response);
   }
+  
+  Future<String> editTransactionDetail(TransactionDetailDTO transactionDetail) async {
+    await api.fetchUserSessionInfo();
+    var url = '/SALES/order_detail';
+    var body = jsonEncode({
+      "rq": {
+        "IP": "103.78.114.49",
+        "DEF_COMPANY_ID": api.companyId,
+        "USER_ID": api.userId,
+        "SESSION_LOGIN_ID": api.sessionId,
+        "ACTION_ID": "EDIT_D",
+        "COMPANY_ID": api.companyId,
+        "DATA": [
+          transactionDetail.toJson()
+        ]
+      }
+    });
+    var response =
+        await api.post(url, headers: await api.requestHeaders(), body: body);
+
+    return ResponseHandler.handle(response);
+  }
+
+  // Future<String> editDeductionValTransactionDetail({
+  //     required String salesId,
+  //     required String rowId,
+  //     required int deductionVal
+  //   }) async {
+  //   await api.fetchUserSessionInfo();
+  //   var url = '/SALES/order';
+  //   var body = jsonEncode({
+  //     "rq": {
+  //       "IP": "103.78.114.49",
+  //       "DEF_COMPANY_ID": api.companyId,
+  //       "USER_ID": api.userId,
+  //       "SESSION_LOGIN_ID": api.sessionId,
+  //       "ACTION_ID": "EDIT_H",
+  //       "COMPANY_ID": api.companyId,
+  //     }
+  //   });
+  //   var response =
+  //       await api.post(url, headers: await api.requestHeaders(), body: body);
+
+  //   return ResponseHandler.handle(response);
+  // }
 
   Future<String> deleteTransaction(String salesId) async {
     await api.fetchUserSessionInfo();

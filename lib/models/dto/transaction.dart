@@ -31,6 +31,7 @@ class TransactionDTO {
 }
 
 class TransactionDetailDTO {
+  String rowId;
   String salesId;
   String partId;
   int qty;
@@ -47,6 +48,7 @@ class TransactionDetailDTO {
   String employeeId4;
 
   TransactionDetailDTO({
+    this.rowId = "",
     this.salesId = "",
     this.partId = "",
     this.qty = 0,
@@ -66,6 +68,7 @@ class TransactionDetailDTO {
   // toJson
   Map<String, dynamic> toJson() {
     return {
+      "ROW_ID": rowId,
       "SALES_ID": salesId,
       "PART_ID": partId,
       "QTY": qty,
@@ -79,7 +82,7 @@ class TransactionDetailDTO {
       "DET_NOTE": detNote,
       "EMPLOYEE_ID2": employeeId2,
       "EMPLOYEE_ID3": employeeId3,
-      "EMPLOYEE_I4": employeeId4,
+      "EMPLOYEE_ID4": employeeId4,
     };
   }
 }

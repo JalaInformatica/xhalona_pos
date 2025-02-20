@@ -62,12 +62,6 @@ class MasterKaryawanScreen extends StatelessWidget {
         return false; // Mencegah navigasi bawaan
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Master Karyawan",
-            style: AppTextStyle.textTitleStyle(),
-          ),
-        ),
         backgroundColor: AppColor.whiteColor,
         body: Padding(
           padding: EdgeInsets.symmetric(
@@ -319,9 +313,6 @@ class MasterKaryawanScreen extends StatelessWidget {
             ],
           ),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: buildFloatingActionButton(context, screenWidth),
-        bottomNavigationBar: buildBottomNavigationBar(context),
       ),
     );
   }

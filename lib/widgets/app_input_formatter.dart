@@ -3,6 +3,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/widgets/app_elevated_button.dart';
 
 class CurrencyInputFormatter extends TextInputFormatter {
   final NumberFormat _formatter =
@@ -77,35 +78,21 @@ Widget buildDropdownFieldJK(
   );
 }
 
-Widget masterButton(VoidCallback onTap, String label, IconData icon,
-    {Color? color = AppColor.secondaryColor}) {
-  return GestureDetector(
-    onTap: onTap,
-    child: Container(
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-      decoration: BoxDecoration(
-        color: color, // Background color
-        borderRadius: BorderRadius.circular(8), // Rounded corners
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 4,
-            offset: Offset(0, 2), // Shadow position
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            color: Colors.white,
-            size: 20,
-          ),
-          SizedBox(width: 8),
-          Text(label, style: AppTextStyle.textTitleStyle(color: Colors.white)),
-        ],
-      ),
+Widget masterButton(VoidCallback onTap, String label, IconData icon) {
+  return AppElevatedButton(
+    onPressed: onTap,
+    foregroundColor: AppColor.primaryColor,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          icon,
+          size: 20,
+          color: AppColor.primaryColor,
+        ),
+        SizedBox(width: 8),
+        Text(label, style: AppTextStyle.textSubtitleStyle()),
+      ],
     ),
   );
 }

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -104,6 +105,9 @@ Future<void> fetchUserSessionInfo() async {
   userId = prefs.getString(LocalStorageConst.userId);
   sessionId = prefs.getString(LocalStorageConst.sessionLoginId);
   companyId = prefs.getString(LocalStorageConst.companyId);
+  if(ip == null || userId == null || sessionId == null || companyId == null){
+    throw Exception("login");
+  }
 }
 
 Future<http.Response> postFormData(String url,

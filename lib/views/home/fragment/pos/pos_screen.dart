@@ -3,6 +3,8 @@ import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/models/dto/tamu.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/views/home/fragment/pos/widgets/kategori_modal.dart';
+import 'package:xhalona_pos/views/home/fragment/pos/widgets/kategori_modal_controller.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/widgets/app_text_field.dart';
 import 'package:xhalona_pos/widgets/app_icon_button.dart';
@@ -61,7 +63,25 @@ class PosScreen extends StatelessWidget {
                             shape: RoundedRectangleBorder(
                                 side: BorderSide(color: AppColor.grey300),
                                 borderRadius: BorderRadius.circular(5)),
-                            onPressed: () {},
+                            onPressed: () {
+                              SmartDialog.show(builder: (context) {
+                                return Padding(
+                                    padding: EdgeInsets.only(top: 15.h),
+                                    child: AppDialog(
+                                      content: SizedBox(
+                                        width: double.maxFinite,
+                                        height: MediaQuery.of(context).size.height * 0.5,
+                                        child: KategoriModal(
+                                          selectedKategori: controller.productFilterCategory.value,
+                                          onKategoriSelected: (selectedMember) {
+                                            controller.updateProductFilterKategori(selectedMember.analisaId);
+                                            SmartDialog.dismiss();
+                                          },
+                                        ),
+                                      ),
+                                    ));
+                              }).then((_) => Get.delete<KategoriModalController>());
+                            },
                             foregroundColor: AppColor.secondaryColor,
                             icon: Icon(Icons.category_outlined))
                       ],
