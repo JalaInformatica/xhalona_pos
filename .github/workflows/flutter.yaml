@@ -32,12 +32,6 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      # Jalankan jalankan semantic-release
-      - name: Run Semantic Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
-
       # Setup JDK 17
       - name: Siapkan JDK 17 (Microsoft Distribution)
         uses: actions/setup-java@v3.10.0
@@ -59,6 +53,12 @@ jobs:
       # Install dependensi flutter
       - name: Install dependensi
         run: flutter pub get
+
+      # Jalankan jalankan semantic-release
+      - name: Run Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
 
       # Build bundel aplikasi Android
       - name: Build Bundel Aplikasi Android
