@@ -155,14 +155,10 @@ jobs:
           name: aplikasi-ios
           path: build/ios/iphoneos/*.app
 
-  release:
-    runs-on: ubuntu-latest
-    needs: [build]
-    steps:
       # Buat tag untuk rilis
       - name: Buat Tag Rilis
         run: |
-          TAG_NAME="${{ needs.build.outputs.version }}"
+          TAG_NAME="${{ steps.update_version.outputs.version }}"
           echo "Creating release tag: $TAG_NAME"
           git tag "$TAG_NAME"
           git push origin "$TAG_NAME"
@@ -171,27 +167,27 @@ jobs:
 
       # Rilis Aplikasi Android
       - name: Rilis Aplikasi Android
-        if: vars.PLATFORM == 'android' && needs.build.outputs.version != needs.build.outputs.current_version
+        if: vars.PLATFORM == 'android' && steps.update_version.outputs.version != steps.update_version.outputs.current_version
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ needs.build.outputs.version }}
+          tag_name: ${{ steps.update_version.outputs.version }}
           files: build/app/outputs/bundle/release/app-release.aab
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Rilis Aplikasi iOS
       - name: Rilis Aplikasi iOS
-        if: vars.PLATFORM == 'ios' && needs.build.outputs.version != needs.build.outputs.current_version
+        if: vars.PLATFORM == 'ios' && steps.update_version.outputs.version != steps.update_version.outputs.current_version
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ needs.build.outputs.version }}
+          tag_name: ${{ steps.update_version.outputs.version }}
           files: build/ios/iphoneos/*.app
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   cleanup:
     runs-on: ubuntu-latest
-    needs: [release]
+    needs: [build]
     if: always()
     steps:
       # Kirim notifikasi email jika gagal
