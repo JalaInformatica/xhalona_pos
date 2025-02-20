@@ -8,12 +8,12 @@ on:
 permissions:
   contents: write
 
-env:
-  ROOT_DIR: ${{ github.workspace }}
-
 jobs:
-  checkout:
+  build:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.update_version.outputs.version }}
+      current_version: ${{ steps.update_version.outputs.current_version }}
     steps:
       # Ambil kode repositori
       - name: Ambil kode
@@ -21,9 +21,6 @@ jobs:
         with:
           show-progress: true
 
-  cache:
-    runs-on: ubuntu-latest
-    steps:
       # Cache untuk Java
       - name: Restore Java cache
         uses: actions/cache@v4
@@ -44,13 +41,7 @@ jobs:
           restore-keys: |
             flutter-${{ runner.os }}-build-
 
-  setup:
-    runs-on: ubuntu-latest
-    needs: [checkout, cache]
-    outputs:
-      version: ${{ steps.update_version.outputs.version }}
-      current_version: ${{ steps.update_version.outputs.current_version }}
-    steps:
+      # Setup JDK 17
       - name: Siapkan JDK 17 (Microsoft Distribution)
         uses: actions/setup-java@v3.10.0
         with:
@@ -71,30 +62,29 @@ jobs:
       # Install dependensi flutter
       - name: Install dependensi
         run: flutter pub get
-        working-directory: ${{ env.ROOT_DIR }}
 
       # Perbarui versi gradle
       - name: Pasang Gradle versi 8.0
         run: |
-            sed -i 's|distributionUrl=.*|distributionUrl=https://services.gradle.org/distributions/gradle-8.0-all.zip|' ${{ env.ROOT_DIR }}/android/gradle/wrapper/gradle-wrapper.properties
+            sed -i 's|distributionUrl=.*|distributionUrl=https://services.gradle.org/distributions/gradle-8.0-all.zip|' android/gradle/wrapper/gradle-wrapper.properties
 
       # Perbarui versi aplikasi flutter
       - name: Perbarui Versi
         id: update_version
         run: |
-            CURRENT_VERSION=$(grep 'version: ' ${{ env.ROOT_DIR }}/pubspec.yaml | sed 's/version: //')
+            CURRENT_VERSION=$(grep 'version: ' pubspec.yaml | sed 's/version: //')
             IFS='+' read -r VERSION CODE <<< "$CURRENT_VERSION"
             NEW_CODE=$((CODE + 1))
             NEW_VERSION="$VERSION+$NEW_CODE"
 
             echo "Updating version from $CURRENT_VERSION to $NEW_VERSION"
 
-            if [ ! -f ${{ env.ROOT_DIR }}/pubspec.yaml ]; then
+            if [ ! -f pubspec.yaml ]; then
                 echo "Error: pubspec.yaml file does not exist."
                 exit 1
             fi
 
-            sed -i "s/version: $CURRENT_VERSION/version: $NEW_VERSION/" ${{ env.ROOT_DIR }}/pubspec.yaml || {
+            sed -i "s/version: $CURRENT_VERSION/version: $NEW_VERSION/" pubspec.yaml || {
                 echo "Error: Failed to update version in pubspec.yaml"
                 exit 1
             }
@@ -109,23 +99,24 @@ jobs:
             fi
 
             echo "version=$NEW_VERSION" >> $GITHUB_ENV
-            echo "current_version=$CURRENT_VERSION" >> $GITHUB_ENV
+            echo "current_version=$CURRENT_VERSION" >> $GITHUB_ENV      
 
-  build_android:
-    runs-on: ubuntu-latest
-    needs: [setup]
-    if: vars.PLATFORM == 'android'
-    steps:
+      # Build bundel aplikasi Android
       - name: Build Bundel Aplikasi Android
+        if: vars.PLATFORM == 'android'
         run: flutter build appbundle --release
 
+      # Unggah bundel aplikasi Android
       - name: Unggah Bundel Aplikasi Android
+        if: vars.PLATFORM == 'android'
         uses: actions/upload-artifact@v4
         with:
           name: bundel-aplikasi-android
           path: build/app/outputs/bundle/release/app-release.aab
 
+      # Tanda Tangani bundel aplikasi Android
       - name: Tanda Tangan Bundel Aplikasi Android
+        if: vars.PLATFORM == 'android'
         uses: r0adkll/sign-android-release@v1
         id: sign_app
         with:
@@ -135,26 +126,29 @@ jobs:
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_ALIAS_PASSWORD }}
 
-  build_ios:
-    runs-on: ubuntu-latest
-    needs: [setup]
-    if: vars.PLATFORM == 'ios'
-    steps:
+      # Dekode sertifikat iOS
       - name: Dekode Sertifikat iOS
+        if: vars.PLATFORM == 'ios'
         run: |
           echo "${{ secrets.IOS_CERTIFICATE }}" | base64 --decode > ios_certificate.p12
 
+      # Install sertifikat iOS
       - name: Install Sertifikat iOS
+        if: vars.PLATFORM == 'ios'
         run: |
           security create-keychain -p "" build.keychain
           security import ios_certificate.p12 -k build.keychain -P "${{ secrets.CERT_PASSWORD }}" -T /usr/bin/codesign
           security list-keychains -s build.keychain
           security unlock-keychain -p "" build.keychain
 
+      # Build aplikasi iOS
       - name: Build Aplikasi iOS
+        if: vars.PLATFORM == 'ios'
         run: flutter build ios --release --no-codesign
 
+      # Unggah aplikasi iOS
       - name: Unggah Aplikasi iOS
+        if: vars.PLATFORM == 'ios'
         uses: actions/upload-artifact@v4
         with:
           name: aplikasi-ios
@@ -162,12 +156,12 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    needs: [build_android, build_ios, setup]
+    needs: [build]
     steps:
       # Buat tag untuk rilis
       - name: Buat Tag Rilis
         run: |
-          TAG_NAME="${{ needs.setup.outputs.version }}"
+          TAG_NAME="${{ needs.build.outputs.version }}"
           echo "Creating release tag: $TAG_NAME"
           git tag "$TAG_NAME"
           git push origin "$TAG_NAME"
@@ -176,20 +170,20 @@ jobs:
 
       # Rilis Aplikasi Android
       - name: Rilis Aplikasi Android
-        if: vars.PLATFORM == 'android' && needs.setup.outputs.version != needs.setup.outputs.current_version
+        if: vars.PLATFORM == 'android' && needs.build.outputs.version != needs.build.outputs.current_version
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ needs.setup.outputs.version }}
+          tag_name: ${{ needs.build.outputs.version }}
           files: build/app/outputs/bundle/release/app-release.aab
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Rilis Aplikasi iOS
       - name: Rilis Aplikasi iOS
-        if: vars.PLATFORM == 'ios' && needs.setup.outputs.version != needs.setup.outputs.current_version
+        if: vars.PLATFORM == 'ios' && needs.build.outputs.version != needs.build.outputs.current_version
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ needs.setup.outputs.version }}
+          tag_name: ${{ needs.build.outputs.version }}
           files: build/ios/iphoneos/*.app
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -197,6 +191,7 @@ jobs:
   cleanup:
     runs-on: ubuntu-latest
     needs: [release]
+    if: always()
     steps:
       # Kirim notifikasi email jika gagal
       - name: Kirim notifikasi email jika gagal
