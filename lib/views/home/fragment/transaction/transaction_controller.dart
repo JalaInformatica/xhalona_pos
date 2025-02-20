@@ -7,10 +7,12 @@ class TransactionController extends GetxController {
   TransactionRepository _transactionRepository = TransactionRepository();
 
   var transactionHeader = <TransactionHeaderDAO>[].obs;
+  var transactionDetail = <TransactionDetailDAO>[].obs;
   var isLoading = true.obs;
   var trxStatusCategory = TransactionStatusCategory.progress.obs;
   var isOnline = false.obs;
   var filterValue = "".obs;
+  var salesId = "".obs;
   RxDouble sumTrx = 0.0.obs;
 
   DateTime dateNow = DateTime.now();
@@ -25,6 +27,7 @@ class TransactionController extends GetxController {
   void onInit() {
     super.onInit();
     fetchTransactions();
+    fetchGetDetailTransactions();
   }
 
   void updateFilterTrxOnline() async {
@@ -60,6 +63,11 @@ class TransactionController extends GetxController {
     fetchTransactions();
   }
 
+  void updateTrxDetail(String newFilterValue) {
+    salesId.value = newFilterValue;
+    fetchGetDetailTransactions();
+  }
+
   void updatePageNo(int newFilterValue) {
     pageNo.value = newFilterValue;
     fetchTransactions();
@@ -86,6 +94,18 @@ class TransactionController extends GetxController {
       transactionHeader.value = result;
       sumTrx.value =
           result.fold(0.0, (sum, item) => sum + (item.nettoVal ?? 0.0));
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> fetchGetDetailTransactions() async {
+    try {
+      isLoading.value = true;
+      final result = await _transactionRepository.getTransactionDetail(
+        transactionId: salesId.value,
+      );
+      transactionDetail.value = result;
     } finally {
       isLoading.value = false;
     }

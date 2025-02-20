@@ -101,9 +101,7 @@ class TransactionService {
         "ACTION_ID": "DELETE_H",
         "COMPANY_ID": api.companyId,
         "DATA": [
-          {
-            "SALES_ID": salesId
-          }
+          {"SALES_ID": salesId}
         ]
       }
     });
@@ -113,19 +111,18 @@ class TransactionService {
     return ResponseHandler.handle(response);
   }
 
-  Future<String> statusTransactions({
-    int? pageNo,
-    int? pageRow,
-    String? filterField,
-    String? filterValue,
-    int? filterDay,
-    int? filterMonth,
-    int? filterYear,
-    String? statusId,
-    String? statusCategory,
-    String? sourceId,
-    String? statusClosed
-  }) async {
+  Future<String> statusTransactions(
+      {int? pageNo,
+      int? pageRow,
+      String? filterField,
+      String? filterValue,
+      int? filterDay,
+      int? filterMonth,
+      int? filterYear,
+      String? statusId,
+      String? statusCategory,
+      String? sourceId,
+      String? statusClosed}) async {
     await api.fetchUserSessionInfo();
     var url = '/SALES/order';
     var body = jsonEncode({
@@ -231,10 +228,7 @@ class TransactionService {
         "USER_ID": api.userId,
         "SESSION_LOGIN_ID": api.sessionId,
         "DATA": [
-          {
-            "SALES_ID": salesId,
-            "ROW_ID": rowId
-          }
+          {"SALES_ID": salesId, "ROW_ID": rowId}
         ]
       }
     });
@@ -243,7 +237,8 @@ class TransactionService {
     return ResponseHandler.handle(response);
   }
 
-  Future<String> editEmployeeTransactionDetail(String salesId, String rowId, String employeeId) async {
+  Future<String> editEmployeeTransactionDetail(
+      String salesId, String rowId, String employeeId) async {
     await api.fetchUserSessionInfo();
     var url = '/SALES/order_detail';
     var body = jsonEncode({
@@ -268,7 +263,79 @@ class TransactionService {
     return ResponseHandler.handle(response);
   }
 
-  Future<String> onTransaction({String? actionId,String? salesId, String? statusDesc}) async {
+  Future<String> ubahEmployeeTerapis(String salesId, String rowId,
+      List<Map<String, dynamic>> trxDetailControllers) async {
+    await api.fetchUserSessionInfo();
+    var url = '/SALES/order_detail';
+
+    List<Map<String, dynamic>> updatedData = [];
+
+    for (var trxController in trxDetailControllers) {
+      updatedData.add({
+        'SALES_ID': salesId,
+        'ROW_ID': rowId,
+        'EMPLOYEE_ID': trxController['selectTherapis'].text,
+      });
+    }
+
+    var body = jsonEncode({
+      "rq": {
+        "ACTION_ID": "EDIT_D_EMPLOYEE",
+        "IP": api.ip,
+        "COMPANY_ID": api.companyId,
+        "SITE_ID": "",
+        "USER_ID": api.userId,
+        "SESSION_LOGIN_ID": api.sessionId,
+        "DATA": updatedData
+      }
+    });
+
+    print('bodi: $body');
+
+    var response =
+        await api.post(url, headers: await api.requestHeaders(), body: body);
+    return ResponseHandler.handle(response);
+  }
+
+  Future<String> ubahBomTerapis(
+      List<Map<String, dynamic>> trxDetailControllers) async {
+    await api.fetchUserSessionInfo();
+    var url = '/SALES/order_detail';
+
+    Map<String, dynamic> bomDataList = {};
+
+    for (var trxController in trxDetailControllers) {
+      trxController['bomData'].forEach((bomName, controllers) {
+        bomDataList[bomName] = {
+          'ROW_ID': controllers['rowController'].text,
+          'UNIT_ID': controllers['unitController'].text,
+          'QTY': controllers['qtyController'].text,
+          'BRAND_ID': controllers['brandController'].text,
+        };
+      });
+    }
+
+    var body = jsonEncode({
+      "rq": {
+        "ACTION_ID": "EDIT_D_BOM",
+        "IP": api.ip,
+        "COMPANY_ID": api.companyId,
+        "SITE_ID": "",
+        "USER_ID": api.userId,
+        "SESSION_LOGIN_ID": api.sessionId,
+        "DATA": bomDataList
+      }
+    });
+
+    print('bodiBom: $body');
+
+    var response =
+        await api.post(url, headers: await api.requestHeaders(), body: body);
+    return ResponseHandler.handle(response);
+  }
+
+  Future<String> onTransaction(
+      {String? actionId, String? salesId, String? statusDesc}) async {
     await api.fetchUserSessionInfo();
     var url = '/SALES/order';
     var body = jsonEncode({
@@ -280,7 +347,10 @@ class TransactionService {
         "ACTION_ID": actionId,
         "COMPANY_ID": api.companyId,
         "SALES_ID": salesId,
-       if(actionId != 'ONCONFIRM' || actionId != 'ONWORKING' || actionId != 'ONFINISH_STORE') "STATUS_DESC": statusDesc
+        if (actionId != 'ONCONFIRM' ||
+            actionId != 'ONWORKING' ||
+            actionId != 'ONFINISH_STORE')
+          "STATUS_DESC": statusDesc
       }
     });
     var response =
@@ -288,5 +358,4 @@ class TransactionService {
 
     return ResponseHandler.handle(response);
   }
-
 }

@@ -10,6 +10,7 @@ class MasAllController extends GetxController {
   // var trxStatusCategory = ProductStatusCategory.progress.obs;
   var isActive = false.obs;
   var filterValue = "".obs;
+  var group = "".obs;
 
   var pageNo = 1.obs;
   var pageRow = 10.obs;
@@ -43,6 +44,13 @@ class MasAllController extends GetxController {
     fetchProducts();
   }
 
+  void updateGroupMasterId(String newGroup) {
+    group.value = newGroup;
+    pageNo.value = 1;
+    pageRow.value = 10;
+    fetchProducts();
+  }
+
   void updatePageNo(int newFilterValue) {
     pageNo.value = newFilterValue;
     fetchProducts();
@@ -60,6 +68,7 @@ class MasAllController extends GetxController {
           // statusCategory: getProductStatusCategoryStr(trxStatusCategory.value),
           isActive: '${isActive.value ? '1' : ''}',
           filterValue: filterValue.value,
+          group: group.value,
           pageNo: pageNo.value,
           pageRow: pageRow.value);
       masAllHeader.value = result;

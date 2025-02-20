@@ -121,6 +121,21 @@ class TransactionRepository extends AppRepository {
     getResponseTrxData(result);
   }
 
+  Future<String> ubahEmployeeTerapis(
+      {required String salesId,
+      required String rowId,
+      required List<Map<String, dynamic>> trxDetailControllers}) async {
+    var result = await _transactionService.ubahEmployeeTerapis(
+        salesId, rowId, trxDetailControllers);
+    return getResponseTrxData(result).first['NO_TRX'];
+  }
+
+  Future<String> ubahBomTerapis(
+      {required List<Map<String, dynamic>> trxDetailControllers}) async {
+    var result = await _transactionService.ubahBomTerapis(trxDetailControllers);
+    return getResponseTrxData(result).first['NO_TRX'];
+  }
+
   Future<String> onTransactionHeader(
       {String? actionId, String? salesId, String? statusDesc}) async {
     var result = await _transactionService.onTransaction(

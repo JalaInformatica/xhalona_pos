@@ -1,16 +1,15 @@
-import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/widgets/app_bottombar.dart';
+import 'package:xhalona_pos/widgets/app_dialog.dart';
+import 'package:xhalona_pos/widgets/app_calendar.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
+import 'package:xhalona_pos/widgets/app_text_form_field.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_viewer_screen.dart';
-import 'package:xhalona_pos/widgets/app_calendar.dart';
-import 'package:xhalona_pos/widgets/app_dialog.dart';
-import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 
 class LapPenjualanScreen extends StatefulWidget {
   @override
@@ -72,7 +71,6 @@ class _ReportFormPageState extends State<LapPenjualanScreen> {
       }
     }
 
-    final screenWidth = MediaQuery.of(context).size.width;
 
     return WillPopScope(
       onWillPop: () async {
