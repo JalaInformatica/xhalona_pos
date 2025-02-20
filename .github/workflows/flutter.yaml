@@ -80,7 +80,11 @@ jobs:
             flutter build ios --release --no-codesign
             echo "artifact_path=build/ios/iphoneos/*.app" >> $GITHUB_ENV
           fi
-          echo "artifact_path=${artifact_path}" >> $GITHUB_ENV
+
+      # Debug Artifact Path
+      - name: Debug Artifact Path
+        run: |
+          echo "Artifact Path: ${{ env.artifact_path }}"
 
       # Upload Artifact
       - name: Upload Artifact
@@ -88,7 +92,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.platform == 'android' && 'bundel-aplikasi-android' || 'aplikasi-ios' }}
-          path: ${{ steps.build.outputs.artifact_path }}
+          path: ${{ env.artifact_path }}
 
       # Rilis Aplikasi
       - name: Rilis Aplikasi
