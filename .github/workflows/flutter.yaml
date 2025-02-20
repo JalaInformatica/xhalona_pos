@@ -18,25 +18,21 @@ jobs:
         with:
           show-progress: true
 
-      # Cache untuk Java
-      - name: Restore Java cache
-        uses: actions/cache@v4
+      # Setup Node.js for semantic-release
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
         with:
-          path: ~/.m2/repository
-          key: java-${{ runner.os }}-build-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            java-${{ runner.os }}-build-
+          node-version: '14'
 
-      # Cache untuk Flutter
-      - name: Restore Flutter cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.pub-cache
-            build
-          key: flutter-${{ runner.os }}-build-${{ hashFiles('pubspec.yaml') }}
-          restore-keys: |
-            flutter-${{ runner.os }}-build-
+      # Install dependensi node untuk semantic-release
+      - name: Install Dependencies
+        run: npm install
+
+      # Jalankan jalankan semantic-release
+      - name: Run Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
 
       # Setup JDK 17
       - name: Siapkan JDK 17 (Microsoft Distribution)
@@ -60,53 +56,6 @@ jobs:
       - name: Install dependensi
         run: flutter pub get
 
-      # Perbarui versi gradle
-      - name: Pasang Gradle versi 8.0
-        run: |
-            sed -i 's|distributionUrl=.*|distributionUrl=https://services.gradle.org/distributions/gradle-8.0-all.zip|' android/gradle/wrapper/gradle-wrapper.properties
-
-      # Perbarui versi aplikasi flutter
-      - name: Perbarui Versi
-        id: update_version
-        run: |
-            TIMESTAMP=$(date +%Y%m%d%H%M%S)
-            CURRENT_VERSION=$(grep 'version: ' pubspec.yaml | sed 's/version: //')
-            VERSION="${CURRENT_VERSION%+*}+$TIMESTAMP"
-
-            echo "Updating version from $CURRENT_VERSION to $VERSION"
-
-            if [ ! -f pubspec.yaml ]; then
-                echo "Error: pubspec.yaml file does not exist."
-                exit 1
-            fi
-
-            sed -i "s/version: $CURRENT_VERSION/version: $VERSION/" pubspec.yaml || {
-                echo "Error: Failed to update version in pubspec.yaml"
-                exit 1
-            }
-
-            git config --local user.email "action@github.com"
-            git config --local user.name "GitHub Action"
-            git add pubspec.yaml  # Menambahkan file ke staging area
-
-            if ! git diff --quiet; then
-                git commit -m "Update version to $VERSION"
-            else
-                echo "No changes to commit."
-            fi
-
-            echo "version=$VERSION" >> $GITHUB_ENV
-            echo "current_version=$CURRENT_VERSION" >> $GITHUB_ENV
-
-      # Cek perubahan versi
-      - name: Cek Perubahan Versi
-        run: |
-            echo "${{ env.version }}"
-            echo "${{ env.current_version }}"
-        env:
-          version: ${{ env.version }}
-          current_version: ${{ env.current_version }}
-
       # Build bundel aplikasi Android
       - name: Build Bundel Aplikasi Android
         if: vars.PLATFORM == 'android'
@@ -124,28 +73,12 @@ jobs:
       - name: Tanda Tangan Bundel Aplikasi Android
         if: vars.PLATFORM == 'android'
         uses: r0adkll/sign-android-release@v1
-        id: sign_app
         with:
           releaseDirectory: build/app/outputs/bundle/release/
           signingKeyBase64: ${{ secrets.KEYSTORE_BASE64 }}
           alias: ${{ secrets.KEY_ALIAS }}
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_ALIAS_PASSWORD }}
-
-      # Dekode sertifikat iOS
-      - name: Dekode Sertifikat iOS
-        if: vars.PLATFORM == 'ios'
-        run: |
-          echo "${{ secrets.IOS_CERTIFICATE }}" | base64 --decode > ios_certificate.p12
-
-      # Install sertifikat iOS
-      - name: Install Sertifikat iOS
-        if: vars.PLATFORM == 'ios'
-        run: |
-          security create-keychain -p "" build.keychain
-          security import ios_certificate.p12 -k build.keychain -P "${{ secrets.CERT_PASSWORD }}" -T /usr/bin/codesign
-          security list-keychains -s build.keychain
-          security unlock-keychain -p "" build.keychain
 
       # Build aplikasi iOS
       - name: Build Aplikasi iOS
@@ -160,50 +93,24 @@ jobs:
           name: aplikasi-ios
           path: build/ios/iphoneos/*.app
 
-      # Buat tag untuk rilis
-      - name: Buat Tag Rilis
-        run: |
-          # Mengambil version terbaru dari output build
-          TAG_NAME="${{ env.version }}"
-          
-          # Jika TAG_NAME kosong, ambil dari pubspec.yaml
-          if [ -z "$TAG_NAME" ]; then
-              TAG_NAME=$(grep 'version: ' pubspec.yaml | sed 's/version: //;s/+.*//;s/^/v/')
-              if [ -z "$TAG_NAME" ]; then
-                  echo "Error: TAG_NAME is still empty. Cannot create tag."
-                  exit 1
-              fi
-          fi
-          
-          echo "Creating release tag: $TAG_NAME"
-          git tag "$TAG_NAME"
-          git push origin "$TAG_NAME"
-        env:
-          version: ${{ env.version }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       # Rilis Aplikasi Android
       - name: Rilis Aplikasi Android
-        if: vars.PLATFORM == 'android' && env.version != env.current_version
+        if: vars.PLATFORM == 'android'
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ env.version }}
+          tag_name: ${{ github.ref }}
           files: build/app/outputs/bundle/release/app-release.aab
         env:
-          version: ${{ env.version }}
-          current_version: ${{ env.current_version }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Rilis Aplikasi iOS
       - name: Rilis Aplikasi iOS
-        if: vars.PLATFORM == 'ios' && env.version != env.current_version
+        if: vars.PLATFORM == 'ios'
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ env.version }}
+          tag_name: ${{ github.ref }}
           files: build/ios/iphoneos/*.app
         env:
-          version: ${{ env.version }}
-          current_version: ${{ env.current_version }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   cleanup:
@@ -226,22 +133,6 @@ jobs:
           server_port: ${{ secrets.SMTP_PORT }}
           username: ${{ secrets.SMTP_USER }}
           password: ${{ secrets.SMTP_PASSWORD }}
-
-      - name: Unggah log
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: log-build
-          path: build/logs/
-
-      - name: Bersihkan cache jika gagal
-        if: failure()
-        run: |
-          echo "Cleaning up cache..."
-          [ -d ~/.m2/repository ] && rm -rf ~/.m2/repository
-          [ -d ~/.pub-cache ] && rm -rf ~/.pub-cache
-          [ -d build ] && rm -rf build/*
-          [ -d build/logs ] && rm -rf build/logs/*
 
       # Kirim notifikasi email jika sukses
       - name: Kirim notifikasi email jika sukses
