@@ -91,6 +91,7 @@ jobs:
 
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action"
+            git add pubspec.yaml  # Menambahkan file ke staging area
 
             if ! git diff --quiet; then
                 git commit -m "Update version to $NEW_VERSION"
@@ -99,7 +100,7 @@ jobs:
             fi
 
             echo "version=$NEW_VERSION" >> $GITHUB_ENV
-            echo "current_version=$CURRENT_VERSION" >> $GITHUB_ENV      
+            echo "current_version=$CURRENT_VERSION" >> $GITHUB_ENV
 
       # Build bundel aplikasi Android
       - name: Build Bundel Aplikasi Android
