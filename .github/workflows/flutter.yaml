@@ -45,6 +45,7 @@ jobs:
 
       # Cache Flutter packages
       - name: Cache Flutter Packages
+        if: success()
         uses: actions/cache@v3
         with:
           path: |
@@ -153,7 +154,7 @@ jobs:
 
       # Kirim notifikasi email jika sukses
       - name: Kirim notifikasi email jika sukses
-        if: success() && github.ref == 'refs/heads/main'
+        if: success()
         uses: dawidd6/action-send-mail@v3
         with:
           from: ${{ secrets.SMTP_FROM }}
