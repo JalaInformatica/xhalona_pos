@@ -170,8 +170,20 @@ class _AddEditBahanState extends State<AddEditBahan> {
               controller: controller,
               focusNode: focusNode,
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: "Cari nama...",
+                labelText: label,
+                labelStyle: TextStyle(color: AppColor.primaryColor),
+                hintText: 'Cari nama...',
+                hintStyle: TextStyle(color: AppColor.primaryColor),
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColor.primaryColor),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      BorderSide(color: AppColor.primaryColor, width: 2.0),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColor.primaryColor),
+                ),
               ),
               onChanged: (value) {
                 // Jangan lakukan apa-apa saat mengetik, biarkan saat dipilih
@@ -222,8 +234,20 @@ class _AddEditBahanState extends State<AddEditBahan> {
               controller: controller,
               focusNode: focusNode,
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: "Cari nama...",
+                labelText: label,
+                labelStyle: TextStyle(color: AppColor.primaryColor),
+                hintText: 'Cari nama...',
+                hintStyle: TextStyle(color: AppColor.primaryColor),
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColor.primaryColor),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      BorderSide(color: AppColor.primaryColor, width: 2.0),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColor.primaryColor),
+                ),
               ),
               onChanged: (value) {
                 // Jangan lakukan apa-apa saat mengetik, biarkan saat dipilih

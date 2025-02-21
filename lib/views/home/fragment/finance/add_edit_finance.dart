@@ -173,7 +173,11 @@ class _AddEditFinanceState extends State<AddEditFinance> {
             }, '', Icons.settings),
             SizedBox(width: 5),
             widget.finance != null
-                ? masterButton(handlePrint, 'Print', Icons.print,)
+                ? masterButton(
+                    handlePrint,
+                    'Print',
+                    Icons.print,
+                  )
                 : SizedBox(),
             SizedBox(width: 5),
           ],
@@ -261,18 +265,20 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                       SizedBox(height: 32),
 
                       // Action Buttons
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      Wrap(
+                        spacing: 4,
+                        runSpacing: 4,
                         children: [
                           masterButton(
                               handleAddEditFinance, "Simpan", Icons.add),
                           masterButton(
-                              handleuPost,
-                              widget.finance != null &&
-                                      widget.finance!.isApproved == true
-                                  ? 'UnPost'
-                                  : 'Post',
-                              Icons.post_add,),
+                            handleuPost,
+                            widget.finance != null &&
+                                    widget.finance!.isApproved == true
+                                ? 'UnPost'
+                                : 'Post',
+                            Icons.post_add,
+                          ),
                           masterButton(() {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
@@ -297,8 +303,19 @@ class _AddEditFinanceState extends State<AddEditFinance> {
       enabled: isEnable,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
+        labelStyle: TextStyle(color: AppColor.primaryColor),
         suffixIcon: Icon(Icons.calendar_today),
+        suffixIconColor: AppColor.primaryColor,
+        hintStyle: TextStyle(color: AppColor.primaryColor),
+        border: OutlineInputBorder(
+          borderSide: BorderSide(color: AppColor.primaryColor),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: AppColor.primaryColor, width: 2.0),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: AppColor.primaryColor),
+        ),
       ),
       onTap: () async {
         DateTime? pickedDate = await showDatePicker(
@@ -313,31 +330,6 @@ class _AddEditFinanceState extends State<AddEditFinance> {
           });
         }
       },
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return '$label tidak boleh kosong';
-        }
-        return null;
-      },
-    );
-  }
-
-  Widget buildTextField(
-    String label,
-    String hint,
-    TextEditingController controller, {
-    TextInputType keyboardType = TextInputType.text,
-    bool isEnabled = true, // Tambahkan parameter ini
-  }) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
-      enabled: isEnabled, // Atur properti enabled berdasarkan parameter
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        border: OutlineInputBorder(),
-      ),
       validator: (value) {
         if (value == null || value.isEmpty) {
           return '$label tidak boleh kosong';
@@ -383,8 +375,20 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                 enabled:
                     enabled, // Mengatur apakah field bisa diketik atau tidak
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: enabled ? "Cari akun..." : "Input dinonaktifkan",
+                  labelText: label,
+                  hintText: 'Cari akun...',
+                  labelStyle: TextStyle(color: AppColor.primaryColor),
+                  hintStyle: TextStyle(color: AppColor.primaryColor),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: AppColor.primaryColor),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide:
+                        BorderSide(color: AppColor.primaryColor, width: 2.0),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: AppColor.primaryColor),
+                  ),
                 ),
                 onChanged: (value) {
                   // Biarkan kosong, hanya proses saat dipilih
@@ -435,8 +439,20 @@ class _AddEditFinanceState extends State<AddEditFinance> {
               controller: controller,
               focusNode: focusNode,
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: "Cari nama...",
+                labelText: label,
+                hintText: 'Cari nama...',
+                labelStyle: TextStyle(color: AppColor.primaryColor),
+                hintStyle: TextStyle(color: AppColor.primaryColor),
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColor.primaryColor),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      BorderSide(color: AppColor.primaryColor, width: 2.0),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColor.primaryColor),
+                ),
               ),
               onChanged: (value) {
                 // Jangan lakukan apa-apa saat mengetik, biarkan saat dipilih

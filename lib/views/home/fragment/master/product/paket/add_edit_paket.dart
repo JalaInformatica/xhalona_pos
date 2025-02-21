@@ -53,7 +53,7 @@ class _AddEditPaketState extends State<AddEditPaket> {
     void handleAddEditPaket() async {
       if (_formKey.currentState!.validate()) {
         String result = await _paketRepository.addEditPaket(
-            comUnitPrice: _hargaController.text,
+            comUnitPrice: parseRupiah(_hargaController.text).toString(),
             comValue: _qtyController.text,
             comPartId: _product,
             partId: widget.partId,
@@ -112,7 +112,8 @@ class _AddEditPaketState extends State<AddEditPaket> {
                       SizedBox(height: 16),
 
                       // Field Nama
-                      buildTextField("Qty", "Masukkan Qty", _qtyController),
+                      buildTextField("Qty", "Masukkan Qty", _qtyController,
+                          keyboardType: TextInputType.number),
                       SizedBox(height: 16),
 
                       buildTextField(
@@ -170,8 +171,20 @@ class _AddEditPaketState extends State<AddEditPaket> {
               controller: controller,
               focusNode: focusNode,
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: "Cari nama...",
+                labelText: label,
+                labelStyle: TextStyle(color: AppColor.primaryColor),
+                hintText: 'Cari nama...',
+                hintStyle: TextStyle(color: AppColor.primaryColor),
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColor.primaryColor),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      BorderSide(color: AppColor.primaryColor, width: 2.0),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColor.primaryColor),
+                ),
               ),
               onChanged: (value) {
                 // Jangan lakukan apa-apa saat mengetik, biarkan saat dipilih

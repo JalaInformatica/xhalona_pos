@@ -6,14 +6,17 @@ import 'package:image_picker/image_picker.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/product.dart';
 import 'package:xhalona_pos/models/dao/kategori.dart';
+import 'package:xhalona_pos/views/home/home_screen.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:xhalona_pos/widgets/full_screen_image.dart';
 import 'package:xhalona_pos/services/user/user_service.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
+import 'package:xhalona_pos/services/api_service.dart' as api;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:xhalona_pos/repositories/product/product_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/master/product/master_product_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/kategori/kategori_controller.dart';
 // ignore_for_file: unused_field
 
@@ -34,17 +37,14 @@ class _AddEditProductState extends State<AddEditProduct> {
   late SharedPreferences prefs;
 
   // Contoh data untuk dropdown
-  List<String> categories = ['Kategori 1', 'Kategori 2', 'Kategori 3'];
-  String? selectedCategory;
-  String? selectedGlobalCategory;
 
   // Variables for input fields
-  String? productName;
-  String? productDescription;
+  final productName = TextEditingController();
+  final productDescription = TextEditingController();
   String? productUnit;
-  double? productPrice;
-  double? productDiscountPercentage;
-  int? productDiscount;
+  final productPrice = TextEditingController();
+  final productDiscountPercentage = TextEditingController();
+  final productDiscount = TextEditingController();
   String? _kategori;
   String? _kategoriGlobal;
   final List<String> genders = ['PCS', 'JASA', 'BUAH'];
@@ -58,14 +58,13 @@ class _AddEditProductState extends State<AddEditProduct> {
 
     inisiasi();
     if (widget.product != null) {
-      selectedCategory = widget.product?.analisaId;
-      selectedGlobalCategory = widget.product?.analisaIdGlobal;
-      productName = widget.product?.partName;
-      productDescription = widget.product?.spec;
-      productUnit = widget.product?.unit1;
-      productPrice = widget.product?.unitPriceNet.toDouble();
-      productDiscountPercentage = widget.product?.discountPct.toDouble();
-      productDiscount = widget.product?.discountVal;
+      productName.text = widget.product?.partName ?? '';
+      productDescription.text = widget.product?.spec ?? '';
+      productUnit = widget.product?.unit1 ?? '';
+      productPrice.text = widget.product?.unitPrice.toString() ?? '';
+      productDiscountPercentage.text =
+          widget.product?.discountPct.toString() ?? '';
+      productDiscount.text = widget.product?.discountVal.toString() ?? '';
       chipStatus['Qty Tetap'] = widget.product?.isFixQty ?? false;
       chipStatus['Bonus'] = widget.product?.isNonSales ?? false;
       chipStatus['Paket'] = widget.product?.isPacket ?? false;
@@ -80,8 +79,6 @@ class _AddEditProductState extends State<AddEditProduct> {
     prefs = await SharedPreferences.getInstance();
     setState(() {
       profileImageUrl = prefs.getString('profileImageUrl');
-      controller.kategoriHeader;
-      controller.kategoriGlobalHeader;
       isLoading = false;
     });
   }
@@ -91,23 +88,23 @@ class _AddEditProductState extends State<AddEditProduct> {
     void handleAddEditProduct() async {
       if (_formKey.currentState!.validate()) {
         String result = await _productRepository.addEditProduct(
-          analisaId: selectedCategory,
-          analisaIdGlobal: selectedGlobalCategory,
+          analisaId: _kategori,
+          analisaIdGlobal: _kategoriGlobal,
           partId: widget.product?.partId,
-          partName: productName,
-          deskripsi: productDescription,
+          partName: productName.text,
+          deskripsi: productDescription.text,
           unit1: productUnit,
-          unitPrice: productPrice?.toInt(),
-          discPct: productDiscountPercentage?.toInt(),
-          discVal: productDiscount,
+          unitPrice: parseRupiah(productPrice.text),
+          discPct: parseRupiah(productDiscountPercentage.text),
+          discVal: parseRupiah(productDiscount.text),
           isFixQty: chipStatus['Qty Tetap'] == true ? 1 : 0,
           isFixPrice: chipStatus['Bonus'] == true ? 1 : 0,
           isPacket: chipStatus['Paket'] == true ? 1 : 0,
           isStock: chipStatus['Stock'] == true ? 1 : 0,
           isPromo: chipStatus['Promo'] == true ? 1 : 0,
           isFree: chipStatus['Tak Dijual'] == true ? 1 : 0,
-          mainImage: profileImageUrl,
-          thumbImage: profileImageUrl,
+          mainImage: profileImageUrl ?? widget.product?.thumbImage,
+          thumbImage: profileImageUrl ?? widget.product?.thumbImage,
           actionId: widget.product == null ? "0" : "1",
         );
 
@@ -119,7 +116,7 @@ class _AddEditProductState extends State<AddEditProduct> {
           setState(() {});
         } else {
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => MasterProductScreen()),
+            MaterialPageRoute(builder: (context) => HomeScreen()),
             (route) => false,
           );
           controllerPro.fetchProducts();
@@ -130,8 +127,16 @@ class _AddEditProductState extends State<AddEditProduct> {
       }
     }
 
-    return Scaffold(
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+            (route) => false); // Navigasi kembali ke halaman sebelumnya
+        return false; // Mencegah navigasi bawaan
+      },
+      child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: Text(
             "Tambah/Edit Data Product ",
             style: AppTextStyle.textTitleStyle(color: Colors.white),
@@ -158,60 +163,27 @@ class _AddEditProductState extends State<AddEditProduct> {
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         SizedBox(height: 16.0),
-                        Obx(() {
-                          return buildDropdownField(
-                            "Kategori",
-                            controller.kategoriHeader,
-                            (value) {
-                              setState(() {
-                                _kategori = value;
-                              });
-                            },
-                          );
-                        }),
+                        buildTypeAheadField(
+                            "Kategori", controller.kategoriHeader, (value) {
+                          setState(() {
+                            _kategori = value;
+                          });
+                        }, controller.updateFilterValue, api.companyId),
                         SizedBox(height: 16),
-                        Obx(() {
-                          return buildDropdownField(
-                            "Kategori Global",
-                            controller.kategoriGlobalHeader,
+                        buildTypeAheadField(
+                            "Kategori Global", controller.kategoriHeader,
                             (value) {
-                              setState(() {
-                                _kategoriGlobal = value;
-                              });
-                            },
-                          );
-                        }),
+                          setState(() {
+                            _kategoriGlobal = value;
+                          });
+                        }, controller.updateFilterValue, 'All'),
                         SizedBox(height: 16),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Nama Produk',
-                            border: OutlineInputBorder(),
-                          ),
-                          initialValue: widget.product?.partName,
-                          onChanged: (value) => productName = value,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Masukkan nama produk';
-                            }
-                            return null;
-                          },
-                        ),
+                        buildTextField(
+                            "Nama Produk", "Masukkan Nama Produk", productName),
                         SizedBox(height: 16.0),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Deskripsi',
-                            border: OutlineInputBorder(),
-                          ),
-                          initialValue: widget.product?.spec,
-                          maxLines: 3,
-                          onChanged: (value) => productDescription = value,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Deskripsi harus di isi';
-                            }
-                            return null;
-                          },
-                        ),
+                        buildTextField(
+                            "Deskripsi", "Masukkan input", productDescription,
+                            maxline: 3),
                         SizedBox(height: 16.0),
                         Text(
                           'Tambah Gambar',
@@ -223,44 +195,51 @@ class _AddEditProductState extends State<AddEditProduct> {
                             masterButton(_showImageSourceSelector,
                                 "Unggah (1X1)", Icons.image),
                             SizedBox(width: 8.0),
-                            Container(
-                              width: 60,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                border: Border.all(
-                                  color: AppColor.primaryColor,
-                                  width: 4,
+                            GestureDetector(
+                              onTap: () {
+                                showFullScreenImage(
+                                  context,
+                                  'https://dreadnought.core-erp.com/XHALONA/${widget.product?.thumbImage ?? profileImageUrl}',
+                                );
+                              },
+                              child: Container(
+                                width: 60,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.rectangle,
+                                  border: Border.all(
+                                    color: AppColor.secondaryColor,
+                                    width: 4,
+                                  ),
                                 ),
-                              ),
-                              child: CachedNetworkImage(
-                                imageUrl:
-                                    'https://dreadnought.core-erp.com/XHALONA/${profileImageUrl ?? '${widget.product?.thumbImage}'}',
-                                imageBuilder: (context, imageProvider) =>
-                                    Container(
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.rectangle,
-                                    image: DecorationImage(
-                                      image: imageProvider,
-                                      fit: BoxFit.cover,
+                                child: CachedNetworkImage(
+                                  imageUrl:
+                                      'https://dreadnought.core-erp.com/XHALONA/${widget.product?.thumbImage ?? profileImageUrl}',
+                                  imageBuilder: (context, imageProvider) =>
+                                      Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.rectangle,
+                                      image: DecorationImage(
+                                        image: imageProvider,
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                placeholder: (context, url) =>
-                                    Shimmer.fromColors(
-                                  baseColor: Colors.grey[300]!,
-                                  highlightColor: Colors.grey[100]!,
-                                  child: CircleAvatar(
+                                  placeholder: (context, url) =>
+                                      Shimmer.fromColors(
+                                    baseColor: Colors.grey[300]!,
+                                    highlightColor: Colors.grey[100]!,
+                                    child: CircleAvatar(
+                                      radius: 50,
+                                      backgroundColor: Colors.grey[200],
+                                    ),
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                      CircleAvatar(
                                     radius: 50,
                                     backgroundColor: Colors.grey[200],
+                                    child: const Icon(Icons.add_a_photo),
                                   ),
-                                ),
-                                errorWidget: (context, url, error) =>
-                                    CircleAvatar(
-                                  radius: 50,
-                                  backgroundColor: Colors.grey[200],
-                                  child: const Icon(Icons.error,
-                                      color: Colors.redAccent),
                                 ),
                               ),
                             )
@@ -289,40 +268,19 @@ class _AddEditProductState extends State<AddEditProduct> {
                           });
                         }),
                         SizedBox(height: 16.0),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Harga Satuan',
-                            hintText: '0',
-                            border: OutlineInputBorder(),
-                          ),
-                          initialValue: widget.product?.unitPriceNet.toString(),
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [CurrencyInputFormatter()],
-                          onChanged: (value) =>
-                              productPrice = double.tryParse(value),
-                        ),
+                        buildTextField(
+                            "Harga Satuan", "Masukkan Harga", productPrice,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [CurrencyInputFormatter()]),
                         SizedBox(height: 16.0),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Diskon %',
-                            hintText: '0',
-                            border: OutlineInputBorder(),
-                          ),
-                          initialValue: widget.product?.discountPct.toString(),
-                          keyboardType: TextInputType.number,
-                          onChanged: (value) => productDiscountPercentage =
-                              double.tryParse(value),
-                        ),
+                        buildTextField("Diskon %", "Masukkan Diskon %",
+                            productDiscountPercentage,
+                            keyboardType: TextInputType.number),
                         SizedBox(height: 16.0),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Diskon',
-                            hintText: 'Masukkan Diskon',
-                            border: OutlineInputBorder(),
-                          ),
-                          initialValue: widget.product?.discountVal.toString(),
-                          onChanged: (value) => productDiscount = value as int?,
-                        ),
+                        buildTextField(
+                            "Diskon ", "Masukkan Diskon ", productDiscount,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [CurrencyInputFormatter()]),
                         SizedBox(height: 16.0),
                         Text(
                           'Ubah Harga',
@@ -332,9 +290,25 @@ class _AddEditProductState extends State<AddEditProduct> {
                           spacing: 8.0,
                           children: chipStatus.keys.map((label) {
                             return FilterChip(
-                              label: Text(label),
+                              label: Text(
+                                label,
+                                style: TextStyle(
+                                  color: chipStatus[label]!
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
+                              ),
                               selected: chipStatus[label]!,
                               selectedColor: AppColor.secondaryColor,
+                              backgroundColor: Colors.transparent,
+                              checkmarkColor: Colors.white,
+                              shape: StadiumBorder(
+                                side: BorderSide(
+                                  color: chipStatus[label]!
+                                      ? Colors.transparent
+                                      : AppColor.secondaryColor,
+                                ),
+                              ),
                               onSelected: (isSelected) {
                                 setState(() {
                                   chipStatus[label] = isSelected;
@@ -353,7 +327,8 @@ class _AddEditProductState extends State<AddEditProduct> {
             ),
           ),
         ),
-      );
+      ),
+    );
   }
 
   Map<String, bool> chipStatus = {
@@ -441,24 +416,69 @@ class _AddEditProductState extends State<AddEditProduct> {
     );
   }
 
-  Widget buildDropdownField(
-      String label, List<KategoriDAO> items, ValueChanged<String?> onChanged) {
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(),
-      ),
-      items: items.map((item) {
-        return DropdownMenuItem(
-            value: item.analisaId, child: Text(item.ketAnalisa));
-      }).toList(),
-      onChanged: onChanged,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return '$label tidak boleh kosong';
-        }
-        return null;
-      },
+  Widget buildTypeAheadField(
+      String label,
+      List<KategoriDAO> items,
+      ValueChanged<String?> onChanged,
+      void Function(String newFilterValue) updateFilterValue,
+      String company) {
+    TextEditingController controllerText = TextEditingController();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: AppTextStyle.textTitleStyle()),
+        SizedBox(height: 8),
+        TypeAheadField<KategoriDAO>(
+          suggestionsCallback: (pattern) async {
+            updateFilterValue(pattern); // Update filter
+            controller.updateFilterCompanyValue(company);
+            return items
+                .where((item) => item.ketAnalisa
+                    .toLowerCase()
+                    .contains(pattern.toLowerCase()))
+                .toList(); // Pencarian berdasarkan nama
+          },
+          builder: (context, textEditingController, focusNode) {
+            controllerText = textEditingController;
+
+            return TextField(
+              controller: controllerText,
+              focusNode: focusNode,
+              decoration: InputDecoration(
+                labelText: label,
+                labelStyle: TextStyle(color: AppColor.primaryColor),
+                hintText: 'Cari Kategori...',
+                hintStyle: TextStyle(color: AppColor.primaryColor),
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColor.primaryColor),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide:
+                      BorderSide(color: AppColor.primaryColor, width: 2.0),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColor.primaryColor),
+                ),
+              ),
+              onChanged: (value) {
+                // Jangan lakukan apa-apa saat mengetik, biarkan saat dipilih
+              },
+            );
+          },
+          itemBuilder: (context, KategoriDAO suggestion) {
+            return ListTile(
+              title: Text(suggestion.ketAnalisa
+                  .toString()), // Tampilkan ID sebagai info tambahan
+            );
+          },
+          onSelected: (KategoriDAO suggestion) {
+            controllerText.text = suggestion.ketAnalisa
+                .toString(); // Tampilkan nama produk di field
+            onChanged(suggestion.analisaId); // Simpan ID produk di _product
+          },
+        ),
+      ],
     );
   }
 }

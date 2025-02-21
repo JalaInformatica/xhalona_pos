@@ -1,12 +1,11 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/views/home/fragment/master/product/varian/master_varian_screen.dart';
-import 'package:xhalona_pos/widgets/app_elevated_button.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/models/dao/product.dart';
 import 'package:xhalona_pos/widgets/app_bottombar.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
+import 'package:xhalona_pos/widgets/app_elevated_button.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/repositories/product/product_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/add_edit_product.dart';
@@ -16,8 +15,8 @@ import 'package:xhalona_pos/views/home/fragment/master/product/paket/paket_contr
 import 'package:xhalona_pos/views/home/fragment/master/product/m_all/master_mAll_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/paket/master_paket_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/bahan/master_bahan_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/master/product/varian/master_varian_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/kategori/master_kategori_screen.dart';
-import 'package:xhalona_pos/views/home/fragment/master/product/varian/varian_group/master_varian_group_screen.dart';
 
 // ignore: must_be_immutable
 class MasterProductScreen extends StatelessWidget {
@@ -46,7 +45,10 @@ class MasterProductScreen extends StatelessWidget {
   }
 
   Widget mButton(
-      VoidCallback onTap, String label, IconData icon,) {
+    VoidCallback onTap,
+    String label,
+    IconData icon,
+  ) {
     return AppElevatedButton(
       padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 15.h),
       onPressed: onTap,
@@ -60,7 +62,9 @@ class MasterProductScreen extends StatelessWidget {
             size: 20,
           ),
           SizedBox(width: 8),
-          Text(label, style: AppTextStyle.textSubtitleStyle(color: AppColor.primaryColor)),
+          Text(label,
+              style:
+                  AppTextStyle.textSubtitleStyle(color: AppColor.primaryColor)),
         ],
       ),
     );
@@ -89,61 +93,61 @@ class MasterProductScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(5.0),
                 child: Row(
-                      children: [
-                        mButton(
-                          (){
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => MasterVarianScreen(),
-                              )
-                            );  
-                          },
-                          "Varian",                        
-                          Icons.layers
-                        ),
-                        SizedBox(width: screenWidth * 0.02),
-                        mButton(() {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => MasterKategoriScreen(),
-                            )
-                          );
-                        }, "Kategori", Icons.category,
-                        ), // Ikon kategori
+                  children: [
+                    mButton(() {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => MasterVarianScreen(),
+                      ));
+                    }, "Varian", Icons.layers),
+                    SizedBox(width: screenWidth * 0.02),
+                    mButton(
+                      () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => MasterKategoriScreen(),
+                        ));
+                      },
+                      "Kategori",
+                      Icons.category,
+                    ), // Ikon kategori
 
-                        SizedBox(width: screenWidth * 0.02),
-                        mButton(() {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => MasterMasAllScreen(),
-                            ),
-                          );
-                        }, "Semua", Icons.apps,
-                        ), // Ikon untuk semua item
-                      ],
-                  ),
+                    SizedBox(width: screenWidth * 0.02),
+                    mButton(
+                      () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => MasterMasAllScreen(),
+                          ),
+                        );
+                      },
+                      "Semua",
+                      Icons.apps,
+                    ), // Ikon untuk semua item
+                  ],
+                ),
               ),
               SizedBox(
                 height: 5.h,
               ),
               AppElevatedButton(
-                onPressed: (){
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => AddEditProduct()));
-                },
-                foregroundColor: AppColor.primaryColor,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.add,
-                      color: AppColor.primaryColor,
-                      size: 20,
-                    ),
-                    SizedBox(width: 8),
-                    Text("Add Product", style: AppTextStyle.textSubtitleStyle(color: AppColor.primaryColor)),
-                  ],
-              )),
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => AddEditProduct()));
+                  },
+                  foregroundColor: AppColor.primaryColor,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.add,
+                        color: AppColor.primaryColor,
+                        size: 20,
+                      ),
+                      SizedBox(width: 8),
+                      Text("Add Product",
+                          style: AppTextStyle.textSubtitleStyle(
+                              color: AppColor.primaryColor)),
+                    ],
+                  )),
               SizedBox(
                 height: 5.h,
               ),
@@ -231,7 +235,7 @@ class MasterProductScreen extends StatelessWidget {
                           showOptionsOnTap: true,
                         ),
                         AppTableCell(
-                            value: product.mainImage,
+                            value: '',
                             index: i,
                             isModalBahan:
                                 product.isFixQty == true ? true : false,
@@ -271,7 +275,7 @@ class MasterProductScreen extends StatelessWidget {
                                   product.partId;
                               controllerBahan.fetchProducts();
                             },
-                            showOptionsOnTap: true,
+                            showImgTap: true,
                             imageUrl:
                                 'https://dreadnought.core-erp.com/XHALONA/${product.mainImage}'),
                         AppTableCell(

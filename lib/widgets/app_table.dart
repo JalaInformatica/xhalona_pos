@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_text_field.dart';
 import 'package:xhalona_pos/widgets/app_icon_button.dart';
+import 'package:xhalona_pos/widgets/full_screen_image.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
 
 // ignore: must_be_immutable
@@ -230,6 +231,7 @@ class AppTableCell extends StatelessWidget {
   final bool isModalPaket;
   final bool isModalBahan;
   final bool showOptionsOnTap;
+  final bool showImgTap;
   final bool isVarian;
   final bool isRejectReschedule;
   final bool isAccReschedule;
@@ -306,6 +308,7 @@ class AppTableCell extends StatelessWidget {
     this.isModalRejectReschedule = false,
     this.isModalStatusOnline = false,
     this.showOptionsOnTap = false,
+    this.showImgTap = false,
     this.onAccReschedule,
     this.onPOS,
     this.onBahan,
@@ -371,6 +374,7 @@ class AppTableCell extends StatelessWidget {
       onStatusOnline: onStatusOnline,
       onWorkingStore: onWorkingStore,
       showOptionsOnTap: showOptionsOnTap,
+      showImgTap: showImgTap,
       onBahan: onBahan,
       onVarian: onVarian,
       onEdit: onEdit,
@@ -386,7 +390,16 @@ class AppTableCell extends StatelessWidget {
         index % 2 == 0 ? Colors.white : Colors.grey.shade200;
 
     return GestureDetector(
-      onTap: showOptionsOnTap ? () => _showOptions(context) : null,
+      onTap: showOptionsOnTap
+          ? () => _showOptions(context)
+          : showImgTap
+              ? () {
+                  showFullScreenImage(
+                    context,
+                    imageUrl.toString(),
+                  );
+                }
+              : null,
       child: Container(
         width: width,
         height: height,

@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/pengguna.dart';
 import 'package:xhalona_pos/models/dao/departemen.dart';
+import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/repositories/pengguna/pengguna_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/pengguna/pengguna_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/master/pengguna/master_pengguna_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/departemen_controller.dart';
 
 // ignore: must_be_immutable
@@ -81,7 +81,7 @@ class _AddEditPenggunaState extends State<AddEditPengguna> {
           setState(() {});
         } else {
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => MasterPenggunaScreen()),
+            MaterialPageRoute(builder: (context) => HomeScreen()),
             (route) => false,
           );
           controller.fetchProducts();
@@ -95,7 +95,7 @@ class _AddEditPenggunaState extends State<AddEditPengguna> {
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => MasterPenggunaScreen()),
+            MaterialPageRoute(builder: (context) => HomeScreen()),
             (route) => false); // Navigasi kembali ke halaman sebelumnya
         return false; // Mencegah navigasi bawaan
       },
@@ -173,8 +173,7 @@ class _AddEditPenggunaState extends State<AddEditPengguna> {
                           masterButton(() {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        MasterPenggunaScreen()),
+                                    builder: (context) => HomeScreen()),
                                 (route) => false);
                           }, "Batal", Icons.refresh),
                         ],
@@ -192,7 +191,17 @@ class _AddEditPenggunaState extends State<AddEditPengguna> {
     return DropdownButtonFormField<String>(
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
+        labelStyle: TextStyle(color: AppColor.primaryColor),
+        hintStyle: TextStyle(color: AppColor.primaryColor),
+        border: OutlineInputBorder(
+          borderSide: BorderSide(color: AppColor.primaryColor),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: AppColor.primaryColor, width: 2.0),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: AppColor.primaryColor),
+        ),
       ),
       items: items.map((item) {
         return DropdownMenuItem(value: item.kdDept, child: Text(item.namaDept));
@@ -215,7 +224,17 @@ class _AddEditPenggunaState extends State<AddEditPengguna> {
     return DropdownButtonFormField<String>(
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
+        labelStyle: TextStyle(color: AppColor.primaryColor),
+        hintStyle: TextStyle(color: AppColor.primaryColor),
+        border: OutlineInputBorder(
+          borderSide: BorderSide(color: AppColor.primaryColor),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: AppColor.primaryColor, width: 2.0),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: AppColor.primaryColor),
+        ),
       ),
       items: items.map<DropdownMenuItem<String>>((item) {
         return DropdownMenuItem<String>(

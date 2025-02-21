@@ -73,7 +73,7 @@ class _AddEditKasBankDetailState extends State<AddEditKasBankDetail> {
         String result = await _kasbankdetailRepository.addEditKasBankDetail(
           acId: _kasbankdetail,
           qty: _qtyController.text,
-          priceUnit: _hargaController.text,
+          priceUnit: parseRupiah(_hargaController.text).toString(),
           flagDk: _flagDK,
           voucerNo: _noTrxController.text,
           uraianDet: _ketController.text,
@@ -234,7 +234,16 @@ class _AddEditKasBankDetailState extends State<AddEditKasBankDetail> {
                 enabled:
                     enabled, // Mengatur apakah field bisa diketik atau tidak
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: AppColor.primaryColor),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide:
+                        BorderSide(color: AppColor.primaryColor, width: 2.0),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: AppColor.primaryColor),
+                  ),
                   hintText: enabled ? "Cari akun..." : "Input dinonaktifkan",
                 ),
                 onChanged: (value) {

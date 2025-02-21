@@ -1,15 +1,14 @@
-import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xhalona_pos/core/constant/local_storage.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
-import 'package:xhalona_pos/widgets/app_elevated_button.dart';
+import 'package:xhalona_pos/widgets/nav_sidebar.dart';
 import 'fragment/laporan/monitor/monitor_screen.dart';
 import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:xhalona_pos/views/home/home_controller.dart';
+import 'package:xhalona_pos/widgets/app_elevated_button.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
 import 'package:xhalona_pos/views/authentication/login/login_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/profile/profile_screen.dart';
@@ -31,91 +30,122 @@ import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/master_
 // ignore_for_file: use_build_context_synchronously
 
 // ignore: must_be_immutable
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  Widget? previousScreen;
+  HomeScreen({this.previousScreen});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   final HomeController controller = Get.put(HomeController());
+
   final KustomerController controllerKus = Get.put(KustomerController());
 
-  Widget? previousScreen;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  Widget? currentScreen;
   Widget menuScreen(String menuName) {
     Widget screen;
 
     switch (menuName.toLowerCase()) {
       case "pos":
-        controller.subMenuName.value="";
+        controller.subMenuName.value = "";
         screen = PosScreen();
         break;
       case "dashboard":
-        controller.subMenuName.value="";
+        controller.subMenuName.value = "";
         screen = DashboardScreen();
         break;
       case "transaksi":
-        controller.subMenuName.value="";
+        controller.subMenuName.value = "";
         screen = TransactionScreen();
         break;
       case "finance":
-        controller.subMenuName.value="";
+        controller.subMenuName.value = "";
         screen = FinanceScreen();
         break;
       case "profil":
-        controller.subMenuName.value="";
+        controller.subMenuName.value = "";
         screen = ProfileScreen();
         break;
       case "master_product":
-        controller.subMenuName.value="Produk";
+        controller.subMenuName.value = "Produk";
         screen = MasterProductScreen();
         break;
       case "master_karyawan":
-        controller.subMenuName.value="Karyawan";
+        controller.subMenuName.value = "Karyawan";
         screen = MasterKaryawanScreen();
         break;
       case "master_coa":
-        controller.subMenuName.value="COA";
+        controller.subMenuName.value = "COA";
         screen = MasterCoaScreen();
         break;
       case "master_pengguna":
-        controller.subMenuName.value="Pengguna";
+        controller.subMenuName.value = "Pengguna";
         screen = MasterPenggunaScreen();
         break;
       case "master_pekerjaan":
-        controller.subMenuName.value="Pekerjaan";
+        controller.subMenuName.value = "Pekerjaan";
         screen = MasterPekerjaanScreen();
         break;
       case "master_rekening":
-        controller.subMenuName.value="Rekening";
+        controller.subMenuName.value = "Rekening";
         screen = MasterRekeningScreen();
         break;
       case "master_customer":
-        controller.subMenuName.value="Customer";
-        screen = MasterKustomerScreen();
+        controller.subMenuName.value = "Customer";
+        controllerKus.isSuplier.value = "0";
+        controllerKus.fetchProducts();
+        screen = MasterKustomerScreen(
+          islabel: 'Customer',
+        );
         break;
       case "master_supplier":
-        controller.subMenuName.value="Supplier";
+        controller.subMenuName.value = "Supplier";
         controllerKus.isSuplier.value = "1";
         controllerKus.fetchProducts();
-        screen = MasterKustomerScreen();
+        screen = MasterKustomerScreen(
+          islabel: 'Supplier',
+        );
         break;
       case "laporan_penjualan":
-        controller.subMenuName.value="Laporan Penjualan";
+        controller.subMenuName.value = "Laporan Penjualan";
         screen = LapPenjualanScreen();
         break;
       case "laporan_monitor_penjualan":
-        controller.subMenuName.value="Monitor Penjualan";
+        controller.subMenuName.value = "Monitor Penjualan";
         screen = MonitorScreen();
         break;
       // case "laporan_stock":
-        // screen = MonitorScreen();
-        // break;
+      // screen = MonitorScreen();
+      // break;
       case "laporan_finansial":
-        controller.subMenuName.value="Laporan Finansial";
+        controller.subMenuName.value = "Laporan Finansial";
         screen = LapFinanceScreen();
         break;
       default:
         return TransactionScreen();
     }
 
-    previousScreen = screen; // Simpan halaman terakhir sebelum berpindah
+    if (screen != widget.previousScreen && screen != null) {
+      widget.previousScreen = screen;
+    } // Simpan halaman terakhir sebelum berpindah
     return screen;
+  }
+
+  void navigateToScreen(Widget? newScreen) {
+    if (newScreen != null) {
+      setState(() {
+        widget.previousScreen = newScreen;
+        currentScreen = newScreen;
+      });
+    } else if (widget.previousScreen != null) {
+      setState(() {
+        currentScreen = widget.previousScreen;
+      });
+    }
   }
 
   Widget menuComponent(String menuName, BuildContext context) {
@@ -152,69 +182,64 @@ class HomeScreen extends StatelessWidget {
     }
     return Obx(() => GestureDetector(
         onTap: () {
-          if(menuName!="laporan" && menuName!="master"){
-          controller.selectedMenuName.value = menuName;
-          }
-          else if(menuName=="master"){
-            SmartDialog.show(
-              builder: (context){
-                return AppDialog(
-                  content: Column(
-                    spacing: 10.h,
-                    children: [
-                      subMenuButton(
-                        value: "master_product",
-                        label: "Produk",
-                        icon: Icons.shopping_bag,
-                      ),
-                      subMenuButton(
-                        value: "master_karyawan",
-                        label: "Karyawan",
-                        icon: Icons.account_circle,
-                      ),
-                      subMenuButton(
-                        value: "master_coa",
-                        label: "COA",
-                        icon: Icons.account_balance,
-                      ),
-                      subMenuButton(
-                        value: "master_pengguna",
-                        label: "Pengguna",
-                        icon: Icons.person,
-                      ),
-                      subMenuButton(
-                        value: "master_pekerjaan",
-                        label: "Pekerjaan",
-                        icon: Icons.work,
-                      ),
-                      subMenuButton(
-                        value: "master_rekening",
-                        label: "Rekening",
-                        icon: Icons.account_balance_wallet,
-                      ),
-                      subMenuButton(
-                        value: "master_customer",
-                        label: "Kustomer",
-                        icon: Icons.people,
-                      ),
-                      subMenuButton(
-                        value: "master_supplier",
-                        label: "Supplier",
-                        icon: Icons.store,
-                      ),
-                    ],
-                  ),
-                );
-              }
-            );
-          }
-          else if(menuName=="laporan"){
-            SmartDialog.show(
-              builder: (context){
-                return AppDialog(
-                  content: Column(
-                    spacing: 10.h,
-                    children: [
+          if (menuName != "laporan" && menuName != "master") {
+            controller.selectedMenuName.value = menuName;
+          } else if (menuName == "master") {
+            SmartDialog.show(builder: (context) {
+              return AppDialog(
+                content: Column(
+                  spacing: 10.h,
+                  children: [
+                    subMenuButton(
+                      value: "master_product",
+                      label: "Produk",
+                      icon: Icons.shopping_bag,
+                    ),
+                    subMenuButton(
+                      value: "master_karyawan",
+                      label: "Karyawan",
+                      icon: Icons.account_circle,
+                    ),
+                    subMenuButton(
+                      value: "master_coa",
+                      label: "COA",
+                      icon: Icons.account_balance,
+                    ),
+                    subMenuButton(
+                      value: "master_pengguna",
+                      label: "Pengguna",
+                      icon: Icons.person,
+                    ),
+                    subMenuButton(
+                      value: "master_pekerjaan",
+                      label: "Pekerjaan",
+                      icon: Icons.work,
+                    ),
+                    subMenuButton(
+                      value: "master_rekening",
+                      label: "Rekening",
+                      icon: Icons.account_balance_wallet,
+                    ),
+                    subMenuButton(
+                      value: "master_customer",
+                      label: "Kustomer",
+                      icon: Icons.people,
+                    ),
+                    subMenuButton(
+                      value: "master_supplier",
+                      label: "Supplier",
+                      icon: Icons.store,
+                    ),
+                  ],
+                ),
+              );
+            });
+          } else if (menuName == "laporan") {
+            SmartDialog.show(builder: (context) {
+              return AppDialog(
+                content: Column(
+                  spacing: 10.h,
+                  children: [
                     subMenuButton(
                       value: "laporan_penjualan",
                       label: "Laporan Penjualan",
@@ -235,12 +260,12 @@ class HomeScreen extends StatelessWidget {
                       label: "Laporan Finance",
                       icon: Icons.monetization_on,
                     ),
-                    ],
-                  ),
-                );
-              }
-            );
-          }},
+                  ],
+                ),
+              );
+            });
+          }
+        },
         child: Container(
             padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
             decoration: BoxDecoration(
@@ -252,9 +277,10 @@ class HomeScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: AppColor.whiteColor,
-                      border: !controller.selectedMenuName.value.contains(menuName)
-                          ? null
-                          : Border.all(color: AppColor.primaryColor)),
+                      border:
+                          !controller.selectedMenuName.value.contains(menuName)
+                              ? null
+                              : Border.all(color: AppColor.primaryColor)),
                   child: Image.asset(
                     iconPath,
                     width: 24,
@@ -269,14 +295,16 @@ class HomeScreen extends StatelessWidget {
                     color: !controller.selectedMenuName.value.contains(menuName)
                         ? AppColor.blackColor
                         : AppColor.primaryColor,
-                    fontWeight: !controller.selectedMenuName.value.contains(menuName)
-                        ? FontWeight.normal
-                        : FontWeight.bold),
+                    fontWeight:
+                        !controller.selectedMenuName.value.contains(menuName)
+                            ? FontWeight.normal
+                            : FontWeight.bold),
               )
             ]))));
   }
 
-  Widget profileInfo(BuildContext context){
+  Widget profileInfo(
+      BuildContext context, GlobalKey<ScaffoldState> scaffoldKey) {
     return Obx(() => Container(
           width: double.infinity,
           padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10.w),
@@ -286,19 +314,26 @@ class HomeScreen extends StatelessWidget {
           child: Row(
             children: [
               AppIconButton(
-                onPressed: () {},
+                onPressed: () {
+                  scaffoldKey.currentState?.openDrawer();
+                },
                 icon: Icon(Icons.menu),
                 foregroundColor: AppColor.whiteColor,
               ),
-              Text(controller.subMenuName.value, style: AppTextStyle.textSubtitleStyle(color: AppColor.whiteColor),),
+              Text(
+                controller.subMenuName.value,
+                style:
+                    AppTextStyle.textSubtitleStyle(color: AppColor.whiteColor),
+              ),
               Spacer(),
               AppIconButton(
                 foregroundColor: AppColor.whiteColor,
                 onPressed: () {
-                  controller.selectedMenuName.value="transaksi";
+                  controller.selectedMenuName.value = "transaksi";
                 },
                 icon: Badge.count(
-                  textStyle: AppTextStyle.textCaptionStyle(fontWeight: FontWeight.bold),
+                  textStyle: AppTextStyle.textCaptionStyle(
+                      fontWeight: FontWeight.bold),
                   textColor: AppColor.blackColor,
                   backgroundColor: AppColor.warningColor,
                   count: controller.todayTrx.value,
@@ -375,28 +410,34 @@ class HomeScreen extends StatelessWidget {
         ));
   }
 
-  Widget subMenuButton({required String value, required String label, required IconData icon}) {
+  Widget subMenuButton(
+      {required String value, required String label, required IconData icon}) {
     return AppElevatedButton(
-      onPressed: (){
-        controller.selectedMenuName.value=value;
+      onPressed: () {
+        controller.selectedMenuName.value = value;
         SmartDialog.dismiss();
       },
-      backgroundColor: controller.selectedMenuName.value!=value? AppColor.whiteColor : AppColor.secondaryColor,
+      backgroundColor: controller.selectedMenuName.value != value
+          ? AppColor.whiteColor
+          : AppColor.secondaryColor,
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 15.h),
       child: Row(
         children: [
           Icon(
             icon,
-            color: controller.selectedMenuName.value!=value? AppColor.primaryColor : AppColor.whiteColor,
+            color: controller.selectedMenuName.value != value
+                ? AppColor.primaryColor
+                : AppColor.whiteColor,
             size: 20,
           ),
           SizedBox(width: 8),
-          Text(
-            label,
-            style: AppTextStyle.textSubtitleStyle(
-              fontWeight: FontWeight.normal,
-              color: controller.selectedMenuName.value!=value? AppColor.primaryColor : AppColor.whiteColor,
-            )),
+          Text(label,
+              style: AppTextStyle.textSubtitleStyle(
+                fontWeight: FontWeight.normal,
+                color: controller.selectedMenuName.value != value
+                    ? AppColor.primaryColor
+                    : AppColor.whiteColor,
+              )),
         ],
       ),
     );
@@ -409,23 +450,27 @@ class HomeScreen extends StatelessWidget {
         if (controller.isMenuLoading.value) {
           return Scaffold(
               backgroundColor: AppColor.whiteColor,
-              body: Center(child: 
-                AppDialog(
-                  shadowColor: AppColor.blackColor,
-                  content: Column(
-                    spacing: 10.h,
-                    children: [
-                      Text("Tunggu Sebentar", style: AppTextStyle.textSubtitleStyle(color: AppColor.primaryColor),),
-                      CircularProgressIndicator(color: AppColor.primaryColor,)
-                  ])
-                )
-              ));
+              body: Center(
+                  child: AppDialog(
+                      shadowColor: AppColor.blackColor,
+                      content: Column(spacing: 10.h, children: [
+                        Text(
+                          "Tunggu Sebentar",
+                          style: AppTextStyle.textSubtitleStyle(
+                              color: AppColor.primaryColor),
+                        ),
+                        CircularProgressIndicator(
+                          color: AppColor.primaryColor,
+                        )
+                      ]))));
         } else {
           return Scaffold(
+            key: _scaffoldKey,
+            drawer: NavSideBar(),
             backgroundColor: AppColor.whiteColor,
             body: Column(
               children: [
-                profileInfo(context),
+                profileInfo(context, _scaffoldKey),
                 Expanded(child: menuScreen(controller.selectedMenuName.value)),
               ],
             ),

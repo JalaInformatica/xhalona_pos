@@ -2,9 +2,9 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
+import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/repositories/kategori_repository.dart';
-import 'package:xhalona_pos/views/home/fragment/master/product/master_product_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/kategori/add_edit_kategori.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/kategori/kategori_controller.dart';
 
@@ -53,7 +53,7 @@ class MasterKategoriScreen extends StatelessWidget {
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => MasterProductScreen()),
+            MaterialPageRoute(builder: (context) => HomeScreen()),
             (route) => false); // Navigasi kembali ke halaman sebelumnya
         return false; // Mencegah navigasi bawaan
       },
@@ -67,8 +67,7 @@ class MasterKategoriScreen extends StatelessWidget {
             icon: Icon(Icons.arrow_back),
             onPressed: () {
               Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(
-                      builder: (context) => MasterProductScreen()),
+                  MaterialPageRoute(builder: (context) => HomeScreen()),
                   (route) => false); // Jika tidak, gunakan navigator default
             }, // Navigasi kembali ke halaman sebelumnya
           ),

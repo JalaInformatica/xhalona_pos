@@ -2,10 +2,10 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/pekerjaan.dart';
+import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/repositories/pekerjaan/pekerjaan_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/pekerjaan/pekerjaan_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/master/pekerjaan/master_pekerjaan_screen.dart';
 
 // ignore: must_be_immutable
 class AddEditPekerjaan extends StatefulWidget {
@@ -59,7 +59,7 @@ class _AddEditPekerjaanState extends State<AddEditPekerjaan> {
           setState(() {});
         } else {
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => MasterPekerjaanScreen()),
+            MaterialPageRoute(builder: (context) => HomeScreen()),
             (route) => false,
           );
           controller.fetchProducts();
@@ -73,7 +73,7 @@ class _AddEditPekerjaanState extends State<AddEditPekerjaan> {
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => MasterPekerjaanScreen()),
+            MaterialPageRoute(builder: (context) => HomeScreen()),
             (route) => false); // Navigasi kembali ke halaman sebelumnya
         return false; // Mencegah navigasi bawaan
       },
@@ -113,8 +113,7 @@ class _AddEditPekerjaanState extends State<AddEditPekerjaan> {
                           masterButton(() {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        MasterPekerjaanScreen()),
+                                    builder: (context) => HomeScreen()),
                                 (route) => false);
                           }, "Batal", Icons.refresh),
                         ],
