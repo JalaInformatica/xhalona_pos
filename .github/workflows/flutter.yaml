@@ -131,7 +131,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  cleanup:
+  notification:
     runs-on: ubuntu-latest
     needs: [build]
     if: always()
@@ -143,9 +143,10 @@ jobs:
         with:
           from: ${{ secrets.SMTP_FROM }}
           to: ${{ vars.SMTP_RECIPIENT }}
-          subject: 'Build Gagal'
+          subject: 'Build Gagal - ${{ github.repository }}'
           body: |
-            Build telah gagal untuk commit ${{ github.sha }} di branch ${{ github.ref }}.
+            Build telah gagal untuk commit ${{ github.sha }} di branch ${{ github.ref }} oleh ${{ github.actor }}.
+            Deskripsi commit: ${{ github.event.head_commit.message }}
             Silakan cek detailnya di ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}.
           server_address: ${{ secrets.SMTP_SERVER }}
           server_port: ${{ secrets.SMTP_PORT }}
@@ -159,9 +160,10 @@ jobs:
         with:
           from: ${{ secrets.SMTP_FROM }}
           to: ${{ vars.SMTP_RECIPIENT }}
-          subject: 'Build Sukses'
+          subject: 'Build Sukses - ${{ github.repository }}'
           body: |
-            Build telah berhasil untuk commit ${{ github.sha }} di branch ${{ github.ref }}.
+            Build telah berhasil untuk commit ${{ github.sha }} di branch ${{ github.ref }} oleh ${{ github.actor }}.
+            Deskripsi commit: ${{ github.event.head_commit.message }}
             Aplikasi telah dirilis. Silakan cek detailnya di ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}.
           server_address: ${{ secrets.SMTP_SERVER }}
           server_port: ${{ secrets.SMTP_PORT }}
