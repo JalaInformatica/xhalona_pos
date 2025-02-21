@@ -5,6 +5,7 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xhalona_pos/views/home/home_controller.dart';
+import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/dashboard/dashboard_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplier_kustomer_controller.dart';
@@ -335,8 +336,12 @@ class _NavSideBarState extends State<NavSideBar> {
         ),
         if (!showLaporanSubMenu && !showMasterSubMenu)
           SizedBox(
-            height: 180,
+            height: 130,
           ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: masterButton(() {}, 'Logout', Icons.logout),
+        ),
         Divider(),
         Padding(
             padding: EdgeInsets.all(5),
