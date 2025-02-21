@@ -1,4 +1,4 @@
-name: Build Aplikasi Xhalona
+name: Build & Sign App
 
 on:
   push:
@@ -14,6 +14,8 @@ jobs:
     strategy:
       matrix:
         platform: ${{ fromJson(vars.PLATFORM) }}
+    outputs:
+      platform: ${{ matrix.platform == 'android' && 'android' || 'ios' }}
     steps:
       # Ambil kode repositori
       - name: Ambil kode
@@ -62,18 +64,16 @@ jobs:
 
       # Manage Versioning
       - name: Manage Versioning
-        id: version
         run: |
           set -e
           CURRENT_VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //;s/+.*//')
           BUILD_NUMBER=$(date +%s)
           NEW_VERSION="${CURRENT_VERSION}+$BUILD_NUMBER"
-          echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
           pubspec_version change --version "$NEW_VERSION"
 
       # Build based on platform
-      - name: Build
-        id: build
+      - name: Build Aplikasi
+        id: building
         run: |
           if [[ "${{ matrix.platform }}" == "android" ]]; then
             flutter build appbundle --release
@@ -90,7 +90,7 @@ jobs:
         if: matrix.platform == 'android'
         uses: r0adkll/sign-android-release@v1.0.4
         with:
-          releaseDirectory: ${{ env.build_path }}
+          releaseDirectory: ${{ steps.building.outputs.build_path }}
           signingKeyBase64: ${{ secrets.KEYSTORE_BASE64 }}
           alias: ${{ secrets.KEY_ALIAS }}
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -112,30 +112,61 @@ jobs:
           security import certificate.p12 -P "${{ secrets.IOS_CERTIFICATE_PASSWORD }}" -T /usr/bin/codesign
 
           # Code signing
-          codesign -f -s "${{ secrets.IOS_CERTIFICATE_NAME }}" --deep --timestamp --options=runtime ${{ env.build_path }}/*.app
+          codesign -f -s "${{ secrets.IOS_CERTIFICATE_NAME }}" --deep --timestamp --options=runtime ${{ steps.building.outputs.build_path }}/*.app
 
-      # Upload Artifact
-      - name: Upload Artifact
-        id: upload_artifact
-        uses: actions/upload-artifact@v4
+  create-tag:
+    needs: build
+    runs-on: ${{ needs.build.outputs.platform == 'android' && 'ubuntu-latest' || 'macos-latest' }}
+    steps:
+      - name: Checkout git
+        uses: actions/checkout@v2
         with:
-          name: ${{ matrix.platform == 'android' && 'bundel-aplikasi-android' || 'aplikasi-ios' }}
-          path: ${{ env.artifact_path }}
-
-      # Rilis Aplikasi
-      - name: Rilis Aplikasi
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ env.NEW_VERSION }}
-          files: ${{ env.artifact_path }}
+          fetch-depth: '0'
+      
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
+          DEFAULT_BUMP: patch
+          RELEASE_BRANCHES: main
 
-  notification:
-    runs-on: ubuntu-latest
-    needs: [build]
+  create-release:
+    needs: [build, create-tag]
+    runs-on: ${{ needs.build.outputs.platform == 'android' && 'ubuntu-latest' || 'macos-latest' }}
+    steps:
+      - name: Checkout git
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Get previous tag
+        id: previoustag
+        uses: WyriHaximus/github-action-get-previous-tag@v1
+        with:
+          fallback: 1.0.0
+
+      - name: Create release
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "${{ steps.previoustag.outputs.tag }}"
+          prerelease: false 
+          title: "${{ steps.previoustag.outputs.tag }}" 
+
+  cleanup:
+    runs-on: ${{ needs.build.outputs.platform == 'android' && 'ubuntu-latest' || 'macos-latest' }}
+    needs: [build, create-tag, create-release]
     if: always()
     steps:
+      # Clean up
+      - name: Cleanup
+        run: |
+          if [[ "${{ needs.build.outputs.platform }}" == "android" ]]; then
+            rm -rf build/app/outputs/bundle/release/*.aab
+          else
+            rm -rf build/ios/iphoneos/*.app
+          fi
       # Kirim notifikasi email jika gagal
       - name: Kirim notifikasi email jika gagal
         if: failure()
