@@ -635,6 +635,7 @@ class AppTableCell extends StatelessWidget {
         options.add(_buildBottomSheetOption(
           icon: Icons.delete,
           text: 'Delete',
+          color: Colors.red,
           onTap: () {
             Navigator.pop(context);
             if (onDelete != null) onDelete!();
@@ -644,6 +645,7 @@ class AppTableCell extends StatelessWidget {
           options.add(_buildBottomSheetOption(
             icon: Icons.local_offer,
             text: 'Paket',
+            color: Colors.green,
             onTap: () {
               Navigator.pop(context);
               if (onPaket != null) onPaket!();
@@ -654,6 +656,7 @@ class AppTableCell extends StatelessWidget {
           options.add(_buildBottomSheetOption(
             icon: Icons.kitchen,
             text: 'Bahan',
+            color: Colors.green,
             onTap: () {
               Navigator.pop(context);
               if (onBahan != null) onBahan!();
@@ -785,12 +788,13 @@ class AppTableCell extends StatelessWidget {
   }
 
   Widget _buildBottomSheetOption({
+    Color color = Colors.blue,
     required IconData icon,
     required String text,
     required VoidCallback onTap,
   }) {
     return ListTile(
-      leading: Icon(icon, color: Colors.blue),
+      leading: Icon(icon, color: color),
       title: Text(text, style: TextStyle(fontSize: 16)),
       onTap: onTap,
     );
@@ -829,7 +833,8 @@ class AppTableTitle extends StatelessWidget {
 
 String formatCurrency(num? amount,
     {String locale = 'id_ID', String symbol = 'Rp'}) {
+  if (amount == null || amount == 0) return '0';
   final format =
       NumberFormat.currency(locale: locale, symbol: symbol, decimalDigits: 0);
-  return format.format(amount ?? 0); // Gunakan 0 jika amount bernilai null
+  return format.format(amount);
 }

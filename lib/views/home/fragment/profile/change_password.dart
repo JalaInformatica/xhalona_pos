@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
+import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 import 'package:xhalona_pos/repositories/user/user_repository.dart';
 
 // ignore: must_be_immutable
@@ -23,10 +24,10 @@ class _EditPasswordState extends State<EditPassword> {
   @override
   void initState() {
     super.initState();
-    Inisialisasi();
+    inisialisasi();
   }
 
-  Future<void> Inisialisasi() async {
+  Future<void> inisialisasi() async {
     setState(() {
       _isLoading = false;
     });
@@ -83,13 +84,41 @@ class _EditPasswordState extends State<EditPassword> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      buildTextField(
-                          "Password", "Masukkan password", _pw1Controller),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _pw1Controller,
+                        icon: tooglePass(),
+                        isScurePass: isScurePass,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Password harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Password",
+                        inputAction: TextInputAction.next,
+                      ),
                       SizedBox(height: 16),
 
                       // Field Nama
-                      buildTextField("Konfirmasi Password",
-                          "Masukkan konfirmasi password", _pw2Controller),
+
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _pw2Controller,
+                        icon: tooglePass(),
+                        isScurePass: isScurePass,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Konfirmasi Password harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Konfirmasi Password",
+                        inputAction: TextInputAction.send,
+                        onFieldSubmitted: (_) {
+                          handleEditPassword();
+                        },
+                      ),
                       SizedBox(height: 32),
 
                       // Action Buttons
@@ -109,39 +138,6 @@ class _EditPasswordState extends State<EditPassword> {
                   ),
                 ),
               ),
-      ),
-    );
-  }
-
-  Widget masterButton(VoidCallback onTap, String label, IconData icon) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-        decoration: BoxDecoration(
-          color: AppColor.secondaryColor, // Background color
-          borderRadius: BorderRadius.circular(8), // Rounded corners
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 4,
-              offset: Offset(0, 2), // Shadow position
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: Colors.white,
-              size: 20,
-            ),
-            SizedBox(width: 8),
-            Text(label,
-                style: AppTextStyle.textTitleStyle(color: Colors.white)),
-          ],
-        ),
       ),
     );
   }
