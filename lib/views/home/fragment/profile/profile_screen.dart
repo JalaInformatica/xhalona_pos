@@ -16,16 +16,16 @@ import 'package:xhalona_pos/views/home/fragment/profile/ubah%20profile/editemail
 // ignore_for_file: unnecessary_null_comparison
 
 // ignore: must_be_immutable
-class ProfileScreen extends StatefulWidget {
+class EditProfileScreen extends StatefulWidget {
   String? profileImageUrl;
 
-  ProfileScreen({this.profileImageUrl});
+  EditProfileScreen({this.profileImageUrl});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _EditProfileScreenState extends State<EditProfileScreen> {
   final HomeController controller = Get.put(HomeController());
 
   final TextEditingController _dateController = TextEditingController();
@@ -232,35 +232,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // handleChangeProfile() async {
-    //   final SharedPreferences prefs = await SharedPreferences.getInstance();
-    //   if (await userProvider.changeUserDetail(
-    //     userName: name ?? controller.profileData.value.userName,
-    //     userEmail: email ?? controller.profileData.value.emailAddress,
-    //     userPhone: controller.profileData.value.phoneNumber,
-    //     joinDate: controller.profileData.value.jointDate,
-    //     userPic: prefs.getString('profileImageUrl') ?? controller.profileData.value.profilePic,
-    //     userBirthDate: _dateController.text == null
-    //         ? '${controller.profileData.value.profileBirthDate?.date}'
-    //         : prefs.getString('datePicker'),
-    //     userGender: prefs.getString('gender') == "Laki-laki"
-    //         ? 'M'
-    //         : 'F' ?? controller.profileData.value.profileSex,
-    //   )) {
-    //     Navigator.pushNamed(context, '/home');
-    //   } else {
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       const SnackBar(
-    //         backgroundColor: Colors.green,
-    //         content: Text(
-    //           "Ubah profile berhasil!!",
-    //           textAlign: TextAlign.center,
-    //         ),
-    //       ),
-    //     );
-    //     Navigator.pushNamed(context, '/profile-user');
-    //   }
-    // }
+    handleChangeProfile() async {}
 
     return WillPopScope(
       onWillPop: () async {
@@ -271,6 +243,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: true,
+        appBar: AppBar(
+          iconTheme: const IconThemeData(color: Colors.white),
+          backgroundColor: AppColor.primaryColor,
+          title: const Text(
+            'Edit Profile',
+            style: TextStyle(color: Colors.white),
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.check),
+              onPressed: handleChangeProfile,
+            ),
+          ],
+        ),
         backgroundColor: Colors.white,
         body: isLoading // Periksa apakah data masih dimuat
             ? Shimmer.fromColors(

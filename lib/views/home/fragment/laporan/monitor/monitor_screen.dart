@@ -1,35 +1,26 @@
-import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:xhalona_pos/core/helper/global_helper.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/models/dao/employee.dart';
-import 'package:xhalona_pos/views/home/fragment/laporan/monitor/monitor_widget.dart';
-import 'package:xhalona_pos/widgets/app_calendar.dart';
-import 'package:xhalona_pos/widgets/app_checkbox.dart';
-import 'package:xhalona_pos/widgets/app_dialog.dart';
-import 'package:xhalona_pos/widgets/app_icon_button.dart';
-import 'package:xhalona_pos/widgets/app_normal_button.dart';
-import 'package:xhalona_pos/widgets/app_pdf_viewer.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
+import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/models/dao/product.dart';
+import 'package:xhalona_pos/models/dao/employee.dart';
 import 'package:xhalona_pos/models/dao/kategori.dart';
 import 'package:xhalona_pos/models/dao/kustomer.dart';
 import 'package:xhalona_pos/models/dao/karyawan.dart';
-import 'package:xhalona_pos/widgets/app_bottombar.dart';
-import 'package:xhalona_pos/views/home/home_screen.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:xhalona_pos/widgets/app_input_formatter.dart';
-import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/laporan/monitor/monitor_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/master/karyawan/karyawan_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/master/product/kategori/kategori_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_viewer_screen.dart';
-import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplier_kustomer_controller.dart';
-import 'package:xhalona_pos/widgets/app_text_field.dart';
+import 'package:xhalona_pos/widgets/app_calendar.dart';
+import 'package:xhalona_pos/widgets/app_checkbox.dart';
 import 'package:xhalona_pos/widgets/app_typeahead.dart';
+import 'package:xhalona_pos/widgets/app_pdf_viewer.dart';
+import 'package:xhalona_pos/widgets/app_text_field.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:xhalona_pos/core/helper/global_helper.dart';
+import 'package:xhalona_pos/widgets/app_normal_button.dart';
+import 'package:xhalona_pos/widgets/app_input_formatter.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:xhalona_pos/views/home/fragment/laporan/monitor/monitor_widget.dart';
+import 'package:xhalona_pos/views/home/fragment/laporan/monitor/monitor_controller.dart';
 
 class MonitorScreen extends StatelessWidget {
   final MonitorController controller = Get.put(MonitorController());
@@ -666,7 +657,6 @@ class MonitorScreen extends StatelessWidget {
               focusNode: focusNode,
               labelText: label,
             );
-            ;
           },
           itemBuilder: (context, KustomerDAO suggestion) {
             return ListTile(

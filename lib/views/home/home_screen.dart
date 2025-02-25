@@ -16,6 +16,7 @@ import 'package:xhalona_pos/views/home/fragment/finance/finance_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/profile/settings_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/profile/change_password.dart';
 import 'package:xhalona_pos/views/home/fragment/dashboard/dashboard_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/profile/profile_page_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/coa/master_coa_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/transaction/transaction_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/laporan/finance/lap_finance_screen.dart';
@@ -68,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
         break;
       case "profil":
         controller.subMenuName.value = "";
-        screen = ProfileScreen();
+        screen = ProfilePageScreen();
         break;
       case "master_product":
         controller.subMenuName.value = "Produk";
@@ -474,51 +475,50 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(child: menuScreen(controller.selectedMenuName.value)),
               ],
             ),
-            bottomNavigationBar: Obx(
-              () => Container(
-                  decoration: BoxDecoration(
-                    color: AppColor.whiteColor,
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColor.grey500,
-                        blurRadius: 1,
-                        offset: Offset(0, 1),
-                      ),
-                    ],
-                  ),
-                  child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Wrap(
-                            alignment: WrapAlignment.center,
-                            runAlignment: WrapAlignment.center,
-                            direction: Axis.horizontal,
-                            spacing: 10,
-                            children: [
-                              ...controller.menuData.map((menuItem) {
-                                if (menuItem.menuId == "NONMENU") {
-                                  return Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children:
-                                        menuItem.dataSubMenu.map((subMenu) {
-                                      return menuComponent(
-                                          subMenu.subMenuDesc, context);
-                                    }).toList(),
-                                  );
-                                }
-                                return menuComponent(
-                                    menuItem.menuDesc, context);
-                              }),
-                              menuComponent("profil", context)
-                            ],
-                          ),
-                        ],
-                      ),
+            bottomNavigationBar: GetBuilder<HomeController>(
+              builder: (_) => Container(
+                decoration: BoxDecoration(
+                  color: AppColor.whiteColor,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColor.grey500,
+                      blurRadius: 1,
+                      offset: Offset(0, 1),
                     ),
-                  ])),
+                  ],
+                ),
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Wrap(
+                          alignment: WrapAlignment.center,
+                          runAlignment: WrapAlignment.center,
+                          direction: Axis.horizontal,
+                          spacing: 10,
+                          children: [
+                            ...controller.menuData.map((menuItem) {
+                              if (menuItem.menuId == "NONMENU") {
+                                return Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: menuItem.dataSubMenu.map((subMenu) {
+                                    return menuComponent(
+                                        subMenu.subMenuDesc, context);
+                                  }).toList(),
+                                );
+                              }
+                              return menuComponent(menuItem.menuDesc, context);
+                            }),
+                            menuComponent("profil", context)
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ]),
+              ),
             ),
           );
         }

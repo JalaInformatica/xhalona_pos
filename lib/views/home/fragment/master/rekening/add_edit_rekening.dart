@@ -103,6 +103,7 @@ class _AddEditRekeningState extends State<AddEditRekening> {
       },
       child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: Text(
             "Tambah/Edit Data Rekening",
             style: AppTextStyle.textTitleStyle(color: Colors.white),

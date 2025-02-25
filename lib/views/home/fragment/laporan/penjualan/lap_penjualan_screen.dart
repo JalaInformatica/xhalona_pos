@@ -6,6 +6,7 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/widgets/app_calendar.dart';
 import 'package:xhalona_pos/widgets/app_pdf_viewer.dart';
+import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 import 'package:xhalona_pos/widgets/app_elevated_button.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
@@ -240,57 +241,12 @@ class LapPenjualanScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 24),
                     Center(
-                        child: AppElevatedButton(
-                            size: AppElevatedButtonSize.big,
-                            backgroundColor: AppColor.primaryColor,
-                            onPressed: () => handleLapPenjualan(context),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              spacing: 10.w,
-                              children: [
-                                Icon(
-                                  Icons.print,
-                                  color: AppColor.whiteColor,
-                                ),
-                                Text(
-                                  "Cetak",
-                                  style: AppTextStyle.textSubtitleStyle(
-                                      color: AppColor.whiteColor),
-                                ),
-                              ],
-                            ))),
+                        child: masterButton(() => handleLapPenjualan(context),
+                            "Cetak", Icons.print)),
                   ],
                 ),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget masterButton(VoidCallback onPressed, String label, IconData icon) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-        decoration: BoxDecoration(
-          color: AppColor.secondaryColor, // Background color
-          borderRadius: BorderRadius.circular(8), // Rounded corners
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 4,
-              offset: Offset(0, 2), // Shadow position
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: Colors.white),
-            SizedBox(width: 8),
-            Text(label, style: AppTextStyle.textBodyStyle(color: Colors.white)),
           ],
         ),
       ),

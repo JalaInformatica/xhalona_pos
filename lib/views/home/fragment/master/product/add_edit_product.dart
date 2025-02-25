@@ -197,10 +197,13 @@ class _AddEditProductState extends State<AddEditProduct> {
                             SizedBox(width: 8.0),
                             GestureDetector(
                               onTap: () {
-                                showFullScreenImage(
-                                  context,
-                                  'https://dreadnought.core-erp.com/XHALONA/${widget.product?.thumbImage ?? profileImageUrl}',
-                                );
+                                if (widget.product?.thumbImage != null ||
+                                    profileImageUrl != null) {
+                                  showFullScreenImage(
+                                    context,
+                                    'https://dreadnought.core-erp.com/XHALONA/${widget.product?.thumbImage ?? profileImageUrl}',
+                                  );
+                                }
                               },
                               child: Container(
                                 width: 60,
@@ -213,34 +216,29 @@ class _AddEditProductState extends State<AddEditProduct> {
                                   ),
                                 ),
                                 child: CachedNetworkImage(
-                                  imageUrl:
-                                      'https://dreadnought.core-erp.com/XHALONA/${widget.product?.thumbImage ?? profileImageUrl}',
-                                  imageBuilder: (context, imageProvider) =>
-                                      Container(
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.rectangle,
-                                      image: DecorationImage(
-                                        image: imageProvider,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                  placeholder: (context, url) =>
-                                      Shimmer.fromColors(
-                                    baseColor: Colors.grey[300]!,
-                                    highlightColor: Colors.grey[100]!,
-                                    child: CircleAvatar(
-                                      radius: 50,
-                                      backgroundColor: Colors.grey[200],
-                                    ),
-                                  ),
-                                  errorWidget: (context, url, error) =>
-                                      CircleAvatar(
-                                    radius: 50,
-                                    backgroundColor: Colors.grey[200],
-                                    child: const Icon(Icons.add_a_photo),
-                                  ),
-                                ),
+                                    imageUrl:
+                                        'https://dreadnought.core-erp.com/XHALONA/${widget.product?.thumbImage ?? profileImageUrl}',
+                                    imageBuilder: (context, imageProvider) =>
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.rectangle,
+                                            image: DecorationImage(
+                                              image: imageProvider,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                    placeholder: (context, url) =>
+                                        Shimmer.fromColors(
+                                          baseColor: Colors.grey[300]!,
+                                          highlightColor: Colors.grey[100]!,
+                                          child: CircleAvatar(
+                                            radius: 50,
+                                            backgroundColor: Colors.grey[200],
+                                          ),
+                                        ),
+                                    errorWidget: (context, url, error) =>
+                                        Icon(Icons.add_a_photo)),
                               ),
                             )
                           ],

@@ -1,12 +1,12 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xhalona_pos/views/home/home_controller.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
+import 'package:xhalona_pos/views/authentication/login/login_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/dashboard/dashboard_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplier_kustomer_controller.dart';
 
@@ -36,7 +36,20 @@ class _NavSideBarState extends State<NavSideBar> {
       baseUrl = prefs.getString('base')!;
       currentVersion = prefs.getString('version');
       showMasterSubMenu = false;
-      showLaporanSubMenu = false;
+      if (controller.selectedMenuName.value == 'laporan_penjualan' ||
+          controller.selectedMenuName.value == 'laporan_finansial' ||
+          controller.selectedMenuName.value == 'laporan_monitor_penjualan')
+        showLaporanSubMenu = true;
+
+      if (controller.selectedMenuName.value == 'master_product' ||
+          controller.selectedMenuName.value == 'master_karyawan' ||
+          controller.selectedMenuName.value == 'master_coa' ||
+          controller.selectedMenuName.value == 'master_pengguna' ||
+          controller.selectedMenuName.value == 'master_pekerjaan' ||
+          controller.selectedMenuName.value == 'master_rekening' ||
+          controller.selectedMenuName.value == 'master_customer' ||
+          controller.selectedMenuName.value == 'master_supplier')
+        showMasterSubMenu = true;
     });
   }
 
@@ -68,12 +81,13 @@ class _NavSideBarState extends State<NavSideBar> {
                 Padding(
                     padding: EdgeInsets.symmetric(vertical: 5.h),
                     child: Text(
-                      "Hi, ",
+                      "Hi, ${controller.profileData.value.userName} ",
                       style: TextStyle(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.bold,
                           color: Colors.white),
                     )),
+                Divider()
               ],
             ),
           ),
@@ -90,43 +104,81 @@ class _NavSideBarState extends State<NavSideBar> {
     );
   }
 
-  ListTile _menuTile({
-    required int menuIndex,
+  Widget _menuTile({
+    required String menuIndex,
     required String icon,
     required String text,
     required Function() onTap,
     IconData? trailingIcon,
   }) {
-    return ListTile(
-      tileColor: AppColor.primaryColor,
-      iconColor: Colors.white,
-      leading: Image.asset(
-        icon,
-        width: 24,
-        height: 24,
-        color: Colors.white,
+    return Padding(
+      padding: const EdgeInsets.only(right: 5, left: 5),
+      child: Material(
+        color: controller.selectedMenuName.value != menuIndex
+            ? Colors.transparent
+            : AppColor.secondaryColor,
+        borderRadius: BorderRadius.circular(10),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: onTap,
+          child: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: ListTile(
+              iconColor: Colors.white,
+              leading: Image.asset(
+                icon,
+                width: 24,
+                height: 24,
+                color: Colors.white,
+              ),
+              title: Text(
+                text,
+                style: AppTextStyle.textSubtitleStyle(color: Colors.white),
+              ),
+              trailing: trailingIcon != null
+                  ? Icon(trailingIcon, color: Colors.white)
+                  : null,
+            ),
+          ),
+        ),
       ),
-      title: Text(text,
-          style: AppTextStyle.textSubtitleStyle(color: Colors.white)),
-      onTap: onTap,
-      trailing:
-          trailingIcon != null ? Icon(trailingIcon, color: Colors.white) : null,
     );
   }
 
-  Widget _subMenuTile(
-      {required int menuIndex,
-      required String text,
-      required Function() onTap}) {
-    return Container(
-      width: double.infinity,
-      color: AppColor.secondaryColor,
-      child: Padding(
-        padding: const EdgeInsets.only(left: 60),
-        child: ListTile(
-            title: Text(text,
-                style: AppTextStyle.textSubtitleStyle(color: Colors.white)),
-            onTap: onTap),
+  Widget _subMenuTile({
+    required String menuIndex,
+    required String text,
+    required Function() onTap,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 5, left: 5),
+      child: Material(
+        color: controller.selectedMenuName.value != menuIndex
+            ? Colors.transparent
+            : AppColor.secondaryColor,
+        borderRadius: BorderRadius.circular(10),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 60),
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: ListTile(
+                title: Text(
+                  text,
+                  style: AppTextStyle.textSubtitleStyle(color: Colors.white),
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -134,9 +186,7 @@ class _NavSideBarState extends State<NavSideBar> {
   void navigateFromOtherWidget(BuildContext context, Widget? newScreen) {
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(
-        builder: (context) => HomeScreen(
-          previousScreen: newScreen ?? HomeScreen().previousScreen,
-        ),
+        builder: (context) => HomeScreen(),
       ),
       (route) => false,
     );
@@ -155,17 +205,19 @@ class _NavSideBarState extends State<NavSideBar> {
                 icon:
                     "assets/images/menu/cashier_machine_cash_register_pos_icon_225108.png",
                 text: "POS",
-                menuIndex: 5,
+                menuIndex: 'pos',
                 onTap: () {
                   controller.selectedMenuName.value = 'pos';
+                  controller.subMenuName.value = "";
                   navigateFromOtherWidget(context, PosScreen());
                 }),
             _menuTile(
               text: "Dashboard",
               icon: "assets/images/menu/view_dashboard_outline_icon_139087.png",
-              menuIndex: 0,
+              menuIndex: 'dashboard',
               onTap: () {
                 controller.selectedMenuName.value = 'dashboard';
+                controller.subMenuName.value = "";
                 navigateFromOtherWidget(context, DashboardScreen());
               },
             ),
@@ -173,9 +225,10 @@ class _NavSideBarState extends State<NavSideBar> {
               icon:
                   "assets/images/menu/bag_buy_cart_market_shop_shopping_tote_icon_123191.png",
               text: "Transaksi",
-              menuIndex: 2,
+              menuIndex: 'transaksi',
               onTap: () {
                 controller.selectedMenuName.value = 'transaksi';
+                controller.subMenuName.value = "";
                 navigateFromOtherWidget(context, DashboardScreen());
               },
             ),
@@ -183,9 +236,10 @@ class _NavSideBarState extends State<NavSideBar> {
               icon:
                   "assets/images/menu/business_cash_coin_dollar_finance_money_payment_icon_123244.png",
               text: "Finance",
-              menuIndex: 1,
+              menuIndex: 'finance',
               onTap: () {
                 controller.selectedMenuName.value = 'finance';
+                controller.subMenuName.value = "";
                 navigateFromOtherWidget(context, DashboardScreen());
               },
             ),
@@ -193,9 +247,10 @@ class _NavSideBarState extends State<NavSideBar> {
               icon:
                   "assets/images/menu/avatar_male_man_people_person_profile_user_icon_123199.png",
               text: "Profil",
-              menuIndex: 4,
+              menuIndex: 'profil',
               onTap: () {
                 controller.selectedMenuName.value = 'profil';
+                controller.subMenuName.value = "";
                 navigateFromOtherWidget(context, DashboardScreen());
               },
             ),
@@ -203,7 +258,7 @@ class _NavSideBarState extends State<NavSideBar> {
                 icon:
                     "assets/images/menu/product_information_management_icon_149893.png",
                 text: "Master",
-                menuIndex: -1,
+                menuIndex: '',
                 onTap: () {
                   setState(() {
                     showMasterSubMenu = !showMasterSubMenu;
@@ -216,7 +271,7 @@ class _NavSideBarState extends State<NavSideBar> {
             if (showMasterSubMenu) ...[
               _subMenuTile(
                   text: "Master Product",
-                  menuIndex: 6,
+                  menuIndex: 'master_product',
                   onTap: () {
                     controller.selectedMenuName.value = 'master_product';
                     controller.subMenuName.value = "Produk";
@@ -224,7 +279,7 @@ class _NavSideBarState extends State<NavSideBar> {
                   }),
               _subMenuTile(
                   text: "Master Karyawan",
-                  menuIndex: 7,
+                  menuIndex: 'master_karyawan',
                   onTap: () {
                     controller.selectedMenuName.value = 'master_karyawan';
                     controller.subMenuName.value = "Karyawan";
@@ -232,7 +287,7 @@ class _NavSideBarState extends State<NavSideBar> {
                   }),
               _subMenuTile(
                   text: "Master COA",
-                  menuIndex: 6,
+                  menuIndex: 'master_coa',
                   onTap: () {
                     controller.selectedMenuName.value = 'master_coa';
                     controller.subMenuName.value = "COA";
@@ -240,7 +295,7 @@ class _NavSideBarState extends State<NavSideBar> {
                   }),
               _subMenuTile(
                   text: "Master Pengguna",
-                  menuIndex: 7,
+                  menuIndex: 'master_pengguna',
                   onTap: () {
                     controller.selectedMenuName.value = 'master_pengguna';
                     controller.subMenuName.value = "Pengguna";
@@ -248,7 +303,7 @@ class _NavSideBarState extends State<NavSideBar> {
                   }),
               _subMenuTile(
                   text: "Master Pekerjaan",
-                  menuIndex: 6,
+                  menuIndex: 'master_pekerjaan',
                   onTap: () {
                     controller.selectedMenuName.value = 'master_pekerjaan';
                     controller.subMenuName.value = "Pekerjaan";
@@ -256,7 +311,7 @@ class _NavSideBarState extends State<NavSideBar> {
                   }),
               _subMenuTile(
                   text: "Master Rekening",
-                  menuIndex: 7,
+                  menuIndex: 'master_rekening',
                   onTap: () {
                     controller.selectedMenuName.value = 'master_rekening';
                     controller.subMenuName.value = "Rekening";
@@ -264,7 +319,7 @@ class _NavSideBarState extends State<NavSideBar> {
                   }),
               _subMenuTile(
                   text: "Master Kustomer",
-                  menuIndex: 6,
+                  menuIndex: 'master_customer',
                   onTap: () {
                     controller.selectedMenuName.value = 'master_customer';
                     controller.subMenuName.value = "Customer";
@@ -274,7 +329,7 @@ class _NavSideBarState extends State<NavSideBar> {
                   }),
               _subMenuTile(
                   text: "Master Supplier",
-                  menuIndex: 7,
+                  menuIndex: 'master_supplier',
                   onTap: () {
                     controller.selectedMenuName.value = 'master_supplier';
                     controller.subMenuName.value = "Supplier";
@@ -286,7 +341,7 @@ class _NavSideBarState extends State<NavSideBar> {
             _menuTile(
               icon:
                   "assets/images/menu/report_document_finance_business_analysis_analytics_chart_icon_188615.png",
-              menuIndex: -1,
+              menuIndex: '',
               text: "Laporan",
               onTap: () {
                 setState(() {
@@ -301,7 +356,7 @@ class _NavSideBarState extends State<NavSideBar> {
             if (showLaporanSubMenu) ...[
               _subMenuTile(
                   text: "Laporan Penjualan",
-                  menuIndex: 8,
+                  menuIndex: 'laporan_penjualan',
                   onTap: () {
                     controller.selectedMenuName.value = 'laporan_penjualan';
                     controller.subMenuName.value = "Laporan Penjualan";
@@ -309,7 +364,7 @@ class _NavSideBarState extends State<NavSideBar> {
                   }),
               _subMenuTile(
                   text: "Laporan Finansial",
-                  menuIndex: 9,
+                  menuIndex: 'laporan_finansial',
                   onTap: () {
                     controller.selectedMenuName.value = 'laporan_finansial';
                     controller.subMenuName.value = "Laporan Finansial";
@@ -317,7 +372,7 @@ class _NavSideBarState extends State<NavSideBar> {
                   }),
               _subMenuTile(
                   text: "Monitor Penjualan",
-                  menuIndex: 8,
+                  menuIndex: 'laporan_monitor_penjualan',
                   onTap: () {
                     controller.selectedMenuName.value =
                         'laporan_monitor_penjualan';
@@ -326,7 +381,7 @@ class _NavSideBarState extends State<NavSideBar> {
                   }),
               _subMenuTile(
                   text: "Laporan Stock",
-                  menuIndex: 9,
+                  menuIndex: '',
                   onTap: () {
                     controller.selectedMenuName.value = '';
                     navigateFromOtherWidget(context, DashboardScreen());
@@ -336,11 +391,17 @@ class _NavSideBarState extends State<NavSideBar> {
         ),
         if (!showLaporanSubMenu && !showMasterSubMenu)
           SizedBox(
-            height: 130,
+            height: 120,
           ),
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: masterButton(() {}, 'Logout', Icons.logout),
+          child: masterButton(() {
+            controller.logout();
+            Get.reset();
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => LoginScreen()),
+                (route) => false);
+          }, 'Logout', Icons.logout),
         ),
         Divider(),
         Padding(
