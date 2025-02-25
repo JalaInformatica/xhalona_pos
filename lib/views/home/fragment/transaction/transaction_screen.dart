@@ -1953,7 +1953,7 @@ class TransactionScreen extends StatelessWidget {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                         content:
-                                            Text('Terjadi kesalahan: $error')),
+                                            Text('Terjadi kesalahan : $error')),
                                   );
                                 });
                               },
