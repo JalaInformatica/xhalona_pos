@@ -61,7 +61,7 @@ class ProfilePageScreen extends StatelessWidget {
                   _infoTile('Mobile', '1234-123-9874'),
                   _infoTile('Tell', '1234-123-9874'),
                   _infoTile('Address', 'NY - Street 21 no 34'),
-                  _infoTile('PostalCode', '9871234567'),
+                  _infoTile('PostalCode', 'sss'),
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
