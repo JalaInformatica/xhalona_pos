@@ -23,6 +23,7 @@ jobs:
 
       # Setup JDK 17 (Microsoft Distribution)
       - name: Siapkan JDK 17
+        if: matrix.platform == 'android'
         uses: actions/setup-java@v3.10.0
         with:
           distribution: 'microsoft'
