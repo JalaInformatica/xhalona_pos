@@ -254,6 +254,7 @@ class AppTableCell extends StatelessWidget {
   final bool isModalOnArrived;
   final bool isModalCheckout;
   final bool isTrxMenu;
+  final bool isPost;
   final VoidCallback? onArrived;
   final VoidCallback? onCheckout;
   final VoidCallback? onDestination;
@@ -293,6 +294,7 @@ class AppTableCell extends StatelessWidget {
     this.isOnFinishStore = false,
     this.isOnWorkingStore = false,
     this.isTrxMenu = false,
+    this.isPost = false,
     this.isPrint = false,
     this.isCheckout = false,
     this.isRejectReschedule = false,
@@ -346,6 +348,7 @@ class AppTableCell extends StatelessWidget {
       isAccReschedule: isAccReschedule,
       isCancelTrx: isCancelTrx,
       isCheckout: isCheckout,
+      isPost: isPost,
       isOnArrived: isOnArrived,
       isOnDestination: isOnDestination,
       isOnFinishStore: isOnFinishStore,
@@ -417,6 +420,13 @@ class AppTableCell extends StatelessWidget {
                   return Icon(Icons.broken_image, color: Colors.grey, size: 24);
                 },
               )
+            else if (isPost)
+              Checkbox(
+                value: isPost,
+                onChanged: (bool? newValue) {
+                  // Tambahkan logika jika ada aksi saat checkbox diubah
+                },
+              )
             else
               Center(
                 child: Text(
@@ -432,7 +442,6 @@ class AppTableCell extends StatelessWidget {
                 isAccReschedule ||
                 isCancelTrx ||
                 isOnArrived ||
-                isOnDestination ||
                 isOnDestination ||
                 isOnFinishStore ||
                 isOnWorkingStore ||
@@ -487,21 +496,21 @@ class AppTableCell extends StatelessWidget {
             backgroundColor: AppColor.primaryColor.withAlpha(100))),
       if (isOnWorkingStore)
         (_buildIconContainer(
-            icon: Icons.build, // Ikon mengerjakan pesanan
+            icon: Icons.hourglass_empty, // Ikon mengerjakan pesanan
             color: AppColor.primaryColor,
             tooltip: 'Kerjakan Pesanan',
             onPressed: onWorkingStore,
             backgroundColor: AppColor.primaryColor.withAlpha(100))),
       if (isOnFinishStore)
         (_buildIconContainer(
-            icon: Icons.check_circle, // Ikon pesanan selesai
+            icon: Icons.flag, // Ikon pesanan selesai
             color: AppColor.primaryColor,
             tooltip: 'Pesanan Selesai',
             onPressed: onFinishStore,
             backgroundColor: AppColor.primaryColor.withAlpha(100))),
       if (isStatusOnline)
         (_buildIconContainer(
-            icon: Icons.shopping_cart, // Ikon konfirmasi pesanan
+            icon: Icons.check, // Ikon konfirmasi pesanan
             color: AppColor.primaryColor,
             tooltip: 'Konfirmasi Pesanan',
             onPressed: onStatusOnline,
@@ -705,7 +714,7 @@ class AppTableCell extends StatelessWidget {
         }
         if (isModalOnWorkingStore) {
           options.add(_buildBottomSheetOption(
-            icon: Icons.build,
+            icon: Icons.hourglass_empty,
             text: 'Kerjakan Pesanan',
             onTap: () {
               Navigator.pop(context);
@@ -715,7 +724,7 @@ class AppTableCell extends StatelessWidget {
         }
         if (isModalOnFinishStore) {
           options.add(_buildBottomSheetOption(
-            icon: Icons.check_circle,
+            icon: Icons.flag,
             text: 'Pesanan Selesai',
             onTap: () {
               Navigator.pop(context);
@@ -725,7 +734,7 @@ class AppTableCell extends StatelessWidget {
         }
         if (isModalStatusOnline) {
           options.add(_buildBottomSheetOption(
-            icon: Icons.shopping_cart,
+            icon: Icons.check,
             text: 'Konfirmasi Pesanan',
             onTap: () {
               Navigator.pop(context);
