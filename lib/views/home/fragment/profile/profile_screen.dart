@@ -16,16 +16,16 @@ import 'package:xhalona_pos/views/home/fragment/profile/ubah%20profile/editemail
 // ignore_for_file: unnecessary_null_comparison
 
 // ignore: must_be_immutable
-class ProfileScreen extends StatefulWidget {
+class EditProfileScreen extends StatefulWidget {
   String? profileImageUrl;
 
-  ProfileScreen({this.profileImageUrl});
+  EditProfileScreen({this.profileImageUrl});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _EditProfileScreenState extends State<EditProfileScreen> {
   final HomeController controller = Get.put(HomeController());
 
   final TextEditingController _dateController = TextEditingController();
