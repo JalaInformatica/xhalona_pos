@@ -29,6 +29,10 @@ class CurrencyInputFormatter extends TextInputFormatter {
   }
 }
 
+int parseRupiah(String rupiah) {
+  return int.parse(rupiah.replaceAll(RegExp(r'[^0-9]'), ''));
+}
+
 Widget buildTextField(
   String label,
   String hint,
@@ -36,16 +40,33 @@ Widget buildTextField(
   TextInputType keyboardType = TextInputType.text,
   List<TextInputFormatter>? inputFormatters,
   bool isEnabled = true,
+  int maxline = 1,
 }) {
   return TextFormField(
     controller: controller,
     keyboardType: keyboardType,
     enabled: isEnabled,
     inputFormatters: inputFormatters,
+    maxLines: maxline,
     decoration: InputDecoration(
       labelText: label,
+      labelStyle: TextStyle(color: AppColor.primaryColor),
       hintText: hint,
-      border: OutlineInputBorder(),
+      hintStyle: TextStyle(color: AppColor.primaryColor),
+      border: OutlineInputBorder(
+        borderSide: BorderSide(color: AppColor.primaryColor),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: AppColor.primaryColor, width: 2.0),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(
+            color: isEnabled ? AppColor.primaryColor : AppColor.primaryColor),
+      ),
+      disabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(
+            color: AppColor.primaryColor), // Border pink saat disabled
+      ),
     ),
     validator: (value) {
       if (value == null || value.isEmpty) {
@@ -62,7 +83,17 @@ Widget buildDropdownFieldJK(
   return DropdownButtonFormField<String>(
     decoration: InputDecoration(
       labelText: label,
-      border: OutlineInputBorder(),
+      labelStyle: TextStyle(color: AppColor.primaryColor),
+      hintStyle: TextStyle(color: AppColor.primaryColor),
+      border: OutlineInputBorder(
+        borderSide: BorderSide(color: AppColor.primaryColor),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: AppColor.primaryColor, width: 2.0),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: AppColor.primaryColor),
+      ),
     ),
     items: items.map((item) {
       return DropdownMenuItem(value: item, child: Text(item));

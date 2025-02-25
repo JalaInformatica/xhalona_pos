@@ -2,10 +2,10 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/rekening.dart';
+import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/repositories/rekening/rekening_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/rekening/rekening_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/master/rekening/master_rekening_screen.dart';
 
 // ignore: must_be_immutable
 class AddEditRekening extends StatefulWidget {
@@ -83,7 +83,7 @@ class _AddEditRekeningState extends State<AddEditRekening> {
           setState(() {});
         } else {
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => MasterRekeningScreen()),
+            MaterialPageRoute(builder: (context) => HomeScreen()),
             (route) => false,
           );
           controller.fetchProducts();
@@ -94,92 +94,102 @@ class _AddEditRekeningState extends State<AddEditRekening> {
       }
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Tambah/Edit Data Rekening",
-          style: AppTextStyle.textTitleStyle(color: Colors.white),
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+            (route) => false); // Navigasi kembali ke halaman sebelumnya
+        return false; // Mencegah navigasi bawaan
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: Text(
+            "Tambah/Edit Data Rekening",
+            style: AppTextStyle.textTitleStyle(color: Colors.white),
+          ),
+          backgroundColor: AppColor.secondaryColor,
         ),
-        backgroundColor: AppColor.secondaryColor,
-      ),
-      body: _isLoading
-          ? buildShimmerLoading()
-          : SingleChildScrollView(
-              padding: EdgeInsets.all(16),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    buildDropdownFieldJK("Jenis Rek.", jenisAc, (value) {
-                      setState(() {
-                        _jenisAc = value;
-                      });
-                    }),
-                    SizedBox(height: 16),
-                    // Field NIK
-                    buildTextField("Kode Rekening", "Masukkan nama Rekening",
-                        _kdRekeningController),
-                    SizedBox(height: 16),
-
-                    // Field Nama
-                    buildTextField("Nama Rekening", "Masukkan nama Rekening",
-                        _nameRekeningController),
-                    SizedBox(height: 16),
-
-                    buildTextField("No Rekening", "Masukkan no Rekening",
-                        _noRekeningController),
-                    SizedBox(height: 16),
-
-                    buildTextField(
-                        "Nama Bank", "Masukkan nama Bank", _nameBankController),
-                    SizedBox(height: 16),
-
-                    buildTextField(
-                        "Atas Nama", "Masukkan atas nama", _atasNamaController),
-                    SizedBox(height: 16),
-
-                    buildTextField("COA ", "Masukkan coa", _coaController),
-                    SizedBox(height: 16),
-
-                    buildTextField("Group", "Masukkan group", _groupController),
-                    SizedBox(height: 16),
-
-                    buildTextField("User Access", "Masukkan user access",
-                        _userAccesController),
-                    SizedBox(height: 16),
-
-                    SwitchListTile(
-                      title: Text("Status Aktif"),
-                      subtitle: Text(
-                          "Tentukan apakah karyawan saat ini aktif atau tidak aktif"),
-                      value: _isActive,
-                      onChanged: (value) {
+        body: _isLoading
+            ? buildShimmerLoading()
+            : SingleChildScrollView(
+                padding: EdgeInsets.all(16),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildDropdownFieldJK("Jenis Rek.", jenisAc, (value) {
                         setState(() {
-                          _isActive = value;
+                          _jenisAc = value;
                         });
-                      },
-                    ),
-                    SizedBox(height: 32),
+                      }),
+                      SizedBox(height: 16),
+                      // Field NIK
+                      buildTextField("Kode Rekening", "Masukkan nama Rekening",
+                          _kdRekeningController),
+                      SizedBox(height: 16),
 
-                    // Action Buttons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        masterButton(
-                            handleAddEditRekening, "Simpan", Icons.add),
-                        masterButton(() {
-                          Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                  builder: (context) => MasterRekeningScreen()),
-                              (route) => false);
-                        }, "Batal", Icons.refresh),
-                      ],
-                    ),
-                  ],
+                      // Field Nama
+                      buildTextField("Nama Rekening", "Masukkan nama Rekening",
+                          _nameRekeningController),
+                      SizedBox(height: 16),
+
+                      buildTextField("No Rekening", "Masukkan no Rekening",
+                          _noRekeningController),
+                      SizedBox(height: 16),
+
+                      buildTextField("Nama Bank", "Masukkan nama Bank",
+                          _nameBankController),
+                      SizedBox(height: 16),
+
+                      buildTextField("Atas Nama", "Masukkan atas nama",
+                          _atasNamaController),
+                      SizedBox(height: 16),
+
+                      buildTextField("COA ", "Masukkan coa", _coaController),
+                      SizedBox(height: 16),
+
+                      buildTextField(
+                          "Group", "Masukkan group", _groupController),
+                      SizedBox(height: 16),
+
+                      buildTextField("User Access", "Masukkan user access",
+                          _userAccesController),
+                      SizedBox(height: 16),
+
+                      SwitchListTile(
+                        title: Text("Status Aktif"),
+                        subtitle: Text(
+                            "Tentukan apakah karyawan saat ini aktif atau tidak aktif"),
+                        value: _isActive,
+                        onChanged: (value) {
+                          setState(() {
+                            _isActive = value;
+                          });
+                        },
+                      ),
+                      SizedBox(height: 32),
+
+                      // Action Buttons
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          masterButton(
+                              handleAddEditRekening, "Simpan", Icons.add),
+                          masterButton(() {
+                            Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                    builder: (context) => HomeScreen()),
+                                (route) => false);
+                          }, "Batal", Icons.refresh),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
+      ),
     );
   }
 }

@@ -16,7 +16,7 @@ class KategoriServices {
         "ACTION_ID": "LIST_H",
         "IP": api.ip,
         "DEF_COMPANY_ID": api.companyId,
-        "COMPANY_ID": api.companyId,
+        "COMPANY_ID": companyId ?? api.companyId,
         "USER_ID": api.userId,
         "SESSION_LOGIN_ID": api.sessionId,
         "FILTER_FIELD": "",

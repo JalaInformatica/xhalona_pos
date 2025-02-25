@@ -2,10 +2,10 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/kustomer.dart';
+import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/repositories/kustomer/kustomer_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplier_kustomer_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/master_kustomer_supplier_screen.dart';
 
 // ignore: must_be_immutable
 class AddEditKustomer extends StatefulWidget {
@@ -76,10 +76,7 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
           setState(() {});
         } else {
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-                builder: (context) => MasterKustomerScreen(
-                      islabel: widget.islabel,
-                    )),
+            MaterialPageRoute(builder: (context) => HomeScreen()),
             (route) => false,
           );
           controller.fetchProducts();
@@ -93,10 +90,7 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-                builder: (context) => MasterKustomerScreen(
-                      islabel: widget.islabel,
-                    )),
+            MaterialPageRoute(builder: (context) => HomeScreen()),
             (route) => false); // Navigasi kembali ke halaman sebelumnya
         return false; // Mencegah navigasi bawaan
       },
@@ -155,9 +149,7 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
                           masterButton(() {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (context) => MasterKustomerScreen(
-                                          islabel: widget.islabel,
-                                        )),
+                                    builder: (context) => HomeScreen()),
                                 (route) => false);
                           }, "Batal", Icons.refresh),
                         ],

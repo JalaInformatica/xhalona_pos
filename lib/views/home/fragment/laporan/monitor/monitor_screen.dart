@@ -1,35 +1,26 @@
-import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:xhalona_pos/core/helper/global_helper.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/models/dao/employee.dart';
-import 'package:xhalona_pos/views/home/fragment/laporan/monitor/monitor_widget.dart';
-import 'package:xhalona_pos/widgets/app_calendar.dart';
-import 'package:xhalona_pos/widgets/app_checkbox.dart';
-import 'package:xhalona_pos/widgets/app_dialog.dart';
-import 'package:xhalona_pos/widgets/app_icon_button.dart';
-import 'package:xhalona_pos/widgets/app_normal_button.dart';
-import 'package:xhalona_pos/widgets/app_pdf_viewer.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
+import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/models/dao/product.dart';
+import 'package:xhalona_pos/models/dao/employee.dart';
 import 'package:xhalona_pos/models/dao/kategori.dart';
 import 'package:xhalona_pos/models/dao/kustomer.dart';
 import 'package:xhalona_pos/models/dao/karyawan.dart';
-import 'package:xhalona_pos/widgets/app_bottombar.dart';
-import 'package:xhalona_pos/views/home/home_screen.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:xhalona_pos/widgets/app_input_formatter.dart';
-import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/laporan/monitor/monitor_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/master/karyawan/karyawan_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/master/product/kategori/kategori_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_viewer_screen.dart';
-import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplier_kustomer_controller.dart';
-import 'package:xhalona_pos/widgets/app_text_field.dart';
+import 'package:xhalona_pos/widgets/app_calendar.dart';
+import 'package:xhalona_pos/widgets/app_checkbox.dart';
 import 'package:xhalona_pos/widgets/app_typeahead.dart';
+import 'package:xhalona_pos/widgets/app_pdf_viewer.dart';
+import 'package:xhalona_pos/widgets/app_text_field.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:xhalona_pos/core/helper/global_helper.dart';
+import 'package:xhalona_pos/widgets/app_normal_button.dart';
+import 'package:xhalona_pos/widgets/app_input_formatter.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:xhalona_pos/views/home/fragment/laporan/monitor/monitor_widget.dart';
+import 'package:xhalona_pos/views/home/fragment/laporan/monitor/monitor_controller.dart';
 
 class MonitorScreen extends StatelessWidget {
   final MonitorController controller = Get.put(MonitorController());
@@ -596,30 +587,27 @@ class MonitorScreen extends StatelessWidget {
             //   },
             //   child: Text("Lihat Monitor")
             // ),
-            Obx(()=> MonitorTable(
-              titles: [
-                MonitorTableTitle(value: "Tanggal "),
-                MonitorTableTitle(value: "Shift "),
-                MonitorTableTitle(value: "No Trx"),
-                MonitorTableTitle(value: "Customer"),
-                MonitorTableTitle(value: "Produk"),
-                MonitorTableTitle(value: "Kategori "),
-                MonitorTableTitle(value: "Qty "),
-                MonitorTableTitle(value: "Harga"),
-                MonitorTableTitle(value: "Total"),
-                MonitorTableTitle(value: "Diskon"),
-                MonitorTableTitle(value: "Tagihan "),
-                MonitorTableTitle(value: "Metode Bayar "),
-                MonitorTableTitle(value: "Komp/Vch"),
-                MonitorTableTitle(value: "Penerimaan"),
-                MonitorTableTitle(value: "Cash"),
-                MonitorTableTitle(value: "Trf/Qris "),
-                MonitorTableTitle(value: "Hutang "),
-                MonitorTableTitle(value: "Titipan"),
-                MonitorTableTitle(value: "Terapis"),
-              ],
-              data: controller.groupingData(controller.monitorHeader)
-            )),
+            Obx(() => MonitorTable(titles: [
+                  MonitorTableTitle(value: "Tanggal "),
+                  MonitorTableTitle(value: "Shift "),
+                  MonitorTableTitle(value: "No Trx"),
+                  MonitorTableTitle(value: "Customer"),
+                  MonitorTableTitle(value: "Produk"),
+                  MonitorTableTitle(value: "Kategori "),
+                  MonitorTableTitle(value: "Qty "),
+                  MonitorTableTitle(value: "Harga"),
+                  MonitorTableTitle(value: "Total"),
+                  MonitorTableTitle(value: "Diskon"),
+                  MonitorTableTitle(value: "Tagihan "),
+                  MonitorTableTitle(value: "Metode Bayar "),
+                  MonitorTableTitle(value: "Komp/Vch"),
+                  MonitorTableTitle(value: "Penerimaan"),
+                  MonitorTableTitle(value: "Cash"),
+                  MonitorTableTitle(value: "Trf/Qris "),
+                  MonitorTableTitle(value: "Hutang "),
+                  MonitorTableTitle(value: "Titipan"),
+                  MonitorTableTitle(value: "Terapis"),
+                ], data: controller.groupingData(controller.monitorHeader))),
             SizedBox(
               width: double.infinity,
               height: 500.h,
@@ -658,15 +646,18 @@ class MonitorScreen extends StatelessWidget {
                       AppTableCell(
                           value: monitor.createDate.split("T").first, index: i),
                       AppTableCell(value: monitor.shiftId, index: i),
-                      AppTableCell(value: shortenTrxId(monitor.salesId), index: i),
+                      AppTableCell(
+                          value: shortenTrxId(monitor.salesId), index: i),
                       AppTableCell(value: monitor.supplierName, index: i),
                       AppTableCell(value: monitor.partName, index: i),
                       AppTableCell(value: monitor.ketAnalisa, index: i),
                       AppTableCell(value: monitor.qty.toString(), index: i),
-                      AppTableCell(value: monitor.price.toString(), index: i),
                       AppTableCell(
-                          value: monitor.totalPrice.toString(), index: i),
-                      AppTableCell(value: monitor.discVal.toString(), index: i),
+                          value: formatCurrency(monitor.price), index: i),
+                      AppTableCell(
+                          value: formatCurrency(monitor.totalPrice), index: i),
+                      AppTableCell(
+                          value: formatCurrency(monitor.discVal), index: i),
                       AppTableCell(
                           value: monitor.totalCompliment.toString(), index: i),
                       AppTableCell(
@@ -674,13 +665,15 @@ class MonitorScreen extends StatelessWidget {
                       AppTableCell(
                           value: monitor.feeEmpVal.toString(), index: i),
                       AppTableCell(
-                          value: monitor.nettoValD.toString(), index: i),
+                          value: formatThousands(monitor.nettoValD.toString()),
+                          index: i),
                       AppTableCell(
-                          value: monitor.totalCash.toString(), index: i),
+                          value: formatCurrency(monitor.totalCash), index: i),
                       AppTableCell(
-                          value: monitor.totalNonCash.toString(), index: i),
+                          value: formatCurrency(monitor.totalNonCash),
+                          index: i),
                       AppTableCell(
-                          value: monitor.totalHutang.toString(), index: i),
+                          value: formatCurrency(monitor.totalHutang), index: i),
                       AppTableCell(
                           value: monitor.addCostVal.toString(), index: i),
                       AppTableCell(value: monitor.fullName, index: i),
@@ -712,13 +705,16 @@ class MonitorScreen extends StatelessWidget {
                             AppTextStyle.textSubtitleStyle(color: Colors.white),
                       ),
                       const Divider(color: Colors.white54, thickness: 1),
-                      _buildSummaryRow('Tagihan', controller.sumTagihan.value),
+                      _buildSummaryRow('Tagihan',
+                          formatCurrency(controller.sumTagihan.value)),
                       _buildSummaryRow('Penerimaan',
                           formatCurrency(controller.sumAcc.value)),
                       _buildSummaryRow(
                           'Cash', formatCurrency(controller.sumCash.value)),
-                      _buildSummaryRow('Diskon', controller.sumDisc.value),
-                      _buildSummaryRow('Hutang', controller.sumHutang.value),
+                      _buildSummaryRow(
+                          'Diskon', formatCurrency(controller.sumDisc.value)),
+                      _buildSummaryRow(
+                          'Hutang', formatCurrency(controller.sumHutang.value)),
                       _buildSummaryRow(
                           'Tf/Qris', formatCurrency(controller.sumQris.value)),
                       _buildSummaryRow('Titipan', controller.sumTitipan.value),
@@ -785,7 +781,6 @@ class MonitorScreen extends StatelessWidget {
               focusNode: focusNode,
               labelText: label,
             );
-            ;
           },
           itemBuilder: (context, KustomerDAO suggestion) {
             return ListTile(

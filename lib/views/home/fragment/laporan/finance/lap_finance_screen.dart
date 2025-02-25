@@ -1,14 +1,13 @@
-import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/views/home/fragment/laporan/finance/lap_finance_controller.dart';
-import 'package:xhalona_pos/widgets/app_bottombar.dart';
-import 'package:xhalona_pos/views/home/home_screen.dart';
-import 'package:xhalona_pos/widgets/app_calendar.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
+import 'package:xhalona_pos/widgets/app_calendar.dart';
+import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/widgets/app_text_form_field.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:xhalona_pos/views/home/fragment/laporan/finance/lap_finance_controller.dart';
 
 class LapFinanceScreen extends StatelessWidget {
   final LapFinanceController controller = Get.put(LapFinanceController());
@@ -133,7 +132,8 @@ class LapFinanceScreen extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 16),
-                  Text('Jenis Laporan:', style: AppTextStyle.textSubtitleStyle()),
+                  Text('Jenis Laporan:',
+                      style: AppTextStyle.textSubtitleStyle()),
                   ListTile(
                     title: Text('Lap. Finance',
                         style: AppTextStyle.textSubtitleStyle()),
@@ -157,9 +157,11 @@ class LapFinanceScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 16),
-                  Text('Detail Laporan:', style: AppTextStyle.textSubtitleStyle()),
+                  Text('Detail Laporan:',
+                      style: AppTextStyle.textSubtitleStyle()),
                   ListTile(
-                    title: Text('Detail', style: AppTextStyle.textSubtitleStyle()),
+                    title:
+                        Text('Detail', style: AppTextStyle.textSubtitleStyle()),
                     leading: Radio(
                       value: 'Detail',
                       groupValue: _detailOption,
@@ -169,12 +171,13 @@ class LapFinanceScreen extends StatelessWidget {
                     ),
                   ),
                   ListTile(
-                    title: Text('Rekap', style: AppTextStyle.textSubtitleStyle()),
+                    title:
+                        Text('Rekap', style: AppTextStyle.textSubtitleStyle()),
                     leading: Radio(
                       value: 'Rekap',
                       groupValue: _detailOption,
                       onChanged: (value) {
-                        controller.detailOption.value = value.toString();                        
+                        controller.detailOption.value = value.toString();
                       },
                     ),
                   ),
@@ -191,52 +194,22 @@ class LapFinanceScreen extends StatelessWidget {
                     ),
                   ),
                   ListTile(
-                    title: Text('EXCEL', style: AppTextStyle.textSubtitleStyle()),
+                    title:
+                        Text('EXCEL', style: AppTextStyle.textSubtitleStyle()),
                     leading: Radio(
                       value: 'EXCEL',
                       groupValue: _formatOption,
-                      onChanged: (value) {                        
+                      onChanged: (value) {
                         controller.formatOption.value = value.toString();
                       },
                     ),
                   ),
                   SizedBox(height: 24),
-                  Center(child: masterButton(() {
-                    
-                  }, "Cetak", Icons.print)),
+                  Center(child: masterButton(() {}, "Cetak", Icons.print)),
                   SizedBox(height: 70),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget masterButton(VoidCallback onPressed, String label, IconData icon) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-        decoration: BoxDecoration(
-          color: AppColor.secondaryColor, // Background color
-          borderRadius: BorderRadius.circular(8), // Rounded corners
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 4,
-              offset: Offset(0, 2), // Shadow position
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: Colors.white),
-            SizedBox(width: 8),
-            Text(label,
-                style: AppTextStyle.textSubtitleStyle(color: Colors.white)),
           ],
         ),
       ),

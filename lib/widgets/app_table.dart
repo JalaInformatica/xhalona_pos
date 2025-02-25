@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_text_field.dart';
 import 'package:xhalona_pos/widgets/app_icon_button.dart';
+import 'package:xhalona_pos/widgets/full_screen_image.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
 
 // ignore: must_be_immutable
@@ -230,6 +231,7 @@ class AppTableCell extends StatelessWidget {
   final bool isModalPaket;
   final bool isModalBahan;
   final bool showOptionsOnTap;
+  final bool showImgTap;
   final bool isVarian;
   final bool isRejectReschedule;
   final bool isAccReschedule;
@@ -306,6 +308,7 @@ class AppTableCell extends StatelessWidget {
     this.isModalRejectReschedule = false,
     this.isModalStatusOnline = false,
     this.showOptionsOnTap = false,
+    this.showImgTap = false,
     this.onAccReschedule,
     this.onPOS,
     this.onBahan,
@@ -371,6 +374,7 @@ class AppTableCell extends StatelessWidget {
       onStatusOnline: onStatusOnline,
       onWorkingStore: onWorkingStore,
       showOptionsOnTap: showOptionsOnTap,
+      showImgTap: showImgTap,
       onBahan: onBahan,
       onVarian: onVarian,
       onEdit: onEdit,
@@ -386,7 +390,16 @@ class AppTableCell extends StatelessWidget {
         index % 2 == 0 ? Colors.white : Colors.grey.shade200;
 
     return GestureDetector(
-      onTap: showOptionsOnTap ? () => _showOptions(context) : null,
+      onTap: showOptionsOnTap
+          ? () => _showOptions(context)
+          : showImgTap
+              ? () {
+                  showFullScreenImage(
+                    context,
+                    imageUrl.toString(),
+                  );
+                }
+              : null,
       child: Container(
         width: width,
         height: height,
@@ -622,6 +635,7 @@ class AppTableCell extends StatelessWidget {
         options.add(_buildBottomSheetOption(
           icon: Icons.delete,
           text: 'Delete',
+          color: Colors.red,
           onTap: () {
             Navigator.pop(context);
             if (onDelete != null) onDelete!();
@@ -631,6 +645,7 @@ class AppTableCell extends StatelessWidget {
           options.add(_buildBottomSheetOption(
             icon: Icons.local_offer,
             text: 'Paket',
+            color: Colors.green,
             onTap: () {
               Navigator.pop(context);
               if (onPaket != null) onPaket!();
@@ -641,6 +656,7 @@ class AppTableCell extends StatelessWidget {
           options.add(_buildBottomSheetOption(
             icon: Icons.kitchen,
             text: 'Bahan',
+            color: Colors.green,
             onTap: () {
               Navigator.pop(context);
               if (onBahan != null) onBahan!();
@@ -772,12 +788,13 @@ class AppTableCell extends StatelessWidget {
   }
 
   Widget _buildBottomSheetOption({
+    Color color = Colors.blue,
     required IconData icon,
     required String text,
     required VoidCallback onTap,
   }) {
     return ListTile(
-      leading: Icon(icon, color: Colors.blue),
+      leading: Icon(icon, color: color),
       title: Text(text, style: TextStyle(fontSize: 16)),
       onTap: onTap,
     );
@@ -816,7 +833,8 @@ class AppTableTitle extends StatelessWidget {
 
 String formatCurrency(num? amount,
     {String locale = 'id_ID', String symbol = 'Rp'}) {
+  if (amount == null || amount == 0) return '0';
   final format =
       NumberFormat.currency(locale: locale, symbol: symbol, decimalDigits: 0);
-  return format.format(amount ?? 0); // Gunakan 0 jika amount bernilai null
+  return format.format(amount);
 }

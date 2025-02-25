@@ -2,10 +2,10 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/models/dao/coa.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/repositories/coa/coa_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/coa/coa_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/master/coa/master_coa_screen.dart';
 
 // ignore: must_be_immutable
 class AddEditCoa extends StatefulWidget {
@@ -80,7 +80,7 @@ class _AddEditCoaState extends State<AddEditCoa> {
           setState(() {});
         } else {
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => MasterCoaScreen()),
+            MaterialPageRoute(builder: (context) => HomeScreen()),
             (route) => false,
           );
           controllerKar.fetchProducts();
@@ -94,7 +94,7 @@ class _AddEditCoaState extends State<AddEditCoa> {
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => MasterCoaScreen()),
+            MaterialPageRoute(builder: (context) => HomeScreen()),
             (route) => false); // Navigasi kembali ke halaman sebelumnya
         return false; // Mencegah navigasi bawaan
       },
@@ -172,7 +172,7 @@ class _AddEditCoaState extends State<AddEditCoa> {
                           masterButton(() {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (context) => MasterCoaScreen()),
+                                    builder: (context) => HomeScreen()),
                                 (route) => false);
                           }, "Batal", Icons.refresh),
                         ],
@@ -190,7 +190,17 @@ class _AddEditCoaState extends State<AddEditCoa> {
     return DropdownButtonFormField<String>(
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
+        labelStyle: TextStyle(color: AppColor.primaryColor),
+        hintStyle: TextStyle(color: AppColor.primaryColor),
+        border: OutlineInputBorder(
+          borderSide: BorderSide(color: AppColor.primaryColor),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: AppColor.primaryColor, width: 2.0),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: AppColor.primaryColor),
+        ),
       ),
       items: items.map((item) {
         return DropdownMenuItem(

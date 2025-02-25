@@ -25,8 +25,6 @@ class _AddEditDeptState extends State<AddEditDept> {
   final _nameDeptController = TextEditingController();
   bool _isLoading = true;
 
-  final List<String> genders = ['Laki-laki', 'Perempuan'];
-
   @override
   void initState() {
     super.initState();
@@ -103,7 +101,7 @@ class _AddEditDeptState extends State<AddEditDept> {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(5),
                             border: Border.all(
-                              color: Colors.grey.shade600,
+                              color: AppColor.primaryColor,
                             )),
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),

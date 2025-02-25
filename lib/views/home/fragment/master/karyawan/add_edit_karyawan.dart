@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/karyawan.dart';
 import 'package:xhalona_pos/models/dao/departemen.dart';
+import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/repositories/karyawan/karyawan_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/karyawan_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/master/karyawan/master_karyawan_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/departemen_controller.dart';
 
 // ignore: must_be_immutable
@@ -100,7 +100,7 @@ class _AddEditKaryawanState extends State<AddEditKaryawan> {
           setState(() {});
         } else {
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => MasterKaryawanScreen()),
+            MaterialPageRoute(builder: (context) => HomeScreen()),
             (route) => false,
           );
           controllerKar.fetchProducts();
@@ -114,7 +114,7 @@ class _AddEditKaryawanState extends State<AddEditKaryawan> {
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => MasterKaryawanScreen()),
+            MaterialPageRoute(builder: (context) => HomeScreen()),
             (route) => false); // Navigasi kembali ke halaman sebelumnya
         return false; // Mencegah navigasi bawaan
       },
@@ -225,8 +225,7 @@ class _AddEditKaryawanState extends State<AddEditKaryawan> {
                           masterButton(() {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        MasterKaryawanScreen()),
+                                    builder: (context) => HomeScreen()),
                                 (route) => false);
                           }, "Batal", Icons.refresh),
                         ],
@@ -245,8 +244,19 @@ class _AddEditKaryawanState extends State<AddEditKaryawan> {
       readOnly: true,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
+        labelStyle: TextStyle(color: AppColor.primaryColor),
         suffixIcon: Icon(Icons.calendar_today),
+        suffixIconColor: AppColor.primaryColor,
+        hintStyle: TextStyle(color: AppColor.primaryColor),
+        border: OutlineInputBorder(
+          borderSide: BorderSide(color: AppColor.primaryColor),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: AppColor.primaryColor, width: 2.0),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: AppColor.primaryColor),
+        ),
       ),
       onTap: () async {
         DateTime? pickedDate = await showDatePicker(
@@ -275,7 +285,17 @@ class _AddEditKaryawanState extends State<AddEditKaryawan> {
     return DropdownButtonFormField<String>(
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
+        labelStyle: TextStyle(color: AppColor.primaryColor),
+        hintStyle: TextStyle(color: AppColor.primaryColor),
+        border: OutlineInputBorder(
+          borderSide: BorderSide(color: AppColor.primaryColor),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: AppColor.primaryColor, width: 2.0),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: AppColor.primaryColor),
+        ),
       ),
       items: items.map((item) {
         return DropdownMenuItem(value: item.kdDept, child: Text(item.namaDept));
