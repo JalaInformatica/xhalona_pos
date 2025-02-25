@@ -42,7 +42,7 @@ class _EditEmailPageState extends State<EditEmailPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ProfileScreen(),
+                    builder: (context) => EditProfileScreen(),
                   ),
                 );
               } else {

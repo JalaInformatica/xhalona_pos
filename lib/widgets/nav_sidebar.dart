@@ -113,43 +113,72 @@ class _NavSideBarState extends State<NavSideBar> {
   }) {
     return Padding(
       padding: const EdgeInsets.only(right: 5, left: 5),
-      child: ListTile(
-        tileColor: controller.selectedMenuName.value != menuIndex
-            ? null
+      child: Material(
+        color: controller.selectedMenuName.value != menuIndex
+            ? Colors.transparent
             : AppColor.secondaryColor,
-        iconColor: Colors.white,
-        leading: Image.asset(
-          icon,
-          width: 24,
-          height: 24,
-          color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: onTap,
+          child: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: ListTile(
+              iconColor: Colors.white,
+              leading: Image.asset(
+                icon,
+                width: 24,
+                height: 24,
+                color: Colors.white,
+              ),
+              title: Text(
+                text,
+                style: AppTextStyle.textSubtitleStyle(color: Colors.white),
+              ),
+              trailing: trailingIcon != null
+                  ? Icon(trailingIcon, color: Colors.white)
+                  : null,
+            ),
+          ),
         ),
-        title: Text(text,
-            style: AppTextStyle.textSubtitleStyle(color: Colors.white)),
-        onTap: onTap,
-        trailing: trailingIcon != null
-            ? Icon(trailingIcon, color: Colors.white)
-            : null,
       ),
     );
   }
 
-  Widget _subMenuTile(
-      {required String menuIndex,
-      required String text,
-      required Function() onTap}) {
-    return Container(
-      width: double.infinity,
-      margin: EdgeInsets.only(right: 5, left: 5),
-      color: controller.selectedMenuName.value != menuIndex
-          ? null
-          : AppColor.secondaryColor,
-      child: Padding(
-        padding: const EdgeInsets.only(left: 60),
-        child: ListTile(
-            title: Text(text,
-                style: AppTextStyle.textSubtitleStyle(color: Colors.white)),
-            onTap: onTap),
+  Widget _subMenuTile({
+    required String menuIndex,
+    required String text,
+    required Function() onTap,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 5, left: 5),
+      child: Material(
+        color: controller.selectedMenuName.value != menuIndex
+            ? Colors.transparent
+            : AppColor.secondaryColor,
+        borderRadius: BorderRadius.circular(10),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 60),
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: ListTile(
+                title: Text(
+                  text,
+                  style: AppTextStyle.textSubtitleStyle(color: Colors.white),
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
