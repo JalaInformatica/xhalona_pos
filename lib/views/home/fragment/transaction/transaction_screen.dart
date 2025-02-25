@@ -90,6 +90,7 @@ class TransactionScreen extends StatelessWidget {
                                 return AppDialog(
                                     content: SizedBox(
                                         width: 100,
+                                        height: MediaQuery.of(context).size.height*0.5,
                                         child: Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [

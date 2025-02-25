@@ -15,6 +15,7 @@ class AppColor {
   static const Color borderImageColor = Color(0xFFF5F5F5);
   static const Color doneColor = Colors.green;
   static const Color blueColor = Colors.blue;
+  static const Color navyColor = Color.fromARGB(255, 94, 102, 147);
   static const Color purpleColor = Colors.purple;
   static const Color dangerColor = Colors.red;
   static const Color warningColor = Colors.yellow;

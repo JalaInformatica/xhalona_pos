@@ -27,7 +27,7 @@ class MonitorServices {
         "MODULE_ID": "POS",
         "SUBMODULE_ID": "ORDER",
         "SORT_ORDER_BY": "$format",
-        "SORT_ORDER_TYPE": "DESC",
+        "SORT_ORDER_TYPE": "ASC",
         "BULAN": "",
         "TAHUN": "",
       }
