@@ -18,6 +18,14 @@ class DashboardController extends GetxController {
   var totalTrxToday = 0.obs;
   List<ReportDAO> salesThisMonth = [];
 
+  DateTime now = DateTime.now();
+
+  late Rx<DateTime?> nettoPerDayStartDate = DateTime(now.year, now.month, 1).obs;
+  late Rx<DateTime?> nettoPerDayEndDate = DateTime(now.year, now.month + 1, 0).obs;
+
+  late var trxPerDayStartDate = DateTime(now.year, now.month, 1).toString().obs;
+  late var trxPerDayEndDate = DateTime(now.year, now.month + 1, 0).toString().obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -27,7 +35,6 @@ class DashboardController extends GetxController {
   Future<void> fetchData() async {
     isLoading.value = true;
 
-    DateTime now = DateTime.now();
     salesThisMonth = await _reportRepository.getReport(
       actionId: "R_01",
       startDate: DateTime(now.year, now.month, 1).toString(),

@@ -90,20 +90,21 @@ class DashboardScreen extends StatelessWidget {
                                   width: 100,
                                   height: MediaQuery.of(context).size.height*0.5,
                                   child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        AppCalendarRange(
-                                          focusedDay: DateTime.now(),
-                                          onRangeSelected: (DateTime? start, DateTime? end, DateTime focusedDay) {
-                                            print("Selected Range: $start - $end");
-                                            print("Focused Day: $focusedDay");
-                                          },
-                                        ),
-                                      ])));
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Obx(()=> AppCalendarRange(
+                                        rangeStart: controller.nettoPerDayStartDate.value,
+                                        rangeEnd: controller.nettoPerDayEndDate.value,
+                                        focusedDay: DateTime.now(),
+                                        onRangeSelected: (DateTime? start, DateTime? end) {
+                                          controller.nettoPerDayStartDate.value = start;
+                                          controller.nettoPerDayEndDate.value = end;
+                                        },
+                                      )),
+                                    ])));
                         });
                       },
                       child: Text("dd/mm/yyyy"))
-                      
                   ],),
                   Obx(() => controller.dataNetPerMonthValue.isNotEmpty
                       ? AspectRatio(

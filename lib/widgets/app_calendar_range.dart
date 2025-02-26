@@ -5,8 +5,7 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 class AppCalendarRange extends TableCalendar {
   AppCalendarRange({
     required DateTime focusedDay,
-    required Function(DateTime?, DateTime?, DateTime) onRangeSelected,
-    DateTime? selectedDay,
+    required Function(DateTime?, DateTime?) onRangeSelected,
     DateTime? rangeStart,
     DateTime? rangeEnd,
   }) : super(
@@ -24,7 +23,8 @@ class AppCalendarRange extends TableCalendar {
             weekdayStyle: AppTextStyle.textBodyStyle(),
           ),
           rangeSelectionMode: RangeSelectionMode.toggledOn,
-          onRangeSelected: onRangeSelected,
+          rangeStartDay: rangeStart,
+          rangeEndDay: rangeEnd,
           calendarStyle: CalendarStyle(
             todayDecoration: const BoxDecoration(
               color: Colors.transparent,
@@ -33,6 +33,15 @@ class AppCalendarRange extends TableCalendar {
               color: AppColor.tertiaryColor,
               shape: BoxShape.circle,
             ),
+            rangeStartDecoration: const BoxDecoration(
+              color: AppColor.primaryColor,
+              shape: BoxShape.circle,
+            ),
+            rangeEndDecoration: const BoxDecoration(
+              color: AppColor.secondaryColor,
+              shape: BoxShape.circle,
+            ),
+            rangeHighlightColor: AppColor.tertiaryColor,
             todayTextStyle: AppTextStyle.textBodyStyle(color: Colors.black),
             selectedTextStyle:
                 AppTextStyle.textBodyStyle(color: AppColor.secondaryColor),
@@ -46,11 +55,19 @@ class AppCalendarRange extends TableCalendar {
           focusedDay: focusedDay,
           firstDay: DateTime.utc(2024, 1, 1),
           lastDay: DateTime.utc(2030, 12, 31),
-          selectedDayPredicate: (day) =>
-              (selectedDay != null && isSameDay(selectedDay, day)) ||
-              (rangeStart != null &&
-                  rangeEnd != null &&
-                  day.isAfter(rangeStart.subtract(const Duration(days: 1))) &&
-                  day.isBefore(rangeEnd.add(const Duration(days: 1)))),
+
+          onDaySelected: (selectedDay, _) {
+            if (rangeEnd != rangeStart){
+              //if range end exists, then reset
+              onRangeSelected(selectedDay, selectedDay);
+            }
+            else if (rangeStart!=null){
+              if (selectedDay.isAfter(rangeStart)) {
+                onRangeSelected(rangeStart, selectedDay);
+              } else {
+                onRangeSelected(selectedDay, rangeStart);
+              }
+            }
+          },
         );
 }
