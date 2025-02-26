@@ -44,7 +44,7 @@ class _EditNamePageState extends State<EditNamePage> {
                 await prefs.setString('name', _nameController.text);
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => ProfileScreen()),
+                  MaterialPageRoute(builder: (context) => EditProfileScreen()),
                 );
               }
             },

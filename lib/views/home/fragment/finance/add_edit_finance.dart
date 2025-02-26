@@ -1,12 +1,17 @@
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/kasbank.dart';
+import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/models/dao/kustomer.dart';
 import 'package:xhalona_pos/models/dao/rekening.dart';
+import 'package:xhalona_pos/widgets/app_calendar.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
+import 'package:xhalona_pos/widgets/app_text_form_field.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/repositories/kasbank/kasbank_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/finance/finance_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/rekening/rekening_controller.dart';
@@ -35,12 +40,10 @@ class _AddEditFinanceState extends State<AddEditFinance> {
   final _ketController = TextEditingController();
   final _tanggalController = TextEditingController();
   final _jmlBayarController = TextEditingController();
-  String? _jenisTrx;
+  String _jenisTrx = 'M';
   String? _finance;
   String? _kustomer;
   bool _isLoading = true;
-
-  final List<String> jenisTrx = ['M', 'K'];
 
   @override
   void initState() {
@@ -197,18 +200,39 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                           isEnabled: widget.finance != null ? false : true),
                       SizedBox(height: 16),
 
-                      buildDropdownFieldJK(
-                        "Jenis Trx",
-                        jenisTrx,
-                        (value) {
-                          setState(() {
-                            _jenisTrx = value;
-                          });
-                        },
-                        enabled: widget.finance != null &&
-                                widget.finance!.isApproved == true
-                            ? false
-                            : true,
+                      Row(
+                        children: [
+                          Expanded(
+                              child: RadioListTile(
+                            title: Text('Masuk',
+                                style: AppTextStyle.textBodyStyle()),
+                            value: 'M',
+                            contentPadding: EdgeInsets.all(0),
+                            dense: true,
+                            visualDensity: VisualDensity.compact,
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            groupValue: _jenisTrx,
+                            onChanged: (value) {
+                              _jenisTrx = value.toString();
+                            },
+                          )),
+                          Expanded(
+                              child: RadioListTile(
+                            title: Text('Keluar',
+                                style: AppTextStyle.textBodyStyle()),
+                            value: 'K',
+                            contentPadding: EdgeInsets.all(0),
+                            dense: true,
+                            visualDensity: VisualDensity.compact,
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            groupValue: _jenisTrx,
+                            onChanged: (value) {
+                              _jenisTrx = value.toString();
+                            },
+                          )),
+                        ],
                       ),
                       SizedBox(height: 16),
 
@@ -228,18 +252,55 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                       ),
                       SizedBox(height: 16),
 
-                      buildDateField(
-                        "Tanggal",
-                        _tanggalController,
-                        isEnable: widget.finance != null &&
-                                widget.finance!.isApproved == true
-                            ? false
-                            : true,
-                      ),
+                      Obx(() => AppTextFormField(
+                            context: context,
+                            textEditingController: _tanggalController,
+                            readOnly: true,
+                            icon: Icon(Icons.calendar_today),
+                            onTap: () {
+                              SmartDialog.show(builder: (context) {
+                                return AppDialog(
+                                    content: SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.5,
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.5,
+                                        child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              AppCalendar(
+                                                focusedDay:
+                                                    DateFormat("dd-MM-yyyy")
+                                                        .parse(
+                                                            _tanggalController
+                                                                .text),
+                                                onDaySelected:
+                                                    (selectedDay, _) {
+                                                  _tanggalController.text =
+                                                      DateFormat('dd-MM-yyyy')
+                                                          .format(selectedDay);
+                                                  SmartDialog.dismiss();
+                                                },
+                                              ),
+                                            ])));
+                              });
+                            },
+                            labelText: "Tanggal",
+                            style: AppTextStyle.textBodyStyle(),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Tanggal Sampai tidak boleh kosong';
+                              }
+                              return null;
+                            },
+                          )),
                       SizedBox(height: 16),
 
-                      buildTypeAheadFieldRef("Diterima dari", kustomer,
-                          (value) {
+                      buildTypeAheadFieldRef(
+                          "${_jenisTrx == 'M' ? 'Diterima dari' : 'Keluar ke'} ",
+                          kustomer, (value) {
                         setState(() {
                           _kustomer = value;
                         });
@@ -292,50 +353,6 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                 ),
               ),
       ),
-    );
-  }
-
-  Widget buildDateField(String label, TextEditingController controller,
-      {bool isEnable = true}) {
-    return TextFormField(
-      controller: controller,
-      readOnly: true,
-      enabled: isEnable,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(color: AppColor.primaryColor),
-        suffixIcon: Icon(Icons.calendar_today),
-        suffixIconColor: AppColor.primaryColor,
-        hintStyle: TextStyle(color: AppColor.primaryColor),
-        border: OutlineInputBorder(
-          borderSide: BorderSide(color: AppColor.primaryColor),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: AppColor.primaryColor, width: 2.0),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: AppColor.primaryColor),
-        ),
-      ),
-      onTap: () async {
-        DateTime? pickedDate = await showDatePicker(
-          context: context,
-          initialDate: DateTime.now(),
-          firstDate: DateTime(1900),
-          lastDate: DateTime(2100),
-        );
-        if (pickedDate != null) {
-          setState(() {
-            controller.text = "${pickedDate.toLocal()}".split(' ')[0];
-          });
-        }
-      },
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return '$label tidak boleh kosong';
-        }
-        return null;
-      },
     );
   }
 
