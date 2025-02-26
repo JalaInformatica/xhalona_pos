@@ -37,11 +37,9 @@ class CoaController extends GetxController {
   //   }
   // }
 
-  void updateFilterValue(String newFilterValue) {
-    filterValue.value = newFilterValue;
-    pageNo.value = 1;
-    pageRow.value = 10;
-    fetchProducts();
+  Future<void> updateFilterValue(String newFilterValue) async {
+    coaHeader.value =
+        await _coaRepository.getCoa(pageRow: 5, filterValue: newFilterValue);
   }
 
   void updatePageNo(int newFilterValue) {

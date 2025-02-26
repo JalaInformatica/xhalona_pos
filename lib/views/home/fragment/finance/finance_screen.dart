@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
@@ -184,7 +185,8 @@ class FinanceScreen extends StatelessWidget {
                             },
                             showOptionsOnTap: true),
                         AppTableCell(
-                            value: finance.voucherDate.split("T").first,
+                            value: DateFormat('dd-MM-yyyy')
+                                .format(DateTime.parse(finance.voucherDate)),
                             index: i,
                             onEdit: () {
                               goTo(context, finance);

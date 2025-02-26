@@ -423,6 +423,7 @@ class AppTableCell extends StatelessWidget {
             else if (isPost)
               Checkbox(
                 value: isPost,
+                activeColor: AppColor.primaryColor,
                 onChanged: (bool? newValue) {
                   // Tambahkan logika jika ada aksi saat checkbox diubah
                 },

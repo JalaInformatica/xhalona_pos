@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:xhalona_pos/widgets/app_text_field.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:xhalona_pos/widgets/app_icon_button.dart';
 
 class AppTypeahead<T> extends TypeAheadField<T> {
   AppTypeahead({
     super.key,
     required String label,
-    required TextEditingController controller,
+     TextEditingController? controller,
     required ValueChanged<String?> onSelected,
     required Future<List<T>> Function(String newFilterValue) updateFilterValue,
     required String Function(T) displayText,
