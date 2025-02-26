@@ -27,6 +27,12 @@ int unFormatThousands(String strNumber){
   }
 }
 
+String getPercentage(int of, int from, {int decimalPoint=2}) {
+  if (from == 0) return "0.00%";
+  double percentage = (of / from) * 100;
+  return "${percentage.toStringAsFixed(decimalPoint)}%";
+}
+
 String shortenTrxId(String text) {
   return text.replaceAll(RegExp(r'(?<=AM)0+'), '');
 }

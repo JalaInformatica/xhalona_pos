@@ -232,35 +232,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // handleChangeProfile() async {
-    //   final SharedPreferences prefs = await SharedPreferences.getInstance();
-    //   if (await userProvider.changeUserDetail(
-    //     userName: name ?? controller.profileData.value.userName,
-    //     userEmail: email ?? controller.profileData.value.emailAddress,
-    //     userPhone: controller.profileData.value.phoneNumber,
-    //     joinDate: controller.profileData.value.jointDate,
-    //     userPic: prefs.getString('profileImageUrl') ?? controller.profileData.value.profilePic,
-    //     userBirthDate: _dateController.text == null
-    //         ? '${controller.profileData.value.profileBirthDate?.date}'
-    //         : prefs.getString('datePicker'),
-    //     userGender: prefs.getString('gender') == "Laki-laki"
-    //         ? 'M'
-    //         : 'F' ?? controller.profileData.value.profileSex,
-    //   )) {
-    //     Navigator.pushNamed(context, '/home');
-    //   } else {
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       const SnackBar(
-    //         backgroundColor: Colors.green,
-    //         content: Text(
-    //           "Ubah profile berhasil!!",
-    //           textAlign: TextAlign.center,
-    //         ),
-    //       ),
-    //     );
-    //     Navigator.pushNamed(context, '/profile-user');
-    //   }
-    // }
+    handleChangeProfile() async {}
 
     return WillPopScope(
       onWillPop: () async {
@@ -271,6 +243,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: true,
+        appBar: AppBar(
+          iconTheme: const IconThemeData(color: Colors.white),
+          backgroundColor: AppColor.primaryColor,
+          title: const Text(
+            'Edit Profile',
+            style: TextStyle(color: Colors.white),
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.check),
+              onPressed: handleChangeProfile,
+            ),
+          ],
+        ),
         backgroundColor: Colors.white,
         body: isLoading // Periksa apakah data masih dimuat
             ? Shimmer.fromColors(

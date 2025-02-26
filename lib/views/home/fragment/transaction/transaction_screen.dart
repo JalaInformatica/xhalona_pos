@@ -4,7 +4,6 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/widgets/app_calendar.dart';
-import 'package:xhalona_pos/models/dao/transaction.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/core/constant/transaction.dart';
 import 'package:xhalona_pos/widgets/app_normal_button.dart';
@@ -90,6 +89,7 @@ class TransactionScreen extends StatelessWidget {
                                 return AppDialog(
                                     content: SizedBox(
                                         width: 100,
+                                        height: MediaQuery.of(context).size.height*0.5,
                                         child: Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
@@ -300,7 +300,7 @@ class TransactionScreen extends StatelessWidget {
                                 reschedule || toHome && accBooking,
                             isModalStatusOnline: paidBooking,
                             isModalOnFinishStore: finish,
-                            isModalOnWorkingStore: onWorking,
+                            isModalOnWorkingStore: accBooking,
                             isModalCancelTrx: cancelByStore,
                             isModalOnDestination: onDestination,
                             isModalOnArrived: arrivedDestination,
@@ -408,10 +408,10 @@ class TransactionScreen extends StatelessWidget {
                               isModalPrint: cancelByStore,
                               isModalRejectReschedule: reschedule,
                               isModalAccReschedule:
-                                  reschedule || toHome || accBooking,
+                                  reschedule || toHome && accBooking,
                               isModalStatusOnline: paidBooking,
                               isModalOnFinishStore: finish,
-                              isModalOnWorkingStore: onWorking,
+                              isModalOnWorkingStore: accBooking,
                               isModalCancelTrx: cancelByStore,
                               isModalOnDestination: onDestination,
                               isModalOnArrived: arrivedDestination,
@@ -519,10 +519,10 @@ class TransactionScreen extends StatelessWidget {
                               isModalPrint: cancelByStore,
                               isModalRejectReschedule: reschedule,
                               isModalAccReschedule:
-                                  reschedule || toHome || accBooking,
+                                  reschedule || toHome && accBooking,
                               isModalStatusOnline: paidBooking,
                               isModalOnFinishStore: finish,
-                              isModalOnWorkingStore: onWorking,
+                              isModalOnWorkingStore: accBooking,
                               isModalCancelTrx: cancelByStore,
                               isModalOnDestination: onDestination,
                               isModalOnArrived: arrivedDestination,
@@ -629,10 +629,10 @@ class TransactionScreen extends StatelessWidget {
                               isModalPrint: cancelByStore,
                               isModalRejectReschedule: reschedule,
                               isModalAccReschedule:
-                                  reschedule || toHome || accBooking,
+                                  reschedule || toHome && accBooking,
                               isModalStatusOnline: paidBooking,
                               isModalOnFinishStore: finish,
-                              isModalOnWorkingStore: onWorking,
+                              isModalOnWorkingStore: accBooking,
                               isModalCancelTrx: cancelByStore,
                               isModalOnDestination: onDestination,
                               isModalOnArrived: arrivedDestination,
@@ -739,10 +739,10 @@ class TransactionScreen extends StatelessWidget {
                               isModalPrint: cancelByStore,
                               isModalRejectReschedule: reschedule,
                               isModalAccReschedule:
-                                  reschedule || toHome || accBooking,
+                                  reschedule || toHome && accBooking,
                               isModalStatusOnline: paidBooking,
                               isModalOnFinishStore: finish,
-                              isModalOnWorkingStore: onWorking,
+                              isModalOnWorkingStore: accBooking,
                               isModalCancelTrx: cancelByStore,
                               isModalOnDestination: onDestination,
                               isModalOnArrived: arrivedDestination,
@@ -849,10 +849,10 @@ class TransactionScreen extends StatelessWidget {
                               isModalPrint: cancelByStore,
                               isModalRejectReschedule: reschedule,
                               isModalAccReschedule:
-                                  reschedule || toHome || accBooking,
+                                  reschedule || toHome && accBooking,
                               isModalStatusOnline: paidBooking,
                               isModalOnFinishStore: finish,
-                              isModalOnWorkingStore: onWorking,
+                              isModalOnWorkingStore: accBooking,
                               isModalCancelTrx: cancelByStore,
                               isModalOnDestination: onDestination,
                               isModalOnArrived: arrivedDestination,
@@ -959,10 +959,10 @@ class TransactionScreen extends StatelessWidget {
                               isModalPrint: cancelByStore,
                               isModalRejectReschedule: reschedule,
                               isModalAccReschedule:
-                                  reschedule || toHome || accBooking,
+                                  reschedule || toHome && accBooking,
                               isModalStatusOnline: paidBooking,
                               isModalOnFinishStore: finish,
-                              isModalOnWorkingStore: onWorking,
+                              isModalOnWorkingStore: accBooking,
                               isModalCancelTrx: cancelByStore,
                               isModalOnDestination: onDestination,
                               isModalOnArrived: arrivedDestination,
@@ -1069,10 +1069,10 @@ class TransactionScreen extends StatelessWidget {
                               isModalPrint: cancelByStore,
                               isModalRejectReschedule: reschedule,
                               isModalAccReschedule:
-                                  reschedule || toHome || accBooking,
+                                  reschedule || toHome && accBooking,
                               isModalStatusOnline: paidBooking,
                               isModalOnFinishStore: finish,
-                              isModalOnWorkingStore: onWorking,
+                              isModalOnWorkingStore: accBooking,
                               isModalCancelTrx: cancelByStore,
                               isModalOnDestination: onDestination,
                               isModalOnArrived: arrivedDestination,
@@ -1179,10 +1179,10 @@ class TransactionScreen extends StatelessWidget {
                               isModalPrint: cancelByStore,
                               isModalRejectReschedule: reschedule,
                               isModalAccReschedule:
-                                  reschedule || toHome || accBooking,
+                                  reschedule || toHome && accBooking,
                               isModalStatusOnline: paidBooking,
                               isModalOnFinishStore: finish,
-                              isModalOnWorkingStore: onWorking,
+                              isModalOnWorkingStore: accBooking,
                               isModalCancelTrx: cancelByStore,
                               isModalOnDestination: onDestination,
                               isModalOnArrived: arrivedDestination,
@@ -1289,10 +1289,10 @@ class TransactionScreen extends StatelessWidget {
                               isModalPrint: cancelByStore,
                               isModalRejectReschedule: reschedule,
                               isModalAccReschedule:
-                                  reschedule || toHome || accBooking,
+                                  reschedule || toHome && accBooking,
                               isModalStatusOnline: paidBooking,
                               isModalOnFinishStore: finish,
-                              isModalOnWorkingStore: onWorking,
+                              isModalOnWorkingStore: accBooking,
                               isModalCancelTrx: cancelByStore,
                               isModalOnDestination: onDestination,
                               isModalOnArrived: arrivedDestination,
@@ -1399,10 +1399,10 @@ class TransactionScreen extends StatelessWidget {
                               isModalPrint: cancelByStore,
                               isModalRejectReschedule: reschedule,
                               isModalAccReschedule:
-                                  reschedule || toHome || accBooking,
+                                  reschedule || toHome && accBooking,
                               isModalStatusOnline: paidBooking,
                               isModalOnFinishStore: finish,
-                              isModalOnWorkingStore: onWorking,
+                              isModalOnWorkingStore: accBooking,
                               isModalCancelTrx: cancelByStore,
                               isModalOnDestination: onDestination,
                               isModalOnArrived: arrivedDestination,
@@ -1509,10 +1509,10 @@ class TransactionScreen extends StatelessWidget {
                               isModalPrint: cancelByStore,
                               isModalRejectReschedule: reschedule,
                               isModalAccReschedule:
-                                  reschedule || toHome || accBooking,
+                                  reschedule || toHome && accBooking,
                               isModalStatusOnline: paidBooking,
                               isModalOnFinishStore: finish,
-                              isModalOnWorkingStore: onWorking,
+                              isModalOnWorkingStore: accBooking,
                               isModalCancelTrx: cancelByStore,
                               isModalOnDestination: onDestination,
                               isModalOnArrived: arrivedDestination,
@@ -1666,7 +1666,7 @@ class TransactionScreen extends StatelessWidget {
                                 });
                               },
                               isStatusOnline: paidBooking,
-                              isOnWorkingStore: onWorking,
+                              isOnWorkingStore: accBooking,
                               showOptionsOnTap: true),
                           AppTableCell(
                               value: "",
@@ -1761,7 +1761,7 @@ class TransactionScreen extends StatelessWidget {
                                 });
                               },
                               isAccReschedule:
-                                  reschedule || toHome || accBooking,
+                                  reschedule || toHome && accBooking,
                               isOnDestination: onDestination,
                               showOptionsOnTap: true),
                           AppTableCell(
@@ -1862,7 +1862,7 @@ class TransactionScreen extends StatelessWidget {
                                 });
                               },
                               isAccReschedule:
-                                  reschedule || toHome || accBooking,
+                                  reschedule || toHome && accBooking,
                               isOnArrived: arrivedDestination,
                               showOptionsOnTap: true),
                           AppTableCell(
@@ -1959,7 +1959,7 @@ class TransactionScreen extends StatelessWidget {
                               },
                               isRejectReschedule: reschedule,
                               isAccReschedule:
-                                  reschedule || toHome || accBooking,
+                                  reschedule || toHome && accBooking,
                               showOptionsOnTap: true),
                           AppTableCell(
                               value: "",
@@ -2061,93 +2061,11 @@ class TransactionScreen extends StatelessWidget {
                               index: i,
                               onCheckout: () {},
                               onPrint: () {},
-                              onRejectReschedule: () {
-                                Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(
-                                      builder: (context) => TrxFormScreen(
-                                            actionId: 'RESCHEDULE_REJECTED',
-                                            salesId: transaction.salesId,
-                                          )),
-                                  (route) => false,
-                                );
-                              },
-                              onAccReschedule: () {
-                                Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(
-                                      builder: (context) => TrxFormScreen(
-                                            actionId: 'RESCHEDULE_APPROVED',
-                                            salesId: transaction.salesId,
-                                          )),
-                                  (route) => false,
-                                );
-                              },
-                              onStatusOnline: () => handleOnTrx(
-                                    actionId: 'ONWORKING',
-                                    salesId: transaction.salesId,
-                                  ),
                               onFinishStore: () => handleOnTrx(
                                     actionId: 'ONFINISH_STORE',
                                     salesId: transaction.salesId,
                                   ),
-                              onWorkingStore: () => handleOnTrx(
-                                    actionId: 'ONWORKING',
-                                    salesId: transaction.salesId,
-                                  ),
                               onCancelTrx: () {},
-                              onDestination: () {
-                                Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(
-                                      builder: (context) => TrxFormScreen(
-                                            actionId: 'ONDESTINATION',
-                                            salesId: transaction.salesId,
-                                          )),
-                                  (route) => false,
-                                );
-                              },
-                              onArrived: () {
-                                Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(
-                                      builder: (context) => TrxFormScreen(
-                                            actionId: 'ONARRIVED',
-                                            salesId: transaction.salesId,
-                                          )),
-                                  (route) => false,
-                                );
-                              },
-                              onEdit: () {
-                                showDialog(
-                                  context: context,
-                                  barrierDismissible: false,
-                                  builder: (context) => const Center(
-                                    child: CircularProgressIndicator(
-                                        color: AppColor.primaryColor),
-                                  ),
-                                );
-
-                                _trxRepository
-                                    .getTransactionDetail(
-                                        transactionId: transaction.salesId)
-                                    .then((detail) async {
-                                  Navigator.of(context)
-                                      .pop(); // Tutup progress indicator
-                                  Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(
-                                      builder: (context) => UbahTerapis(
-                                        trxDetail: detail,
-                                      ),
-                                    ),
-                                    (route) => false,
-                                  );
-                                }).catchError((error) {
-                                  Navigator.of(context)
-                                      .pop(); // Tutup progress indicator jika ada error
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                        content:
-                                            Text('Terjadi kesalahan: $error')),
-                                  );
-                                });
-                              },
                               isOnFinishStore: finish,
                               isCancelTrx: cancelByStore,
                               showOptionsOnTap: true),

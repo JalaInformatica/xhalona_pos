@@ -42,7 +42,8 @@ class AppTypeahead<T> extends TypeAheadField<T> {
         },
         itemBuilder: (context, T suggestion) {
           return ListTile(
-            title: Text(displayText(suggestion)),
+            tileColor: AppColor.whiteColor,
+            title: Text(displayText(suggestion), style: AppTextStyle.textBodyStyle(),),
           );
         },
         

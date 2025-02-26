@@ -219,15 +219,16 @@ class FinanceScreen extends StatelessWidget {
                             },
                             showOptionsOnTap: true),
                         AppTableCell(
-                            value: finance.jmlBayar.toString(),
+                            value: formatCurrency(finance.jmlBayar),
                             index: i,
                             onEdit: () {
                               goTo(context, finance);
                             },
                             showOptionsOnTap: true),
                         AppTableCell(
-                            value: finance.isApproved == true ? 'V' : '',
+                            value: '',
                             index: i,
+                            isPost: finance.isApproved,
                             onEdit: () {
                               goTo(context, finance);
                             },

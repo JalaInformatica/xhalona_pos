@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:esc_pos_utils/esc_pos_utils.dart';
@@ -11,6 +12,7 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:image/image.dart' as img;
+import 'dart:ui' as ui;
 
 class AppPDFViewer extends StatefulWidget {
   final String pdfUrl;
@@ -33,13 +35,72 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
     _fetchPdfBytes();
   }
 
+  Future<PdfPageImage?> getImage() async {
+    final tempDir = await getTemporaryDirectory();
+    final pdfFile = File('${tempDir.path}/temp.pdf');
+    await pdfFile.writeAsBytes(pdfBytes!);
+
+    final document = await PdfDocument.openFile(pdfFile.path);
+    final page = await document.getPage(1);
+
+    print(page.width);
+    print(page.height);
+
+    final image = await page.render(
+        forPrint: true,
+        width: page.width * 2.35,
+        height: page.height * 2.35,
+        backgroundColor: "#ffffff",
+        format: PdfPageImageFormat.png);
+    print(image!.width);
+    print(image.height);
+
+    return image;
+  }
+
+  img.Image cropBottomWhiteSpace(img.Image image) {
+    int width = image.width;
+    int height = image.height;
+
+    int lastNonWhiteRow = height - 1;
+
+    // Scan from bottom to top to find the first non-white pixel row
+    for (int y = height - 1; y >= 0; y--) {
+      bool isRowEmpty = true;
+      for (int x = 0; x < width; x++) {
+        int pixel = image.getPixel(x, y);
+        int alpha = img.getAlpha(pixel);
+        int red = img.getRed(pixel);
+        int green = img.getGreen(pixel);
+        int blue = img.getBlue(pixel);
+
+        // Consider a pixel non-white if its color is not close to pure white (255,255,255)
+        if (alpha > 0 && (red < 250 || green < 250 || blue < 250)) {
+          isRowEmpty = false;
+          break;
+        }
+      }
+      if (!isRowEmpty) {
+        lastNonWhiteRow = y;
+        break;
+      }
+    }
+
+    // Crop the image to remove white space at the bottom
+    return img.copyCrop(image, 0, 0, width, lastNonWhiteRow + 1);
+  }
+
   Future<void> _fetchPdfBytes() async {
     try {
       final response = await http.get(Uri.parse(widget.pdfUrl));
       if (response.statusCode == 200) {
         pdfBytes = Uint8List.fromList(response.bodyBytes);
-        await _convertPdfToImage();
-        setState(() {});
+        PdfPageImage? pdfPageImage =
+            await getImage(); // await _convertPdfToImage();
+        if (pdfPageImage != null) {
+          imageBytes = pdfPageImage.bytes;
+          setState(() {});
+        }
       } else {
         _showMessage("Failed to load PDF");
       }
@@ -48,36 +109,45 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
     }
   }
 
+  //   final tempDir = await getTemporaryDirectory();
+  // final pdfFile = File('${tempDir.path}/temp.pdf');
+  // await pdfFile.writeAsBytes(pdfBytes!);
+
+  // final document = await PdfDocument.openFile(pdfFile.path);
+  // final page = await document.getPage(1); // Get the first page
+
+  // final pageImage = await page.render(
+  //   width: 1080, // Higher resolution for better quality
+  //   height: (1080 * page.height / page.width).toDouble(), // Maintain aspect ratio
+  //   format: PdfPageImageFormat.png,
+  // );
+
+  // if (pageImage != null) {
+  //   setState(() {
+  //     imageBytes = pageImage.bytes;
+  //   });
+  // }
+
+  // await page.close();
+  // await document.close();
+
   // Convert PDF to Image with Dynamic Page Size
-  // Convert PDF to Image with Dynamic Page Size
-  Future<void> _convertPdfToImage() async {
-    try {
-    final tempDir = await getTemporaryDirectory();
-    final pdfFile = File('${tempDir.path}/temp.pdf');
-    await pdfFile.writeAsBytes(pdfBytes!);
+  // Future<void> _convertPdfToImage() async {
+  //   try {
+  //    final tempDir = await getTemporaryDirectory();
+  //    final pdfFile = File('${tempDir.path}/temp.pdf');
+  //    await pdfFile.writeAsBytes(pdfBytes!);
 
-    final document = await PdfDocument.openFile(pdfFile.path);
-    final page = await document.getPage(1); // Get the first page
+  //    final document = await PdfDocument.openFile(pdfFile.path);
+  //    final page = await document.getPage(1);
 
-    final pageImage = await page.render(
-      width: 1080, // Higher resolution for better quality
-      height: (1080 * page.height / page.width).toDouble(), // Maintain aspect ratio
-      format: PdfPageImageFormat.png,
-    );
-
-    if (pageImage != null) {
-      setState(() {
-        imageBytes = pageImage.bytes;
-      });
-    }
-
-    await page.close();
-    await document.close();
-  } catch (e) {
-    _showMessage("Error converting PDF to image: $e");
-  }
-  }
-
+  //    final image = await page.render(
+  //     width: page.width, // Higher resolution for better quality
+  //     height: page.height, // Maintain aspect ratio
+  //     format: PdfPageImageFormat.jpeg,
+  //     backgroundColor: "#ffffff"
+  //   );
+  //   }
   Future<void> _savePdfToDevice() async {
     if (pdfBytes == null) {
       _showMessage("PDF is not loaded yet.");
@@ -122,23 +192,29 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
     }
   }
 
-  void _previewBytes(BuildContext context, List<int> bytes) {
-    Uint8List imageData = Uint8List.fromList(bytes);
+  void _previewPrinting(BuildContext context, img.Image image) async {
+    Uint8List imageBytes = Uint8List.fromList(img.encodePng(image));
 
+    // Show the cropped image in a dialog
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Print Preview"),
-          content: imageData.isNotEmpty
-              ? Image.memory(imageData)
-              : Text("No image data available"),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text("Close"),
-            ),
-          ],
+      builder: (context) {
+        return Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Image.memory(imageBytes), // Display the cropped image
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text("Close"),
+              ),
+            ],
+          ),
         );
       },
     );
@@ -146,53 +222,35 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
 
   Future<void> _print(BuildContext context) async {
     try {
-      // bool isBluetoothConnected = await PrintBluetoothThermal.connectionStatus;
+      bool isBluetoothConnected = await PrintBluetoothThermal.connectionStatus;
 
-      // if (!isBluetoothConnected) {
-      //   _showMessage("Scanning for Bluetooth printers...");
-      //   await _connectPrinter(context);
-      //   isBluetoothConnected = await PrintBluetoothThermal.connectionStatus;
+      if (!isBluetoothConnected) {
+        _showMessage("Scanning for Bluetooth printers...");
+        await _connectPrinter(context);
+        isBluetoothConnected = await PrintBluetoothThermal.connectionStatus;
 
-      //   if (!isBluetoothConnected) {
-      //     _showMessage("No printer connected.");
-      //     return;
-      //   }
-      // }
-
-      if (imageBytes == null) {
-        _showMessage("No image to print.");
-        return;
+        if (!isBluetoothConnected) {
+          _showMessage("No printer connected.");
+          return;
+        }
       }
-
-      img.Image? image = img.decodeImage(imageBytes!);
-      if (image == null) {
-        _showMessage("Error: Decoded image is null.");
-        return;
-      }
-
-      // ✅ Process Image for Thermal Printing
-      img.Image processedImage = img.grayscale(image); // Convert to grayscale
-      processedImage = img.copyResize(processedImage, width: 576); // Resize
+      List<int> bytes = [];
 
       final profile = await CapabilityProfile.load();
       final generator = Generator(PaperSize.mm58, profile);
-      List<int> bytes = [];
-
-      bytes += generator.image(processedImage);
-
-      // ✅ Debugging
-      _showMessage("Printing ${bytes.length} bytes...");
-
-      _previewBytes(context, bytes);
-
-      // final bool result =
-      //     await PrintBluetoothThermal.writeBytes(Uint8List.fromList(bytes));
-
-      // if (result) {
-      //   _showMessage("Print successful.");
-      // } else {
-      //   _showMessage("Print failed.");
-      // }
+      img.Image? image = img.decodeImage(imageBytes!);
+      if (image != null) {
+        img.Image croppedImage = cropBottomWhiteSpace(image);
+        bytes += generator.image(croppedImage);
+        bytes += generator.cut();
+        final bool result = await PrintBluetoothThermal.writeBytes(bytes);
+        image = null;
+        if (result) {
+          _showMessage("Print successful.");
+        } else {
+          _showMessage("Print failed.");
+        }
+      }
     } catch (e) {
       _showMessage("Printing error: $e");
     }
@@ -269,7 +327,7 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
           ),
         ],
       ),
-      body: pdfBytes == null
+      body: imageBytes == null
           ? Center(
               child: AppDialog(
                   shadowColor: AppColor.blackColor,
