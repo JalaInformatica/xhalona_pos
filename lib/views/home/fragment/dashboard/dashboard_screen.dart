@@ -1,3 +1,4 @@
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -5,6 +6,9 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/core/helper/global_helper.dart';
 import 'package:shimmer/shimmer.dart'; // Tambahkan package shimmer
 import 'package:xhalona_pos/views/home/fragment/dashboard/dashboard_controller.dart';
+import 'package:xhalona_pos/widgets/app_calendar_range.dart';
+import 'package:xhalona_pos/widgets/app_dialog.dart';
+import 'package:xhalona_pos/widgets/app_normal_button.dart';
 
 class DashboardScreen extends StatelessWidget {
   final DashboardController controller = Get.put(DashboardController());
@@ -71,10 +75,37 @@ class DashboardScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 spacing: 15.h,
                 children: [
-                  Text(
-                    'Netto Bulan Ini',
-                    style: AppTextStyle.textBodyStyle(),
-                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Netto',
+                        style: AppTextStyle.textBodyStyle(),
+                      ),
+                      AppTextButton(
+                      onPressed: () {
+                        SmartDialog.show(builder: (context) {
+                          return AppDialog(
+                              content: SizedBox(
+                                  width: 100,
+                                  height: MediaQuery.of(context).size.height*0.5,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Obx(()=> AppCalendarRange(
+                                        rangeStart: controller.nettoPerDayStartDate.value,
+                                        rangeEnd: controller.nettoPerDayEndDate.value,
+                                        focusedDay: DateTime.now(),
+                                        onRangeSelected: (DateTime? start, DateTime? end) {
+                                          controller.nettoPerDayStartDate.value = start;
+                                          controller.nettoPerDayEndDate.value = end;
+                                        },
+                                      )),
+                                    ])));
+                        });
+                      },
+                      child: Text("dd/mm/yyyy"))
+                  ],),
                   Obx(() => controller.dataNetPerMonthValue.isNotEmpty
                       ? AspectRatio(
                           aspectRatio: 3,

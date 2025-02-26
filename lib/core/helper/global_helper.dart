@@ -27,6 +27,10 @@ int unFormatThousands(String strNumber){
   }
 }
 
+String formatToDDMMYYYY(DateTime dateTime){
+  return DateFormat('dd-MM-yyyy').format(dateTime);
+}
+
 String getPercentage(int of, int from, {int decimalPoint=2}) {
   if (from == 0) return "0.00%";
   double percentage = (of / from) * 100;
