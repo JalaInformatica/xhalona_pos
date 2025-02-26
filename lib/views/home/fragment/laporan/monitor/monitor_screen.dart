@@ -15,6 +15,7 @@ import 'package:xhalona_pos/widgets/app_checkbox.dart';
 import 'package:xhalona_pos/widgets/app_typeahead.dart';
 import 'package:xhalona_pos/widgets/app_pdf_viewer.dart';
 import 'package:xhalona_pos/widgets/app_text_field.dart';
+import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:xhalona_pos/core/helper/global_helper.dart';
 import 'package:xhalona_pos/widgets/app_normal_button.dart';
@@ -77,7 +78,7 @@ class MonitorScreen extends StatelessWidget {
                           ],
                         )),
                     Obx(() => MonitorTable(
-                      isLoading: controller.isLoading.value,
+                        isLoading: controller.isLoading.value,
                         skippedRowIds: controller.formatId,
                         titles: [
                           MonitorTableTitle(value: "Tanggal "),
@@ -86,18 +87,51 @@ class MonitorScreen extends StatelessWidget {
                           MonitorTableTitle(value: "Customer"),
                           MonitorTableTitle(value: "Produk"),
                           MonitorTableTitle(value: "Kategori "),
-                          MonitorTableTitle(value: "Qty ", textAlign: TextAlign.end,),
-                          MonitorTableTitle(value: "Harga", textAlign: TextAlign.end,),
-                          MonitorTableTitle(value: "Total", textAlign: TextAlign.end,),
-                          MonitorTableTitle(value: "Diskon", textAlign: TextAlign.end,),
-                          MonitorTableTitle(value: "Tagihan ", textAlign: TextAlign.end,),
+                          MonitorTableTitle(
+                            value: "Qty ",
+                            textAlign: TextAlign.end,
+                          ),
+                          MonitorTableTitle(
+                            value: "Harga",
+                            textAlign: TextAlign.end,
+                          ),
+                          MonitorTableTitle(
+                            value: "Total",
+                            textAlign: TextAlign.end,
+                          ),
+                          MonitorTableTitle(
+                            value: "Diskon",
+                            textAlign: TextAlign.end,
+                          ),
+                          MonitorTableTitle(
+                            value: "Tagihan ",
+                            textAlign: TextAlign.end,
+                          ),
                           MonitorTableTitle(value: "Metode Bayar "),
-                          MonitorTableTitle(value: "Komp/Vch", textAlign: TextAlign.end,),
-                          MonitorTableTitle(value: "Penerimaan", textAlign: TextAlign.end,),
-                          MonitorTableTitle(value: "Cash", textAlign: TextAlign.end,),
-                          MonitorTableTitle(value: "Trf/Qris ", textAlign: TextAlign.end,),
-                          MonitorTableTitle(value: "Hutang ", textAlign: TextAlign.end,),
-                          MonitorTableTitle(value: "Titipan", textAlign: TextAlign.end,),
+                          MonitorTableTitle(
+                            value: "Komp/Vch",
+                            textAlign: TextAlign.end,
+                          ),
+                          MonitorTableTitle(
+                            value: "Penerimaan",
+                            textAlign: TextAlign.end,
+                          ),
+                          MonitorTableTitle(
+                            value: "Cash",
+                            textAlign: TextAlign.end,
+                          ),
+                          MonitorTableTitle(
+                            value: "Trf/Qris ",
+                            textAlign: TextAlign.end,
+                          ),
+                          MonitorTableTitle(
+                            value: "Hutang ",
+                            textAlign: TextAlign.end,
+                          ),
+                          MonitorTableTitle(
+                            value: "Titipan",
+                            textAlign: TextAlign.end,
+                          ),
                           MonitorTableTitle(value: "Terapis"),
                         ],
                         data:
@@ -105,13 +139,14 @@ class MonitorScreen extends StatelessWidget {
                   ])),
           Obx(() => controller.showFilters.value
               ? SingleChildScrollView(
-                child: Column(children: [
+                  child: Column(children: [
                   Container(
                     padding: EdgeInsets.all(15),
                     decoration: BoxDecoration(
-                      color: AppColor.whiteColor,
-                      border: Border(bottom: BorderSide(color: AppColor.primaryColor, width: 3.h))
-                    ),
+                        color: AppColor.whiteColor,
+                        border: Border(
+                            bottom: BorderSide(
+                                color: AppColor.primaryColor, width: 3.h))),
                     child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -592,14 +627,13 @@ class MonitorScreen extends StatelessWidget {
                         ]),
                   ),
                   AppIconButton(
-                    shape: CircleBorder(),
-                    backgroundColor: AppColor.grey500,
-                    foregroundColor: AppColor.whiteColor,
-                    onPressed: (){
-                      controller.showFilters.value = false;
-                    }, 
-                    icon: Icon(Icons.close_rounded)
-                  )
+                      shape: CircleBorder(),
+                      backgroundColor: AppColor.grey500,
+                      foregroundColor: AppColor.whiteColor,
+                      onPressed: () {
+                        controller.showFilters.value = false;
+                      },
+                      icon: Icon(Icons.close_rounded))
                 ]))
               : SizedBox.shrink())
         ],
