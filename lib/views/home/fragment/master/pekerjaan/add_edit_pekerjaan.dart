@@ -4,6 +4,7 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/pekerjaan.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
+import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 import 'package:xhalona_pos/repositories/pekerjaan/pekerjaan_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/pekerjaan/pekerjaan_controller.dart';
 
@@ -95,14 +96,34 @@ class _AddEditPekerjaanState extends State<AddEditPekerjaan> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Field NIK
-                      buildTextField("Kode Pekerjaan",
-                          "Masukkan nama Pekerjaan", _kdPekerjaanController),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _kdPekerjaanController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Kode Pekerjaan harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Kode Pekerjaan",
+                        inputAction: TextInputAction.next,
+                      ),
                       SizedBox(height: 16),
 
                       // Field Nama
-                      buildTextField("Nama Pekerjaan",
-                          "Masukkan nama Pekerjaan", _namePekerjaanController),
-                      SizedBox(height: 32),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _namePekerjaanController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Nama Pekerjaan harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Nama Pekerjaan",
+                        inputAction: TextInputAction.next,
+                      ),
+                      SizedBox(height: 20),
 
                       // Action Buttons
                       Row(

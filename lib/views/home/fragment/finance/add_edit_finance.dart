@@ -281,8 +281,7 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                                   });
                                 },
                                 updateFilterValue: (newValue) async {
-                                  await controllerKar
-                                      .updateFilterValue(newValue);
+                                  await controllerKar.updateTypeValue(newValue);
                                   return controllerKar.rekeningHeader;
                                 },
                                 displayText: (akun) => akun.namaAc,
@@ -372,8 +371,7 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                                 },
                                 controller: _kustomerController,
                                 updateFilterValue: (newValue) async {
-                                  await controllerKus
-                                      .updateFilterValue(newValue);
+                                  await controllerKus.updateTypeValue(newValue);
                                   return controllerKus.kustomerHeader;
                                 },
                                 displayText: (akun) => akun.suplierName,

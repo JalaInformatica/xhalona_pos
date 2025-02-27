@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/varian.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
+import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 import 'package:xhalona_pos/repositories/varian/varian_repositorty.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/m_all/mAll_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/varian/varian_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/varian/master_varian_screen.dart';
-
 
 // ignore: must_be_immutable
 class AddEditVarian extends StatefulWidget {
@@ -95,9 +95,19 @@ class _AddEditVarianState extends State<AddEditVarian> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Field Nama
-                      buildTextField("Sub Varian", "Masukkan Sub Varian",
-                          _nameVarianController),
-                      SizedBox(height: 32),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _nameVarianController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Sub Varian harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Sub Varian",
+                        inputAction: TextInputAction.next,
+                      ),
+                      SizedBox(height: 20),
 
                       // Action Buttons
                       Row(

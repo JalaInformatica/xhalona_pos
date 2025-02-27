@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/kategori.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
+import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 import 'package:xhalona_pos/repositories/kategori_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/kategori/kategori_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/kategori/master_kategori_screen.dart';
@@ -96,15 +97,25 @@ class _AddEditKategoriState extends State<AddEditKategori> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Field Nama
-                      buildTextField("Nama Kategori", "Masukkan nama Kategori",
-                          _nameKategoriController),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _nameKategoriController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Nama kategori harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Nama kategori",
+                        inputAction: TextInputAction.next,
+                      ),
                       SizedBox(height: 16),
 
                       // Field Aktif/Non-Aktif
                       SwitchListTile(
                         title: Text("Status Aktif"),
                         subtitle: Text(
-                            "Tentukan apakah karyawan saat ini aktif atau tidak aktif"),
+                            "Tentukan apakah kategori saat ini aktif atau tidak aktif"),
                         value: _isActive,
                         onChanged: (value) {
                           setState(() {
@@ -112,7 +123,7 @@ class _AddEditKategoriState extends State<AddEditKategori> {
                           });
                         },
                       ),
-                      SizedBox(height: 32),
+                      SizedBox(height: 10),
 
                       // Action Buttons
                       Row(

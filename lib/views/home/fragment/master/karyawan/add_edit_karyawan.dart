@@ -1,10 +1,16 @@
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/models/dao/karyawan.dart';
+import 'package:xhalona_pos/widgets/app_calendar.dart';
 import 'package:xhalona_pos/models/dao/departemen.dart';
+import 'package:xhalona_pos/widgets/app_typeahead.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
+import 'package:xhalona_pos/widgets/app_text_form_field.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/repositories/karyawan/karyawan_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/karyawan_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/departemen_controller.dart';
@@ -34,12 +40,11 @@ class _AddEditKaryawanState extends State<AddEditKaryawan> {
   final _addressController = TextEditingController();
   final _bonusController = TextEditingController();
   final _targetController = TextEditingController();
+  final _departmentController = TextEditingController();
   String? _gender;
   String? _department;
   bool _isActive = true; // Status Aktif/Non-Aktif
   bool _isLoading = true;
-
-  final List<String> genders = ['Laki-laki', 'Perempuan'];
 
   @override
   void initState() {
@@ -49,10 +54,13 @@ class _AddEditKaryawanState extends State<AddEditKaryawan> {
       // Inisialisasi data dari karyawan jika tersedia
       _nikController.text = widget.karyawan!.empId;
       _nameController.text = widget.karyawan!.fullName;
-      _joinDateController.text = widget.karyawan!.dateIn.split("T").first;
+      _departmentController.text = widget.karyawan!.kd_dept!;
+      _joinDateController.text = DateFormat('dd-MM-yyyy')
+          .format(DateTime.parse(widget.karyawan!.dateIn));
       _bpjsKesController.text = widget.karyawan!.bpjsNo;
       _bpjsKetController.text = widget.karyawan!.bpjsTk!;
-      _birthDateController.text = widget.karyawan!.birthDate!.split("T").first;
+      _birthDateController.text = DateFormat('dd-MM-yyyy')
+          .format(DateTime.parse(widget.karyawan!.birthDate!));
       _birthPlaceController.text = widget.karyawan!.birthPlace!;
       _addressController.text = widget.karyawan!.alamat!;
       _bonusController.text = widget.karyawan!.bonusAmount!.toString();
@@ -71,17 +79,17 @@ class _AddEditKaryawanState extends State<AddEditKaryawan> {
 
   @override
   Widget build(BuildContext context) {
-    final List<DepartemenDAO> departments = controller.departemenHeader;
-
     void handleAddEditKaryawan() async {
       if (_formKey.currentState!.validate()) {
         String result = await _karyawanRepository.addEditKaryawan(
           empId: _nikController.text,
           fullName: _nameController.text,
-          dateIn: _joinDateController.text,
+          dateIn: DateFormat('yyyy-MM-dd')
+              .format(DateFormat('dd-MM-yyyy').parse(_joinDateController.text)),
           bpjsNo: _bpjsKesController.text,
           bpjsTk: _bpjsKetController.text,
-          birthDate: _birthDateController.text,
+          birthDate: DateFormat('yyyy-MM-dd').format(
+              DateFormat('dd-MM-yyyy').parse(_birthDateController.text)),
           birthPlace: _birthPlaceController.text,
           alamat: _addressController.text,
           bonusAmount: _bonusController.text,
@@ -136,71 +144,329 @@ class _AddEditKaryawanState extends State<AddEditKaryawan> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Field NIK
-                      buildTextField(
-                          "NIK", "Masukkan NIK karyawan", _nikController),
-                      SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: AppTextFormField(
+                              context: context,
+                              textEditingController: _nikController,
+                              validator: (value) {
+                                if (value == '') {
+                                  return "NIK harus diisi!";
+                                }
+                                return null;
+                              },
+                              labelText: "NIK",
+                              inputAction: TextInputAction.next,
+                            ),
+                          ),
+                          SizedBox(width: 16),
 
-                      // Field Nama
-                      buildTextField(
-                          "Nama", "Masukkan nama karyawan", _nameController),
+                          // Field Nama
+                          Expanded(
+                            child: AppTextFormField(
+                              context: context,
+                              textEditingController: _nameController,
+                              validator: (value) {
+                                if (value == '') {
+                                  return "Nama harus diisi!";
+                                }
+                                return null;
+                              },
+                              labelText: "Nama",
+                              inputAction: TextInputAction.next,
+                            ),
+                          ),
+                        ],
+                      ),
+
                       SizedBox(height: 16),
 
                       // Field Tanggal Masuk
-                      buildDateField("Tanggal Masuk", _joinDateController),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _joinDateController,
+                        readOnly: true,
+                        icon: Icon(Icons.calendar_today),
+                        onTap: () {
+                          SmartDialog.show(builder: (context) {
+                            return AppDialog(
+                                content: SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.5,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.5,
+                                    child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          AppCalendar(
+                                            focusedDay: _joinDateController
+                                                    .text.isNotEmpty
+                                                ? DateFormat("dd-MM-yyyy")
+                                                    .parse(_joinDateController
+                                                        .text)
+                                                : DateTime.now(),
+                                            onDaySelected: (selectedDay, _) {
+                                              setState(() {
+                                                _joinDateController.text =
+                                                    DateFormat('dd-MM-yyyy')
+                                                        .format(selectedDay);
+                                                SmartDialog.dismiss();
+                                              });
+                                            },
+                                          ),
+                                        ])));
+                          });
+                        },
+                        labelText: "Tanggal Masuk",
+                        style: AppTextStyle.textBodyStyle(),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Tanggal Masuk tidak boleh kosong';
+                          }
+                          return null;
+                        },
+                      ),
                       SizedBox(height: 16),
 
                       // Field BPJS Kesehatan
-                      buildTextField("BPJS Kesehatan",
-                          "Masukkan nomor BPJS Kesehatan", _bpjsKesController),
-                      SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: AppTextFormField(
+                              context: context,
+                              textEditingController: _bpjsKesController,
+                              validator: (value) {
+                                if (value == '') {
+                                  return "BPJS Kesehatan harus diisi!";
+                                }
+                                return null;
+                              },
+                              labelText: "BPJS Kesehatan",
+                              inputAction: TextInputAction.next,
+                            ),
+                          ),
+                          SizedBox(width: 16),
 
-                      // Field BPJS Ketenagakerjaan
-                      buildTextField(
-                          "BPJS Ketenagakerjaan",
-                          "Masukkan nomor BPJS Ketenagakerjaan",
-                          _bpjsKetController),
-                      SizedBox(height: 16),
+                          // Field BPJS Ketenagakerjaan
+                          Expanded(
+                            child: AppTextFormField(
+                              context: context,
+                              textEditingController: _bpjsKetController,
+                              validator: (value) {
+                                if (value == '') {
+                                  return "BPJS Ketenagakerjaan harus diisi!";
+                                }
+                                return null;
+                              },
+                              labelText: "BPJS Ketenagakerjaan",
+                              inputAction: TextInputAction.next,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10),
 
                       // Field Jenis Kelamin
-                      buildDropdownFieldJK("Jenis Kelamin", genders, (value) {
-                        setState(() {
-                          _gender = value;
-                        });
-                      }),
-                      SizedBox(height: 16),
+                      Text(
+                        'Jenis Kelamin',
+                        style: AppTextStyle.textBodyStyle(),
+                      ),
 
-                      // Field Tanggal Lahir
-                      buildDateField("Tanggal Lahir", _birthDateController),
-                      SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                              child: RadioListTile(
+                                  title: Text('Laki-Laki',
+                                      style: AppTextStyle.textBodyStyle()),
+                                  value: 'Laki-Laki',
+                                  contentPadding: EdgeInsets.all(0),
+                                  dense: true,
+                                  visualDensity: VisualDensity.compact,
+                                  materialTapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                  groupValue: _gender,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _gender = value.toString();
+                                    });
+                                  })),
+                          Expanded(
+                              child: RadioListTile(
+                                  title: Text('Perempuan',
+                                      style: AppTextStyle.textBodyStyle()),
+                                  value: 'Perempuan',
+                                  contentPadding: EdgeInsets.all(0),
+                                  dense: true,
+                                  visualDensity: VisualDensity.compact,
+                                  materialTapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                  groupValue: _gender,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _gender = value.toString();
+                                    });
+                                  })),
+                        ],
+                      ),
+                      SizedBox(height: 5),
 
-                      buildTextField("Tempat Lahir", "Masukkan tempat lahir",
-                          _birthPlaceController),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: AppTextFormField(
+                              context: context,
+                              textEditingController: _birthPlaceController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Tempat Lahir harus diisi!";
+                                }
+                                return null;
+                              },
+                              labelText: "Tempat Lahir",
+                              inputAction: TextInputAction.next,
+                            ),
+                          ),
+                          SizedBox(width: 16),
+                          Expanded(
+                            child: AppTextFormField(
+                              context: context,
+                              textEditingController: _birthDateController,
+                              readOnly: true,
+                              icon: Icon(Icons.calendar_today),
+                              onTap: () {
+                                SmartDialog.show(builder: (context) {
+                                  return AppDialog(
+                                    content: SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.5,
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.5,
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          AppCalendar(
+                                            focusedDay: _birthDateController
+                                                    .text.isNotEmpty
+                                                ? DateFormat("dd-MM-yyyy")
+                                                    .parse(_birthDateController
+                                                        .text)
+                                                : DateTime.now(),
+                                            onDaySelected: (selectedDay, _) {
+                                              setState(() {
+                                                _birthDateController.text =
+                                                    DateFormat('dd-MM-yyyy')
+                                                        .format(selectedDay);
+                                                SmartDialog.dismiss();
+                                              });
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                });
+                              },
+                              labelText: "Tanggal Lahir",
+                              style: AppTextStyle.textBodyStyle(),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Tanggal Lahir tidak boleh kosong';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          // Spasi antar field
+                        ],
+                      ),
+
                       SizedBox(height: 16),
 
                       // Field Alamat
-                      buildTextField("Alamat", "Masukkan alamat karyawan",
-                          _addressController),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _addressController,
+                        maxLines: 2,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Alamat harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Alamat",
+                        inputAction: TextInputAction.next,
+                      ),
                       SizedBox(height: 16),
 
                       // Field Bagian
-                      buildDropdownField("Bagian", departments, (value) {
-                        setState(() {
-                          _department = value;
-                        });
-                      }),
-                      SizedBox(height: 16),
+                      Visibility(
+                          visible: true,
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: 10.h),
+                            child: AppTypeahead<DepartemenDAO>(
+                                label: "Bagian",
+                                controller: _departmentController,
+                                onSelected: (selectedPartId) {
+                                  setState(() {
+                                    _department = selectedPartId ?? "";
+                                    _departmentController.text =
+                                        selectedPartId ?? "";
+                                    controller.fetchProducts();
+                                  });
+                                },
+                                updateFilterValue: (newValue) async {
+                                  await controller.updateTypeValue(newValue);
+                                  return controller.departemenHeader;
+                                },
+                                displayText: (akun) => akun.namaDept,
+                                getId: (akun) => akun.kdDept,
+                                onClear: (forceClear) {
+                                  if (forceClear ||
+                                      _departmentController.text !=
+                                          _department) {}
+                                }),
+                          )),
+                      SizedBox(height: 5),
 
                       // Field Bonus
-                      buildTextField(
-                          "Bonus", "Masukkan bonus karyawan", _bonusController,
-                          keyboardType: TextInputType.number),
-                      SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: AppTextFormField(
+                                context: context,
+                                textEditingController: _bonusController,
+                                validator: (value) {
+                                  if (value == '') {
+                                    return "Bonus harus diisi!";
+                                  }
+                                  return null;
+                                },
+                                labelText: "Bonus",
+                                inputAction: TextInputAction.next,
+                                keyboardType: TextInputType.number),
+                          ),
+                          SizedBox(width: 16),
 
-                      // Field Target
-                      buildTextField("Target", "Masukkan target karyawan",
-                          _targetController,
-                          keyboardType: TextInputType.number),
-                      SizedBox(height: 16),
+                          // Field Target
+                          Expanded(
+                            child: AppTextFormField(
+                                context: context,
+                                textEditingController: _targetController,
+                                validator: (value) {
+                                  if (value == '') {
+                                    return "Target harus diisi!";
+                                  }
+                                  return null;
+                                },
+                                labelText: "Target",
+                                inputAction: TextInputAction.next,
+                                keyboardType: TextInputType.number),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 5),
 
                       // Field Aktif/Non-Aktif
                       SwitchListTile(

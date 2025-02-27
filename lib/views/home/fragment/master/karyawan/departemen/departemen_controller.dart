@@ -36,7 +36,12 @@ class DepartemenController extends GetxController {
   //   }
   // }
 
-  void updateFilterValue(String newFilterValue) {
+  Future<void> updateTypeValue(String newFilterValue) async {
+    departemenHeader.value = await _deptRepository.getDepartemen(
+        pageNo: 1, pageRow: 5, filterValue: newFilterValue);
+  }
+
+  Future<void> updateFilterValue(String newFilterValue) async {
     filterValue.value = newFilterValue;
     pageNo.value = 1;
     pageRow.value = 10;

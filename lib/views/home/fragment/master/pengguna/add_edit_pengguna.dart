@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/pengguna.dart';
 import 'package:xhalona_pos/models/dao/departemen.dart';
+import 'package:xhalona_pos/widgets/app_typeahead.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
+import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 import 'package:xhalona_pos/repositories/pengguna/pengguna_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/pengguna/pengguna_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/departemen_controller.dart';
@@ -27,11 +29,28 @@ class _AddEditPenggunaState extends State<AddEditPengguna> {
   final _usernameController = TextEditingController();
   final _passController = TextEditingController();
   final _emailController = TextEditingController();
+  final _departmentController = TextEditingController();
+  final _levelController = TextEditingController();
   bool _isLoading = true;
   bool _isActive = true;
+  bool isScurePass = true;
   String? _role;
   String? _level;
   String? _department;
+
+  Widget tooglePass() {
+    return IconButton(
+      onPressed: () {
+        setState(() {
+          isScurePass = !isScurePass;
+        });
+      },
+      icon: isScurePass
+          ? const Icon(Icons.visibility)
+          : const Icon(Icons.visibility_off),
+      color: Colors.grey,
+    );
+  }
 
   final List<String> role = ['Admin', 'Finance', 'Kasir', 'Owner'];
   final List<Map<String, dynamic>> level = [
@@ -48,7 +67,9 @@ class _AddEditPenggunaState extends State<AddEditPengguna> {
     if (widget.pengguna != null) {
       // Inisialisasi data dari karyawan jika tersedia
       _usernameController.text = widget.pengguna!.userName;
+      _departmentController.text = widget.pengguna!.deptId!;
       _emailController.text = widget.pengguna!.emailAddress;
+      _levelController.text = widget.pengguna!.levelId.toString();
     }
   }
 
@@ -60,12 +81,11 @@ class _AddEditPenggunaState extends State<AddEditPengguna> {
 
   @override
   Widget build(BuildContext context) {
-    final List<DepartemenDAO> departments = controllerDept.departemenHeader;
     void handleAddEditPengguna() async {
       if (_formKey.currentState!.validate()) {
         String result = await _penggunaRepository.addEditPengguna(
             memberId: _usernameController.text,
-            deptId: _department,
+            deptId: _departmentController.text,
             password: _passController.text,
             levelId: _level,
             email: _emailController.text,
@@ -117,31 +137,117 @@ class _AddEditPenggunaState extends State<AddEditPengguna> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Field NIK
-                      buildTextField(
-                          "Username", "Masukkan username", _usernameController),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _usernameController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Username harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Username",
+                        inputAction: TextInputAction.next,
+                      ),
                       SizedBox(height: 16),
 
-                      buildDropdownField("Bagian", departments, (value) {
-                        setState(() {
-                          _department = value;
-                        });
-                      }),
+                      Visibility(
+                          visible: true,
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: 10.h),
+                            child: AppTypeahead<DepartemenDAO>(
+                                label: "Bagian",
+                                controller: _departmentController,
+                                onSelected: (selectedPartId) {
+                                  setState(() {
+                                    _department = selectedPartId ?? "";
+                                    _departmentController.text =
+                                        selectedPartId ?? "";
+                                    controller.fetchProducts();
+                                  });
+                                },
+                                updateFilterValue: (newValue) async {
+                                  await controllerDept
+                                      .updateTypeValue(newValue);
+                                  return controllerDept.departemenHeader;
+                                },
+                                displayText: (akun) => akun.namaDept,
+                                getId: (akun) => akun.kdDept,
+                                onClear: (forceClear) {
+                                  if (forceClear ||
+                                      _departmentController.text !=
+                                          _department) {}
+                                }),
+                          )),
                       SizedBox(height: 16),
 
                       // Field Nama
-                      buildTextField(
-                          "Password", "Masukkan password", _passController),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _passController,
+                        icon: tooglePass(),
+                        isScurePass: isScurePass,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Password harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Password",
+                        inputAction: TextInputAction.next,
+                      ),
                       SizedBox(height: 16),
 
-                      buildDropdownFieldLevel("Level User", level, (value) {
-                        setState(() {
-                          _level = value;
-                        });
-                      }),
+                      Visibility(
+                        visible: true,
+                        child: Padding(
+                          padding: EdgeInsets.only(bottom: 10.h),
+                          child: AppTypeahead<Map<String, dynamic>>(
+                            label: "Level",
+                            controller: _levelController,
+                            onSelected: (selectedItem) {
+                              setState(() {
+                                _level = selectedItem ?? "";
+                                _levelController.text = selectedItem ?? "";
+                                controller.fetchProducts();
+                              });
+                            },
+                            updateFilterValue: (newValue) async {
+                              return level
+                                  .where((item) => item['label']
+                                      .toLowerCase()
+                                      .contains(newValue.toLowerCase()))
+                                  .toList();
+                            },
+                            displayText: (item) => item['label'],
+                            getId: (item) => item['id'],
+                            onClear: (forceClear) {
+                              if (forceClear ||
+                                  _levelController.text != _level) {
+                                setState(() {
+                                  _level = "";
+                                  _levelController.clear();
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+
                       SizedBox(height: 16),
 
-                      buildTextField(
-                          "Email", "Masukkan Email", _emailController),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _emailController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Email harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Email",
+                        inputAction: TextInputAction.next,
+                      ),
                       SizedBox(height: 16),
 
                       buildDropdownFieldJK("Role User", role, (value) {

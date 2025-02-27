@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/models/dao/karyawan.dart';
-import 'package:xhalona_pos/widgets/app_bottombar.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/repositories/karyawan/karyawan_repository.dart';
@@ -148,7 +148,8 @@ class MasterKaryawanScreen extends StatelessWidget {
                             },
                             showOptionsOnTap: true),
                         AppTableCell(
-                            value: karyawan.dateIn.split("T").first,
+                            value: DateFormat('dd-MM-yyyy')
+                                .format(DateTime.parse(karyawan.dateIn)),
                             index: i,
                             onEdit: () {
                               Navigator.of(context).pushAndRemoveUntil(
@@ -213,7 +214,8 @@ class MasterKaryawanScreen extends StatelessWidget {
                             },
                             showOptionsOnTap: true),
                         AppTableCell(
-                            value: karyawan.birthDate!.split("T").first,
+                            value: DateFormat('dd-MM-yyyy')
+                                .format(DateTime.parse(karyawan.birthDate!)),
                             index: i,
                             onEdit: () {
                               Navigator.of(context).pushAndRemoveUntil(

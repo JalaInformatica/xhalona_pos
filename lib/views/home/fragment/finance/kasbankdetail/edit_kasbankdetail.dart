@@ -159,8 +159,7 @@ class _AddEditKasBankDetailState extends State<AddEditKasBankDetail> {
                                 },
                                 controller: _kasbankdetailController,
                                 updateFilterValue: (newValue) async {
-                                  await controllerKus
-                                      .updateFilterValue(newValue);
+                                  await controllerKus.updateTypeValue(newValue);
                                   return controllerKus.coaHeader;
                                 },
                                 displayText: (akun) => akun.namaRekening,

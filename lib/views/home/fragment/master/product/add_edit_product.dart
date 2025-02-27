@@ -6,12 +6,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/product.dart';
 import 'package:xhalona_pos/models/dao/kategori.dart';
+import 'package:xhalona_pos/widgets/app_typeahead.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:xhalona_pos/widgets/full_screen_image.dart';
 import 'package:xhalona_pos/services/user/user_service.dart';
+import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/services/api_service.dart' as api;
 import 'package:cached_network_image/cached_network_image.dart';
@@ -45,6 +46,8 @@ class _AddEditProductState extends State<AddEditProduct> {
   final productPrice = TextEditingController();
   final productDiscountPercentage = TextEditingController();
   final productDiscount = TextEditingController();
+  final _kategoriController = TextEditingController();
+  final _kategoriGlobalController = TextEditingController();
   String? _kategori;
   String? _kategoriGlobal;
   final List<String> genders = ['PCS', 'JASA', 'BUAH'];
@@ -162,34 +165,116 @@ class _AddEditProductState extends State<AddEditProduct> {
                           'Informasi Produk',
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
-                        SizedBox(height: 16.0),
-                        buildTypeAheadField(
-                            "Kategori", controller.kategoriHeader, (value) {
-                          setState(() {
-                            _kategori = value;
-                          });
-                        }, controller.updateFilterValue, api.companyId),
-                        SizedBox(height: 16),
-                        buildTypeAheadField(
-                            "Kategori Global", controller.kategoriHeader,
-                            (value) {
-                          setState(() {
-                            _kategoriGlobal = value;
-                          });
-                        }, controller.updateFilterValue, 'All'),
-                        SizedBox(height: 16),
-                        buildTextField(
-                            "Nama Produk", "Masukkan Nama Produk", productName),
-                        SizedBox(height: 16.0),
-                        buildTextField(
-                            "Deskripsi", "Masukkan input", productDescription,
-                            maxline: 3),
-                        SizedBox(height: 16.0),
+                        SizedBox(height: 5.0),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Visibility(
+                                  visible: true,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(bottom: 10.h),
+                                    child: AppTypeahead<KategoriDAO>(
+                                        label: "Kategori",
+                                        controller: _kategoriController,
+                                        onSelected: (selectedPartId) {
+                                          setState(() {
+                                            _kategori = selectedPartId ?? "";
+                                            _kategoriController.text =
+                                                selectedPartId ?? "";
+                                            controller.fetchProducts();
+                                          });
+                                        },
+                                        updateFilterValue: (newValue) async {
+                                          await controller.updateTypeValue(
+                                              newValue, api.companyId);
+                                          return controller.kategoriHeader;
+                                        },
+                                        displayText: (akun) => akun.ketAnalisa,
+                                        getId: (akun) => akun.analisaId,
+                                        onClear: (forceClear) {
+                                          if (forceClear ||
+                                              _kategoriController.text !=
+                                                  _kategori) {}
+                                        }),
+                                  )),
+                            ),
+                            SizedBox(width: 16),
+                            Expanded(
+                              child: Visibility(
+                                  visible: true,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(bottom: 10.h),
+                                    child: AppTypeahead<KategoriDAO>(
+                                        label: "Kategori",
+                                        controller: _kategoriGlobalController,
+                                        onSelected: (selectedPartId) {
+                                          setState(() {
+                                            _kategoriGlobal =
+                                                selectedPartId ?? "";
+                                            _kategoriGlobalController.text =
+                                                selectedPartId ?? "";
+                                            controller.fetchProducts();
+                                          });
+                                        },
+                                        updateFilterValue: (newValue) async {
+                                          await controller.updateTypeValue(
+                                              newValue, 'All');
+                                          return controller.kategoriHeader;
+                                        },
+                                        displayText: (akun) => akun.ketAnalisa,
+                                        getId: (akun) => akun.analisaId,
+                                        onClear: (forceClear) {
+                                          if (forceClear ||
+                                              _kategoriGlobalController.text !=
+                                                  _kategoriGlobal) {}
+                                        }),
+                                  )),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 5),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AppTextFormField(
+                                  context: context,
+                                  textEditingController: productName,
+                                  validator: (value) {
+                                    if (value == '') {
+                                      return "Nama Produk harus diisi!";
+                                    }
+                                    return null;
+                                  },
+                                  labelText: "Nama Produk",
+                                  maxLines: 2,
+                                  inputAction: TextInputAction.next),
+                            ),
+                            SizedBox(width: 16),
+
+                            // Field Target
+                            Expanded(
+                              child: AppTextFormField(
+                                context: context,
+                                textEditingController: productDescription,
+                                validator: (value) {
+                                  if (value == '') {
+                                    return "Deskripsi harus diisi!";
+                                  }
+                                  return null;
+                                },
+                                labelText: "Deskripsi",
+                                inputAction: TextInputAction.next,
+                                maxLines: 2,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 5.0),
                         Text(
                           'Tambah Gambar',
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
-                        SizedBox(height: 8.0),
+                        SizedBox(height: 5.0),
                         Row(
                           children: [
                             masterButton(_showImageSourceSelector,
@@ -259,27 +344,74 @@ class _AddEditProductState extends State<AddEditProduct> {
                           'Satuan & Harga ',
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
-                        SizedBox(height: 16.0),
-                        buildDropdownFieldJK("Satuan", genders, (value) {
-                          setState(() {
-                            productUnit = value;
-                          });
-                        }),
-                        SizedBox(height: 16.0),
-                        buildTextField(
-                            "Harga Satuan", "Masukkan Harga", productPrice,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [CurrencyInputFormatter()]),
-                        SizedBox(height: 16.0),
-                        buildTextField("Diskon %", "Masukkan Diskon %",
-                            productDiscountPercentage,
-                            keyboardType: TextInputType.number),
-                        SizedBox(height: 16.0),
-                        buildTextField(
-                            "Diskon ", "Masukkan Diskon ", productDiscount,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [CurrencyInputFormatter()]),
-                        SizedBox(height: 16.0),
+                        SizedBox(height: 5.0),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: buildDropdownFieldJK("Satuan", genders,
+                                  (value) {
+                                setState(() {
+                                  productUnit = value;
+                                });
+                              }),
+                            ),
+                            SizedBox(width: 16.0),
+                            Expanded(
+                              child: AppTextFormField(
+                                  context: context,
+                                  textEditingController: productPrice,
+                                  validator: (value) {
+                                    if (value == '') {
+                                      return "Harga Satuan harus diisi!";
+                                    }
+                                    return null;
+                                  },
+                                  labelText: "Harga Satuan",
+                                  inputAction: TextInputAction.next,
+                                  inputFormatters: [CurrencyInputFormatter()],
+                                  keyboardType: TextInputType.number),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10.0),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AppTextFormField(
+                                  context: context,
+                                  textEditingController:
+                                      productDiscountPercentage,
+                                  validator: (value) {
+                                    if (value == '') {
+                                      return "Diskon % harus diisi!";
+                                    }
+                                    return null;
+                                  },
+                                  labelText: "Diskon %",
+                                  inputAction: TextInputAction.next,
+                                  keyboardType: TextInputType.number),
+                            ),
+                            SizedBox(width: 16),
+
+                            // Field Target
+                            Expanded(
+                              child: AppTextFormField(
+                                  context: context,
+                                  textEditingController: productDiscount,
+                                  validator: (value) {
+                                    if (value == '') {
+                                      return "Diskon harus diisi!";
+                                    }
+                                    return null;
+                                  },
+                                  labelText: "Diskon",
+                                  inputAction: TextInputAction.next,
+                                  inputFormatters: [CurrencyInputFormatter()],
+                                  keyboardType: TextInputType.number),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 1.0),
                         Text(
                           'Ubah Harga',
                           style: Theme.of(context).textTheme.bodyLarge,
@@ -411,72 +543,6 @@ class _AddEditProductState extends State<AddEditProduct> {
           ],
         );
       },
-    );
-  }
-
-  Widget buildTypeAheadField(
-      String label,
-      List<KategoriDAO> items,
-      ValueChanged<String?> onChanged,
-      void Function(String newFilterValue) updateFilterValue,
-      String company) {
-    TextEditingController controllerText = TextEditingController();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: AppTextStyle.textTitleStyle()),
-        SizedBox(height: 8),
-        TypeAheadField<KategoriDAO>(
-          suggestionsCallback: (pattern) async {
-            updateFilterValue(pattern); // Update filter
-            controller.updateFilterCompanyValue(company);
-            return items
-                .where((item) => item.ketAnalisa
-                    .toLowerCase()
-                    .contains(pattern.toLowerCase()))
-                .toList(); // Pencarian berdasarkan nama
-          },
-          builder: (context, textEditingController, focusNode) {
-            controllerText = textEditingController;
-
-            return TextField(
-              controller: controllerText,
-              focusNode: focusNode,
-              decoration: InputDecoration(
-                labelText: label,
-                labelStyle: TextStyle(color: AppColor.primaryColor),
-                hintText: 'Cari Kategori...',
-                hintStyle: TextStyle(color: AppColor.primaryColor),
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColor.primaryColor),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide:
-                      BorderSide(color: AppColor.primaryColor, width: 2.0),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColor.primaryColor),
-                ),
-              ),
-              onChanged: (value) {
-                // Jangan lakukan apa-apa saat mengetik, biarkan saat dipilih
-              },
-            );
-          },
-          itemBuilder: (context, KategoriDAO suggestion) {
-            return ListTile(
-              title: Text(suggestion.ketAnalisa
-                  .toString()), // Tampilkan ID sebagai info tambahan
-            );
-          },
-          onSelected: (KategoriDAO suggestion) {
-            controllerText.text = suggestion.ketAnalisa
-                .toString(); // Tampilkan nama produk di field
-            onChanged(suggestion.analisaId); // Simpan ID produk di _product
-          },
-        ),
-      ],
     );
   }
 }

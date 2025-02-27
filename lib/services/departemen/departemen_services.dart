@@ -19,8 +19,8 @@ class DepartemenServices {
         "SESSION_LOGIN_ID": api.sessionId,
         "FILTER_FIELD": "",
         "FILTER_VALUE": filterValue ?? '',
-        "PAGE_NO": pageNo ?? 1,
-        "PAGE_ROW": pageRow ?? 10,
+        "PAGE_NO": '$pageNo' ?? '1',
+        "PAGE_ROW": '$pageRow ' ?? '10',
         "SORT_ORDER_BY": "NAMADEPARTMENT",
         "SORT_ORDER_TYPE": "ASC",
       }
