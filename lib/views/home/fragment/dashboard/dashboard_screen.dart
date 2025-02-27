@@ -83,28 +83,28 @@ class DashboardScreen extends StatelessWidget {
                         style: AppTextStyle.textBodyStyle(),
                       ),
                       AppTextButton(
-                      onPressed: () {
-                        SmartDialog.show(builder: (context) {
-                          return AppDialog(
-                              content: SizedBox(
-                                  width: 100,
-                                  height: MediaQuery.of(context).size.height*0.5,
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Obx(()=> AppCalendarRange(
-                                        rangeStart: controller.nettoPerDayStartDate.value,
-                                        rangeEnd: controller.nettoPerDayEndDate.value,
-                                        focusedDay: DateTime.now(),
-                                        onRangeSelected: (DateTime? start, DateTime? end) {
-                                          controller.nettoPerDayStartDate.value = start;
-                                          controller.nettoPerDayEndDate.value = end;
-                                        },
-                                      )),
-                                    ])));
-                        });
-                      },
-                      child: Text("dd/mm/yyyy"))
+                        onPressed: () {
+                          SmartDialog.show(builder: (context) {
+                            return AppDialog(
+                                content: SizedBox(
+                                    width: 100,
+                                    height: MediaQuery.of(context).size.height*0.5,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Obx(()=> AppCalendarRange(
+                                          rangeStart: controller.nettoPerDayStartDate.value,
+                                          rangeEnd: controller.nettoPerDayEndDate.value,
+                                          focusedDay: DateTime.now(),
+                                          onRangeSelected: (DateTime? start, DateTime? end) {
+                                            controller.nettoPerDayStartDate.value = start;
+                                            controller.nettoPerDayEndDate.value = end;
+                                          },
+                                        )),
+                                      ])));
+                          });
+                        },
+                        child: Obx(()=> Text("${formatToDDMMYYYY(controller.nettoPerDayStartDate.value)} To ${formatToDDMMYYYY(controller.nettoPerDayEndDate.value)}")))
                   ],),
                   Obx(() => controller.dataNetPerMonthValue.isNotEmpty
                       ? AspectRatio(

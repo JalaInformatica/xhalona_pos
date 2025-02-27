@@ -65,6 +65,7 @@ dependencies:
   print_bluetooth_thermal: ^1.1.5
   esc_pos_utils: ^1.1.0
   image: ^3.3.0
+  pdf: ^3.8.4
   
 
 dev_dependencies:

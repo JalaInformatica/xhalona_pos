@@ -27,7 +27,10 @@ int unFormatThousands(String strNumber){
   }
 }
 
-String formatToDDMMYYYY(DateTime dateTime){
+String formatToDDMMYYYY(DateTime? dateTime){
+  if(dateTime==null){
+    return '';
+  }
   return DateFormat('dd-MM-yyyy').format(dateTime);
 }
 

@@ -11,6 +11,7 @@ class AppTextButton extends TextButton {
     super.key, 
     required VoidCallback? onPressed,
     required Widget child, 
+    IconData? icon,
     Color? backgroundColor,
     Color? borderColor,
     Color? foregroundColor,
@@ -22,16 +23,22 @@ class AppTextButton extends TextButton {
     OutlinedBorder? shape,
   }) : super(
         onPressed: !disabled? onPressed : null,
-        child: child,
+        child: icon==null? child : Row(
+          spacing: 5.w,
+          children: [
+            Icon(icon, color: !disabled? foregroundColor ?? AppColor.primaryColor : AppColor.grey400,),
+            child,
+          ],
+        ),
         style: TextButton.styleFrom(
-          foregroundColor: !disabled ? foregroundColor ?? AppColor.primaryColor : AppColor.blackColor,
-          backgroundColor: !disabled ? backgroundColor ?? Colors.white : AppColor.grey300,
+          foregroundColor: !disabled? foregroundColor ?? AppColor.primaryColor : AppColor.grey400,
+          backgroundColor: !disabled? backgroundColor ?? Colors.white : AppColor.grey200,
           visualDensity: size == AppTextButtonSize.small? VisualDensity.compact : VisualDensity.standard,
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           padding: padding,
           shape: shape ?? RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5),
-            side: BorderSide(color: disabled? AppColor.grey500 : borderColor ?? AppColor.primaryColor),
+            side: BorderSide(color: !disabled? borderColor ?? AppColor.primaryColor : AppColor.grey400),
           ),
           alignment: alignment
         ),

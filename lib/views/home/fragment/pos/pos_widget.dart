@@ -1,6 +1,9 @@
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:pdf/pdf.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/models/dao/transaction.dart';
 import 'package:xhalona_pos/widgets/app_image.dart';
 import 'package:xhalona_pos/models/dao/product.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
@@ -308,6 +311,25 @@ Widget transaction(
                           "Belum Ada Transaksi",
                           style: AppTextStyle.textSubtitleStyle(),
                         ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          spacing: 5.w,
+                          children: [
+                            AppTextButton(
+                              borderColor: AppColor.blueColor,
+                              onPressed: (){
+                                controller.newTransaction();
+                              },
+                              child: Text("Buat Baru", style: AppTextStyle.textSubtitleStyle(color: AppColor.blueColor),),
+                            ),
+                            Text("Atau", style: AppTextStyle.textBodyStyle()),
+                            AppTextButton(
+                              onPressed: (){
+                                controller.isOpenTransaksi.value=false;
+                              },
+                              child: Text("Pilih Produk", style: AppTextStyle.textSubtitleStyle()),
+                            ),
+                        ],)
                       ],
                     ))
                   : Column(
@@ -472,7 +494,7 @@ Widget transaction(
                                 padding: EdgeInsets.symmetric(horizontal: 8.w),
                                 borderColor: AppColor.blueColor,
                                 onPressed: () {
-                                  controller.newTransaction();
+                                  controller.resetTransaction();
                                 },
                                 child: Text(
                                   "Baru",
@@ -654,16 +676,14 @@ Widget transaction(
                                             (detail) =>
                                                 detail.employeeId.isEmpty),
                                     foregroundColor: AppColor.primaryColor,
-                                    onPressed: () {},
-                                    child: Row(
-                                      spacing: 5.w,
-                                      children: [
-                                        Icon(Icons.event_seat,
-                                            color: AppColor.primaryColor),
-                                        Text("Antrian",
+                                    onPressed: () async {
+                                      await controller.generateQueuePDF().then(
+                                        (pdf) => Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AppPDFViewer(pdfDocument: pdf,)))
+                                      );
+                                    },
+                                    icon: Icons.event_seat,
+                                    child: Text("Antrian",
                                             style: AppTextStyle.textBodyStyle())
-                                      ],
-                                    ),
                                   ),
                                   AppTextButton(
                                     disabled: controller.currentTransaction
@@ -680,15 +700,10 @@ Widget transaction(
                                                 ),
                                               ));
                                     },
-                                    child: Row(
-                                      spacing: 5.w,
-                                      children: [
-                                        Icon(Icons.document_scanner,
-                                            color: AppColor.primaryColor),
-                                        Text("Nota",
+                                    icon: Icons.document_scanner,
+                                    child: Text("Nota",
                                             style: AppTextStyle.textBodyStyle())
-                                      ],
-                                    ),
+                                    
                                   ),
                                 ],
                               )),
@@ -700,7 +715,7 @@ Widget transaction(
                                           .supplierId.isEmpty ||
                                       controller.currentTransactionDetail.any(
                                           (detail) =>
-                                              detail.employeeId.isEmpty),
+                                              detail.employeeId.isEmpty) || !controller.currentTransaction.value.isEditable,
                                   backgroundColor: AppColor.primaryColor,
                                   foregroundColor: AppColor.whiteColor,
                                   onPressed: onCheckoutClicked,

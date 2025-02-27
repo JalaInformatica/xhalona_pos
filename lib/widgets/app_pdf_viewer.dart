@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:esc_pos_utils/esc_pos_utils.dart';
+import 'package:flutter/services.dart';
+import 'package:pdf/pdf.dart' as pf;
 import 'package:pdfx/pdfx.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -13,11 +15,12 @@ import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:image/image.dart' as img;
 import 'dart:ui' as ui;
-
+import 'package:pdf/widgets.dart' as pw;
 class AppPDFViewer extends StatefulWidget {
-  final String pdfUrl;
-
-  const AppPDFViewer({Key? key, required this.pdfUrl}) : super(key: key);
+  final String? pdfUrl;
+  final pw.Document? pdfDocument;
+  
+  const AppPDFViewer({Key? key, this.pdfUrl, this.pdfDocument}) : super(key: key);
 
   @override
   _AppPDFViewerState createState() => _AppPDFViewerState();
@@ -32,7 +35,23 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
   @override
   void initState() {
     super.initState();
-    _fetchPdfBytes();
+    if(widget.pdfUrl!=null){
+      _fetchPdfBytes();
+    }
+    else if(widget.pdfDocument!=null){
+      gene();
+    } 
+  }
+
+  Future<void> gene()async{
+    pdfBytes = await widget.pdfDocument?.save();
+    PdfPageImage? pdfPageImage =
+    await getImage(); // await _convertPdfToImage();
+    if (pdfPageImage != null) {
+      imageBytes = pdfPageImage.bytes;
+      setState(() {});
+    }
+
   }
 
   Future<PdfPageImage?> getImage() async {
@@ -92,7 +111,7 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
 
   Future<void> _fetchPdfBytes() async {
     try {
-      final response = await http.get(Uri.parse(widget.pdfUrl));
+      final response = await http.get(Uri.parse(widget.pdfUrl!));
       if (response.statusCode == 200) {
         pdfBytes = Uint8List.fromList(response.bodyBytes);
         PdfPageImage? pdfPageImage =
@@ -109,45 +128,6 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
     }
   }
 
-  //   final tempDir = await getTemporaryDirectory();
-  // final pdfFile = File('${tempDir.path}/temp.pdf');
-  // await pdfFile.writeAsBytes(pdfBytes!);
-
-  // final document = await PdfDocument.openFile(pdfFile.path);
-  // final page = await document.getPage(1); // Get the first page
-
-  // final pageImage = await page.render(
-  //   width: 1080, // Higher resolution for better quality
-  //   height: (1080 * page.height / page.width).toDouble(), // Maintain aspect ratio
-  //   format: PdfPageImageFormat.png,
-  // );
-
-  // if (pageImage != null) {
-  //   setState(() {
-  //     imageBytes = pageImage.bytes;
-  //   });
-  // }
-
-  // await page.close();
-  // await document.close();
-
-  // Convert PDF to Image with Dynamic Page Size
-  // Future<void> _convertPdfToImage() async {
-  //   try {
-  //    final tempDir = await getTemporaryDirectory();
-  //    final pdfFile = File('${tempDir.path}/temp.pdf');
-  //    await pdfFile.writeAsBytes(pdfBytes!);
-
-  //    final document = await PdfDocument.openFile(pdfFile.path);
-  //    final page = await document.getPage(1);
-
-  //    final image = await page.render(
-  //     width: page.width, // Higher resolution for better quality
-  //     height: page.height, // Maintain aspect ratio
-  //     format: PdfPageImageFormat.jpeg,
-  //     backgroundColor: "#ffffff"
-  //   );
-  //   }
   Future<void> _savePdfToDevice() async {
     if (pdfBytes == null) {
       _showMessage("PDF is not loaded yet.");
@@ -222,18 +202,18 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
 
   Future<void> _print(BuildContext context) async {
     try {
-      bool isBluetoothConnected = await PrintBluetoothThermal.connectionStatus;
+      // bool isBluetoothConnected = await PrintBluetoothThermal.connectionStatus;
 
-      if (!isBluetoothConnected) {
-        _showMessage("Scanning for Bluetooth printers...");
-        await _connectPrinter(context);
-        isBluetoothConnected = await PrintBluetoothThermal.connectionStatus;
+      // if (!isBluetoothConnected) {
+      //   _showMessage("Scanning for Bluetooth printers...");
+      //   await _connectPrinter(context);
+      //   isBluetoothConnected = await PrintBluetoothThermal.connectionStatus;
 
-        if (!isBluetoothConnected) {
-          _showMessage("No printer connected.");
-          return;
-        }
-      }
+      //   if (!isBluetoothConnected) {
+      //     _showMessage("No printer connected.");
+      //     return;
+      //   }
+      // }
       List<int> bytes = [];
 
       final profile = await CapabilityProfile.load();
@@ -243,13 +223,14 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
         img.Image croppedImage = cropBottomWhiteSpace(image);
         bytes += generator.image(croppedImage);
         bytes += generator.cut();
-        final bool result = await PrintBluetoothThermal.writeBytes(bytes);
-        image = null;
-        if (result) {
-          _showMessage("Print successful.");
-        } else {
-          _showMessage("Print failed.");
-        }
+        _previewPrinting(context, croppedImage);
+        // final bool result = await PrintBluetoothThermal.writeBytes(bytes);
+        // image = null;
+        // if (result) {
+        //   _showMessage("Print successful.");
+        // } else {
+        //   _showMessage("Print failed.");
+        // }
       }
     } catch (e) {
       _showMessage("Printing error: $e");
@@ -306,7 +287,7 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColor.grey100,
       appBar: AppBar(
         backgroundColor: Colors.white,
         actions: [
@@ -327,7 +308,7 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
           ),
         ],
       ),
-      body: imageBytes == null
+      body: !(imageBytes != null)
           ? Center(
               child: AppDialog(
                   shadowColor: AppColor.blackColor,
@@ -342,6 +323,7 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
                     )
                   ])))
           : PDFView(
+              backgroundColor: AppColor.grey100,
               pdfData: pdfBytes,
               enableSwipe: true,
               swipeHorizontal: false,
