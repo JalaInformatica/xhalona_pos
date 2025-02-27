@@ -591,7 +591,7 @@ class _CheckoutScreen extends State<CheckoutScreen> {
                                           ),
                                         ).then((_) {
                                           PosController controller = Get.find<PosController>();
-                                          controller.newTransaction();
+                                          controller.resetTransaction();
                                 }));
                               });
                             },
