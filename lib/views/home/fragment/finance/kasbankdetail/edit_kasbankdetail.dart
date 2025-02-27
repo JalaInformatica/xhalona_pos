@@ -2,10 +2,12 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/models/dao/coa.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/widgets/app_typeahead.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:xhalona_pos/models/dao/kasbankdetail.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
+import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 import 'package:xhalona_pos/views/home/fragment/master/coa/coa_controller.dart';
 import 'package:xhalona_pos/repositories/kasbank/kasbankdetail_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/finance/finance_controller.dart';
@@ -33,6 +35,7 @@ class _AddEditKasBankDetailState extends State<AddEditKasBankDetail> {
   final _ketController = TextEditingController();
   final _hargaController = TextEditingController();
   final _qtyController = TextEditingController();
+  final _kasbankdetailController = TextEditingController();
   String? _flagDK;
   String? _kasbankdetail;
   bool _isLoading = true;
@@ -125,54 +128,142 @@ class _AddEditKasBankDetailState extends State<AddEditKasBankDetail> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Field NIK
-                      buildTextField(
-                          "No Trx", "Masukkan no trx", _noTrxController,
-                          isEnabled: false),
-                      SizedBox(height: 16),
-
-                      buildTypeAheadFieldAkun(
-                        "Coa",
-                        coa,
-                        (value) {
-                          setState(() {
-                            _kasbankdetail = value;
-                          });
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _noTrxController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "No Trx harus diisi!";
+                          }
+                          return null;
                         },
-                        controllerKus.updateFilterValue,
+                        labelText: "No Trx",
+                        inputAction: TextInputAction.next,
+                        readOnly: true,
                       ),
                       SizedBox(height: 16),
 
-                      buildDropdownFieldJK(
-                        "Jenis Trx",
-                        flagDK,
-                        (value) {
-                          setState(() {
-                            _flagDK = value;
-                          });
-                        },
+                      Visibility(
+                          visible: true,
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: 10.h),
+                            child: AppTypeahead<CoaDAO>(
+                                label: "COA ",
+                                onSelected: (selectedPartId) {
+                                  setState(() {
+                                    _kasbankdetail = selectedPartId ?? "";
+                                    _kasbankdetailController.text =
+                                        selectedPartId ?? "";
+                                    controllerKus.fetchProducts();
+                                  });
+                                },
+                                controller: _kasbankdetailController,
+                                updateFilterValue: (newValue) async {
+                                  await controllerKus
+                                      .updateFilterValue(newValue);
+                                  return controllerKus.coaHeader;
+                                },
+                                displayText: (akun) => akun.namaRekening,
+                                getId: (akun) => akun.acId,
+                                onClear: (forceClear) {
+                                  if (forceClear ||
+                                      _kasbankdetailController.text !=
+                                          _kasbankdetail) {}
+                                }),
+                          )),
+                      SizedBox(height: 16),
+
+                      Text(
+                        'Jenis Trx',
+                        style: AppTextStyle.textBodyStyle(),
+                      ),
+
+                      Row(
+                        children: [
+                          Expanded(
+                              child: RadioListTile(
+                            title: Text('Debit',
+                                style: AppTextStyle.textBodyStyle()),
+                            value: 'D',
+                            contentPadding: EdgeInsets.all(0),
+                            dense: true,
+                            visualDensity: VisualDensity.compact,
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            groupValue: _flagDK,
+                            onChanged: (value) {
+                              setState(() {
+                                _flagDK = value.toString();
+                              });
+                            },
+                          )),
+                          Expanded(
+                              child: RadioListTile(
+                            title: Text('Kredit',
+                                style: AppTextStyle.textBodyStyle()),
+                            value: 'K',
+                            contentPadding: EdgeInsets.all(0),
+                            dense: true,
+                            visualDensity: VisualDensity.compact,
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            groupValue: _flagDK,
+                            onChanged: (value) {
+                              setState(() {
+                                _flagDK = value.toString();
+                              });
+                            },
+                          )),
+                        ],
                       ),
                       SizedBox(height: 16),
 
                       // Field Nama
-                      buildTextField(
-                          "Harga", "Masukkan harga", _hargaController,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [CurrencyInputFormatter()]),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _hargaController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Jumlah Bayar harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Jumlah Bayar",
+                        inputAction: TextInputAction.next,
+                        inputFormatters: [CurrencyInputFormatter()],
+                        keyboardType: TextInputType.number,
+                      ),
                       SizedBox(height: 16),
 
                       // Field Nama
-                      buildTextField(
-                        "Qty",
-                        "Masukkan qty",
-                        _qtyController,
+
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _qtyController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Qty harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Qty",
+                        inputAction: TextInputAction.next,
+                        keyboardType: TextInputType.number,
                       ),
                       SizedBox(height: 16),
 
                       // Field BPJS Kesehatan
-                      buildTextField(
-                        "Keterangan",
-                        "Masukkan keterangan",
-                        _ketController,
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _ketController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Keterangan harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Keterangan",
+                        inputAction: TextInputAction.next,
                       ),
                       SizedBox(height: 32),
 
@@ -195,74 +286,6 @@ class _AddEditKasBankDetailState extends State<AddEditKasBankDetail> {
                 ),
               ),
       ),
-    );
-  }
-
-  Widget buildTypeAheadFieldAkun(
-    String label,
-    List<CoaDAO> items,
-    ValueChanged<String?> onChanged,
-    void Function(String newFilterValue) updateFilterValue, {
-    bool enabled = true,
-  }) {
-    TextEditingController controller = TextEditingController();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: AppTextStyle.textTitleStyle()),
-        SizedBox(height: 8),
-        AbsorbPointer(
-          // Membuat field tidak interaktif saat disabled
-          absorbing: !enabled,
-          child: TypeAheadField<CoaDAO>(
-            suggestionsCallback: (pattern) async {
-              if (!enabled) return []; // Tidak ada saran jika disabled
-              updateFilterValue(pattern);
-              return items
-                  .where((item) => item.namaRekening
-                      .toLowerCase()
-                      .contains(pattern.toLowerCase()))
-                  .toList();
-            },
-            builder: (context, textEditingController, focusNode) {
-              controller = textEditingController;
-
-              return TextField(
-                controller: controller,
-                focusNode: focusNode,
-                enabled:
-                    enabled, // Mengatur apakah field bisa diketik atau tidak
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: AppColor.primaryColor),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                        BorderSide(color: AppColor.primaryColor, width: 2.0),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: AppColor.primaryColor),
-                  ),
-                  hintText: enabled ? "Cari akun..." : "Input dinonaktifkan",
-                ),
-                onChanged: (value) {
-                  // Biarkan kosong, hanya proses saat dipilih
-                },
-              );
-            },
-            itemBuilder: (context, CoaDAO suggestion) {
-              return ListTile(
-                title: Text(suggestion.namaRekening.toString()),
-              );
-            },
-            onSelected: (CoaDAO suggestion) {
-              controller.text = suggestion.namaRekening.toString();
-              onChanged(suggestion.acId);
-            },
-          ),
-        ),
-      ],
     );
   }
 }

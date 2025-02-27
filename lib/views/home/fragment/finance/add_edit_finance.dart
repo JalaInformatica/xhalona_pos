@@ -7,6 +7,7 @@ import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/models/dao/kustomer.dart';
 import 'package:xhalona_pos/models/dao/rekening.dart';
 import 'package:xhalona_pos/widgets/app_calendar.dart';
+import 'package:xhalona_pos/widgets/app_typeahead.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
@@ -40,44 +41,50 @@ class _AddEditFinanceState extends State<AddEditFinance> {
   final _ketController = TextEditingController();
   final _tanggalController = TextEditingController();
   final _jmlBayarController = TextEditingController();
+  final _financeController = TextEditingController();
+  final _kustomerController = TextEditingController();
   String _jenisTrx = 'M';
   String? _finance;
   String? _kustomer;
   bool _isLoading = true;
+  bool _isRadioEnabled = true;
 
   @override
   void initState() {
     super.initState();
     Inisialisasi();
-    if (widget.finance != null) {
-      // Inisialisasi data dari finance jika tersedia
-      _noTrxController.text = widget.finance!.voucherNo;
-      _ketController.text = widget.finance!.ket;
-      _tanggalController.text = widget.finance!.voucherDate.split("T").first;
-      _jmlBayarController.text = widget.finance!.jmlBayar.toString();
-      _jenisTrx = widget.finance!.jenisAc;
-      _kustomer = widget.finance!.refName;
-    }
   }
 
   Future<void> Inisialisasi() async {
     setState(() {
       _isLoading = false;
+      if (widget.finance != null) {
+        // Inisialisasi data dari finance jika tersedia
+        _noTrxController.text = widget.finance!.voucherNo;
+        _ketController.text = widget.finance!.ket;
+        _tanggalController.text = DateFormat('dd-MM-yyyy')
+            .format(DateTime.parse(widget.finance!.voucherDate));
+        _jmlBayarController.text = widget.finance!.jmlBayar.toString();
+        _financeController.text = widget.finance!.acId;
+        _finance = widget.finance!.acId;
+        _kustomerController.text = widget.finance!.refName;
+        _kustomer = widget.finance!.refName;
+        _isRadioEnabled = widget.finance!.isApproved == false ? true : false;
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<RekeningDAO> rekening = controllerKar.rekeningHeader;
-    final List<KustomerDAO> kustomer = controllerKus.kustomerHeader;
-
     void handleAddEditFinance() async {
       if (_formKey.currentState!.validate()) {
         String result = await _financeRepository.addEditKasBank(
           acId: _finance,
           refID: _kustomer,
           subModulId: _jenisTrx,
-          vocherDate: _tanggalController.text,
+          vocherDate: DateFormat('yyyy-MM-dd').format(
+            DateFormat('dd-MM-yyyy').parse(_tanggalController.text),
+          ),
           vocherNo: _noTrxController.text,
           ket: _ketController.text,
           actionId: widget.finance == null ? "0" : "1",
@@ -195,10 +202,24 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Field NIK
-                      buildTextField(
-                          "No Trx", "Masukkan no trx", _noTrxController,
-                          isEnabled: widget.finance != null ? false : true),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _noTrxController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "No Trx harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "No Trx",
+                        inputAction: TextInputAction.next,
+                        readOnly: true,
+                      ),
                       SizedBox(height: 16),
+                      Text(
+                        'Jenis Trx',
+                        style: AppTextStyle.textBodyStyle(),
+                      ),
 
                       Row(
                         children: [
@@ -213,9 +234,13 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                             materialTapTargetSize:
                                 MaterialTapTargetSize.shrinkWrap,
                             groupValue: _jenisTrx,
-                            onChanged: (value) {
-                              _jenisTrx = value.toString();
-                            },
+                            onChanged: _isRadioEnabled
+                                ? (value) {
+                                    setState(() {
+                                      _jenisTrx = value.toString();
+                                    });
+                                  }
+                                : null,
                           )),
                           Expanded(
                               child: RadioListTile(
@@ -228,101 +253,180 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                             materialTapTargetSize:
                                 MaterialTapTargetSize.shrinkWrap,
                             groupValue: _jenisTrx,
-                            onChanged: (value) {
-                              _jenisTrx = value.toString();
-                            },
+                            onChanged: _isRadioEnabled
+                                ? (value) {
+                                    setState(() {
+                                      _jenisTrx = value.toString();
+                                    });
+                                  }
+                                : null,
                           )),
                         ],
                       ),
                       SizedBox(height: 16),
 
-                      buildTypeAheadFieldAkun(
-                        "Akun",
-                        rekening,
-                        (value) {
-                          setState(() {
-                            _finance = value;
+                      Visibility(
+                          visible: true,
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: 10.h),
+                            child: AppTypeahead<RekeningDAO>(
+                                label: "Akun",
+                                controller: _financeController,
+                                onSelected: (selectedPartId) {
+                                  setState(() {
+                                    _finance = selectedPartId ?? "";
+                                    _financeController.text =
+                                        selectedPartId ?? "";
+                                    controllerKar.fetchProducts();
+                                  });
+                                },
+                                updateFilterValue: (newValue) async {
+                                  await controllerKar
+                                      .updateFilterValue(newValue);
+                                  return controllerKar.rekeningHeader;
+                                },
+                                displayText: (akun) => akun.namaAc,
+                                getId: (akun) => akun.acId,
+                                onClear: (forceClear) {
+                                  if (forceClear ||
+                                      _financeController.text != _finance) {}
+                                }),
+                          )),
+
+                      // buildTypeAheadFieldAkun(
+                      //   "Akun",
+                      //   rekening,
+                      //   (value) {
+                      //     setState(() {
+                      //       _finance = value;
+                      //     });
+                      //   },
+                      //   controllerKar.updateFilterValue,
+                      //   enabled: widget.finance != null &&
+                      //           widget.finance!.isApproved == true
+                      //       ? false
+                      //       : true,
+                      // ),
+                      SizedBox(height: 16),
+
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _tanggalController,
+                        readOnly: true,
+                        icon: Icon(Icons.calendar_today),
+                        onTap: () {
+                          SmartDialog.show(builder: (context) {
+                            return AppDialog(
+                                content: SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.5,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.5,
+                                    child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          AppCalendar(
+                                            focusedDay: _tanggalController
+                                                    .text.isNotEmpty
+                                                ? DateFormat("dd-MM-yyyy")
+                                                    .parse(
+                                                        _tanggalController.text)
+                                                : DateTime.now(),
+                                            onDaySelected: (selectedDay, _) {
+                                              setState(() {
+                                                _tanggalController.text =
+                                                    DateFormat('dd-MM-yyyy')
+                                                        .format(selectedDay);
+                                                SmartDialog.dismiss();
+                                              });
+                                            },
+                                          ),
+                                        ])));
                           });
                         },
-                        controllerKar.updateFilterValue,
-                        enabled: widget.finance != null &&
-                                widget.finance!.isApproved == true
-                            ? false
-                            : true,
+                        labelText: "Tanggal",
+                        style: AppTextStyle.textBodyStyle(),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Tanggal Sampai tidak boleh kosong Trying to read dd from  at 0';
+                          }
+                          return null;
+                        },
                       ),
                       SizedBox(height: 16),
 
-                      Obx(() => AppTextFormField(
-                            context: context,
-                            textEditingController: _tanggalController,
-                            readOnly: true,
-                            icon: Icon(Icons.calendar_today),
-                            onTap: () {
-                              SmartDialog.show(builder: (context) {
-                                return AppDialog(
-                                    content: SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.5,
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.5,
-                                        child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              AppCalendar(
-                                                focusedDay:
-                                                    DateFormat("dd-MM-yyyy")
-                                                        .parse(
-                                                            _tanggalController
-                                                                .text),
-                                                onDaySelected:
-                                                    (selectedDay, _) {
-                                                  _tanggalController.text =
-                                                      DateFormat('dd-MM-yyyy')
-                                                          .format(selectedDay);
-                                                  SmartDialog.dismiss();
-                                                },
-                                              ),
-                                            ])));
-                              });
-                            },
-                            labelText: "Tanggal",
-                            style: AppTextStyle.textBodyStyle(),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Tanggal Sampai tidak boleh kosong';
-                              }
-                              return null;
-                            },
+                      Visibility(
+                          visible: true,
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: 10.h),
+                            child: AppTypeahead<KustomerDAO>(
+                                label:
+                                    "${_jenisTrx == 'M' ? 'Diterima dari' : 'Keluar ke'} ",
+                                onSelected: (selectedPartId) {
+                                  setState(() {
+                                    _kustomer = selectedPartId ?? "";
+                                    _kustomerController.text =
+                                        selectedPartId ?? "";
+                                    controllerKus.fetchProducts();
+                                  });
+                                },
+                                controller: _kustomerController,
+                                updateFilterValue: (newValue) async {
+                                  await controllerKus
+                                      .updateFilterValue(newValue);
+                                  return controllerKus.kustomerHeader;
+                                },
+                                displayText: (akun) => akun.suplierName,
+                                getId: (akun) => akun.suplierId,
+                                onClear: (forceClear) {
+                                  if (forceClear ||
+                                      _kustomerController.text != _kustomer) {}
+                                }),
                           )),
-                      SizedBox(height: 16),
 
-                      buildTypeAheadFieldRef(
-                          "${_jenisTrx == 'M' ? 'Diterima dari' : 'Keluar ke'} ",
-                          kustomer, (value) {
-                        setState(() {
-                          _kustomer = value;
-                        });
-                      }, controllerKus.updateFilterValue),
+                      // buildTypeAheadFieldRef(
+                      //     "${_jenisTrx == 'M' ? 'Diterima dari' : 'Keluar ke'} ",
+                      //     kustomer, (value) {
+                      //   setState(() {
+                      //     _kustomer = value;
+                      //   });
+                      // }, controllerKus.updateFilterValue),
                       SizedBox(height: 16),
 
                       // Field Nama
-                      buildTextField(
-                        "Keterangan",
-                        "Masukkan keterangan",
-                        _ketController,
-                        isEnabled: widget.finance != null &&
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _ketController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Keterangan harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Keterangan",
+                        inputAction: TextInputAction.next,
+                        readOnly: widget.finance != null &&
                                 widget.finance!.isApproved == true
-                            ? false
-                            : true,
+                            ? true
+                            : false,
                       ),
                       SizedBox(height: 16),
 
                       // Field BPJS Kesehatan
-                      buildTextField("Jumlah Bayar", "Masukkan jumlah bayar",
-                          _jmlBayarController,
-                          isEnabled: widget.finance != null ? false : true),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _jmlBayarController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Jumlah Bayar harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Jumlah Bayar",
+                        inputAction: TextInputAction.next,
+                        readOnly: true,
+                      ),
+
                       SizedBox(height: 32),
 
                       // Action Buttons
@@ -353,142 +457,6 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                 ),
               ),
       ),
-    );
-  }
-
-  Widget buildTypeAheadFieldAkun(
-    String label,
-    List<RekeningDAO> items,
-    ValueChanged<String?> onChanged,
-    void Function(String newFilterValue) updateFilterValue, {
-    bool enabled = true,
-  }) {
-    TextEditingController controller = TextEditingController();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: AppTextStyle.textTitleStyle()),
-        SizedBox(height: 8),
-        AbsorbPointer(
-          // Membuat field tidak interaktif saat disabled
-          absorbing: !enabled,
-          child: TypeAheadField<RekeningDAO>(
-            suggestionsCallback: (pattern) async {
-              if (!enabled) return []; // Tidak ada saran jika disabled
-              updateFilterValue(pattern);
-              return items
-                  .where((item) => item.bankAcName!
-                      .toLowerCase()
-                      .contains(pattern.toLowerCase()))
-                  .toList();
-            },
-            builder: (context, textEditingController, focusNode) {
-              controller = textEditingController;
-
-              return TextField(
-                controller: controller,
-                focusNode: focusNode,
-                enabled:
-                    enabled, // Mengatur apakah field bisa diketik atau tidak
-                decoration: InputDecoration(
-                  labelText: label,
-                  hintText: 'Cari akun...',
-                  labelStyle: TextStyle(color: AppColor.primaryColor),
-                  hintStyle: TextStyle(color: AppColor.primaryColor),
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: AppColor.primaryColor),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide:
-                        BorderSide(color: AppColor.primaryColor, width: 2.0),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: AppColor.primaryColor),
-                  ),
-                ),
-                onChanged: (value) {
-                  // Biarkan kosong, hanya proses saat dipilih
-                },
-              );
-            },
-            itemBuilder: (context, RekeningDAO suggestion) {
-              return ListTile(
-                title: Text(suggestion.bankAcName.toString()),
-              );
-            },
-            onSelected: (RekeningDAO suggestion) {
-              controller.text = suggestion.bankAcName.toString();
-              onChanged(suggestion.acId);
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget buildTypeAheadFieldRef(
-    String label,
-    List<KustomerDAO> items,
-    ValueChanged<String?> onChanged,
-    void Function(String newFilterValue) updateFilterValue,
-  ) {
-    TextEditingController controller = TextEditingController();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: AppTextStyle.textTitleStyle()),
-        SizedBox(height: 8),
-        TypeAheadField<KustomerDAO>(
-          suggestionsCallback: (pattern) async {
-            updateFilterValue(pattern); // Update filter
-            return items
-                .where((item) => item.suplierName
-                    .toLowerCase()
-                    .contains(pattern.toLowerCase()))
-                .toList(); // Pencarian berdasarkan nama
-          },
-          builder: (context, textEditingController, focusNode) {
-            controller = textEditingController;
-
-            return TextField(
-              controller: controller,
-              focusNode: focusNode,
-              decoration: InputDecoration(
-                labelText: label,
-                hintText: 'Cari nama...',
-                labelStyle: TextStyle(color: AppColor.primaryColor),
-                hintStyle: TextStyle(color: AppColor.primaryColor),
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColor.primaryColor),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide:
-                      BorderSide(color: AppColor.primaryColor, width: 2.0),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColor.primaryColor),
-                ),
-              ),
-              onChanged: (value) {
-                // Jangan lakukan apa-apa saat mengetik, biarkan saat dipilih
-              },
-            );
-          },
-          itemBuilder: (context, KustomerDAO suggestion) {
-            return ListTile(
-              title: Text(suggestion.suplierName
-                  .toString()), // Tampilkan ID sebagai info tambahan
-            );
-          },
-          onSelected: (KustomerDAO suggestion) {
-            controller.text = suggestion.suplierName
-                .toString(); // Tampilkan nama produk di field
-            onChanged(suggestion.suplierId); // Simpan ID produk di _product
-          },
-        ),
-      ],
     );
   }
 }

@@ -37,12 +37,9 @@ class KustomerController extends GetxController {
   //   }
   // }
 
-  void updateFilterValue(String newFilterValue) {
-    isSuplier.value = '1';
-    filterValue.value = newFilterValue;
-    pageNo.value = 1;
-    pageRow.value = 10;
-    fetchProducts();
+  Future<void> updateFilterValue(String newFilterValue) async {
+    kustomerHeader.value = await _kustomerRepository.getKustomer(
+        pageRow: 5, filterValue: newFilterValue, isSuplier: '1');
   }
 
   void updateMonitorValue(String newFilterValue) {
