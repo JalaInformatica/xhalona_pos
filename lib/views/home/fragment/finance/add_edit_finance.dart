@@ -313,7 +313,7 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                         context: context,
                         textEditingController: _tanggalController,
                         readOnly: true,
-                        icon: Icon(Icons.calendar_today),
+                        suffixIcon: Icon(Icons.calendar_today),
                         onTap: () {
                           SmartDialog.show(builder: (context) {
                             return AppDialog(

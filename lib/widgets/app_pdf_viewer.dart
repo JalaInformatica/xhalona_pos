@@ -202,18 +202,18 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
 
   Future<void> _print(BuildContext context) async {
     try {
-      // bool isBluetoothConnected = await PrintBluetoothThermal.connectionStatus;
+      bool isBluetoothConnected = await PrintBluetoothThermal.connectionStatus;
 
-      // if (!isBluetoothConnected) {
-      //   _showMessage("Scanning for Bluetooth printers...");
-      //   await _connectPrinter(context);
-      //   isBluetoothConnected = await PrintBluetoothThermal.connectionStatus;
+      if (!isBluetoothConnected) {
+        _showMessage("Scanning for Bluetooth printers...");
+        await _connectPrinter(context);
+        isBluetoothConnected = await PrintBluetoothThermal.connectionStatus;
 
-      //   if (!isBluetoothConnected) {
-      //     _showMessage("No printer connected.");
-      //     return;
-      //   }
-      // }
+        if (!isBluetoothConnected) {
+          _showMessage("No printer connected.");
+          return;
+        }
+      }
       List<int> bytes = [];
 
       final profile = await CapabilityProfile.load();
@@ -223,14 +223,14 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
         img.Image croppedImage = cropBottomWhiteSpace(image);
         bytes += generator.image(croppedImage);
         bytes += generator.cut();
-        _previewPrinting(context, croppedImage);
-        // final bool result = await PrintBluetoothThermal.writeBytes(bytes);
-        // image = null;
-        // if (result) {
-        //   _showMessage("Print successful.");
-        // } else {
-        //   _showMessage("Print failed.");
-        // }
+        // _previewPrinting(context, croppedImage);
+        final bool result = await PrintBluetoothThermal.writeBytes(bytes);
+        image = null;
+        if (result) {
+          _showMessage("Print successful.");
+        } else {
+          _showMessage("Print failed.");
+        }
       }
     } catch (e) {
       _showMessage("Printing error: $e");

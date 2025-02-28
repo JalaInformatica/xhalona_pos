@@ -87,7 +87,7 @@ class _EditPasswordState extends State<EditPassword> {
                       AppTextFormField(
                         context: context,
                         textEditingController: _pw1Controller,
-                        icon: tooglePass(),
+                        suffixIcon: tooglePass(),
                         isScurePass: isScurePass,
                         validator: (value) {
                           if (value == '') {
@@ -105,7 +105,7 @@ class _EditPasswordState extends State<EditPassword> {
                       AppTextFormField(
                         context: context,
                         textEditingController: _pw2Controller,
-                        icon: tooglePass(),
+                        suffixIcon: tooglePass(),
                         isScurePass: isScurePass,
                         validator: (value) {
                           if (value == '') {

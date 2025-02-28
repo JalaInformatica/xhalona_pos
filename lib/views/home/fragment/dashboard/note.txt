@@ -1,0 +1,19 @@
+bikin transaksi baru tanpa ada 
+nomor hp bisa diganti pake yg lain
+orang datang baru datang bikin antrian langsung. nama harus diisi
+
+radio button
+-masuk m
+-keluar k
+masuk -> diterima dari
+keluar -> bayar ke
+
+api akun finance share ke Pak Heri buat dicek
+
+tanggal tahun -> date -> appcalendar/appcalendarrange
+
+tidak ada scrolling lagi -> kecilin textfieldnya -> pake apptextfield/apptextformfield
+
+ada juga komponen apptypeahead
+
+web -> detail tidak keluar

@@ -57,7 +57,7 @@ class LapPenjualanScreen extends StatelessWidget {
                                   textEditingController: _startDateController
                                     ..text = controller.startDate.value,
                                   readOnly: true,
-                                  icon: Icon(Icons.calendar_today),
+                                  suffixIcon: Icon(Icons.calendar_today),
                                   onTap: () =>
                                       SmartDialog.show(builder: (context) {
                                     return AppDialog(
@@ -105,7 +105,7 @@ class LapPenjualanScreen extends StatelessWidget {
                                   textEditingController: _endDateController
                                     ..text = controller.endDate.value,
                                   readOnly: true,
-                                  icon: Icon(Icons.calendar_today),
+                                  suffixIcon: Icon(Icons.calendar_today),
                                   onTap: () {
                                     SmartDialog.show(builder: (context) {
                                       return AppDialog(

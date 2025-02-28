@@ -19,7 +19,7 @@ class AppTextFormField extends TextFormField {
     Color? fillColor,
     TextInputType keyboardType = TextInputType.text,
     List<TextInputFormatter>? inputFormatters,
-    Widget? icon,
+    Widget? suffixIcon,
     bool isScurePass = false,
     TextInputAction? inputAction = TextInputAction.done,
     required TextEditingController textEditingController,
@@ -49,7 +49,7 @@ class AppTextFormField extends TextFormField {
               hintStyle: (style ?? AppTextStyle.textBodyStyle()).copyWith(
                 color: AppColor.grey500,
               ),
-              suffixIcon: icon,
+              suffixIcon: suffixIcon,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(5),
                 borderSide: BorderSide(color: AppColor.grey100),

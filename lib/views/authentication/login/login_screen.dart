@@ -126,7 +126,7 @@ class _LoginScreen extends State<LoginScreen> {
                   AppTextFormField(
                     context: context,
                     textEditingController: passwordController,
-                    icon: tooglePass(),
+                    suffixIcon: tooglePass(),
                     isScurePass: isScurePass,
                     validator: (value) {
                       if (value == '') {
