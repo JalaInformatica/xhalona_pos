@@ -185,7 +185,7 @@ class _AddEditPenggunaState extends State<AddEditPengguna> {
                       AppTextFormField(
                         context: context,
                         textEditingController: _passController,
-                        icon: tooglePass(),
+                        suffixIcon: tooglePass(),
                         isScurePass: isScurePass,
                         validator: (value) {
                           if (value == '') {

@@ -187,7 +187,7 @@ class _AddEditKaryawanState extends State<AddEditKaryawan> {
                         context: context,
                         textEditingController: _joinDateController,
                         readOnly: true,
-                        icon: Icon(Icons.calendar_today),
+                        suffixIcon: Icon(Icons.calendar_today),
                         onTap: () {
                           SmartDialog.show(builder: (context) {
                             return AppDialog(
@@ -333,7 +333,7 @@ class _AddEditKaryawanState extends State<AddEditKaryawan> {
                               context: context,
                               textEditingController: _birthDateController,
                               readOnly: true,
-                              icon: Icon(Icons.calendar_today),
+                              suffixIcon: Icon(Icons.calendar_today),
                               onTap: () {
                                 SmartDialog.show(builder: (context) {
                                   return AppDialog(
