@@ -44,11 +44,9 @@ class KategoriController extends GetxController {
     fetchProducts();
   }
 
-  void updateFilterCompanyValue(String newFilterValue) {
-    filterCompany.value = newFilterValue;
-    pageNo.value = 1;
-    pageRow.value = 10;
-    fetchProducts();
+  Future<void> updateTypeValue(String newFilterValue, String companyId) async {
+    kategoriHeader.value = await _kategoriRepository.getKategori(
+        pageRow: 5, filterValue: newFilterValue, companyId: companyId);
   }
 
   void updatePageNo(int newFilterValue) {

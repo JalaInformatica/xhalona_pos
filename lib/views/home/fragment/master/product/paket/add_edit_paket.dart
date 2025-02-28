@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/paket.dart';
 import 'package:xhalona_pos/models/dao/product.dart';
+import 'package:xhalona_pos/widgets/app_typeahead.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
+import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 import 'package:xhalona_pos/repositories/paket_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/paket/paket_controller.dart';
@@ -28,6 +30,7 @@ class _AddEditPaketState extends State<AddEditPaket> {
   final _formKey = GlobalKey<FormState>();
   final _hargaController = TextEditingController();
   final _qtyController = TextEditingController();
+  final _productController = TextEditingController();
   bool _isLoading = true;
   String? _product;
 
@@ -37,6 +40,7 @@ class _AddEditPaketState extends State<AddEditPaket> {
     Inisialisasi();
     if (widget.paket != null) {
       // Inisialisasi data dari karyawan jika tersedia
+      _productController.text = widget.paket!.partId;
       _hargaController.text = widget.paket!.comUnitPrice.toString();
       _qtyController.text = widget.paket!.comValue.toString();
     }
@@ -103,24 +107,72 @@ class _AddEditPaketState extends State<AddEditPaket> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Field NIK
-                      buildTypeAheadFieldProduct("Kode Produk/Nama Produk",
-                          controllerPro.productHeader, (value) {
-                        setState(() {
-                          _product = value;
-                        });
-                      }, controllerPro.updateFilterValue),
+                      Visibility(
+                          visible: true,
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: 10.h),
+                            child: AppTypeahead<ProductDAO>(
+                                label: "Kode Produk/Nama Produk",
+                                controller: _productController,
+                                onSelected: (selectedPartId) {
+                                  setState(() {
+                                    _product = selectedPartId ?? "";
+                                    _productController.text =
+                                        selectedPartId ?? "";
+                                    controllerPro.fetchProducts();
+                                  });
+                                },
+                                updateFilterValue: (newValue) async {
+                                  await controllerPro.updateTypeValue(newValue);
+                                  return controllerPro.productHeader;
+                                },
+                                displayText: (akun) => akun.partName,
+                                getId: (akun) => akun.partId,
+                                onClear: (forceClear) {
+                                  if (forceClear ||
+                                      _productController.text != _product) {}
+                                }),
+                          )),
                       SizedBox(height: 16),
 
                       // Field Nama
-                      buildTextField("Qty", "Masukkan Qty", _qtyController,
-                          keyboardType: TextInputType.number),
-                      SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: AppTextFormField(
+                              context: context,
+                              textEditingController: _qtyController,
+                              validator: (value) {
+                                if (value == '') {
+                                  return "Qty harus diisi!";
+                                }
+                                return null;
+                              },
+                              labelText: "Qty",
+                              inputAction: TextInputAction.next,
+                            ),
+                          ),
+                          SizedBox(width: 16),
 
-                      buildTextField(
-                          "Harga", "Masukkan Harga", _hargaController,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [CurrencyInputFormatter()]),
-                      SizedBox(height: 32),
+                          // Field Nama
+                          Expanded(
+                            child: AppTextFormField(
+                                context: context,
+                                textEditingController: _hargaController,
+                                validator: (value) {
+                                  if (value == '') {
+                                    return "Harga harus diisi!";
+                                  }
+                                  return null;
+                                },
+                                labelText: "Harga",
+                                inputAction: TextInputAction.next,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [CurrencyInputFormatter()]),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
 
                       // Action Buttons
                       Row(
@@ -140,70 +192,6 @@ class _AddEditPaketState extends State<AddEditPaket> {
                 ),
               ),
       ),
-    );
-  }
-
-  Widget buildTypeAheadFieldProduct(
-    String label,
-    List<ProductDAO> items,
-    ValueChanged<String?> onChanged,
-    void Function(String newFilterValue) updateFilterValue,
-  ) {
-    TextEditingController controller = TextEditingController();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: AppTextStyle.textTitleStyle()),
-        SizedBox(height: 8),
-        TypeAheadField<ProductDAO>(
-          suggestionsCallback: (pattern) async {
-            updateFilterValue(pattern); // Update filter
-            return items
-                .where((item) =>
-                    item.partName.toLowerCase().contains(pattern.toLowerCase()))
-                .toList(); // Pencarian berdasarkan nama
-          },
-          builder: (context, textEditingController, focusNode) {
-            controller = textEditingController;
-
-            return TextField(
-              controller: controller,
-              focusNode: focusNode,
-              decoration: InputDecoration(
-                labelText: label,
-                labelStyle: TextStyle(color: AppColor.primaryColor),
-                hintText: 'Cari nama...',
-                hintStyle: TextStyle(color: AppColor.primaryColor),
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColor.primaryColor),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide:
-                      BorderSide(color: AppColor.primaryColor, width: 2.0),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColor.primaryColor),
-                ),
-              ),
-              onChanged: (value) {
-                // Jangan lakukan apa-apa saat mengetik, biarkan saat dipilih
-              },
-            );
-          },
-          itemBuilder: (context, ProductDAO suggestion) {
-            return ListTile(
-              title: Text(suggestion.partName
-                  .toString()), // Tampilkan ID sebagai info tambahan
-            );
-          },
-          onSelected: (ProductDAO suggestion) {
-            controller.text = suggestion.partName
-                .toString(); // Tampilkan nama produk di field
-            onChanged(suggestion.partId); // Simpan ID produk di _product
-          },
-        ),
-      ],
     );
   }
 }

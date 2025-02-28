@@ -2,8 +2,10 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/models/dao/coa.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/widgets/app_typeahead.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
+import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 import 'package:xhalona_pos/repositories/coa/coa_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/coa/coa_controller.dart';
 
@@ -24,15 +26,13 @@ class _AddEditCoaState extends State<AddEditCoa> {
   final _kodeRekController = TextEditingController();
   final _nameController = TextEditingController();
   final _jenisRekController = TextEditingController();
+  final _coaController = TextEditingController();
   String? _flagDk;
   String? _flagTm;
   // ignore: unused_field
   String? _coa;
   bool _isActive = true; // Status Aktif/Non-Aktif
   bool _isLoading = true;
-
-  final List<String> flagDks = ['D', 'K'];
-  final List<String> flagTm = ['T', 'M'];
 
   @override
   void initState() {
@@ -43,6 +43,7 @@ class _AddEditCoaState extends State<AddEditCoa> {
       _kodeRekController.text = widget.coa!.acId;
       _nameController.text = widget.coa!.namaRekening;
       _jenisRekController.text = widget.coa!.jenisRek;
+      _coaController.text = widget.coa!.acId;
       _flagDk = widget.coa!.flagDk;
       _flagTm = widget.coa!.flagTm;
       _isActive = widget.coa!.isActive == 1 ? true : false;
@@ -57,8 +58,6 @@ class _AddEditCoaState extends State<AddEditCoa> {
 
   @override
   Widget build(BuildContext context) {
-    final List<CoaDAO> coa = controllerKar.coaHeader;
-
     void handleAddEditCoa() async {
       if (_formKey.currentState!.validate()) {
         String result = await _coaRepository.addEditCoa(
@@ -116,39 +115,163 @@ class _AddEditCoaState extends State<AddEditCoa> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Field NIK
-                      buildDropdownField("Parrent Account", coa, (value) {
-                        setState(() {
-                          _coa = value;
-                        });
-                      }),
+                      Visibility(
+                          visible: true,
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: 10.h),
+                            child: AppTypeahead<CoaDAO>(
+                                label: "Akun",
+                                controller: _coaController,
+                                onSelected: (selectedPartId) {
+                                  setState(() {
+                                    _coa = selectedPartId ?? "";
+                                    _coaController.text = selectedPartId ?? "";
+                                    controllerKar.fetchProducts();
+                                  });
+                                },
+                                updateFilterValue: (newValue) async {
+                                  await controllerKar
+                                      .updateFilterValue(newValue);
+                                  return controllerKar.coaHeader;
+                                },
+                                displayText: (akun) => akun.namaRekening,
+                                getId: (akun) => akun.acId,
+                                onClear: (forceClear) {
+                                  if (forceClear ||
+                                      _coaController.text != _coa) {}
+                                }),
+                          )),
                       SizedBox(height: 16),
-                      buildTextField("Kode Rekening", "Masukkan kode rek",
-                          _kodeRekController),
+
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _kodeRekController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Kode Rekening harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Kode Rekening",
+                        inputAction: TextInputAction.next,
+                      ),
                       SizedBox(height: 16),
 
                       // Field Nama
-                      buildTextField("Nama Rekening", "Masukkan nama rek",
-                          _nameController),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _nameController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Nama Rekening harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Nama Rekening",
+                        inputAction: TextInputAction.next,
+                      ),
                       SizedBox(height: 16),
 
                       // Field BPJS Kesehatan
-                      buildTextField("Jenis Rekening",
-                          "Masukkan Jenis Rekening", _jenisRekController),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _jenisRekController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Jenis Rekening harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Jenis Rekening",
+                        inputAction: TextInputAction.next,
+                      ),
                       SizedBox(height: 16),
 
                       // Field BPJS Ketenagakerjaan
-                      buildDropdownFieldJK("D/K", flagDks, (value) {
-                        setState(() {
-                          _flagDk = value;
-                        });
-                      }),
+                      Text(
+                        'D/K',
+                        style: AppTextStyle.textBodyStyle(),
+                      ),
+
+                      Row(
+                        children: [
+                          Expanded(
+                              child: RadioListTile(
+                                  title: Text('D',
+                                      style: AppTextStyle.textBodyStyle()),
+                                  value: 'D',
+                                  contentPadding: EdgeInsets.all(0),
+                                  dense: true,
+                                  visualDensity: VisualDensity.compact,
+                                  materialTapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                  groupValue: _flagDk,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _flagDk = value.toString();
+                                    });
+                                  })),
+                          Expanded(
+                              child: RadioListTile(
+                                  title: Text('K',
+                                      style: AppTextStyle.textBodyStyle()),
+                                  value: 'K',
+                                  contentPadding: EdgeInsets.all(0),
+                                  dense: true,
+                                  visualDensity: VisualDensity.compact,
+                                  materialTapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                  groupValue: _flagDk,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _flagDk = value.toString();
+                                    });
+                                  })),
+                        ],
+                      ),
                       SizedBox(height: 16),
 
-                      buildDropdownFieldJK("TM", flagTm, (value) {
-                        setState(() {
-                          _flagTm = value;
-                        });
-                      }),
+                      Text(
+                        'TM',
+                        style: AppTextStyle.textBodyStyle(),
+                      ),
+
+                      Row(
+                        children: [
+                          Expanded(
+                              child: RadioListTile(
+                                  title: Text('T',
+                                      style: AppTextStyle.textBodyStyle()),
+                                  value: 'T',
+                                  contentPadding: EdgeInsets.all(0),
+                                  dense: true,
+                                  visualDensity: VisualDensity.compact,
+                                  materialTapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                  groupValue: _flagTm,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _flagTm = value.toString();
+                                    });
+                                  })),
+                          Expanded(
+                              child: RadioListTile(
+                                  title: Text('M',
+                                      style: AppTextStyle.textBodyStyle()),
+                                  value: 'M',
+                                  contentPadding: EdgeInsets.all(0),
+                                  dense: true,
+                                  visualDensity: VisualDensity.compact,
+                                  materialTapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                  groupValue: _flagTm,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _flagTm = value.toString();
+                                    });
+                                  })),
+                        ],
+                      ),
                       SizedBox(height: 16),
                       // Field Aktif/Non-Aktif
                       SwitchListTile(
@@ -182,37 +305,6 @@ class _AddEditCoaState extends State<AddEditCoa> {
                 ),
               ),
       ),
-    );
-  }
-
-  Widget buildDropdownField(
-      String label, List<CoaDAO> items, ValueChanged<String?> onChanged) {
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(color: AppColor.primaryColor),
-        hintStyle: TextStyle(color: AppColor.primaryColor),
-        border: OutlineInputBorder(
-          borderSide: BorderSide(color: AppColor.primaryColor),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: AppColor.primaryColor, width: 2.0),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: AppColor.primaryColor),
-        ),
-      ),
-      items: items.map((item) {
-        return DropdownMenuItem(
-            value: item.acId, child: Text(item.namaRekening));
-      }).toList(),
-      onChanged: onChanged,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return '$label tidak boleh kosong';
-        }
-        return null;
-      },
     );
   }
 }

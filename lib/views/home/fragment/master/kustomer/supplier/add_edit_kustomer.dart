@@ -4,6 +4,7 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/kustomer.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
+import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 import 'package:xhalona_pos/repositories/kustomer/kustomer_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplier_kustomer_controller.dart';
 
@@ -112,32 +113,93 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Field NIK
-                      buildTextField(
-                          "Kode ${widget.islabel}",
-                          "Masukkan kode ${widget.islabel}",
-                          _kdKustomerController),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _kdKustomerController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Kode ${widget.islabel} harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Kode ${widget.islabel}",
+                        inputAction: TextInputAction.next,
+                      ),
                       SizedBox(height: 16),
 
                       // Field Nama
-                      buildTextField(
-                          "Nama ${widget.islabel}",
-                          "Masukkan nama ${widget.islabel}",
-                          _nameKustomerController),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _nameKustomerController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Nama ${widget.islabel} harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Nama ${widget.islabel}",
+                        inputAction: TextInputAction.next,
+                      ),
                       SizedBox(height: 16),
 
-                      buildTextField(
-                          "Telp ", "Masukkan Telp ", _telpKustomerController),
-                      SizedBox(height: 16),
-                      buildTextField("Email ", "Masukkan Email ",
-                          _emailKustomerController),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _telpKustomerController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Telp harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Telp",
+                        inputAction: TextInputAction.next,
+                        keyboardType: TextInputType.number,
+                      ),
+
                       SizedBox(height: 16),
 
-                      buildTextField("Alamat ", "Masukkan Alamat ",
-                          _address1KustomerController),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _emailKustomerController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Email harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Email",
+                        inputAction: TextInputAction.next,
+                      ),
                       SizedBox(height: 16),
 
-                      buildTextField("Alamat lain", "Masukkan Alamat ",
-                          _address2KustomerController),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _address1KustomerController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Alamat harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Alamat",
+                        inputAction: TextInputAction.next,
+                      ),
+
+                      SizedBox(height: 16),
+
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _address2KustomerController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Alamat lain harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Alamat lain",
+                        inputAction: TextInputAction.next,
+                      ),
+
                       SizedBox(height: 32),
 
                       // Action Buttons

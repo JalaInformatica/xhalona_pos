@@ -36,9 +36,16 @@ class RekeningController extends GetxController {
   //   }
   // }
 
-  Future<void> updateFilterValue(String newFilterValue) async {
+  Future<void> updateTypeValue(String newFilterValue) async {
     rekeningHeader.value = await _rekeningRepository.getRekening(
         pageRow: 5, filterValue: newFilterValue);
+  }
+
+  Future<void> updateFilterValue(String newFilterValue) async {
+    filterValue.value = newFilterValue;
+    pageNo.value = 1;
+    pageRow.value = 10;
+    fetchProducts();
   }
 
   void updatePageNo(int newFilterValue) {

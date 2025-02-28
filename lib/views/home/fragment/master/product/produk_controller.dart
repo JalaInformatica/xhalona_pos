@@ -32,6 +32,11 @@ class ProductController extends GetxController {
     fetchProducts();
   }
 
+  Future<void> updateTypeValue(String newFilterValue) async {
+    productHeader.value = await _productRepository.getProducts(
+        pageRow: 5, filterValue: newFilterValue);
+  }
+
   void updateFilterJasa() async {
     isJasa.value = !isJasa.value;
     pageNo.value = 1;

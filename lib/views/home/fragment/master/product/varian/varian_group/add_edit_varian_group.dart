@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/varian.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
+import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 import 'package:xhalona_pos/repositories/varian/varianGroup_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/m_all/mAll_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/varian/varian_group/varianGroup_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/varian/varian_group/master_varian_group_screen.dart';
-
 
 // ignore: must_be_immutable
 class AddEditVarianGroup extends StatefulWidget {
@@ -94,11 +94,19 @@ class _AddEditVarianGroupState extends State<AddEditVarianGroup> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Field Nama
-                      buildTextField(
-                          "Group VarianGroup",
-                          "Masukkan Group VarianGroup",
-                          _nameVarianGroupController),
-                      SizedBox(height: 32),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _nameVarianGroupController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "VarianGroup harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "VarianGroup",
+                        inputAction: TextInputAction.next,
+                      ),
+                      SizedBox(height: 20),
 
                       // Action Buttons
                       Row(

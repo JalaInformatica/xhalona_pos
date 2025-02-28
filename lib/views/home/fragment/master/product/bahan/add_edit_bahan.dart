@@ -4,7 +4,7 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/bahan.dart';
 import 'package:xhalona_pos/models/dao/product.dart';
 import 'package:xhalona_pos/models/dao/masterall.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:xhalona_pos/widgets/app_typeahead.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/repositories/bahan/bahan_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
@@ -30,6 +30,8 @@ class _AddEditBahanState extends State<AddEditBahan> {
 
   final _formKey = GlobalKey<FormState>();
   final _nameBahanController = TextEditingController();
+  final _productController = TextEditingController();
+  final _unitController = TextEditingController();
   bool _isLoading = true;
   String? _product;
   String? _unit;
@@ -40,7 +42,9 @@ class _AddEditBahanState extends State<AddEditBahan> {
     Inisialisasi();
     if (widget.kategori != null) {
       // Inisialisasi data dari karyawan jika tersedia
+      _productController.text = widget.kategori!.partId;
       _nameBahanController.text = widget.kategori!.bomPartName;
+      _unitController.text = widget.kategori!.unitId;
     }
   }
 
@@ -105,21 +109,59 @@ class _AddEditBahanState extends State<AddEditBahan> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Field Nama
-                      buildTypeAheadFieldProduct("Kode Produk/Nama Produk",
-                          controllerPro.productHeader, (value) {
-                        setState(() {
-                          _product = value;
-                        });
-                      }, controllerPro.updateFilterValue),
+                      Visibility(
+                          visible: true,
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: 10.h),
+                            child: AppTypeahead<ProductDAO>(
+                                label: "Kode Produk/Nama Produk",
+                                controller: _productController,
+                                onSelected: (selectedPartId) {
+                                  setState(() {
+                                    _product = selectedPartId ?? "";
+                                    _productController.text =
+                                        selectedPartId ?? "";
+                                    controllerPro.fetchProducts();
+                                  });
+                                },
+                                updateFilterValue: (newValue) async {
+                                  await controllerPro.updateTypeValue(newValue);
+                                  return controllerPro.productHeader;
+                                },
+                                displayText: (akun) => akun.partName,
+                                getId: (akun) => akun.partId,
+                                onClear: (forceClear) {
+                                  if (forceClear ||
+                                      _productController.text != _product) {}
+                                }),
+                          )),
                       SizedBox(height: 16),
 
-                      buildTypeAheadField("Unit", controllerMas.masAllHeader,
-                          (value) {
-                        setState(() {
-                          _unit = value;
-                        });
-                      }, controllerMas.updateFilterValue),
-                      SizedBox(height: 32),
+                      Visibility(
+                          visible: true,
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: 10.h),
+                            child: AppTypeahead<MasAllDAO>(
+                                label: "Unit",
+                                controller: _unitController,
+                                onSelected: (selectedPartId) {
+                                  setState(() {
+                                    _unit = selectedPartId ?? "";
+                                    _unitController.text = selectedPartId ?? "";
+                                    controllerMas.fetchProducts();
+                                  });
+                                },
+                                updateFilterValue: (newValue) async {
+                                  await controllerMas.updateTypeValue(newValue);
+                                  return controllerMas.masAllHeader;
+                                },
+                                displayText: (akun) => akun.masDesc,
+                                getId: (akun) => akun.masterId,
+                                onClear: (forceClear) {
+                                  if (forceClear ||
+                                      _unitController.text != _unit) {}
+                                }),
+                          )),
 
                       // Action Buttons
                       Row(
@@ -139,134 +181,6 @@ class _AddEditBahanState extends State<AddEditBahan> {
                 ),
               ),
       ),
-    );
-  }
-
-  Widget buildTypeAheadFieldProduct(
-    String label,
-    List<ProductDAO> items,
-    ValueChanged<String?> onChanged,
-    void Function(String newFilterValue) updateFilterValue,
-  ) {
-    TextEditingController controller = TextEditingController();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: AppTextStyle.textTitleStyle()),
-        SizedBox(height: 8),
-        TypeAheadField<ProductDAO>(
-          suggestionsCallback: (pattern) async {
-            updateFilterValue(pattern); // Update filter
-            return items
-                .where((item) =>
-                    item.partName.toLowerCase().contains(pattern.toLowerCase()))
-                .toList(); // Pencarian berdasarkan nama
-          },
-          builder: (context, textEditingController, focusNode) {
-            controller = textEditingController;
-
-            return TextField(
-              controller: controller,
-              focusNode: focusNode,
-              decoration: InputDecoration(
-                labelText: label,
-                labelStyle: TextStyle(color: AppColor.primaryColor),
-                hintText: 'Cari nama...',
-                hintStyle: TextStyle(color: AppColor.primaryColor),
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColor.primaryColor),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide:
-                      BorderSide(color: AppColor.primaryColor, width: 2.0),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColor.primaryColor),
-                ),
-              ),
-              onChanged: (value) {
-                // Jangan lakukan apa-apa saat mengetik, biarkan saat dipilih
-              },
-            );
-          },
-          itemBuilder: (context, ProductDAO suggestion) {
-            return ListTile(
-              title: Text(suggestion.partName
-                  .toString()), // Tampilkan ID sebagai info tambahan
-            );
-          },
-          onSelected: (ProductDAO suggestion) {
-            controller.text = suggestion.partName
-                .toString(); // Tampilkan nama produk di field
-            onChanged(suggestion.partId); // Simpan ID produk di _product
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget buildTypeAheadField(
-    String label,
-    List<MasAllDAO> items,
-    ValueChanged<String?> onChanged,
-    void Function(String newFilterValue) updateFilterValue,
-  ) {
-    TextEditingController controller = TextEditingController();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: AppTextStyle.textTitleStyle()),
-        SizedBox(height: 8),
-        TypeAheadField<MasAllDAO>(
-          suggestionsCallback: (pattern) async {
-            updateFilterValue(pattern); // Update filter
-            return items
-                .where((item) =>
-                    item.masDesc.toLowerCase().contains(pattern.toLowerCase()))
-                .toList(); // Pencarian berdasarkan nama
-          },
-          builder: (context, textEditingController, focusNode) {
-            controller = textEditingController;
-
-            return TextField(
-              controller: controller,
-              focusNode: focusNode,
-              decoration: InputDecoration(
-                labelText: label,
-                labelStyle: TextStyle(color: AppColor.primaryColor),
-                hintText: 'Cari nama...',
-                hintStyle: TextStyle(color: AppColor.primaryColor),
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColor.primaryColor),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide:
-                      BorderSide(color: AppColor.primaryColor, width: 2.0),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColor.primaryColor),
-                ),
-              ),
-              onChanged: (value) {
-                // Jangan lakukan apa-apa saat mengetik, biarkan saat dipilih
-              },
-            );
-          },
-          itemBuilder: (context, MasAllDAO suggestion) {
-            return ListTile(
-              title: Text(suggestion.masDesc
-                  .toString()), // Tampilkan ID sebagai info tambahan
-            );
-          },
-          onSelected: (MasAllDAO suggestion) {
-            controller.text =
-                suggestion.masDesc.toString(); // Tampilkan nama produk di field
-            onChanged(suggestion.masterId); // Simpan ID produk di _product
-          },
-        ),
-      ],
     );
   }
 }

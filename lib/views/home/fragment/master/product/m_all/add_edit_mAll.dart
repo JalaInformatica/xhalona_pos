@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/masterall.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
+import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 import 'package:xhalona_pos/repositories/m_all/mAll_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/m_all/mAll_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/widgets/employee_modal_controller.dart';
@@ -99,15 +100,34 @@ class _AddEditMasAllState extends State<AddEditMasAll> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Field NIK
-
-                      buildTextField("Keterangan", "Masukkan keterangan",
-                          _kdMasAllController),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _kdMasAllController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Keterangan harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Keterangan",
+                        inputAction: TextInputAction.next,
+                      ),
                       SizedBox(height: 16),
 
                       // Field Nama
-                      buildTextField("Kategori", "Masukkan kategori",
-                          _nameMasAllController),
-                      SizedBox(height: 32),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _nameMasAllController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "kategori harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "kategori",
+                        inputAction: TextInputAction.next,
+                      ),
+                      SizedBox(height: 20),
 
                       // Action Buttons
                       Row(

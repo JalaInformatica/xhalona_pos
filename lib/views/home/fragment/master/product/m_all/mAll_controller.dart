@@ -51,6 +51,11 @@ class MasAllController extends GetxController {
     fetchProducts();
   }
 
+  Future<void> updateTypeValue(String newFilterValue) async {
+    masAllHeader.value = await _masAllRepository.getMasAll(
+        pageRow: 5, filterValue: newFilterValue);
+  }
+
   void updatePageNo(int newFilterValue) {
     pageNo.value = newFilterValue;
     fetchProducts();

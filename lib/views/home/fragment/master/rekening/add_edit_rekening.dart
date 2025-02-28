@@ -1,10 +1,14 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:xhalona_pos/models/dao/coa.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/rekening.dart';
+import 'package:xhalona_pos/widgets/app_typeahead.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
+import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 import 'package:xhalona_pos/repositories/rekening/rekening_repository.dart';
+import 'package:xhalona_pos/views/home/fragment/master/coa/coa_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/rekening/rekening_controller.dart';
 
 // ignore: must_be_immutable
@@ -19,6 +23,7 @@ class AddEditRekening extends StatefulWidget {
 class _AddEditRekeningState extends State<AddEditRekening> {
   RekeningRepository _rekeningRepository = RekeningRepository();
   final RekeningController controller = Get.put(RekeningController());
+  final CoaController controllerKus = Get.put(CoaController());
 
   final _formKey = GlobalKey<FormState>();
   final _kdRekeningController = TextEditingController();
@@ -30,6 +35,7 @@ class _AddEditRekeningState extends State<AddEditRekening> {
   final _groupController = TextEditingController();
   final _userAccesController = TextEditingController();
   String? _jenisAc;
+  String? _kasbankdetail;
   bool _isLoading = true;
   bool _isActive = true;
 
@@ -126,42 +132,171 @@ class _AddEditRekeningState extends State<AddEditRekening> {
                       }),
                       SizedBox(height: 16),
                       // Field NIK
-                      buildTextField("Kode Rekening", "Masukkan nama Rekening",
-                          _kdRekeningController),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: AppTextFormField(
+                              context: context,
+                              textEditingController: _kdRekeningController,
+                              validator: (value) {
+                                if (value == '') {
+                                  return "Kode Rekening harus diisi!";
+                                }
+                                return null;
+                              },
+                              labelText: "Kode Rekening",
+                              inputAction: TextInputAction.next,
+                            ),
+                          ),
+                          SizedBox(width: 16),
+
+                          // Field BPJS Ketenagakerjaan
+                          Expanded(
+                            child: AppTextFormField(
+                              context: context,
+                              textEditingController: _noRekeningController,
+                              validator: (value) {
+                                if (value == '') {
+                                  return "No Rekening harus diisi!";
+                                }
+                                return null;
+                              },
+                              labelText: "No Rekening",
+                              inputAction: TextInputAction.next,
+                            ),
+                          ),
+                        ],
+                      ),
                       SizedBox(height: 16),
 
                       // Field Nama
-                      buildTextField("Nama Rekening", "Masukkan nama Rekening",
-                          _nameRekeningController),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _nameRekeningController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Nama Rekening harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Nama Rekening",
+                        inputAction: TextInputAction.next,
+                      ),
                       SizedBox(height: 16),
 
-                      buildTextField("No Rekening", "Masukkan no Rekening",
-                          _noRekeningController),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: AppTextFormField(
+                              context: context,
+                              textEditingController: _nameBankController,
+                              validator: (value) {
+                                if (value == '') {
+                                  return "Nama Bank harus diisi!";
+                                }
+                                return null;
+                              },
+                              labelText: "Nama Bank",
+                              inputAction: TextInputAction.next,
+                            ),
+                          ),
+                          SizedBox(width: 16),
+
+                          // Field BPJS Ketenagakerjaan
+                          Expanded(
+                            child: AppTextFormField(
+                              context: context,
+                              textEditingController: _atasNamaController,
+                              validator: (value) {
+                                if (value == '') {
+                                  return "Atas Nama harus diisi!";
+                                }
+                                return null;
+                              },
+                              labelText: "Atas Nama",
+                              inputAction: TextInputAction.next,
+                            ),
+                          ),
+                        ],
+                      ),
                       SizedBox(height: 16),
 
-                      buildTextField("Nama Bank", "Masukkan nama Bank",
-                          _nameBankController),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _nameRekeningController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Nama Rekening harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Nama Rekening",
+                        inputAction: TextInputAction.next,
+                      ),
                       SizedBox(height: 16),
 
-                      buildTextField("Atas Nama", "Masukkan atas nama",
-                          _atasNamaController),
+                      Visibility(
+                          visible: true,
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: 10.h),
+                            child: AppTypeahead<CoaDAO>(
+                                label: "COA ",
+                                onSelected: (selectedPartId) {
+                                  setState(() {
+                                    _kasbankdetail = selectedPartId ?? "";
+                                    _coaController.text = selectedPartId ?? "";
+                                    controllerKus.fetchProducts();
+                                  });
+                                },
+                                controller: _coaController,
+                                updateFilterValue: (newValue) async {
+                                  await controllerKus.updateTypeValue(newValue);
+                                  return controllerKus.coaHeader;
+                                },
+                                displayText: (akun) => akun.namaRekening,
+                                getId: (akun) => akun.acId,
+                                onClear: (forceClear) {
+                                  if (forceClear ||
+                                      _coaController.text != _kasbankdetail) {}
+                                }),
+                          )),
+
                       SizedBox(height: 16),
 
-                      buildTextField("COA ", "Masukkan coa", _coaController),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _groupController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Group harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Group",
+                        inputAction: TextInputAction.next,
+                      ),
+
                       SizedBox(height: 16),
 
-                      buildTextField(
-                          "Group", "Masukkan group", _groupController),
-                      SizedBox(height: 16),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _userAccesController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "User Access harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "User Access",
+                        inputAction: TextInputAction.next,
+                      ),
 
-                      buildTextField("User Access", "Masukkan user access",
-                          _userAccesController),
-                      SizedBox(height: 16),
+                      SizedBox(height: 5),
 
                       SwitchListTile(
                         title: Text("Status Aktif"),
                         subtitle: Text(
-                            "Tentukan apakah karyawan saat ini aktif atau tidak aktif"),
+                            "Tentukan apakah rekening saat ini aktif atau tidak aktif"),
                         value: _isActive,
                         onChanged: (value) {
                           setState(() {
@@ -169,7 +304,7 @@ class _AddEditRekeningState extends State<AddEditRekening> {
                           });
                         },
                       ),
-                      SizedBox(height: 32),
+                      SizedBox(height: 15),
 
                       // Action Buttons
                       Row(

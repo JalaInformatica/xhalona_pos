@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/departemen.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
+import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 import 'package:xhalona_pos/repositories/departemen/depertemen_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/departemen_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/master_departemen_screen.dart';
@@ -95,27 +96,34 @@ class _AddEditDeptState extends State<AddEditDept> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Field NIK
-                      Container(
-                        height: 60,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(
-                              color: AppColor.primaryColor,
-                            )),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                            _kdDeptController.text,
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _kdDeptController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Kode Departement harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Kode Departement",
+                        inputAction: TextInputAction.next,
+                        readOnly: true,
                       ),
                       SizedBox(height: 16),
 
                       // Field Nama
-                      buildTextField("Nama Departement",
-                          "Masukkan nama departement", _nameDeptController),
+                      AppTextFormField(
+                        context: context,
+                        textEditingController: _nameDeptController,
+                        validator: (value) {
+                          if (value == '') {
+                            return "Nama Departement harus diisi!";
+                          }
+                          return null;
+                        },
+                        labelText: "Nama Departement",
+                        inputAction: TextInputAction.next,
+                      ),
                       SizedBox(height: 32),
 
                       // Action Buttons

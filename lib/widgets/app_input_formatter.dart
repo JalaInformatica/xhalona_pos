@@ -82,17 +82,30 @@ Widget buildDropdownFieldJK(
     {bool enabled = true}) {
   return DropdownButtonFormField<String>(
     decoration: InputDecoration(
-      labelText: label,
-      labelStyle: TextStyle(color: AppColor.primaryColor),
-      hintStyle: TextStyle(color: AppColor.primaryColor),
-      border: OutlineInputBorder(
-        borderSide: BorderSide(color: AppColor.primaryColor),
+      labelStyle: AppTextStyle.textBodyStyle(
+        color: AppColor.grey500,
       ),
-      focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: AppColor.primaryColor, width: 2.0),
+      floatingLabelStyle:
+          AppTextStyle.textBodyStyle(color: AppColor.primaryColor),
+      isDense: true,
+      hintStyle: (AppTextStyle.textBodyStyle()).copyWith(
+        color: AppColor.grey500,
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(5),
+        borderSide: BorderSide(color: AppColor.grey100),
       ),
       enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(5),
+        borderSide: BorderSide(color: AppColor.grey300),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(5),
         borderSide: BorderSide(color: AppColor.primaryColor),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(5),
+        borderSide: BorderSide(color: AppColor.dangerColor),
       ),
     ),
     items: items.map((item) {
