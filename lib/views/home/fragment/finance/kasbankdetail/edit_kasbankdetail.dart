@@ -116,7 +116,7 @@ class _AddEditKasBankDetailState extends State<AddEditKasBankDetail> {
             "Kas Bank Detail ${widget.noTrx}",
             style: AppTextStyle.textTitleStyle(color: Colors.white),
           ),
-          backgroundColor: AppColor.secondaryColor,
+          backgroundColor: AppColor.whiteColor,
         ),
         body: _isLoading
             ? buildShimmerLoading()

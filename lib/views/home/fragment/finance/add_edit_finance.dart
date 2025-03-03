@@ -7,6 +7,8 @@ import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/models/dao/kustomer.dart';
 import 'package:xhalona_pos/models/dao/rekening.dart';
 import 'package:xhalona_pos/widgets/app_calendar.dart';
+import 'package:xhalona_pos/widgets/app_elevated_button.dart';
+import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:xhalona_pos/widgets/app_typeahead.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -97,9 +99,8 @@ class _AddEditFinanceState extends State<AddEditFinance> {
           );
           setState(() {});
         } else {
-          Navigator.of(context).pushAndRemoveUntil(
+          Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => HomeScreen()),
-            (route) => false,
           );
           controllerFi.fetchProducts();
           ScaffoldMessenger.of(context).showSnackBar(
@@ -111,11 +112,10 @@ class _AddEditFinanceState extends State<AddEditFinance> {
 
     void handlePrint() async {
       controllerFi.printLapFinance(_noTrxController.text).then((url) {
-        Navigator.of(context).pushAndRemoveUntil(
+        Navigator.of(context).push(
           MaterialPageRoute(
               builder: (context) =>
                   LapPenjualanViewerScreen(url, "Print Kas Bank")),
-          (route) => false,
         );
       });
     }
@@ -137,9 +137,8 @@ class _AddEditFinanceState extends State<AddEditFinance> {
         );
         setState(() {});
       } else {
-        Navigator.of(context).pushAndRemoveUntil(
+        Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => HomeScreen()),
-          (route) => false,
         );
         controllerFi.fetchProducts();
         ScaffoldMessenger.of(context).showSnackBar(
@@ -148,60 +147,60 @@ class _AddEditFinanceState extends State<AddEditFinance> {
       }
     }
 
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
-            (route) => false); // Navigasi kembali ke halaman sebelumnya
-        return false; // Mencegah navigasi bawaan
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Finance",
-            style: AppTextStyle.textTitleStyle(color: Colors.white),
-          ),
-          backgroundColor: AppColor.secondaryColor,
-          actions: [
-            widget.finance != null && widget.finance!.isApproved == false
-                ? masterButton(() {
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (context) => AddEditKasBankDetail(
-                                  noTrx: widget.finance!.voucherNo,
-                                  ket: widget.finance!.ket,
-                                  rowId: widget.finance!.rowId.toString(),
-                                )),
-                        (route) => false);
-                  }, '', Icons.add)
+    return SafeArea(child: Scaffold(
+        backgroundColor: AppColor.whiteColor,
+        body: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.all(10.w),
+              color: AppColor.primaryColor,
+              child: Row(
+              children: [
+                AppIconButton(
+                  foregroundColor: AppColor.whiteColor,
+                    onPressed: (){
+                    Navigator.of(context).pop();
+                  }, 
+                  icon: Icon(Icons.arrow_back)
+                ),
+                Text(
+                  "Catatan Keuangan",
+                  style: AppTextStyle.textSubtitleStyle(color: AppColor.whiteColor),
+                ),
+                Spacer(),
+                widget.finance != null
+                    ? masterButton(
+                        handlePrint,
+                        'Print',
+                        Icons.print,
+                      )
                 : SizedBox(),
-            SizedBox(width: 5),
-            masterButton(() {
-              Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => MetodeBayarScreen()),
-                  (route) => false);
-            }, '', Icons.settings),
-            SizedBox(width: 5),
-            widget.finance != null
-                ? masterButton(
-                    handlePrint,
-                    'Print',
-                    Icons.print,
-                  )
-                : SizedBox(),
-            SizedBox(width: 5),
-          ],
-        ),
-        body: _isLoading
-            ? buildShimmerLoading()
-            : SingleChildScrollView(
+          ],)),
+            _isLoading ? buildShimmerLoading()
+            : Expanded(child: SingleChildScrollView(
                 padding: EdgeInsets.all(16),
                 child: Form(
                   key: _formKey,
                   child: Column(
+                    spacing: 10.h,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: IntrinsicWidth(
+                          child: AppElevatedButton(
+                            foregroundColor: AppColor.primaryColor,
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (context) => MetodeBayarScreen()));
+                            },
+                            icon: Icons.settings, 
+                            child: Text("Metode Bayar")
+                          ),
+                        )
+                      ),       
                       // Field NIK
+                      if(widget.finance!=null)
                       AppTextFormField(
                         context: context,
                         textEditingController: _noTrxController,
@@ -215,12 +214,10 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                         inputAction: TextInputAction.next,
                         readOnly: true,
                       ),
-                      SizedBox(height: 16),
                       Text(
                         'Jenis Trx',
                         style: AppTextStyle.textBodyStyle(),
                       ),
-
                       Row(
                         children: [
                           Expanded(
@@ -263,13 +260,9 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                           )),
                         ],
                       ),
-                      SizedBox(height: 16),
-
                       Visibility(
                           visible: true,
-                          child: Padding(
-                            padding: EdgeInsets.only(bottom: 10.h),
-                            child: AppTypeahead<RekeningDAO>(
+                          child: AppTypeahead<RekeningDAO>(
                                 label: "Akun",
                                 controller: _financeController,
                                 onSelected: (selectedPartId) {
@@ -290,7 +283,7 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                                   if (forceClear ||
                                       _financeController.text != _finance) {}
                                 }),
-                          )),
+                          ),
 
                       // buildTypeAheadFieldAkun(
                       //   "Akun",
@@ -306,11 +299,10 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                       //       ? false
                       //       : true,
                       // ),
-                      SizedBox(height: 16),
-
                       AppTextFormField(
                         context: context,
-                        textEditingController: _tanggalController,
+                        textEditingController: _tanggalController..text=DateFormat('dd-MM-yyyy')
+                                                        .format(DateTime.now()),
                         readOnly: true,
                         suffixIcon: Icon(Icons.calendar_today),
                         onTap: () {
@@ -352,13 +344,9 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 16),
-
                       Visibility(
                           visible: true,
-                          child: Padding(
-                            padding: EdgeInsets.only(bottom: 10.h),
-                            child: AppTypeahead<KustomerDAO>(
+                          child: AppTypeahead<KustomerDAO>(
                                 label:
                                     "${_jenisTrx == 'M' ? 'Diterima dari' : 'Keluar ke'} ",
                                 onSelected: (selectedPartId) {
@@ -380,7 +368,7 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                                   if (forceClear ||
                                       _kustomerController.text != _kustomer) {}
                                 }),
-                          )),
+                          ),
 
                       // buildTypeAheadFieldRef(
                       //     "${_jenisTrx == 'M' ? 'Diterima dari' : 'Keluar ke'} ",
@@ -389,7 +377,6 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                       //     _kustomer = value;
                       //   });
                       // }, controllerKus.updateFilterValue),
-                      SizedBox(height: 16),
 
                       // Field Nama
                       AppTextFormField(
@@ -408,8 +395,6 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                             ? true
                             : false,
                       ),
-                      SizedBox(height: 16),
-
                       // Field BPJS Kesehatan
                       AppTextFormField(
                         context: context,
@@ -420,41 +405,37 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                           }
                           return null;
                         },
-                        labelText: "Jumlah Bayar",
+                        hintText: "Jumlah Bayar",
                         inputAction: TextInputAction.next,
-                        readOnly: true,
+                        disabled: true,
                       ),
 
-                      SizedBox(height: 32),
-
                       // Action Buttons
-                      Wrap(
+                      Row(
                         spacing: 4,
-                        runSpacing: 4,
                         children: [
-                          masterButton(
-                              handleAddEditFinance, "Simpan", Icons.add),
-                          masterButton(
-                            handleuPost,
-                            widget.finance != null &&
+                          Expanded(child: AppElevatedButton(
+                             onPressed: handleAddEditFinance,
+                             backgroundColor: AppColor.primaryColor,
+                             foregroundColor: AppColor.whiteColor,
+                             icon: Icons.add, 
+                             child: Text("Simpan", style: AppTextStyle.textSubtitleStyle(),)),),
+                          Expanded(child: AppElevatedButton(
+                            onPressed: handleuPost,
+                            icon: Icons.post_add,
+                            backgroundColor: widget.finance != null && widget.finance!.isApproved? AppColor.primaryColor : AppColor.purpleColor,
+                            foregroundColor: AppColor.whiteColor,
+                            borderColor: AppColor.transparentColor,
+                            child: widget.finance != null &&
                                     widget.finance!.isApproved == true
-                                ? 'UnPost'
-                                : 'Post',
-                            Icons.post_add,
-                          ),
-                          masterButton(() {
-                            Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(
-                                    builder: (context) => HomeScreen()),
-                                (route) => false);
-                          }, "Batal", Icons.refresh),
+                                ? Text('UnPost', style: AppTextStyle.textSubtitleStyle(),)
+                                : Text('Post', style: AppTextStyle.textSubtitleStyle()),))
                         ],
                       ),
                     ],
                   ),
                 ),
-              ),
-      ),
-    );
+              )),
+    ])));
   }
 }

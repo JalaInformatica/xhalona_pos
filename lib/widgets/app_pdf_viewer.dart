@@ -289,7 +289,7 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
     return Scaffold(
       backgroundColor: AppColor.grey100,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColor.whiteColor,
         actions: [
           IconButton(
             icon: Icon(Icons.print),

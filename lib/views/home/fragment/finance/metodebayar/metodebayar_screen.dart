@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/widgets/app_elevated_button.dart';
+import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/models/dao/metodebayar.dart';
@@ -119,26 +121,19 @@ class MetodeBayarScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
-            (route) => false); // Navigasi kembali ke halaman sebelumnya
-        return false; // Mencegah navigasi bawaan
-      },
-      child: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           title: Text(
             "Metode Bayar",
-            style: AppTextStyle.textTitleStyle(),
+            style: AppTextStyle.textTitleStyle(color: AppColor.whiteColor),
           ),
-          leading: IconButton(
+          backgroundColor: AppColor.primaryColor,
+          leading: AppIconButton(
+            foregroundColor: AppColor.whiteColor,
             icon: Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => HomeScreen()),
-                  (route) => false); // Jika tidak, gunakan navigator default
-            }, // Navigasi kembali ke halaman sebelumnya
+              Navigator.of(context).pop();
+            }, 
           ),
         ),
         backgroundColor: AppColor.whiteColor,
@@ -150,12 +145,18 @@ class MetodeBayarScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              mButton(() {
-                Navigator.of(context).pushAndRemoveUntil(
+              AppElevatedButton(
+                onPressed: () {
+                 Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(
                         builder: (context) => AddEditMetodeBayar()),
                     (route) => false);
-              }, "Add MetodeBayar", Icons.add, double.infinity),
+              }, 
+              backgroundColor: AppColor.primaryColor,
+              foregroundColor: AppColor.whiteColor,
+              icon: Icons.add, 
+              child: Text("Tambah Metode Bayar", style: AppTextStyle.textSubtitleStyle(),)
+              ),
               SizedBox(
                 height: 5.h,
               ),
@@ -313,7 +314,6 @@ class MetodeBayarScreen extends StatelessWidget {
             ],
           ),
         ),
-      ),
     );
   }
 }

@@ -74,7 +74,7 @@ class _AppTableState extends State<AppTable> {
       children: [
         Row(
           children: [
-            Expanded(
+            Flexible(
               child: SizedBox(
                   height: 42,
                   child: AppTextField(

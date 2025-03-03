@@ -25,6 +25,8 @@ class AppElevatedButton extends ElevatedButton {
   }) : super(
         onPressed: !disabled? onPressed : onPressedValidation ?? (){},
         child: icon==null? child : Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 5.w,
           children: [
             Icon(icon, color: foregroundColor,),
             child,

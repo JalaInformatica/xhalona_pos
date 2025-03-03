@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/widgets/app_elevated_button.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/models/dao/kasbank.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
@@ -24,7 +25,7 @@ class FinanceScreen extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
         decoration: BoxDecoration(
-          color: AppColor.secondaryColor, // Background color
+          color: AppColor.primaryColor, // Background color
           borderRadius: BorderRadius.circular(8), // Rounded corners
           boxShadow: [
             BoxShadow(
@@ -112,10 +113,9 @@ class FinanceScreen extends StatelessWidget {
   }
 
   Future<dynamic> goTo(BuildContext context, KasBankDAO finance) {
-    return Navigator.of(context).pushAndRemoveUntil(
+    return Navigator.of(context).push(
         MaterialPageRoute(
-            builder: (context) => AddEditFinance(finance: finance)),
-        (route) => false);
+            builder: (context) => AddEditFinance(finance: finance)));
   }
 
   String getLastFourDigits(String voucherNo) {
@@ -128,14 +128,7 @@ class FinanceScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
-            (route) => false); // Navigasi kembali ke halaman sebelumnya
-        return false; // Mencegah navigasi bawaan
-      },
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: AppColor.whiteColor,
         body: Padding(
           padding: EdgeInsets.symmetric(
@@ -145,15 +138,19 @@ class FinanceScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              mButton(() {
-                Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => AddEditFinance()),
-                    (route) => false);
-              }, "Add Finance", Icons.add, double.infinity),
+              AppElevatedButton(
+                foregroundColor: AppColor.primaryColor,
+                backgroundColor: AppColor.whiteColor,
+                onPressed: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => AddEditFinance()));
+              }, 
+              icon: Icons.add, 
+              child: Text("Catatan Keuangan Baru", style: AppTextStyle.textSubtitleStyle(),),),
               SizedBox(
-                height: 5.h,
+                height: 10.h,
               ),
-              Obx(() => Expanded(
+              Obx(() => Flexible(
                       child: AppTable(
                     onSearch: (filterValue) =>
                         controller.updateFilterValue(filterValue),
@@ -193,7 +190,7 @@ class FinanceScreen extends StatelessWidget {
                             },
                             showOptionsOnTap: true),
                         AppTableCell(
-                            value: finance.jenisAc,
+                            value: finance.jenisAc == "M" ? "Masuk" : finance.jenisAc == "K"? "Keluar" : "",
                             index: i,
                             onEdit: () {
                               goTo(context, finance);
@@ -241,12 +238,11 @@ class FinanceScreen extends StatelessWidget {
                           value: "", // Ganti dengan URL gambar jika ada
                           isEdit: true,
                           onEdit: () {
-                            Navigator.of(context).pushAndRemoveUntil(
+                            Navigator.of(context).push(
                                 MaterialPageRoute(
                                     builder: (context) => AddEditFinance(
                                           finance: finance,
-                                        )),
-                                (route) => false);
+                                        )));
                           },
                         ),
                       ];
@@ -257,7 +253,6 @@ class FinanceScreen extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 }

@@ -107,7 +107,7 @@ class _AddEditMetodeBayarState extends State<AddEditMetodeBayar> {
             "Tambah/Edit Data MetodeBayar",
             style: AppTextStyle.textTitleStyle(color: Colors.white),
           ),
-          backgroundColor: AppColor.secondaryColor,
+          backgroundColor: AppColor.whiteColor,
         ),
         body: _isLoading
             ? buildShimmerLoading()

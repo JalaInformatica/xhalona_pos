@@ -5,6 +5,7 @@ class AppColor {
   static const Color secondaryColor =Color(0xFFFF94CA);
   static const Color tertiaryColor = Color.fromARGB(255, 255, 241, 248);
   static const Color backgroundColor = Color(0xffF1F1F1);
+  static const Color transparentColor = Colors.transparent;
   static const Color starColor = Color.fromARGB(255, 244, 203, 4);
   static const Color dividerColor = Color(0xFFBDBDBD);
   static const Color grey500 = Colors.grey;
