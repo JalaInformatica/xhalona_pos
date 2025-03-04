@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/product.dart';
 import 'package:xhalona_pos/models/dao/kategori.dart';
+import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:xhalona_pos/widgets/app_typeahead.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -142,13 +143,20 @@ class _AddEditProductState extends State<AddEditProduct> {
       },
       child: Scaffold(
         appBar: AppBar(
-          automaticallyImplyLeading: false,
+          foregroundColor: AppColor.whiteColor,
+          leading: AppIconButton(
+            onPressed: (){
+              
+            }, 
+          icon: Icon(Icons.arrow_back)),
+          titleSpacing: 0,
           title: Text(
-            "Tambah/Edit Data Product ",
+            "Tambah/Edit Data Produk ",
             style: AppTextStyle.textTitleStyle(color: Colors.white),
           ),
-          backgroundColor: AppColor.secondaryColor,
+          backgroundColor: AppColor.primaryColor,
         ),
+        backgroundColor: AppColor.whiteColor,
         body: SingleChildScrollView(
           padding: EdgeInsets.all(16.0),
           child: Form(
@@ -157,7 +165,8 @@ class _AddEditProductState extends State<AddEditProduct> {
               children: [
                 // Informasi Produk Section
                 Card(
-                  elevation: 4,
+                  elevation: 2,
+                  color: AppColor.whiteColor,
                   margin: EdgeInsets.only(bottom: 16.0),
                   child: Padding(
                     padding: EdgeInsets.all(16.0),
@@ -166,7 +175,7 @@ class _AddEditProductState extends State<AddEditProduct> {
                       children: [
                         Text(
                           'Informasi Produk',
-                          style: Theme.of(context).textTheme.titleLarge,
+                          style: AppTextStyle.textSubtitleStyle(),
                         ),
                         SizedBox(height: 5.0),
                         Row(
@@ -274,7 +283,7 @@ class _AddEditProductState extends State<AddEditProduct> {
                         SizedBox(height: 5.0),
                         Text(
                           'Tambah Gambar',
-                          style: Theme.of(context).textTheme.bodyLarge,
+                          style: AppTextStyle.textSubtitleStyle(),
                         ),
                         SizedBox(height: 5.0),
                         Row(
@@ -336,7 +345,8 @@ class _AddEditProductState extends State<AddEditProduct> {
                 ),
                 // Satuan & Harga Section
                 Card(
-                  elevation: 4,
+                  elevation: 2,
+                  color: AppColor.whiteColor,
                   child: Padding(
                     padding: EdgeInsets.all(16.0),
                     child: Column(
@@ -344,7 +354,7 @@ class _AddEditProductState extends State<AddEditProduct> {
                       children: [
                         Text(
                           'Satuan & Harga ',
-                          style: Theme.of(context).textTheme.titleLarge,
+                          style: AppTextStyle.textSubtitleStyle(),
                         ),
                         SizedBox(height: 5.0),
                         Row(
@@ -431,7 +441,7 @@ class _AddEditProductState extends State<AddEditProduct> {
                                 ),
                               ),
                               selected: chipStatus[label]!,
-                              selectedColor: AppColor.secondaryColor,
+                              selectedColor: AppColor.primaryColor,
                               backgroundColor: Colors.transparent,
                               checkmarkColor: Colors.white,
                               shape: StadiumBorder(
@@ -451,7 +461,7 @@ class _AddEditProductState extends State<AddEditProduct> {
                         ),
                         SwitchListTile(
                           title: Text(
-                            "Is Publish",
+                            "Tampilkan ",
                             style: AppTextStyle.textBodyStyle(),
                           ),
                           value: _isPublish,
