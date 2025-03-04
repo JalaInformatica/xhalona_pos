@@ -1,3 +1,5 @@
+import 'package:xhalona_pos/models/dao/birthdate.dart';
+
 class UserDAO {
   String userId;
   String userName;
@@ -6,7 +8,7 @@ class UserDAO {
   int levelId;
   String jointDate;
   String profilePic;
-  String profileBirthDate;
+  BirthDateDAO profileBirthDate;
   String profileSex;
   String profileAddress;
   String profileCity;
@@ -25,7 +27,7 @@ class UserDAO {
     this.levelId = 0,
     this.jointDate = "",
     this.profilePic = "",
-    this.profileBirthDate = "",
+    this.profileBirthDate = const BirthDateDAO(),
     this.profileSex = "",
     this.profileAddress = "",
     this.profileCity = "",
@@ -45,7 +47,9 @@ class UserDAO {
         levelId = json['LevelID'] ?? 0,
         jointDate = json['JOINT_DATE'] ?? "",
         profilePic = json['PROFILE_PIC'] ?? "",
-        profileBirthDate = json['PROFILE_BIRTH_DATE'] ?? "",
+        profileBirthDate = json['PROFILE_BIRTH_DATE'] != null
+            ? BirthDateDAO.fromJson(json['PROFILE_BIRTH_DATE'])
+            : const BirthDateDAO(),
         profileSex = json['PROFILE_SEX'] ?? "",
         profileAddress = json['PROFILE_ADDRESS']?? "",
         profileCity = json['PROFILE_CITY'] ?? "",

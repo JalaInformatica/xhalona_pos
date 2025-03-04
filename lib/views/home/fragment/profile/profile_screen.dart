@@ -243,7 +243,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         userPic: prefs.getString('profileImageUrl') ??
             controller.profileData.value.profilePic,
         userBirthDate: _dateController.text == null
-            ? controller.profileData.value.profileBirthDate
+            ? controller.profileData.value.profileBirthDate.date
             : prefs.getString('datePicker'),
         userGender: prefs.getString('gender') == "Laki-laki"
             ? 'M'
@@ -538,7 +538,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     null
                                 ? prefs.getString('datePicker') ??
                                     controller
-                                        .profileData.value.profileBirthDate
+                                        .profileData.value.profileBirthDate.date
                                 : 'Atur Sekarang'),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: _selectDate,
