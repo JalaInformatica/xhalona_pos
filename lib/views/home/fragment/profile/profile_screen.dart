@@ -11,6 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:xhalona_pos/views/home/home_controller.dart';
 import 'package:xhalona_pos/services/user/user_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:xhalona_pos/repositories/user/user_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/profile/ubah%20profile/editname_page.dart';
 import 'package:xhalona_pos/views/home/fragment/profile/ubah%20profile/editemail_page.dart';
 // ignore_for_file: unnecessary_null_comparison
@@ -27,6 +28,7 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final HomeController controller = Get.put(HomeController());
+  UserRepository _userRepository = UserRepository();
 
   final TextEditingController _dateController = TextEditingController();
   late SharedPreferences prefs;
@@ -232,7 +234,39 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    handleChangeProfile() async {}
+    handleChangeProfile() async {
+      String result = await _userRepository.changeUserDetail(
+        userName: name ?? controller.profileData.value.userName,
+        userEmail: email ?? controller.profileData.value.emailAddress,
+        userPhone: controller.profileData.value.phoneNumber1,
+        joinDate: controller.profileData.value.jointDate,
+        userPic: prefs.getString('profileImageUrl') ??
+            controller.profileData.value.profilePic,
+        userBirthDate: _dateController.text == null
+            ? controller.profileData.value.profileBirthDate
+            : prefs.getString('datePicker'),
+        userGender: prefs.getString('gender') == "Laki-laki"
+            ? 'M'
+            : 'F' ?? controller.profileData.value.profileSex,
+      );
+
+      bool isSuccess = result == "1";
+      if (isSuccess) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Data gagal disimpan!')),
+        );
+        setState(() {});
+      } else {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+          (route) => false,
+        );
+        controller.fetchMenu();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Data berhasil disimpan!')),
+        );
+      }
+    }
 
     return WillPopScope(
       onWillPop: () async {

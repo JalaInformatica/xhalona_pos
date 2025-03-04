@@ -7,6 +7,8 @@ class KustomerDAO {
   String emailAdress;
   String? scID;
   String? createdBy;
+  bool? isPayable;
+  bool? isCompliment;
 
   KustomerDAO({
     this.suplierId = "",
@@ -17,6 +19,8 @@ class KustomerDAO {
     this.emailAdress = "",
     this.scID,
     this.createdBy,
+    this.isPayable,
+    this.isCompliment,
   });
 
   KustomerDAO.fromJson(Map<String, dynamic> json)
@@ -27,6 +31,8 @@ class KustomerDAO {
         telp = json['TELP'] ?? "",
         emailAdress = json['EMAIL_ADDRESS'] ?? "",
         scID = json['SOURCE_ID'],
+        isPayable = json['IS_PAYABLE'],
+        isCompliment = json['IS_COMPLIMENT'],
         createdBy = json['CREATEBY'];
 
   Map<String, dynamic> toJson() {

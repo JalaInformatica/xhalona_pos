@@ -54,6 +54,7 @@ class _AddEditProductState extends State<AddEditProduct> {
 
   String? profileImageUrl;
   bool isLoading = true;
+  bool _isPublish = false;
 
   @override
   void initState() {
@@ -75,6 +76,7 @@ class _AddEditProductState extends State<AddEditProduct> {
       chipStatus['Promo'] = widget.product?.isPromo ?? false;
       chipStatus['Tak Dijual'] = widget.product?.isFixPrice ?? false;
       profileImageUrl = widget.product?.thumbImage;
+      _isPublish = widget.product!.isPublish;
     }
   }
 
@@ -108,6 +110,7 @@ class _AddEditProductState extends State<AddEditProduct> {
           isFree: chipStatus['Tak Dijual'] == true ? 1 : 0,
           mainImage: profileImageUrl ?? widget.product?.thumbImage,
           thumbImage: profileImageUrl ?? widget.product?.thumbImage,
+          isPublish: _isPublish == true ? 1 : 0,
           actionId: widget.product == null ? "0" : "1",
         );
 
@@ -205,7 +208,7 @@ class _AddEditProductState extends State<AddEditProduct> {
                                   child: Padding(
                                     padding: EdgeInsets.only(bottom: 10.h),
                                     child: AppTypeahead<KategoriDAO>(
-                                        label: "Kategori",
+                                        label: "Kategori Global",
                                         controller: _kategoriGlobalController,
                                         onSelected: (selectedPartId) {
                                           setState(() {
@@ -232,7 +235,6 @@ class _AddEditProductState extends State<AddEditProduct> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 5),
                         Row(
                           children: [
                             Expanded(
@@ -292,7 +294,7 @@ class _AddEditProductState extends State<AddEditProduct> {
                               },
                               child: Container(
                                 width: 60,
-                                height: 60,
+                                height: 40,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.rectangle,
                                   border: Border.all(
@@ -373,7 +375,7 @@ class _AddEditProductState extends State<AddEditProduct> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 10.0),
+                        SizedBox(height: 5.0),
                         Row(
                           children: [
                             Expanded(
@@ -422,7 +424,7 @@ class _AddEditProductState extends State<AddEditProduct> {
                             return FilterChip(
                               label: Text(
                                 label,
-                                style: TextStyle(
+                                style: AppTextStyle.textBodyStyle(
                                   color: chipStatus[label]!
                                       ? Colors.white
                                       : Colors.black,
@@ -446,6 +448,18 @@ class _AddEditProductState extends State<AddEditProduct> {
                               },
                             );
                           }).toList(),
+                        ),
+                        SwitchListTile(
+                          title: Text(
+                            "Is Publish",
+                            style: AppTextStyle.textBodyStyle(),
+                          ),
+                          value: _isPublish,
+                          onChanged: (value) {
+                            setState(() {
+                              _isPublish = value;
+                            });
+                          },
                         ),
                       ],
                     ),

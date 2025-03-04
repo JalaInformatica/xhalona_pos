@@ -10,6 +10,7 @@ class ProductController extends GetxController {
   // var trxStatusCategory = ProductStatusCategory.progress.obs;
   var isActive = false.obs;
   var isJasa = false.obs;
+  var isPublish = false.obs;
   var isStock = false.obs;
   var isPaket = false.obs;
   var isPromo = false.obs;
@@ -39,6 +40,13 @@ class ProductController extends GetxController {
 
   void updateFilterJasa() async {
     isJasa.value = !isJasa.value;
+    pageNo.value = 1;
+    pageRow.value = 10;
+    fetchProducts();
+  }
+
+  void updateFilterPublish() async {
+    isPublish.value = !isPublish.value;
     pageNo.value = 1;
     pageRow.value = 10;
     fetchProducts();
@@ -109,6 +117,7 @@ class ProductController extends GetxController {
           isPacket: '${isPaket.value ? '1' : ''}',
           isPromo: '${isPromo.value ? '1' : ''}',
           isStock: '${isStock.value ? '1' : ''}',
+          isPublish: '${isPublish.value ? '1' : ''}',
           analisaId: '',
           analisaIdGlobal: '',
           filterValue: filterValue.value,

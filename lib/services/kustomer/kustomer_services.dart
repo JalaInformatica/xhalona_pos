@@ -40,6 +40,8 @@ class KustomerServices {
     String? adress2,
     String? telp,
     String? emailAdress,
+    String? isPayable,
+    String? isCompliment,
     String? isSuplier,
     String? actionId,
   }) async {
@@ -58,6 +60,8 @@ class KustomerServices {
         "ADDRESS2": adress2,
         "TELP": telp,
         "EMAIL_ADDRESS": emailAdress,
+        "IS_PAYABLE": isPayable,
+        "IS_COMPLIMENT": isCompliment,
         "IS_SUPPLIER": isSuplier
       }
     });

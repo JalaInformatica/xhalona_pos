@@ -39,6 +39,7 @@ class ProductDAO {
   String groupAnalisaName;
   String groupAnalisaId;
   bool isNonSales;
+  bool isPublish;
 
   ProductSortBy productSortBy = ProductSortBy();
 
@@ -83,6 +84,7 @@ class ProductDAO {
     this.groupAnalisaName = "",
     this.groupAnalisaId = "",
     this.isNonSales = false,
+    this.isPublish = false,
   });
 
   ProductDAO.fromJson(Map<String, dynamic> json)
@@ -118,14 +120,15 @@ class ProductDAO {
         totalQtySoled = json['TOTAL_QTY_SOLED'] ?? 0,
         totalRate = json['TOTAL_RATE'] ?? 0,
         totalRatePerson = json['TOTAL_RATE_PERSON'] ?? 0,
-        employeeFeePct = json['EMPLOYEE_FEE_PCT']?? 0,
-        employeeFeeVal = json['EMPLOYEE_FEE_VAL']?? 0,
+        employeeFeePct = json['EMPLOYEE_FEE_PCT'] ?? 0,
+        employeeFeeVal = json['EMPLOYEE_FEE_VAL'] ?? 0,
         createDate = json['CREATEDATE'] ?? "",
         createBy = json['CREATEBY'] ?? "",
         isPromo = json['IS_PROMO'] ?? false,
         groupAnalisaName = json['GROUP_ANALISA_NAME'] ?? "",
         groupAnalisaId = json['GROUP_ANALISA_ID'] ?? "",
-        isNonSales = json['IS_NON_SALES'] ?? false;
+        isNonSales = json['IS_NON_SALES'] ?? false,
+        isPublish = json['IS_PUBLISH'] ?? false;
 
   Map<String, dynamic> toJson() {
     return {

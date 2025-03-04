@@ -79,6 +79,7 @@ class _AddEditRekeningState extends State<AddEditRekening> {
             acGroupId: _groupController.text,
             acsUserId: _userAccesController.text,
             jenisAc: _jenisAc,
+            isActive: _isActive == true ? "1" : "0",
             actionId: widget.rekening == null ? '0' : '1');
 
         bool isSuccess = result == "1";

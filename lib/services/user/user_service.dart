@@ -121,4 +121,45 @@ class UserService {
 
     return ResponseHandler.handle(response);
   }
+
+  Future<String> changeUserDetail({
+    String? userName,
+    String? userEmail,
+    String? userPhone,
+    String? joinDate,
+    String? userPic,
+    String? userBirthDate,
+    String? userGender,
+  }) async {
+    var profileUrl = '/SYSMAN/profile';
+
+    var body = jsonEncode({
+      "rqProfileChange": {
+        "USER_ID": api.userId,
+        "SESSION_LOGIN_ID": api.sessionId,
+        "UserName": userName,
+        "EmailAddress": userEmail,
+        "PhoneNumber1": userPhone,
+        "JOINT_DATE": joinDate,
+        "PROFILE_PIC": userPic,
+        "PROFILE_BIRTH_DATE": userBirthDate,
+        "PROFILE_SEX": userGender,
+        "PROFILE_ADDRESS": null,
+        "PROFILE_CITY": null,
+        "PROFILE_KELURAHAN": null,
+        "PROFILE_KECAMATAN": null,
+        "PROFILE_PROVINSI": null,
+        "PROFILE_POSTAL_CODE": null,
+        "PROFILE_ADDRESS_POINT": null
+      }
+    });
+
+    var response = await api.post(
+      profileUrl,
+      headers: await api.requestHeaders(),
+      body: body,
+    );
+
+    return ResponseHandler.handle(response);
+  }
 }

@@ -31,6 +31,8 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
   final _address1KustomerController = TextEditingController();
   final _address2KustomerController = TextEditingController();
   bool _isLoading = true;
+  bool _isPayable = false;
+  bool _isCompliment = false;
 
   final List<String> genders = ['Laki-laki', 'Perempuan'];
 
@@ -46,6 +48,8 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
       _emailKustomerController.text = widget.kustomer!.emailAdress;
       _address1KustomerController.text = widget.kustomer!.address1;
       _address2KustomerController.text = widget.kustomer!.address2;
+      _isPayable = widget.kustomer!.isPayable ?? false;
+      _isCompliment = widget.kustomer!.isCompliment ?? false;
     }
   }
 
@@ -66,6 +70,8 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
             emailAdress: _emailKustomerController.text,
             adress1: _address1KustomerController.text,
             adress2: _address2KustomerController.text,
+            isPayable: _isPayable == true ? "1" : "0",
+            isCompliment: _isCompliment == true ? "1" : "0",
             isSuplier: widget.isSuplier,
             actionId: widget.kustomer == null ? '0' : '1');
 
@@ -200,7 +206,34 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
                         inputAction: TextInputAction.next,
                       ),
 
-                      SizedBox(height: 32),
+                      SizedBox(height: 16),
+                      if (widget.isSuplier == '0')
+                        SwitchListTile(
+                          title: Text(
+                            "Is Payable",
+                            style: AppTextStyle.textBodyStyle(),
+                          ),
+                          value: _isPayable,
+                          onChanged: (value) {
+                            setState(() {
+                              _isPayable = value;
+                            });
+                          },
+                        ),
+                      if (widget.isSuplier == '0')
+                        SwitchListTile(
+                          title: Text(
+                            "Is Compliment",
+                            style: AppTextStyle.textBodyStyle(),
+                          ),
+                          value: _isCompliment,
+                          onChanged: (value) {
+                            setState(() {
+                              _isCompliment = value;
+                            });
+                          },
+                        ),
+                      SizedBox(height: 15),
 
                       // Action Buttons
                       Row(

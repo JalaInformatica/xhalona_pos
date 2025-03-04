@@ -152,19 +152,24 @@ class MasterProductScreen extends StatelessWidget {
                 height: 5.h,
               ),
               Obx(
-                () => Row(
-                  children: [
-                    checkboxItem("Jasa", controller.isJasa.value,
-                        (_) => controller.updateFilterJasa()),
-                    checkboxItem("Stock", controller.isStock.value,
-                        (_) => controller.updateFilterStock()),
-                    checkboxItem("Paket", controller.isPaket.value,
-                        (_) => controller.updateFilterPaket()),
-                    checkboxItem("Promo", controller.isPromo.value,
-                        (_) => controller.updateFilterPromo()),
-                    checkboxItem("Bahan", controller.isBahan.value,
-                        (_) => controller.updateFilterBahan()),
-                  ],
+                () => SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      checkboxItem("Publish", controller.isPublish.value,
+                          (_) => controller.updateFilterPublish()),
+                      checkboxItem("Jasa", controller.isJasa.value,
+                          (_) => controller.updateFilterJasa()),
+                      checkboxItem("Stock", controller.isStock.value,
+                          (_) => controller.updateFilterStock()),
+                      checkboxItem("Paket", controller.isPaket.value,
+                          (_) => controller.updateFilterPaket()),
+                      checkboxItem("Promo", controller.isPromo.value,
+                          (_) => controller.updateFilterPromo()),
+                      checkboxItem("Bahan", controller.isBahan.value,
+                          (_) => controller.updateFilterBahan()),
+                    ],
+                  ),
                 ),
               ),
               SizedBox(

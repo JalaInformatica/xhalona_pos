@@ -33,4 +33,25 @@ class UserRepository extends AppRepository {
     String data = getResponseData(result);
     return data;
   }
+
+  Future<String> changeUserDetail({
+    String? userName,
+    String? userEmail,
+    String? userPhone,
+    String? joinDate,
+    String? userPic,
+    String? userBirthDate,
+    String? userGender,
+  }) async {
+    var result = await _userService.changeUserDetail(
+      userEmail: userEmail,
+      userPhone: userPhone,
+      joinDate: joinDate,
+      userPic: userPic,
+      userBirthDate: userBirthDate,
+      userGender: userGender,
+    );
+    String data = getResponseData(result);
+    return data;
+  }
 }

@@ -28,6 +28,8 @@ class KustomerRepository extends AppRepository {
     String? adress2,
     String? telp,
     String? emailAdress,
+    String? isPayable,
+    String? isCompliment,
     String? isSuplier,
     String? actionId,
   }) async {
@@ -38,6 +40,8 @@ class KustomerRepository extends AppRepository {
       adress2: adress2,
       telp: telp,
       emailAdress: emailAdress,
+      isPayable: isPayable,
+      isCompliment: isCompliment,
       isSuplier: isSuplier,
       actionId: actionId,
     );

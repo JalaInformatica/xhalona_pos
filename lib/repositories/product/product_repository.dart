@@ -16,6 +16,7 @@ class ProductRepository extends AppRepository {
       String? isPromo,
       String? analisaIdGlobal,
       String? analisaId,
+      String? isPublish,
       String? partId,
       String? filterField,
       String? filterValue}) async {
@@ -31,6 +32,7 @@ class ProductRepository extends AppRepository {
       analisaId: analisaId,
       analisaIdGlobal: analisaIdGlobal,
       partId: partId,
+      isPublish: isPublish,
       filterField: filterField,
       filterValue: filterValue,
     );
@@ -56,6 +58,7 @@ class ProductRepository extends AppRepository {
     int? unitPrice,
     String? isActive,
     int? isPromo,
+    int? isPublish,
     String? thumbImage,
     String? mainImage,
   }) async {
@@ -76,6 +79,7 @@ class ProductRepository extends AppRepository {
       unitPrice: unitPrice,
       isActive: isActive,
       isPromo: isPromo,
+      isPublish: isPublish,
       mainImage: mainImage,
       thumbImage: thumbImage,
       actionId: actionId,

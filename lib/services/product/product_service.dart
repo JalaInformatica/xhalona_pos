@@ -14,6 +14,7 @@ class ProductService {
       String? isPromo,
       String? analisaIdGlobal,
       String? analisaId,
+      String? isPublish,
       String? partId,
       String? filterField,
       String? filterValue}) async {
@@ -39,6 +40,7 @@ class ProductService {
         "IS_STOCK": isStock ?? "",
         "ANALISA_ID_GLOBAL": analisaIdGlobal ?? "",
         "ANALISA_ID": analisaId ?? "",
+        "IS_PUBLISH": isPublish ?? "",
         "PART_ID": partId ?? "",
         "IS_NON_SALES": isNonSales ?? "",
       }
@@ -69,6 +71,7 @@ class ProductService {
     int? unitPrice,
     String? isActive,
     int? isPromo,
+    int? isPublish,
     String? thumbImage,
     String? mainImage,
   }) async {
@@ -97,6 +100,7 @@ class ProductService {
         "UNIT_PRICE": unitPrice,
         "IS_ACTIVE": "1",
         "IS_PROMO": isPromo,
+        "IS_PUBLISH": isPublish,
         "THUMB_IMAGE": thumbImage,
         "MAIN_IMAGE": mainImage,
         "IMG_THUMB": "",
