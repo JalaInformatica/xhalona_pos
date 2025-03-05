@@ -151,6 +151,38 @@ class AppRepository {
     }
   }
 
+  String getResponseDataProfile(String response) {
+    var decodedResponse = jsonDecode(response);
+    var result = decodedResponse["rsProfileChange"];
+
+    if (result is List && result.isNotEmpty) {
+      var item = result.first; // Ambil elemen pertama dari list
+
+      if (item['RESULT_CODE'].toString().contains("01")) {
+        return item['RESULT_MESSAGE'] ?? 'Berhasil';
+      } else {
+        SmartDialog.showToast(
+            item['RESULT_MESSAGE'] ??
+                'Gagal, silahkan coba kembali setelah beberapa saat',
+            displayTime: Duration(seconds: 5));
+        throw Exception();
+      }
+    } else if (result is Map) {
+      // Menangani jika result adalah Map seperti contoh baru
+      if (result['RESULT_CODE'].toString().contains("01")) {
+        return result['MESSAGE'] ?? 'Berhasil';
+      } else {
+        SmartDialog.showToast(
+            result['MESSAGE'] ??
+                'Gagal, silahkan coba kembali setelah beberapa saat',
+            displayTime: Duration(seconds: 5));
+        throw Exception();
+      }
+    } else {
+      throw Exception("Response tidak sesuai format yang diharapkan");
+    }
+  }
+
   String getResponseLogoutData(String response) {
     var result = jsonDecode(response)["rsloginStatus"];
     if (result['RESULT_CODE'].toString().contains("01")) {

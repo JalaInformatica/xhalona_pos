@@ -109,6 +109,9 @@ class MasterKustomerScreen extends StatelessWidget {
                                   MaterialPageRoute(
                                       builder: (context) => AddEditKustomer(
                                             kustomer: kustomer,
+                                            islabel: islabel,
+                                            isSuplier:
+                                                controller.isSuplier.value,
                                           )),
                                   (route) => false);
                             },
@@ -125,6 +128,9 @@ class MasterKustomerScreen extends StatelessWidget {
                                   MaterialPageRoute(
                                       builder: (context) => AddEditKustomer(
                                             kustomer: kustomer,
+                                            islabel: islabel,
+                                            isSuplier:
+                                                controller.isSuplier.value,
                                           )),
                                   (route) => false);
                             },
@@ -141,6 +147,9 @@ class MasterKustomerScreen extends StatelessWidget {
                                   MaterialPageRoute(
                                       builder: (context) => AddEditKustomer(
                                             kustomer: kustomer,
+                                            islabel: islabel,
+                                            isSuplier:
+                                                controller.isSuplier.value,
                                           )),
                                   (route) => false);
                             },
@@ -157,6 +166,9 @@ class MasterKustomerScreen extends StatelessWidget {
                                   MaterialPageRoute(
                                       builder: (context) => AddEditKustomer(
                                             kustomer: kustomer,
+                                            islabel: islabel,
+                                            isSuplier:
+                                                controller.isSuplier.value,
                                           )),
                                   (route) => false);
                             },
@@ -173,6 +185,9 @@ class MasterKustomerScreen extends StatelessWidget {
                                   MaterialPageRoute(
                                       builder: (context) => AddEditKustomer(
                                             kustomer: kustomer,
+                                            islabel: islabel,
+                                            isSuplier:
+                                                controller.isSuplier.value,
                                           )),
                                   (route) => false);
                             },

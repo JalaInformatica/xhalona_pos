@@ -54,7 +54,6 @@ class _AddEditProductState extends State<AddEditProduct> {
 
   String? profileImageUrl;
   bool isLoading = true;
-  bool _isPublish = false;
 
   @override
   void initState() {
@@ -76,7 +75,7 @@ class _AddEditProductState extends State<AddEditProduct> {
       chipStatus['Promo'] = widget.product?.isPromo ?? false;
       chipStatus['Tak Dijual'] = widget.product?.isFixPrice ?? false;
       profileImageUrl = widget.product?.thumbImage;
-      _isPublish = widget.product!.isPublish;
+      chipStatus['Publish'] = widget.product?.isPublish ?? false;
     }
   }
 
@@ -110,7 +109,7 @@ class _AddEditProductState extends State<AddEditProduct> {
           isFree: chipStatus['Tak Dijual'] == true ? 1 : 0,
           mainImage: profileImageUrl ?? widget.product?.thumbImage,
           thumbImage: profileImageUrl ?? widget.product?.thumbImage,
-          isPublish: _isPublish == true ? 1 : 0,
+          isPublish: chipStatus['Publish'] == true ? 1 : 0,
           actionId: widget.product == null ? "0" : "1",
         );
 
@@ -419,7 +418,7 @@ class _AddEditProductState extends State<AddEditProduct> {
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
                         Wrap(
-                          spacing: 8.0,
+                          spacing: 4.0,
                           children: chipStatus.keys.map((label) {
                             return FilterChip(
                               label: Text(
@@ -449,18 +448,6 @@ class _AddEditProductState extends State<AddEditProduct> {
                             );
                           }).toList(),
                         ),
-                        SwitchListTile(
-                          title: Text(
-                            "Is Publish",
-                            style: AppTextStyle.textBodyStyle(),
-                          ),
-                          value: _isPublish,
-                          onChanged: (value) {
-                            setState(() {
-                              _isPublish = value;
-                            });
-                          },
-                        ),
                       ],
                     ),
                   ),
@@ -482,6 +469,7 @@ class _AddEditProductState extends State<AddEditProduct> {
     "Stock": false,
     "Promo": false,
     "Tak Dijual": false,
+    "Publish": false,
   };
 
   Future<void> _requestPermissionCamera() async {

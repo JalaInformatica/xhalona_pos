@@ -44,6 +44,7 @@ class UserRepository extends AppRepository {
     String? userGender,
   }) async {
     var result = await _userService.changeUserDetail(
+      userName: userName,
       userEmail: userEmail,
       userPhone: userPhone,
       joinDate: joinDate,
@@ -51,7 +52,7 @@ class UserRepository extends AppRepository {
       userBirthDate: userBirthDate,
       userGender: userGender,
     );
-    String data = getResponseData(result);
+    String data = getResponseDataProfile(result);
     return data;
   }
 }
