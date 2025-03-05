@@ -538,7 +538,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     null
                                 ? prefs.getString('datePicker') ??
                                     controller
-                                        .profileData.value.profileBirthDate.date
+                                        .profileData.value.profileBirthDate.date.split(" ").first
                                 : 'Atur Sekarang'),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: _selectDate,

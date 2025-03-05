@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/widgets/app_elevated_button.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
@@ -68,7 +69,8 @@ class MasterKustomerScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              mButton(() {
+              AppElevatedButton(
+                onPressed: () {
                 Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(
                         builder: (context) => AddEditKustomer(
@@ -76,7 +78,10 @@ class MasterKustomerScreen extends StatelessWidget {
                               isSuplier: controller.isSuplier.value,
                             )),
                     (route) => false);
-              }, Icons.add, "Add $islabel"),
+              }, 
+              foregroundColor: AppColor.primaryColor,
+              icon: Icons.add, 
+              child: Text("$islabel Baru", style: AppTextStyle.textSubtitleStyle(),)),
               SizedBox(
                 height: 5.h,
               ),

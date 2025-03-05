@@ -57,6 +57,8 @@ class ProfilePageScreen extends StatelessWidget {
                       controller.profileData.value.profileBirthDate.date
                               .isNotEmpty
                           ? controller.profileData.value.profileBirthDate.date
+                              .split(" ")
+                              .first
                           : '-'),
                   _infoTile(
                       'No Handphone',
