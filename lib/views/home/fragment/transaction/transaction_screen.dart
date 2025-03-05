@@ -87,27 +87,27 @@ class TransactionScreen extends StatelessWidget {
                             onPressed: () {
                               SmartDialog.show(builder: (context) {
                                 return AppDialog(
-                                    content: SizedBox(
-                                        width: 100,
-                                        height: MediaQuery.of(context).size.height*0.5,
-                                        child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              AppCalendar(
-                                                focusedDay: DateTime(
-                                                    controller.filterYear.value,
-                                                    controller
-                                                        .filterMonth.value,
-                                                    controller.filterDay.value),
-                                                onDaySelected:
-                                                    (selectedDay, _) {
-                                                  controller
-                                                      .updateFilterTrxDate(
-                                                          selectedDay);
-                                                  SmartDialog.dismiss();
-                                                },
-                                              ),
-                                            ])));
+                                  content: SizedBox(
+                                    width: 100,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        AppCalendar(
+                                          focusedDay: DateTime(
+                                            controller.filterYear.value,
+                                            controller.filterMonth.value,
+                                            controller.filterDay.value,
+                                          ),
+                                          onDaySelected: (selectedDay, _) {
+                                            controller.updateFilterTrxDate(
+                                                selectedDay);
+                                            SmartDialog.dismiss();
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
                               });
                             },
                             borderColor: AppColor.grey300,

@@ -4,7 +4,6 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/models/dao/pekerjaan.dart';
 import 'package:xhalona_pos/widgets/app_bottombar.dart';
-import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/repositories/pekerjaan/pekerjaan_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/pekerjaan/add_edit_pekerjaan.dart';
@@ -17,42 +16,8 @@ class MasterPekerjaanScreen extends StatelessWidget {
   final PekerjaanController controller = Get.put(PekerjaanController());
   PekerjaanRepository _pekerjaanRepository = PekerjaanRepository();
 
-  Widget mButton(VoidCallback onTap, IconData icon, String label) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-        decoration: BoxDecoration(
-          color: AppColor.secondaryColor, // Background color
-          borderRadius: BorderRadius.circular(8), // Rounded corners
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 4,
-              offset: Offset(0, 2), // Shadow position
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: Colors.white,
-              size: 20,
-            ),
-            SizedBox(width: 8),
-            Text(label,
-                style: AppTextStyle.textTitleStyle(color: Colors.white)),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
         backgroundColor: AppColor.whiteColor,
         body: Padding(
@@ -67,7 +32,7 @@ class MasterPekerjaanScreen extends StatelessWidget {
                 Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => AddEditPekerjaan()),
                     (route) => false);
-              }, Icons.add, "Add Pekerjaan"),
+              }, 'Add Pekerjaan', Icons.add, double.infinity),
               SizedBox(
                 height: 5.h,
               ),
@@ -131,8 +96,7 @@ class MasterPekerjaanScreen extends StatelessWidget {
                   )))
             ],
           ),
-        )
-    );
+        ));
   }
 
   Future<dynamic> messageHapus(String jobId, String jobDesc) {

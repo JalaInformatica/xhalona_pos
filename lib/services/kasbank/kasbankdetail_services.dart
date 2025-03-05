@@ -10,8 +10,9 @@ class KasBankDetailServices {
     var url = '/SALES/t_kas_bank_detail';
     var body = jsonEncode({
       "rq": {
-        "ACTION_ID": "LIST_d",
+        "ACTION_ID": "LIST_D",
         "IP": api.ip,
+        "DEF_COMPANY_ID": api.companyId,
         "DET_COMPANY_ID": api.companyId,
         "USER_ID": api.userId,
         "SESSION_LOGIN_ID": api.sessionId,
@@ -71,7 +72,7 @@ class KasBankDetailServices {
 
   Future<String> deleteKasBankDetail({
     String? voucerNo,
-    String? rowId,
+    int? rowId,
   }) async {
     await api.fetchUserSessionInfo();
     var url = '/SALES/t_kas_bank_detail';

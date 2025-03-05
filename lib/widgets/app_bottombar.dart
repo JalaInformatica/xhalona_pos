@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/views/home/home_controller.dart';
+import 'package:xhalona_pos/widgets/app_elevated_button.dart';
 import 'package:xhalona_pos/views/home/fragment/master/coa/master_coa_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/laporan/monitor/monitor_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/laporan/finance/lap_finance_screen.dart';
@@ -135,36 +136,17 @@ Widget menuComponent(String menuName, BuildContext context) {
           ]))));
 }
 
-Widget mButton(VoidCallback onTap, String label, IconData icon, double? width) {
-  return GestureDetector(
-    onTap: onTap,
-    child: Container(
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-      decoration: BoxDecoration(
-        color: AppColor.secondaryColor, // Background color
-        borderRadius: BorderRadius.circular(8), // Rounded corners
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 4,
-            offset: Offset(0, 2), // Shadow position
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            color: Colors.white,
-            size: 20,
-          ),
-          SizedBox(width: 8),
-          Text(label, style: AppTextStyle.textTitleStyle(color: Colors.white)),
-        ],
-      ),
-    ),
-  );
+Widget mButton(VoidCallback onTap, String label, IconData icon, double? width,
+    {bool disable = false}) {
+  return AppElevatedButton(
+      onPressed: onTap,
+      foregroundColor: AppColor.primaryColor,
+      icon: icon,
+      disabled: disable,
+      child: Text(
+        label,
+        style: AppTextStyle.textSubtitleStyle(),
+      ));
 }
 
 Widget buildFloatingActionButton(BuildContext context, screenWidth) {

@@ -42,16 +42,17 @@ class UserRepository extends AppRepository {
     String? userPic,
     String? userBirthDate,
     String? userGender,
+    String? userAddress,
   }) async {
     var result = await _userService.changeUserDetail(
-      userName: userName,
-      userEmail: userEmail,
-      userPhone: userPhone,
-      joinDate: joinDate,
-      userPic: userPic,
-      userBirthDate: userBirthDate,
-      userGender: userGender,
-    );
+        userName: userName,
+        userEmail: userEmail,
+        userPhone: userPhone,
+        joinDate: joinDate,
+        userPic: userPic,
+        userBirthDate: userBirthDate,
+        userGender: userGender,
+        userAddress: userAddress);
     String data = getResponseDataProfile(result);
     return data;
   }

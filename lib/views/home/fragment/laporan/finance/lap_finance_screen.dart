@@ -49,10 +49,6 @@ class LapFinanceScreen extends StatelessWidget {
                                                   .size
                                                   .width *
                                               0.5,
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.5,
                                           child: Column(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
@@ -95,10 +91,6 @@ class LapFinanceScreen extends StatelessWidget {
                                             width: MediaQuery.of(context)
                                                     .size
                                                     .width *
-                                                0.5,
-                                            height: MediaQuery.of(context)
-                                                    .size
-                                                    .height *
                                                 0.5,
                                             child: Column(
                                                 mainAxisSize: MainAxisSize.min,

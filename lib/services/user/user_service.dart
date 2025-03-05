@@ -130,8 +130,16 @@ class UserService {
     String? userPic,
     String? userBirthDate,
     String? userGender,
+    String? userAddress,
   }) async {
     var profileUrl = '/SYSMAN/profile';
+
+    var alamat = userAddress!.split(',').map((e) => e.trim()).toList();
+
+// Fungsi untuk menghindari error jika index tidak tersedia
+    String safeGet(List<String> list, int index) {
+      return list.length > index ? list[index] : '';
+    }
 
     var body = jsonEncode({
       "rqProfileChange": {
@@ -144,12 +152,12 @@ class UserService {
         "PROFILE_PIC": userPic,
         "PROFILE_BIRTH_DATE": userBirthDate,
         "PROFILE_SEX": userGender,
-        "PROFILE_ADDRESS": '',
-        "PROFILE_CITY": '',
-        "PROFILE_KELURAHAN": '',
-        "PROFILE_KECAMATAN": '',
-        "PROFILE_PROVINSI": '',
-        "PROFILE_POSTAL_CODE": '',
+        "PROFILE_ADDRESS": "${safeGet(alamat, 0)}, ${safeGet(alamat, 1)}",
+        "PROFILE_CITY": safeGet(alamat, 4),
+        "PROFILE_KELURAHAN": safeGet(alamat, 2),
+        "PROFILE_KECAMATAN": safeGet(alamat, 3),
+        "PROFILE_PROVINSI": safeGet(alamat, 5),
+        "PROFILE_POSTAL_CODE": safeGet(alamat, 6),
         "PROFILE_ADDRESS_POINT": ''
       }
     });

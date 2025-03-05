@@ -191,31 +191,30 @@ class _AddEditKaryawanState extends State<AddEditKaryawan> {
                         onTap: () {
                           SmartDialog.show(builder: (context) {
                             return AppDialog(
-                                content: SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.5,
-                                    height: MediaQuery.of(context).size.height *
-                                        0.5,
-                                    child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          AppCalendar(
-                                            focusedDay: _joinDateController
-                                                    .text.isNotEmpty
-                                                ? DateFormat("dd-MM-yyyy")
-                                                    .parse(_joinDateController
-                                                        .text)
-                                                : DateTime.now(),
-                                            onDaySelected: (selectedDay, _) {
-                                              setState(() {
-                                                _joinDateController.text =
-                                                    DateFormat('dd-MM-yyyy')
-                                                        .format(selectedDay);
-                                                SmartDialog.dismiss();
-                                              });
-                                            },
-                                          ),
-                                        ])));
+                              content: SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.5,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    AppCalendar(
+                                      focusedDay: _joinDateController
+                                              .text.isNotEmpty
+                                          ? DateFormat("dd-MM-yyyy")
+                                              .parse(_joinDateController.text)
+                                          : DateTime.now(),
+                                      onDaySelected: (selectedDay, _) {
+                                        setState(() {
+                                          _joinDateController.text =
+                                              DateFormat('dd-MM-yyyy')
+                                                  .format(selectedDay);
+                                          SmartDialog.dismiss();
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
                           });
                         },
                         labelText: "Tanggal Masuk",
@@ -340,9 +339,6 @@ class _AddEditKaryawanState extends State<AddEditKaryawan> {
                                     content: SizedBox(
                                       width: MediaQuery.of(context).size.width *
                                           0.5,
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.5,
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [

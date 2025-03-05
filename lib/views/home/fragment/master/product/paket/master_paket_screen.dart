@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/paket.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
+import 'package:xhalona_pos/widgets/app_bottombar.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/repositories/paket_repository.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
@@ -17,39 +18,6 @@ class MasterPaketScreen extends StatelessWidget {
   final PaketController controller = Get.put(PaketController());
   final ProductController controllerPro = Get.put(ProductController());
   PaketRepository _paketRepository = PaketRepository();
-
-  Widget mButton(VoidCallback onTap, IconData icon, String label) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-        decoration: BoxDecoration(
-          color: AppColor.secondaryColor, // Background color
-          borderRadius: BorderRadius.circular(8), // Rounded corners
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 4,
-              offset: Offset(0, 2), // Shadow position
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: Colors.white,
-              size: 20,
-            ),
-            SizedBox(width: 8),
-            Text(label,
-                style: AppTextStyle.textTitleStyle(color: Colors.white)),
-          ],
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +62,7 @@ class MasterPaketScreen extends StatelessWidget {
                               partId: controller.filterPartId.value,
                             )),
                     (route) => false);
-              }, Icons.add, "Add Paket"),
+              }, "Add Paket", Icons.add, double.infinity),
               SizedBox(
                 height: 5.h,
               ),
@@ -117,7 +85,7 @@ class MasterPaketScreen extends StatelessWidget {
                       var paket = controller.paketHeader[i];
                       return [
                         AppTableCell(
-                            value: paket.cpartName!,
+                            value: paket.cpartName ?? '',
                             index: i,
                             onEdit: () {
                               goTo(context, paket,

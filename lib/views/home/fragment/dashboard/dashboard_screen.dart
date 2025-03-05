@@ -1,14 +1,13 @@
-import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/core/helper/global_helper.dart';
-import 'package:shimmer/shimmer.dart'; // Tambahkan package shimmer
-import 'package:xhalona_pos/views/home/fragment/dashboard/dashboard_controller.dart';
-import 'package:xhalona_pos/widgets/app_calendar_range.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
+import 'package:xhalona_pos/core/helper/global_helper.dart';
 import 'package:xhalona_pos/widgets/app_normal_button.dart';
+import 'package:xhalona_pos/widgets/app_calendar_range.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:xhalona_pos/views/home/fragment/dashboard/dashboard_controller.dart';
 
 class DashboardScreen extends StatelessWidget {
   final DashboardController controller = Get.put(DashboardController());
@@ -83,29 +82,40 @@ class DashboardScreen extends StatelessWidget {
                         style: AppTextStyle.textBodyStyle(),
                       ),
                       AppTextButton(
-                        onPressed: () {
-                          SmartDialog.show(builder: (context) {
-                            return AppDialog(
+                          onPressed: () {
+                            SmartDialog.show(builder: (context) {
+                              return AppDialog(
                                 content: SizedBox(
-                                    width: 100,
-                                    height: MediaQuery.of(context).size.height*0.5,
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Obx(()=> AppCalendarRange(
-                                          rangeStart: controller.nettoPerDayStartDate.value,
-                                          rangeEnd: controller.nettoPerDayEndDate.value,
-                                          focusedDay: DateTime.now(),
-                                          onRangeSelected: (DateTime? start, DateTime? end) {
-                                            controller.nettoPerDayStartDate.value = start;
-                                            controller.nettoPerDayEndDate.value = end;
-                                          },
-                                        )),
-                                      ])));
-                          });
-                        },
-                        child: Obx(()=> Text("${formatToDDMMYYYY(controller.nettoPerDayStartDate.value)} To ${formatToDDMMYYYY(controller.nettoPerDayEndDate.value)}")))
-                  ],),
+                                  width: 100,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Obx(() => Flexible(
+                                            child: AppCalendarRange(
+                                              rangeStart: controller
+                                                  .nettoPerDayStartDate.value,
+                                              rangeEnd: controller
+                                                  .nettoPerDayEndDate.value,
+                                              focusedDay: DateTime.now(),
+                                              onRangeSelected: (DateTime? start,
+                                                  DateTime? end) {
+                                                controller.nettoPerDayStartDate
+                                                    .value = start;
+                                                controller.nettoPerDayEndDate
+                                                    .value = end;
+                                              },
+                                            ),
+                                          )),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            });
+                          },
+                          child: Obx(() => Text(
+                              "${formatToDDMMYYYY(controller.nettoPerDayStartDate.value)} To ${formatToDDMMYYYY(controller.nettoPerDayEndDate.value)}")))
+                    ],
+                  ),
                   Obx(() => controller.dataNetPerMonthValue.isNotEmpty
                       ? AspectRatio(
                           aspectRatio: 3,
@@ -545,19 +555,6 @@ class DashboardScreen extends StatelessWidget {
                 ],
               ),
             ]),
-      ),
-    );
-  }
-
-  // Widget Shimmer Card
-  Widget _shimmerCard() {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
-      child: Card(
-        elevation: 1,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        child: SizedBox(),
       ),
     );
   }

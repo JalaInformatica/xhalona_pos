@@ -5,13 +5,13 @@ import 'package:xhalona_pos/views/home/home_controller.dart';
 import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 import 'package:xhalona_pos/views/home/fragment/profile/profile_screen.dart';
 
-class EditNamePage extends StatefulWidget {
+class EditAddressPage extends StatefulWidget {
   @override
-  State<EditNamePage> createState() => _EditNamePageState();
+  State<EditAddressPage> createState() => _EditNamePageState();
 }
 
-class _EditNamePageState extends State<EditNamePage> {
-  final TextEditingController _nameController = TextEditingController();
+class _EditNamePageState extends State<EditAddressPage> {
+  final TextEditingController _addressController = TextEditingController();
   final HomeController controller = Get.put(HomeController());
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -22,7 +22,8 @@ class _EditNamePageState extends State<EditNamePage> {
     super.initState();
     // Inisialisasi dengan nilai email saat ini
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _nameController.text = controller.profileData.value.userName ?? '';
+      _addressController.text =
+          controller.profileData.value.profileAddress ?? '';
     });
   }
 
@@ -36,7 +37,7 @@ class _EditNamePageState extends State<EditNamePage> {
             Navigator.pop(context);
           },
         ),
-        title: const Text('Ubah Nama'),
+        title: const Text('Ubah Alamat'),
         actions: [
           TextButton(
             onPressed: () async {
@@ -44,7 +45,7 @@ class _EditNamePageState extends State<EditNamePage> {
               if (_formKey.currentState!.validate()) {
                 final SharedPreferences prefs =
                     await SharedPreferences.getInstance();
-                await prefs.setString('name', _nameController.text);
+                await prefs.setString('userAddress', _addressController.text);
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => EditProfileScreen()),
@@ -70,20 +71,20 @@ class _EditNamePageState extends State<EditNamePage> {
             children: [
               AppTextFormField(
                 context: context,
-                textEditingController: _nameController,
+                textEditingController: _addressController,
                 validator: (value) {
                   if (value == '') {
-                    return "Nama lengkap harus diisi!";
+                    return "Alamat harus diisi!";
                   }
                   return null;
                 },
-                maxLength: 100,
-                labelText: "Nama lengkap",
+                maxLines: 5,
+                labelText: "Alamat",
                 inputAction: TextInputAction.next,
               ),
               const SizedBox(height: 10),
               const Text(
-                'Maks. 100 karakter',
+                'Ex: Jalan Merdeka No. 10, RT 03/RW 05, Kelurahan Cempaka Putih, Kecamatan Cempaka Putih, Kota Jakarta Pusat, DKI Jakarta 10510',
                 style: TextStyle(color: Colors.grey),
               ),
             ],

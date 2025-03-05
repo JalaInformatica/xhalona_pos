@@ -44,6 +44,13 @@ class KasBankDetailController extends GetxController {
     fetchProducts();
   }
 
+  void updateVoucher(String newFilterValue) {
+    vocherNo.value = newFilterValue;
+    pageNo.value = 1;
+    pageRow.value = 10;
+    fetchProducts();
+  }
+
   void updatePageNo(int newFilterValue) {
     pageNo.value = newFilterValue;
     fetchProducts();

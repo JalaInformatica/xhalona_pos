@@ -1,5 +1,8 @@
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:xhalona_pos/views/home/home_controller.dart';
+import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 import 'package:xhalona_pos/views/home/fragment/profile/profile_screen.dart';
 
 class EditEmailPage extends StatefulWidget {
@@ -9,16 +12,16 @@ class EditEmailPage extends StatefulWidget {
 
 class _EditEmailPageState extends State<EditEmailPage> {
   final _emailController = TextEditingController();
+  final HomeController controller = Get.put(HomeController());
   final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
     // Inisialisasi dengan nilai email saat ini
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   final userProvider = Provider.of<UserProvider>(context, listen: false);
-    //   _emailController.text = userProvider.user.emailAddress ?? '';
-    // });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _emailController.text = controller.profileData.value.emailAddress ?? '';
+    });
   }
 
   @override
@@ -68,14 +71,9 @@ class _EditEmailPageState extends State<EditEmailPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  hintText: 'Email',
-                  hintStyle: TextStyle(fontWeight: FontWeight.w300),
-                  border: const UnderlineInputBorder(),
-                ),
-                maxLength: 100,
+              AppTextFormField(
+                context: context,
+                textEditingController: _emailController,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Email tidak boleh kosong';
@@ -89,6 +87,9 @@ class _EditEmailPageState extends State<EditEmailPage> {
                   }
                   return null; // Return null jika valid
                 },
+                maxLength: 100,
+                labelText: "Email",
+                inputAction: TextInputAction.next,
               ),
               const SizedBox(height: 10),
               const Text(

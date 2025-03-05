@@ -1,9 +1,10 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/widgets/app_elevated_button.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
+import 'package:xhalona_pos/widgets/app_bottombar.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
+import 'package:xhalona_pos/widgets/app_elevated_button.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/repositories/kustomer/kustomer_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/add_edit_kustomer.dart';
@@ -16,39 +17,6 @@ class MasterKustomerScreen extends StatelessWidget {
 
   final KustomerController controller = Get.put(KustomerController());
   KustomerRepository _kustomerRepository = KustomerRepository();
-
-  Widget mButton(VoidCallback onTap, IconData icon, String label) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-        decoration: BoxDecoration(
-          color: AppColor.secondaryColor, // Background color
-          borderRadius: BorderRadius.circular(8), // Rounded corners
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 4,
-              offset: Offset(0, 2), // Shadow position
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: Colors.white,
-              size: 20,
-            ),
-            SizedBox(width: 8),
-            Text(label,
-                style: AppTextStyle.textTitleStyle(color: Colors.white)),
-          ],
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,8 +37,7 @@ class MasterKustomerScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              AppElevatedButton(
-                onPressed: () {
+              mButton(() {
                 Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(
                         builder: (context) => AddEditKustomer(
@@ -78,10 +45,7 @@ class MasterKustomerScreen extends StatelessWidget {
                               isSuplier: controller.isSuplier.value,
                             )),
                     (route) => false);
-              }, 
-              foregroundColor: AppColor.primaryColor,
-              icon: Icons.add, 
-              child: Text("$islabel Baru", style: AppTextStyle.textSubtitleStyle(),)),
+              }, "$islabel Baru", Icons.add, double.infinity),
               SizedBox(
                 height: 5.h,
               ),

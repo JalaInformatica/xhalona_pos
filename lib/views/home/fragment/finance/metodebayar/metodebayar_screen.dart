@@ -1,11 +1,10 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/widgets/app_elevated_button.dart';
-import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
-import 'package:xhalona_pos/views/home/home_screen.dart';
+import 'package:xhalona_pos/widgets/app_bottombar.dart';
 import 'package:xhalona_pos/models/dao/metodebayar.dart';
+import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/repositories/metodebayar/metodebayar_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/finance/metodebayar/add_edit_metodebayar.dart';
@@ -17,40 +16,6 @@ class MetodeBayarScreen extends StatelessWidget {
 
   final MetodeBayarController controller = Get.put(MetodeBayarController());
   MetodeBayarRepository _metodebayarRepository = MetodeBayarRepository();
-
-  Widget mButton(
-      VoidCallback onTap, String label, IconData icon, double? width) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-        decoration: BoxDecoration(
-          color: AppColor.secondaryColor, // Background color
-          borderRadius: BorderRadius.circular(8), // Rounded corners
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 4,
-              offset: Offset(0, 2), // Shadow position
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: Colors.white,
-              size: 20,
-            ),
-            SizedBox(width: 8),
-            Text(label,
-                style: AppTextStyle.textTitleStyle(color: Colors.white)),
-          ],
-        ),
-      ),
-    );
-  }
 
   Future<dynamic> messageHapus(String payMethodeId, String namaRekening) {
     return SmartDialog.show(builder: (context) {
@@ -122,198 +87,188 @@ class MetodeBayarScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Metode Bayar",
-            style: AppTextStyle.textTitleStyle(color: AppColor.whiteColor),
-          ),
-          backgroundColor: AppColor.primaryColor,
-          leading: AppIconButton(
-            foregroundColor: AppColor.whiteColor,
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.of(context).pop();
-            }, 
-          ),
+      appBar: AppBar(
+        title: Text(
+          "Metode Bayar",
+          style: AppTextStyle.textTitleStyle(color: AppColor.whiteColor),
         ),
-        backgroundColor: AppColor.whiteColor,
-        body: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: 10.w,
-            vertical: 20.h,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AppElevatedButton(
-                onPressed: () {
-                 Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(
-                        builder: (context) => AddEditMetodeBayar()),
-                    (route) => false);
-              }, 
-              backgroundColor: AppColor.primaryColor,
-              foregroundColor: AppColor.whiteColor,
-              icon: Icons.add, 
-              child: Text("Tambah Metode Bayar", style: AppTextStyle.textSubtitleStyle(),)
-              ),
-              SizedBox(
-                height: 5.h,
-              ),
-              Obx(() => Expanded(
-                      child: AppTable(
-                    onSearch: (filterValue) =>
-                        controller.updateFilterValue(filterValue),
-                    onChangePageNo: (pageNo) => controller.updatePageNo(pageNo),
-                    onChangePageRow: (pageRow) =>
-                        controller.updatePageRow(pageRow),
-                    pageNo: controller.pageNo.value,
-                    pageRow: controller.pageRow.value,
-                    titles: [
-                      AppTableTitle(value: "Metode Pembayaran"),
-                      AppTableTitle(value: "Jenis Metode Pembayaran"),
-                      AppTableTitle(value: "Debit"),
-                      AppTableTitle(value: "Cash"),
-                      AppTableTitle(value: "Otomatis"),
-                      AppTableTitle(value: "Sesuai Tagihan"),
-                      AppTableTitle(value: "Kurang dari Tagihan"),
-                      AppTableTitle(value: "Hutang"),
-                      AppTableTitle(value: "Kartu"),
-                      AppTableTitle(value: "Aksi"),
-                    ],
-                    data: List.generate(controller.metodebayarHeader.length,
-                        (int i) {
-                      var metodebayar = controller.metodebayarHeader[i];
-                      return [
-                        AppTableCell(
-                            value: metodebayar.payMetodeName,
-                            index: i,
-                            onEdit: () {
-                              goTo(context, metodebayar);
-                            },
-                            onDelete: () async {
-                              await messageHapus(metodebayar.payMetodeId,
-                                  metodebayar.payMetodeName);
-                            },
-                            showOptionsOnTap: true),
-                        AppTableCell(
-                            value: metodebayar.payMetodeGroup,
-                            index: i,
-                            onEdit: () {
-                              goTo(context, metodebayar);
-                            },
-                            onDelete: () async {
-                              await messageHapus(metodebayar.payMetodeId,
-                                  metodebayar.payMetodeName);
-                            },
-                            showOptionsOnTap: true),
-                        AppTableCell(
-                            value: metodebayar.isCard == true ? 'Ya' : 'Tidak',
-                            index: i,
-                            onEdit: () {
-                              goTo(context, metodebayar);
-                            },
-                            onDelete: () async {
-                              await messageHapus(metodebayar.payMetodeId,
-                                  metodebayar.payMetodeName);
-                            },
-                            showOptionsOnTap: true),
-                        AppTableCell(
-                            value: metodebayar.isCash == true ? 'Ya' : 'Tidak',
-                            index: i,
-                            onEdit: () {
-                              goTo(context, metodebayar);
-                            },
-                            onDelete: () async {
-                              await messageHapus(metodebayar.payMetodeId,
-                                  metodebayar.payMetodeName);
-                            },
-                            showOptionsOnTap: true),
-                        AppTableCell(
-                            value:
-                                metodebayar.isDefault == true ? 'Ya' : 'Tidak',
-                            index: i,
-                            onEdit: () {
-                              goTo(context, metodebayar);
-                            },
-                            onDelete: () async {
-                              await messageHapus(metodebayar.payMetodeId,
-                                  metodebayar.payMetodeName);
-                            },
-                            showOptionsOnTap: true),
-                        AppTableCell(
-                            value:
-                                metodebayar.isFixHmt == true ? 'Ya' : 'Tidak',
-                            index: i,
-                            onEdit: () {
-                              goTo(context, metodebayar);
-                            },
-                            onDelete: () async {
-                              await messageHapus(metodebayar.payMetodeId,
-                                  metodebayar.payMetodeName);
-                            },
-                            showOptionsOnTap: true),
-                        AppTableCell(
-                            value: metodebayar.isBellowHmt == true
-                                ? 'Ya'
-                                : 'Tidak',
-                            index: i,
-                            onEdit: () {
-                              goTo(context, metodebayar);
-                            },
-                            onDelete: () async {
-                              await messageHapus(metodebayar.payMetodeId,
-                                  metodebayar.payMetodeName);
-                            },
-                            showOptionsOnTap: true),
-                        AppTableCell(
-                            value: 'Tidak',
-                            index: i,
-                            onEdit: () {
-                              goTo(context, metodebayar);
-                            },
-                            onDelete: () async {
-                              await messageHapus(metodebayar.payMetodeId,
-                                  metodebayar.payMetodeName);
-                            },
-                            showOptionsOnTap: true),
-                        AppTableCell(
-                            value: 'Tidak',
-                            index: i,
-                            onEdit: () {
-                              goTo(context, metodebayar);
-                            },
-                            onDelete: () async {
-                              await messageHapus(metodebayar.payMetodeId,
-                                  metodebayar.payMetodeName);
-                            },
-                            showOptionsOnTap: true),
-                        AppTableCell(
+        backgroundColor: AppColor.primaryColor,
+        leading: AppIconButton(
+          foregroundColor: AppColor.whiteColor,
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
+      backgroundColor: AppColor.whiteColor,
+      body: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: 10.w,
+          vertical: 20.h,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            mButton(() {
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => AddEditMetodeBayar()),
+                  (route) => false);
+            }, "Add Metode Bayar", Icons.add, double.infinity),
+            SizedBox(
+              height: 5.h,
+            ),
+            Obx(() => Expanded(
+                    child: AppTable(
+                  onSearch: (filterValue) =>
+                      controller.updateFilterValue(filterValue),
+                  onChangePageNo: (pageNo) => controller.updatePageNo(pageNo),
+                  onChangePageRow: (pageRow) =>
+                      controller.updatePageRow(pageRow),
+                  pageNo: controller.pageNo.value,
+                  pageRow: controller.pageRow.value,
+                  titles: [
+                    AppTableTitle(value: "Metode Pembayaran"),
+                    AppTableTitle(value: "Jenis Metode Pembayaran"),
+                    AppTableTitle(value: "Debit"),
+                    AppTableTitle(value: "Cash"),
+                    AppTableTitle(value: "Otomatis"),
+                    AppTableTitle(value: "Sesuai Tagihan"),
+                    AppTableTitle(value: "Kurang dari Tagihan"),
+                    AppTableTitle(value: "Hutang"),
+                    AppTableTitle(value: "Kartu"),
+                    AppTableTitle(value: "Aksi"),
+                  ],
+                  data: List.generate(controller.metodebayarHeader.length,
+                      (int i) {
+                    var metodebayar = controller.metodebayarHeader[i];
+                    return [
+                      AppTableCell(
+                          value: metodebayar.payMetodeName,
                           index: i,
+                          onEdit: () {
+                            goTo(context, metodebayar);
+                          },
                           onDelete: () async {
                             await messageHapus(metodebayar.payMetodeId,
                                 metodebayar.payMetodeName);
                           },
-                          value: "", // Ganti dengan URL gambar jika ada
-                          isEdit: true,
-                          isDelete: true,
+                          showOptionsOnTap: true),
+                      AppTableCell(
+                          value: metodebayar.payMetodeGroup,
+                          index: i,
                           onEdit: () {
-                            Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(
-                                    builder: (context) => AddEditMetodeBayar(
-                                          metodebayar: metodebayar,
-                                        )),
-                                (route) => false);
+                            goTo(context, metodebayar);
                           },
-                        ),
-                      ];
-                    }),
-                    onRefresh: () => controller.fetchProducts(),
-                    isRefreshing: controller.isLoading.value,
-                  )))
-            ],
-          ),
+                          onDelete: () async {
+                            await messageHapus(metodebayar.payMetodeId,
+                                metodebayar.payMetodeName);
+                          },
+                          showOptionsOnTap: true),
+                      AppTableCell(
+                          value: metodebayar.isCard == true ? 'Ya' : 'Tidak',
+                          index: i,
+                          onEdit: () {
+                            goTo(context, metodebayar);
+                          },
+                          onDelete: () async {
+                            await messageHapus(metodebayar.payMetodeId,
+                                metodebayar.payMetodeName);
+                          },
+                          showOptionsOnTap: true),
+                      AppTableCell(
+                          value: metodebayar.isCash == true ? 'Ya' : 'Tidak',
+                          index: i,
+                          onEdit: () {
+                            goTo(context, metodebayar);
+                          },
+                          onDelete: () async {
+                            await messageHapus(metodebayar.payMetodeId,
+                                metodebayar.payMetodeName);
+                          },
+                          showOptionsOnTap: true),
+                      AppTableCell(
+                          value: metodebayar.isDefault == true ? 'Ya' : 'Tidak',
+                          index: i,
+                          onEdit: () {
+                            goTo(context, metodebayar);
+                          },
+                          onDelete: () async {
+                            await messageHapus(metodebayar.payMetodeId,
+                                metodebayar.payMetodeName);
+                          },
+                          showOptionsOnTap: true),
+                      AppTableCell(
+                          value: metodebayar.isFixHmt == true ? 'Ya' : 'Tidak',
+                          index: i,
+                          onEdit: () {
+                            goTo(context, metodebayar);
+                          },
+                          onDelete: () async {
+                            await messageHapus(metodebayar.payMetodeId,
+                                metodebayar.payMetodeName);
+                          },
+                          showOptionsOnTap: true),
+                      AppTableCell(
+                          value:
+                              metodebayar.isBellowHmt == true ? 'Ya' : 'Tidak',
+                          index: i,
+                          onEdit: () {
+                            goTo(context, metodebayar);
+                          },
+                          onDelete: () async {
+                            await messageHapus(metodebayar.payMetodeId,
+                                metodebayar.payMetodeName);
+                          },
+                          showOptionsOnTap: true),
+                      AppTableCell(
+                          value: 'Tidak',
+                          index: i,
+                          onEdit: () {
+                            goTo(context, metodebayar);
+                          },
+                          onDelete: () async {
+                            await messageHapus(metodebayar.payMetodeId,
+                                metodebayar.payMetodeName);
+                          },
+                          showOptionsOnTap: true),
+                      AppTableCell(
+                          value: 'Tidak',
+                          index: i,
+                          onEdit: () {
+                            goTo(context, metodebayar);
+                          },
+                          onDelete: () async {
+                            await messageHapus(metodebayar.payMetodeId,
+                                metodebayar.payMetodeName);
+                          },
+                          showOptionsOnTap: true),
+                      AppTableCell(
+                        index: i,
+                        onDelete: () async {
+                          await messageHapus(metodebayar.payMetodeId,
+                              metodebayar.payMetodeName);
+                        },
+                        value: "", // Ganti dengan URL gambar jika ada
+                        isEdit: true,
+                        isDelete: true,
+                        onEdit: () {
+                          Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(
+                                  builder: (context) => AddEditMetodeBayar(
+                                        metodebayar: metodebayar,
+                                      )),
+                              (route) => false);
+                        },
+                      ),
+                    ];
+                  }),
+                  onRefresh: () => controller.fetchProducts(),
+                  isRefreshing: controller.isLoading.value,
+                )))
+          ],
         ),
+      ),
     );
   }
 }

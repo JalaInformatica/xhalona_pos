@@ -46,7 +46,7 @@ class KasBankDetailRepository extends AppRepository {
 
   Future<String> deleteKasBankDetail({
     String? voucerNo,
-    String? rowId,
+    int? rowId,
   }) async {
     var result = await _kasBankDetailService.deleteKasBankDetail(
         voucerNo: voucerNo, rowId: rowId);

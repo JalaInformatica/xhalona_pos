@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
@@ -56,9 +57,9 @@ class ProfilePageScreen extends StatelessWidget {
                       'Tanggal Lahir',
                       controller.profileData.value.profileBirthDate.date
                               .isNotEmpty
-                          ? controller.profileData.value.profileBirthDate.date
-                              .split(" ")
-                              .first
+                          ? DateFormat('dd-MM-yyyy').format(DateTime.parse(
+                              controller
+                                  .profileData.value.profileBirthDate.date))
                           : '-'),
                   _infoTile(
                       'No Handphone',
@@ -139,12 +140,25 @@ class ProfilePageScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: AppTextStyle.textSubtitleStyle()),
-          Text(
-            value,
-            style: AppTextStyle.textTitleStyle(),
+          Expanded(
+            flex: 3, // Atur flex agar sesuai kebutuhan
+            child: Text(
+              title,
+              style: AppTextStyle.textSubtitleStyle(),
+            ),
+          ),
+          SizedBox(width: 8), // Beri jarak agar tidak terlalu rapat
+          Expanded(
+            flex: 5, // Bagian teks panjang lebih lebar
+            child: Text(
+              value,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1, // Bisa ubah ke 2 atau lebih jika ingin multi-line
+              style: AppTextStyle.textTitleStyle(),
+              textAlign: TextAlign.right, // Agar tetap sejajar kanan
+            ),
           ),
         ],
       ),

@@ -4,7 +4,6 @@ import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/models/dao/rekening.dart';
 import 'package:xhalona_pos/widgets/app_bottombar.dart';
-import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/repositories/rekening/rekening_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/rekening/add_edit_rekening.dart';
@@ -16,34 +15,6 @@ class MasterRekeningScreen extends StatelessWidget {
 
   final RekeningController controller = Get.put(RekeningController());
   RekeningRepository _rekeningRepository = RekeningRepository();
-
-  Widget mButton(VoidCallback onTap, IconData icon, String label) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 40,
-        width: double.infinity,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: AppColor.secondaryColor),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: Colors.white),
-            SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +32,7 @@ class MasterRekeningScreen extends StatelessWidget {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => AddEditRekening()),
                 );
-              }, Icons.add, "Add Rekening"),
+              }, 'Add Rekening', Icons.add, double.infinity),
               SizedBox(
                 height: 5.h,
               ),
@@ -184,8 +155,7 @@ class MasterRekeningScreen extends StatelessWidget {
                   )))
             ],
           ),
-        )
-    );
+        ));
   }
 
   Future<dynamic> messageHapus(String acId, String namaAc) {

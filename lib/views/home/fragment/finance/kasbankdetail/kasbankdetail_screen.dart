@@ -1,22 +1,24 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:xhalona_pos/models/dao/coa.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/widgets/app_bottombar.dart';
+import 'package:xhalona_pos/views/home/home_screen.dart';
+import 'package:xhalona_pos/models/dao/kasbankdetail.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:xhalona_pos/repositories/coa/coa_repository.dart';
-import 'package:xhalona_pos/views/home/fragment/master/coa/add_edit_coa.dart';
-import 'package:xhalona_pos/views/home/fragment/master/coa/coa_controller.dart';
+import 'package:xhalona_pos/repositories/kasbank/kasbankdetail_repository.dart';
+import 'package:xhalona_pos/views/home/fragment/finance/kasbankdetail/edit_kasbankdetail.dart';
+import 'package:xhalona_pos/views/home/fragment/finance/kasbankdetail/kasbankdetail_controller.dart';
 
 // ignore: must_be_immutable
-class MasterCoaScreen extends StatelessWidget {
-  MasterCoaScreen({super.key});
+class KasBankDetailScreen extends StatelessWidget {
+  bool? approve;
+  KasBankDetailScreen({super.key, this.approve});
 
-  final CoaController controller = Get.put(CoaController());
-  CoaRepository _coaRepository = CoaRepository();
+  final KasBankDetailController controller = Get.put(KasBankDetailController());
+  KasBankDetailRepository _kasbankdetailRepository = KasBankDetailRepository();
 
-  Future<dynamic> messageHapus(String acId, String namaRekening) {
+  Future<dynamic> messageHapus(int rowId, String detVoucherNo) {
     return SmartDialog.show(builder: (context) {
       return AlertDialog(
           shape: RoundedRectangleBorder(
@@ -33,7 +35,7 @@ class MasterCoaScreen extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           content: Text(
-            "Apakah Anda yakin ingin menghapus data '$namaRekening'?",
+            "Apakah Anda yakin ingin menghapus data '$detVoucherNo'?",
             maxLines: 2,
             style: AppTextStyle.textSubtitleStyle(),
             textAlign: TextAlign.center,
@@ -50,7 +52,8 @@ class MasterCoaScreen extends StatelessWidget {
             ),
             TextButton(
               onPressed: () async {
-                String result = await _coaRepository.deleteCoa(accId: acId);
+                String result = await _kasbankdetailRepository
+                    .deleteKasBankDetail(rowId: rowId, voucerNo: detVoucherNo);
 
                 bool isSuccess = result == "1";
                 if (isSuccess) {
@@ -75,15 +78,31 @@ class MasterCoaScreen extends StatelessWidget {
     });
   }
 
-  Future<dynamic> goTo(BuildContext context, CoaDAO coa) {
+  Future<dynamic> goTo(BuildContext context, KasBankDetailDAO kasbankdetail) {
     return Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => AddEditCoa(coa: coa)),
+        MaterialPageRoute(
+            builder: (context) =>
+                AddEditKasBankDetail(kasbankdetail: kasbankdetail)),
         (route) => false);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Kas Bank Detail",
+          style: AppTextStyle.textTitleStyle(),
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => HomeScreen()),
+                (route) => false); // Jika tidak, gunakan navigator default
+          }, // Navigasi kembali ke halaman sebelumnya
+        ),
+      ),
       backgroundColor: AppColor.whiteColor,
       body: Padding(
         padding: EdgeInsets.symmetric(
@@ -95,9 +114,12 @@ class MasterCoaScreen extends StatelessWidget {
           children: [
             mButton(() {
               Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => AddEditCoa()),
+                  MaterialPageRoute(
+                      builder: (context) => AddEditKasBankDetail(
+                          noTrx: controller.vocherNo.value)),
                   (route) => false);
-            }, "Add Coa", Icons.add, double.infinity),
+            }, "Add Kas Bank Detail", Icons.add, double.infinity,
+                disable: approve ?? false),
             SizedBox(
               height: 5.h,
             ),
@@ -111,79 +133,86 @@ class MasterCoaScreen extends StatelessWidget {
                 pageNo: controller.pageNo.value,
                 pageRow: controller.pageRow.value,
                 titles: [
-                  AppTableTitle(value: "Kode "),
-                  AppTableTitle(value: "Nama "),
-                  AppTableTitle(value: "jenis"),
+                  AppTableTitle(value: "Keterangan "),
+                  AppTableTitle(value: "Rekening (COA) "),
+                  AppTableTitle(value: "Qty"),
+                  AppTableTitle(value: "Harga"),
                   AppTableTitle(value: "D/K"),
-                  AppTableTitle(value: "TM"),
                   AppTableTitle(value: "Aksi"),
                 ],
-                data: List.generate(controller.coaHeader.length, (int i) {
-                  var coa = controller.coaHeader[i];
+                data: List.generate(controller.kbdetailHeader.length, (int i) {
+                  var kasbankdetail = controller.kbdetailHeader[i];
                   return [
                     AppTableCell(
-                        value: coa.acId,
+                        value: kasbankdetail.uraianDet,
                         index: i,
                         onEdit: () {
-                          goTo(context, coa);
+                          goTo(context, kasbankdetail);
                         },
                         onDelete: () async {
-                          await messageHapus(coa.acId, coa.namaRekening);
+                          await messageHapus(
+                              kasbankdetail.rowId, kasbankdetail.detVoucherNo);
                         },
                         showOptionsOnTap: true),
                     AppTableCell(
-                        value: coa.namaRekening,
+                        value:
+                            '${kasbankdetail.acId} - ${kasbankdetail.namaRek}',
                         index: i,
                         onEdit: () {
-                          goTo(context, coa);
+                          goTo(context, kasbankdetail);
                         },
                         onDelete: () async {
-                          await messageHapus(coa.acId, coa.namaRekening);
+                          await messageHapus(
+                              kasbankdetail.rowId, kasbankdetail.detVoucherNo);
                         },
                         showOptionsOnTap: true),
                     AppTableCell(
-                        value: coa.jenisRek,
+                        value: kasbankdetail.qty.toString(),
                         index: i,
                         onEdit: () {
-                          goTo(context, coa);
+                          goTo(context, kasbankdetail);
                         },
                         onDelete: () async {
-                          await messageHapus(coa.acId, coa.namaRekening);
+                          await messageHapus(
+                              kasbankdetail.rowId, kasbankdetail.detVoucherNo);
                         },
                         showOptionsOnTap: true),
                     AppTableCell(
-                        value: coa.flagDk,
+                        value: formatCurrency(kasbankdetail.priceUnit),
                         index: i,
                         onEdit: () {
-                          goTo(context, coa);
+                          goTo(context, kasbankdetail);
                         },
                         onDelete: () async {
-                          await messageHapus(coa.acId, coa.namaRekening);
+                          await messageHapus(
+                              kasbankdetail.rowId, kasbankdetail.detVoucherNo);
                         },
                         showOptionsOnTap: true),
                     AppTableCell(
-                        value: coa.flagTm!,
+                        value: kasbankdetail.flagDK,
                         index: i,
                         onEdit: () {
-                          goTo(context, coa);
+                          goTo(context, kasbankdetail);
                         },
                         onDelete: () async {
-                          await messageHapus(coa.acId, coa.namaRekening);
+                          await messageHapus(
+                              kasbankdetail.rowId, kasbankdetail.detVoucherNo);
                         },
                         showOptionsOnTap: true),
                     AppTableCell(
                       index: i,
                       onDelete: () async {
-                        await messageHapus(coa.acId, coa.namaRekening);
+                        await messageHapus(
+                            kasbankdetail.rowId, kasbankdetail.detVoucherNo);
                       },
                       value: "", // Ganti dengan URL gambar jika ada
-                      isEdit: true,
-                      isDelete: true,
+                      isEdit: approve == true ? false : true,
+                      isDelete: approve == true ? false : true,
                       onEdit: () {
                         Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(
-                                builder: (context) => AddEditCoa(
-                                      coa: coa,
+                                builder: (context) => AddEditKasBankDetail(
+                                      kasbankdetail: kasbankdetail,
                                     )),
                             (route) => false);
                       },

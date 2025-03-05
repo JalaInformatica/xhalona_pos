@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
+import 'package:xhalona_pos/widgets/app_bottombar.dart';
 import 'package:xhalona_pos/models/dao/departemen.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
@@ -15,39 +16,6 @@ class MasterDepartemenScreen extends StatelessWidget {
 
   final DepartemenController controller = Get.put(DepartemenController());
   DepartemenRepository _deptRepository = DepartemenRepository();
-
-  Widget mButton(VoidCallback onTap, IconData icon, String label) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-        decoration: BoxDecoration(
-          color: AppColor.secondaryColor, // Background color
-          borderRadius: BorderRadius.circular(8), // Rounded corners
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 4,
-              offset: Offset(0, 2), // Shadow position
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: Colors.white,
-              size: 20,
-            ),
-            SizedBox(width: 8),
-            Text(label,
-                style: AppTextStyle.textTitleStyle(color: Colors.white)),
-          ],
-        ),
-      ),
-    );
-  }
 
   Future<dynamic> goTo(BuildContext context, DepartemenDAO dept) {
     return Navigator.of(context).pushAndRemoveUntil(
@@ -89,7 +57,7 @@ class MasterDepartemenScreen extends StatelessWidget {
                 Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => AddEditDept()),
                     (route) => false);
-              }, Icons.add, "Add Departement"),
+              }, "Add Departement", Icons.add, double.infinity),
               SizedBox(
                 height: 5.h,
               ),

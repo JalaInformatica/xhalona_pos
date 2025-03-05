@@ -14,6 +14,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:xhalona_pos/repositories/user/user_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/profile/ubah%20profile/editname_page.dart';
 import 'package:xhalona_pos/views/home/fragment/profile/ubah%20profile/editemail_page.dart';
+import 'package:xhalona_pos/views/home/fragment/profile/ubah%20profile/editadress_page.dart';
 // ignore_for_file: unnecessary_null_comparison
 
 // ignore: must_be_immutable
@@ -36,6 +37,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? tLahir;
   String? email;
   String? jKelamin;
+  String? alamat;
 
   String? profileImageUrl;
   String? baseUrl;
@@ -64,6 +66,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       name = prefs.getString('name');
       tLahir = prefs.getString('datePicker');
       email = prefs.getString('userEmail');
+      alamat = prefs.getString('userAddress');
     });
   }
 
@@ -239,6 +242,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         userName: name ?? controller.profileData.value.userName,
         userEmail: email ?? controller.profileData.value.emailAddress,
         userPhone: controller.profileData.value.phoneNumber1,
+        userAddress: alamat ?? controller.profileData.value.profileAddress,
         joinDate: controller.profileData.value.jointDate,
         userPic: prefs.getString('profileImageUrl') ??
             controller.profileData.value.profilePic,
@@ -300,7 +304,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   children: [
                     // CircleAvatar di atas daftar
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 20),
+                      padding: const EdgeInsets.only(bottom: 10),
                       child: CircleAvatar(
                         radius: 50,
                         backgroundColor: Colors.grey[300],
@@ -313,7 +317,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           5,
                           (index) => Padding(
                             padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 16),
+                                vertical: 5, horizontal: 16),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -515,7 +519,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 10),
                       ListTile(
                         title: const Text('Nama'),
                         subtitle: Text(
@@ -536,12 +540,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         subtitle: Text(
                             '${controller.profileData.value.profileBirthDate}' !=
                                     null
-                                ? prefs.getString('datePicker') ??
-                                    controller
-                                        .profileData.value.profileBirthDate.date.split(" ").first
+                                ? DateFormat('dd-MM-yyyy').format(
+                                        DateTime.parse(
+                                            prefs.getString('datePicker')!)) ??
+                                    DateFormat('dd-MM-yyyy').format(
+                                        DateTime.parse(controller.profileData
+                                            .value.profileBirthDate.date))
                                 : 'Atur Sekarang'),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: _selectDate,
+                      ),
+                      const Divider(),
+                      ListTile(
+                        title: const Text('Alamat'),
+                        subtitle: Text(
+                            controller.profileData.value.profileAddress != null
+                                ? alamat ??
+                                    controller.profileData.value.profileAddress
+                                : 'Atur Sekarang'),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => EditAddressPage()));
+                        },
                       ),
                       const Divider(),
                       ListTile(

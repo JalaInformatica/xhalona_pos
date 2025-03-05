@@ -46,11 +46,10 @@ class _AddEditKasBankDetailState extends State<AddEditKasBankDetail> {
   void initState() {
     super.initState();
     Inisialisasi();
-
-    _noTrxController.text = widget.noTrx!;
-    _ketController.text = widget.ket!;
-
+    if (widget.noTrx != null) _noTrxController.text = widget.noTrx!;
     if (widget.kasbankdetail != null) {
+      _noTrxController.text = widget.kasbankdetail!.detVoucherNo;
+      _ketController.text = widget.kasbankdetail!.uraianDet;
       _hargaController.text = widget.kasbankdetail!.priceUnit.toString();
       _qtyController.text = widget.kasbankdetail!.qty.toString();
       _flagDK = widget.kasbankdetail!.flagDK;
