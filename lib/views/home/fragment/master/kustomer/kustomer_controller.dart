@@ -2,12 +2,14 @@ import 'package:get/get.dart';
 import 'package:xhalona_pos/models/dao/kustomer.dart';
 import 'package:xhalona_pos/repositories/kustomer/kustomer_repository.dart';
 
+enum FilterCompliment {ALL, TRUE, FALSE}
+enum FilterDebt {ALL, TRUE, FALSE}
+
 class KustomerController extends GetxController {
   KustomerRepository _kustomerRepository = KustomerRepository();
 
   var kustomerHeader = <KustomerDAO>[].obs;
   var isLoading = true.obs;
-  // var trxStatusCategory = ProductStatusCategory.progress.obs;
   var isActive = false.obs;
   var filterValue = "".obs;
   var isSuplier = "".obs;
@@ -15,17 +17,32 @@ class KustomerController extends GetxController {
   var pageNo = 1.obs;
   var pageRow = 10.obs;
 
+  var filterCompliment = FilterCompliment.ALL.obs;
+  var filterDebt = FilterDebt.ALL.obs;
+  var isFilteredDialog = false.obs;
+
+  List<String> filter = ["","1","0"];
+
   @override
   void onInit() {
     super.onInit();
-    fetchProducts();
+    fetchKustomers();
   }
 
   void updateFilterActive() async {
     isActive.value = !isActive.value;
     pageNo.value = 1;
     pageRow.value = 10;
-    fetchProducts();
+    fetchKustomers();
+  }
+
+  void updateFilterDialog({
+    required FilterCompliment newFilterCompliment,
+    required FilterDebt newFilterDebt
+  }) async {
+    filterCompliment.value = newFilterCompliment;
+    filterDebt.value = newFilterDebt;
+    fetchKustomers();
   }
 
   // void updateFilterTrxStatusCategory(ProductStatusCategory newStatusCategory) async {
@@ -46,7 +63,7 @@ class KustomerController extends GetxController {
     filterValue.value = newFilterValue;
     pageNo.value = 1;
     pageRow.value = 10;
-    fetchProducts();
+    fetchKustomers();
   }
 
   void updateMonitorValue(String newFilterValue) {
@@ -54,20 +71,20 @@ class KustomerController extends GetxController {
     filterValue.value = newFilterValue;
     pageNo.value = 1;
     pageRow.value = 10;
-    fetchProducts();
+    fetchKustomers();
   }
 
   void updatePageNo(int newFilterValue) {
     pageNo.value = newFilterValue;
-    fetchProducts();
+    fetchKustomers();
   }
 
   void updatePageRow(int newFilterValue) {
     pageRow.value = newFilterValue;
-    fetchProducts();
+    fetchKustomers();
   }
 
-  Future<void> fetchProducts() async {
+  Future<void> fetchKustomers() async {
     try {
       isLoading.value = true;
       final result = await _kustomerRepository.getKustomer(
@@ -76,10 +93,19 @@ class KustomerController extends GetxController {
           filterValue: filterValue.value,
           pageNo: pageNo.value,
           pageRow: pageRow.value,
-          isSuplier: isSuplier.value);
+          isSuplier: isSuplier.value,
+          isCompliment: filter[filterCompliment.value.index],
+          isPayable: filter[filterDebt.value.index]
+          );
       kustomerHeader.value = result;
     } finally {
       isLoading.value = false;
     }
+  }
+
+  Future<void> deleteKustomer(String supplierId) async{
+    await _kustomerRepository.deleteKustomer(
+      suplierId: supplierId
+    );
   }
 }

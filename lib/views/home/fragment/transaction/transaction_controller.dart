@@ -1,7 +1,10 @@
 import 'package:get/get.dart';
 import 'package:xhalona_pos/models/dao/transaction.dart';
 import 'package:xhalona_pos/core/constant/transaction.dart';
+import 'package:xhalona_pos/repositories/crystal_report/transaction_crystal_report_repository.dart';
 import 'package:xhalona_pos/repositories/transaction/transaction_repository.dart';
+
+enum DateType {DATE, MONTH, NONE}
 
 class TransactionController extends GetxController {
   TransactionRepository _transactionRepository = TransactionRepository();
@@ -13,12 +16,23 @@ class TransactionController extends GetxController {
   var isOnline = false.obs;
   var filterValue = "".obs;
   var salesId = "".obs;
-  RxDouble sumTrx = 0.0.obs;
+  RxInt sumNetto = 0.obs;
+  RxInt sumPayment = 0.obs;
+  RxInt sumDebt = 0.obs;
+
+  var filterDateType = DateType.DATE.obs;
+  // DateType get dateType => _dateType.value;
+  // set dateType(DateType dateType){
+  //   _dateType.value = dateType;
+
+  // }
+
 
   DateTime dateNow = DateTime.now();
-  late RxInt filterDay = dateNow.day.obs;
-  late RxInt filterMonth = dateNow.month.obs;
-  late RxInt filterYear = dateNow.year.obs;
+  late RxnInt filterDay = RxnInt(dateNow.day);
+  late RxnInt filterMonth = RxnInt(dateNow.month);
+  late RxnInt filterYear = RxnInt(dateNow.year);
+  var isDateFilterChanged = true.obs;
 
   var pageNo = 1.obs;
   var pageRow = 10.obs;
@@ -47,10 +61,23 @@ class TransactionController extends GetxController {
     }
   }
 
-  void updateFilterTrxDate(DateTime selectedDay) {
-    filterYear.value = selectedDay.year;
-    filterMonth.value = selectedDay.month;
-    filterDay.value = selectedDay.day;
+  void updateFilterTrxDate({
+    required DateType dateType, 
+    int? day, int? month, int? year
+    }) {
+    filterDateType.value = dateType;
+    filterYear.value = year;
+    filterMonth.value = month;
+    filterDay.value = day;
+    pageNo.value = 1;
+    pageRow.value = 10;
+    fetchTransactions();
+  }
+
+  void updateFilterTrxNone() {
+    filterYear.value = null;
+    filterMonth.value = null;
+    filterDay.value = null;
     pageNo.value = 1;
     pageRow.value = 10;
     fetchTransactions();
@@ -92,11 +119,17 @@ class TransactionController extends GetxController {
           pageNo: pageNo.value,
           pageRow: pageRow.value);
       transactionHeader.value = result;
-      sumTrx.value =
-          result.fold(0.0, (sum, item) => sum + (item.nettoVal ?? 0.0));
+      sumNetto.value = result.fold(0, (sum, item) => sum + (item.nettoVal));
+      sumPayment.value = result.fold(0, (sum, item) => sum + (item.paymentVal));
+      sumDebt.value = result.fold(0, (sum, item) => sum + (item.totalHutang));
     } finally {
       isLoading.value = false;
     }
+  }
+
+  Future<String> printNota(String salesId) async {
+    return await TransactionCrystalReportRepository()
+        .printNota(salesId: salesId);
   }
 
   Future<void> fetchGetDetailTransactions() async {

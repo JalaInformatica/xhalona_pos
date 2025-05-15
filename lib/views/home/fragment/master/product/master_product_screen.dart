@@ -774,7 +774,6 @@ class MasterProductScreen extends StatelessWidget {
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: buildFloatingActionButton(context, screenWidth),
       ),
     );
   }

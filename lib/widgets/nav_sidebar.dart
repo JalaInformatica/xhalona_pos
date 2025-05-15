@@ -8,7 +8,7 @@ import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
 import 'package:xhalona_pos/views/authentication/login/login_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/dashboard/dashboard_screen.dart';
-import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplier_kustomer_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/master/supplier/supplier_controller.dart';
 
 // ignore_for_file: unnecessary_null_comparison
 
@@ -193,7 +193,6 @@ class _NavSideBarState extends State<NavSideBar> {
   }
 
   final HomeController controller = Get.put(HomeController());
-  final KustomerController controllerKus = Get.put(KustomerController());
 
   Widget buildMenuItems(BuildContext context) {
     return Column(
@@ -323,8 +322,6 @@ class _NavSideBarState extends State<NavSideBar> {
                   onTap: () {
                     controller.selectedMenuName.value = 'master_customer';
                     controller.subMenuName.value = "Customer";
-                    controllerKus.isSuplier.value = "0";
-                    controllerKus.fetchProducts();
                     navigateFromOtherWidget(context, DashboardScreen());
                   }),
               _subMenuTile(
@@ -333,8 +330,6 @@ class _NavSideBarState extends State<NavSideBar> {
                   onTap: () {
                     controller.selectedMenuName.value = 'master_supplier';
                     controller.subMenuName.value = "Supplier";
-                    controllerKus.isSuplier.value = "1";
-                    controllerKus.fetchProducts();
                     navigateFromOtherWidget(context, DashboardScreen());
                   }),
             ],

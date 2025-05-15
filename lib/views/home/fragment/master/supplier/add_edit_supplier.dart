@@ -6,22 +6,13 @@ import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 import 'package:xhalona_pos/repositories/kustomer/kustomer_repository.dart';
-import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplier_kustomer_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/master/supplier/supplier_controller.dart';
 
-// ignore: must_be_immutable
-class AddEditKustomer extends StatefulWidget {
+class AddEditSupplier extends StatelessWidget {
   KustomerDAO? kustomer;
-  String? islabel;
-  String? isSuplier;
-  AddEditKustomer({super.key, this.kustomer, this.islabel, this.isSuplier});
-
-  @override
-  _AddEditKustomerState createState() => _AddEditKustomerState();
-}
-
-class _AddEditKustomerState extends State<AddEditKustomer> {
+  AddEditSupplier({this.kustomer});
   KustomerRepository _kustomerRepository = KustomerRepository();
-  final KustomerController controller = Get.put(KustomerController());
+  final SupplierController controller = Get.put(SupplierController());
 
   final _formKey = GlobalKey<FormState>();
   final _kdKustomerController = TextEditingController();
@@ -30,34 +21,34 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
   final _emailKustomerController = TextEditingController();
   final _address1KustomerController = TextEditingController();
   final _address2KustomerController = TextEditingController();
-  bool _isLoading = true;
+  // bool _isLoading = true;
   bool _isPayable = false;
   bool _isCompliment = false;
 
   final List<String> genders = ['Laki-laki', 'Perempuan'];
 
-  @override
-  void initState() {
-    super.initState();
-    Inisialisasi();
-    if (widget.kustomer != null) {
-      // Inisialisasi data dari karyawan jika tersedia
-      _kdKustomerController.text = widget.kustomer!.suplierId;
-      _nameKustomerController.text = widget.kustomer!.suplierName;
-      _telpKustomerController.text = widget.kustomer!.telp;
-      _emailKustomerController.text = widget.kustomer!.emailAdress;
-      _address1KustomerController.text = widget.kustomer!.address1;
-      _address2KustomerController.text = widget.kustomer!.address2;
-      _isPayable = widget.kustomer!.isPayable ?? false;
-      _isCompliment = widget.kustomer!.isCompliment ?? false;
-    }
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   Inisialisasi();
+  //   if (widget.kustomer != null) {
+  //     // Inisialisasi data dari karyawan jika tersedia
+  //     _kdKustomerController.text = widget.kustomer!.suplierId;
+  //     _nameKustomerController.text = widget.kustomer!.suplierName;
+  //     _telpKustomerController.text = widget.kustomer!.telp;
+  //     _emailKustomerController.text = widget.kustomer!.emailAdress;
+  //     _address1KustomerController.text = widget.kustomer!.address1;
+  //     _address2KustomerController.text = widget.kustomer!.address2;
+  //     _isPayable = widget.kustomer!.isPayable ?? false;
+  //     _isCompliment = widget.kustomer!.isCompliment ?? false;
+  //   }
+  // }
 
-  Future<void> Inisialisasi() async {
-    setState(() {
-      _isLoading = false;
-    });
-  }
+  // Future<void> Inisialisasi() async {
+  //   setState(() {
+  //     _isLoading = false;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -72,15 +63,14 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
             adress2: _address2KustomerController.text,
             isPayable: _isPayable == true ? "1" : "0",
             isCompliment: _isCompliment == true ? "1" : "0",
-            isSuplier: widget.isSuplier,
-            actionId: widget.kustomer == null ? '0' : '1');
+            isSuplier: "1",
+            actionId: kustomer == null ? '0' : '1');
 
         bool isSuccess = result == "1";
         if (isSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Data gagal disimpan!')),
           );
-          setState(() {});
         } else {
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => HomeScreen()),
@@ -94,24 +84,15 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
       }
     }
 
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
-            (route) => false); // Navigasi kembali ke halaman sebelumnya
-        return false; // Mencegah navigasi bawaan
-      },
-      child: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           title: Text(
-            "Tambah/Edit Data ${widget.islabel}",
+            "Tambah/Edit Data Supplier",
             style: AppTextStyle.textTitleStyle(color: Colors.white),
           ),
           backgroundColor: AppColor.secondaryColor,
         ),
-        body: _isLoading
-            ? buildShimmerLoading()
-            : SingleChildScrollView(
+        body: SingleChildScrollView(
                 padding: EdgeInsets.all(16),
                 child: Form(
                   key: _formKey,
@@ -124,11 +105,11 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
                         textEditingController: _kdKustomerController,
                         validator: (value) {
                           if (value == '') {
-                            return "Kode ${widget.islabel} harus diisi!";
+                            return "Kode harus diisi!";
                           }
                           return null;
                         },
-                        labelText: "Kode ${widget.islabel}",
+                        labelText: "Kode ",
                         inputAction: TextInputAction.next,
                       ),
                       SizedBox(height: 16),
@@ -139,11 +120,11 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
                         textEditingController: _nameKustomerController,
                         validator: (value) {
                           if (value == '') {
-                            return "Nama ${widget.islabel} harus diisi!";
+                            return "Nama  harus diisi!";
                           }
                           return null;
                         },
-                        labelText: "Nama ${widget.islabel}",
+                        labelText: "Nama ",
                         inputAction: TextInputAction.next,
                       ),
                       SizedBox(height: 16),
@@ -207,7 +188,6 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
                       ),
 
                       SizedBox(height: 16),
-                      if (widget.isSuplier == '0')
                         SwitchListTile(
                           title: Text(
                             "Is Payable",
@@ -215,12 +195,11 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
                           ),
                           value: _isPayable,
                           onChanged: (value) {
-                            setState(() {
-                              _isPayable = value;
-                            });
+                            // setState(() {
+                            //   _isPayable = value;
+                            // });
                           },
                         ),
-                      if (widget.isSuplier == '0')
                         SwitchListTile(
                           title: Text(
                             "Is Compliment",
@@ -228,9 +207,9 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
                           ),
                           value: _isCompliment,
                           onChanged: (value) {
-                            setState(() {
-                              _isCompliment = value;
-                            });
+                            // setState(() {
+                            //   _isCompliment = value;
+                            // });
                           },
                         ),
                       SizedBox(height: 15),
@@ -253,7 +232,6 @@ class _AddEditKustomerState extends State<AddEditKustomer> {
                   ),
                 ),
               ),
-      ),
     );
   }
 }

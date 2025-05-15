@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/models/dao/kasbank.dart';
+import 'package:xhalona_pos/views/home/fragment/master/kustomer/kustomer_controller.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/models/dao/kustomer.dart';
 import 'package:xhalona_pos/models/dao/rekening.dart';
@@ -21,7 +22,7 @@ import 'package:xhalona_pos/views/home/fragment/master/rekening/rekening_control
 import 'package:xhalona_pos/views/home/fragment/finance/metodebayar/metodebayar_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/finance/kasbankdetail/edit_kasbankdetail.dart';
 import 'package:xhalona_pos/views/home/fragment/laporan/penjualan/lap_penjualan_viewer_screen.dart';
-import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplier_kustomer_controller.dart';
+import 'package:xhalona_pos/views/home/fragment/master/supplier/supplier_controller.dart';
 
 // ignore: must_be_immutable
 class AddEditFinance extends StatefulWidget {
@@ -354,7 +355,7 @@ class _AddEditFinanceState extends State<AddEditFinance> {
                                     _kustomer = selectedPartId ?? "";
                                     _kustomerController.text =
                                         selectedPartId ?? "";
-                                    controllerKus.fetchProducts();
+                                    controllerKus.fetchKustomers();
                                   });
                                 },
                                 controller: _kustomerController,

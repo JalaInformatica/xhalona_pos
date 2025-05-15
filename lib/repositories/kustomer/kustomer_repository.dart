@@ -11,12 +11,17 @@ class KustomerRepository extends AppRepository {
     String? isActive,
     String? filterValue,
     String? isSuplier,
+    String? isPayable,
+    String? isCompliment
   }) async {
     var result = await _KustomerService.getKustomer(
-        pageNo: pageNo,
-        pageRow: pageRow,
-        filterValue: filterValue,
-        isSuplier: isSuplier);
+      pageNo: pageNo,
+      pageRow: pageRow,
+      filterValue: filterValue,
+      isSuplier: isSuplier,
+      isCompliment: isCompliment,
+      isPayable: isPayable
+    );
     List data = getResponseListData(result);
     return data.map((Kustomer) => KustomerDAO.fromJson(Kustomer)).toList();
   }
@@ -42,8 +47,7 @@ class KustomerRepository extends AppRepository {
       emailAdress: emailAdress,
       isPayable: isPayable,
       isCompliment: isCompliment,
-      isSuplier: isSuplier,
-      actionId: actionId,
+      isSuplier: isSuplier
     );
     return getResponseTrxData(result).first["NO_TRX"];
   }

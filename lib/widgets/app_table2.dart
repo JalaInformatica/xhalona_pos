@@ -9,6 +9,7 @@ import 'package:xhalona_pos/widgets/app_icon_button.dart';
 class AppTable2 extends StatefulWidget {
   final List<AppTableTitle2> titles;
   final List<List<AppTableCell2>> data;
+  final List<AppTableCell2>?footer;
   final VoidCallback onRefresh;
   final bool isRefreshing;
   final Function(String) onSearch;
@@ -28,6 +29,7 @@ class AppTable2 extends StatefulWidget {
     required this.onChangePageNo,
     this.pageNo = 1,
     this.pageRow = 10,
+    this.footer
   });
 
   @override
@@ -51,6 +53,32 @@ class _AppTableState extends State<AppTable2> {
     });
   }
 
+  ScrollController headerScrollController = ScrollController();
+  ScrollController bodyScrollController = ScrollController();
+  ScrollController footerScrollController = ScrollController();
+
+  @override
+  initState(){
+    super.initState();
+    headerScrollController.addListener(() {
+      if (bodyScrollController.hasClients && 
+          bodyScrollController.offset != headerScrollController.offset) {
+        bodyScrollController.jumpTo(headerScrollController.offset);
+      }
+    });
+
+    bodyScrollController.addListener(() {
+      if (headerScrollController.hasClients &&
+          headerScrollController.offset != bodyScrollController.offset) {
+        headerScrollController.jumpTo(bodyScrollController.offset);
+      }
+      if(footerScrollController.hasClients && 
+        footerScrollController.offset != bodyScrollController.offset){
+        footerScrollController.jumpTo(bodyScrollController.offset);
+      }
+    });
+  }
+
   @override
   void dispose() {
     searchController.dispose();
@@ -58,88 +86,161 @@ class _AppTableState extends State<AppTable2> {
     super.dispose();
   }
 
+
   Widget customTable({
-    required List<AppTableTitle2> titles,
-    required List<List<AppTableCell2>> data,
-    required int itemCount,
-  }) {
-    return Flexible(
-        child: SingleChildScrollView(
-            child: Row(
+  required List<AppTableTitle2> titles,
+  required List<List<AppTableCell2>> data,
+  required int itemCount,
+}) {
+
+  return Flexible(
+    child: Column(
       children: [
-        DataTable(
-          columnSpacing: 5,
-          horizontalMargin: 0,
-          dividerThickness: 0.01,
-          headingRowHeight: 40,
-          dataRowMinHeight: 40,
-          dataRowMaxHeight: 40,
-          headingRowColor: WidgetStateProperty.resolveWith<Color?>(
-            (Set<WidgetState> states) {
-              return AppColor.primaryColor;
-            },
-          ),
-          columns: [
-            DataColumn(label: titles.first)
-          ],
-          rows: List.generate(itemCount, 
-            (index){
-              return DataRow(
-                color: WidgetStateProperty.resolveWith<Color?>(
-                (Set<WidgetState> states) {
-                  return index % 2 == 0 ? Colors.white : AppColor.tertiaryColor;
-                  },
-                ),
-                cells: [
-                  DataCell(
-                    data[index].first
-                  )
-                ]
-              );
-            }),
-        ),
-        Flexible(
-          child: Scrollbar(
-            thumbVisibility: true,
-            child: SingleChildScrollView(
-              controller: ScrollController(),
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
-              columnSpacing: 5,
+        // Sticky Header
+        Row(
+          children: [
+            DataTable(
+              columnSpacing: 0,
               horizontalMargin: 0,
-              dividerThickness: 0.01,
+              dividerThickness: 0,
               headingRowHeight: 40,
-              dataRowMinHeight: 40,
-              dataRowMaxHeight: 40,
-              headingRowColor: WidgetStateProperty.resolveWith<Color?>(
-                (Set<WidgetState> states) {
-                  return AppColor.primaryColor;
-                },
+              dataRowMaxHeight: 0, 
+              headingRowColor: WidgetStateProperty.all(AppColor.primaryColor),
+              columns: [
+                DataColumn(label: titles.first)
+              ],
+              rows: const [],
+            ),
+            Flexible(
+              child: SingleChildScrollView(
+                physics: ScrollPhysics(),
+                controller: headerScrollController,
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  columnSpacing: 0,
+                  horizontalMargin: 0,
+                  dividerThickness: 0,
+                  headingRowHeight: 40,
+                  dataRowMaxHeight: 0,
+                  headingRowColor:
+                      WidgetStateProperty.all(AppColor.primaryColor),
+                  columns: titles
+                      .skip(1)
+                      .map((column) => DataColumn(label: column))
+                      .toList(),
+                  rows: const [],
+                ),
               ),
-              columns:
-                titles.map(
-                  (columns) => DataColumn(label: columns),
-                ).skip(1).toList(),
-              rows: List.generate(itemCount, 
-                (index){
-                  return DataRow(
-                    color: WidgetStateProperty.resolveWith<Color?>(
-                    (Set<WidgetState> states) {
-                      return index % 2 == 0 ? Colors.white : AppColor.tertiaryColor;
-                      },
+            ),
+          ],
+        ),
+        // Scrollable Body
+        Flexible(
+          child: SingleChildScrollView(
+            child: Row(
+              children: [
+                DataTable(
+                  columnSpacing: 0,
+                  horizontalMargin: 0,
+                  dividerThickness: 0.01,
+                  headingRowHeight: 0, 
+                  dataRowMinHeight: 40,
+                  dataRowMaxHeight: 40,
+                  columns: [
+                    DataColumn(label: SizedBox.shrink()), 
+                  ],
+                  rows: List.generate(itemCount, (index) {
+                    return DataRow(
+                      color: WidgetStateProperty.all(
+                        index % 2 == 0 ? Colors.white : AppColor.tertiaryColor,
+                      ),
+                      cells: [
+                        DataCell(data[index].first),
+                      ],
+                    );
+                  }),
+                ),
+                Flexible(
+                  child: Scrollbar(
+                    child: SingleChildScrollView(
+                      physics: ScrollPhysics(),
+                      controller: bodyScrollController,
+                      scrollDirection: Axis.horizontal,
+                      child: DataTable(
+                        columnSpacing: 0,
+                        horizontalMargin: 0,
+                        dividerThickness: 0.01,
+                        headingRowHeight: 0,
+                        dataRowMinHeight: 40,
+                        dataRowMaxHeight: 40,
+                        columns: titles
+                            .skip(1)
+                            .map((column) => DataColumn(label: Container()))
+                            .toList(), 
+                        rows: List.generate(itemCount, (index) {
+                          return DataRow(
+                            color: WidgetStateProperty.all(
+                              index % 2 == 0
+                                  ? Colors.white
+                                  : AppColor.tertiaryColor,
+                            ),
+                            cells: data[index]
+                                .skip(1)
+                                .map((item) => DataCell(item))
+                                .toList(),
+                          );
+                        }),
+                      ),
                     ),
-                    cells: data[index].skip(1).map((item)=>DataCell(
-                      item,
-                    )).toList()
-                  );
-                }
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if(widget.footer!=null)
+        Row(
+          children: [
+            DataTable(
+              columnSpacing: 0,
+              horizontalMargin: 0,
+              dividerThickness: 0,
+              headingRowHeight: 40,
+              dataRowMaxHeight: 0, 
+              headingRowColor: WidgetStateProperty.all(AppColor.grey300),
+              columns: [
+                DataColumn(label: widget.footer!.first)
+              ],
+              rows: const [],
+            ),
+            Flexible(
+              child: SingleChildScrollView(
+                controller: footerScrollController,
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  columnSpacing: 0,
+                  horizontalMargin: 0,
+                  dividerThickness: 0,
+                  headingRowHeight: 40,
+                  dataRowMaxHeight: 0,
+                  headingRowColor:
+                      WidgetStateProperty.all(AppColor.grey300),
+                  columns: [
+                    ...widget.footer!.map(
+                      (item)=>DataColumn(label: item)
+                    ).skip(1),
+                  ],
+                  rows: const [],
+                ),
               ),
-            )
-          )
-        )),
+            ),
+          ],
+        ),
       ],
-    )));
-  }
+    ),
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -171,6 +272,7 @@ class _AppTableState extends State<AppTable2> {
               )
             : Flexible(child: _buildShimmerTable(100)),
         SizedBox(height: 5),
+        
         Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -202,6 +304,7 @@ class _AppTableState extends State<AppTable2> {
                     border: Border.all(color: AppColor.grey500),
                     borderRadius: BorderRadius.circular(5)),
                 child: DropdownButton<String>(
+                  underline: SizedBox.shrink(),
                   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   value: "${widget.pageRow}/page",
                   onChanged: (String? newValue) {
@@ -281,6 +384,7 @@ class AppTableCell2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: action,
       child: SizedBox(
         width: width,

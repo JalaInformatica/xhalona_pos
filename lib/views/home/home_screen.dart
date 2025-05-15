@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/views/home/fragment/master/kustomer/master_kustomer_screen.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/widgets/nav_sidebar.dart';
 import 'fragment/laporan/monitor/monitor_screen.dart';
@@ -26,8 +27,7 @@ import 'package:xhalona_pos/views/home/fragment/master/pengguna/master_pengguna_
 import 'package:xhalona_pos/views/home/fragment/master/rekening/master_rekening_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/master_karyawan_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/pekerjaan/master_pekerjaan_screen.dart';
-import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplier_kustomer_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/master_kustomer_supplier_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/master/supplier/master_supplier_screen.dart';
 // ignore_for_file: use_build_context_synchronously
 
 // ignore: must_be_immutable
@@ -41,9 +41,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final HomeController controller = Get.put(HomeController());
-
-  final KustomerController controllerKus = Get.put(KustomerController());
-
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Widget? currentScreen;
@@ -97,19 +94,11 @@ class _HomeScreenState extends State<HomeScreen> {
         break;
       case "master_customer":
         controller.subMenuName.value = "Customer";
-        controllerKus.isSuplier.value = "0";
-        controllerKus.fetchProducts();
-        screen = MasterKustomerScreen(
-          islabel: 'Customer',
-        );
+        screen = MasterKustomerScreen();
         break;
       case "master_supplier":
         controller.subMenuName.value = "Supplier";
-        controllerKus.isSuplier.value = "1";
-        controllerKus.fetchProducts();
-        screen = MasterKustomerScreen(
-          islabel: 'Supplier',
-        );
+        screen = MasterSupplierScreen();
         break;
       case "laporan_penjualan":
         controller.subMenuName.value = "Laporan Penjualan";
@@ -447,25 +436,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Obx(() {
-        if (controller.isMenuLoading.value) {
-          return Scaffold(
-              backgroundColor: AppColor.whiteColor,
-              body: Center(
-                  child: AppDialog(
-                      shadowColor: AppColor.blackColor,
-                      content: Column(spacing: 10.h, children: [
-                        Text(
-                          "Tunggu Sebentar",
-                          style: AppTextStyle.textSubtitleStyle(
-                              color: AppColor.primaryColor),
-                        ),
-                        CircularProgressIndicator(
-                          color: AppColor.primaryColor,
-                        )
-                      ]))));
-        } else {
-          return Scaffold(
+      child: Obx(() =>
+        Scaffold(
             key: _scaffoldKey,
             drawer: NavSideBar(),
             backgroundColor: AppColor.whiteColor,
@@ -475,8 +447,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(child: menuScreen(controller.selectedMenuName.value)),
               ],
             ),
-            bottomNavigationBar: GetBuilder<HomeController>(
-              builder: (_) => Container(
+            bottomNavigationBar: Obx(
+              () => Container(
                 decoration: BoxDecoration(
                   color: AppColor.whiteColor,
                   boxShadow: [
@@ -487,42 +459,33 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-                child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  SingleChildScrollView(
+                child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
+                      spacing: 10.w,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Wrap(
-                          alignment: WrapAlignment.center,
-                          runAlignment: WrapAlignment.center,
-                          direction: Axis.horizontal,
-                          spacing: 10,
-                          children: [
-                            ...controller.menuData.map((menuItem) {
-                              if (menuItem.menuId == "NONMENU") {
-                                return Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: menuItem.dataSubMenu.map((subMenu) {
-                                    return menuComponent(
-                                        subMenu.subMenuDesc, context);
-                                  }).toList(),
-                                );
-                              }
-                              return menuComponent(menuItem.menuDesc, context);
-                            }),
-                            menuComponent("profil", context)
-                          ],
-                        ),
+                        ...controller.menuData.map((menuItem) {
+                          if (menuItem.menuId == "NONMENU") {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: menuItem.dataSubMenu.map((subMenu) {
+                                return menuComponent(
+                                    subMenu.subMenuDesc, context);
+                              }).toList(),
+                            );
+                          }
+                          return menuComponent(menuItem.menuDesc, context);
+                        }),
+                        if(controller.menuData.isNotEmpty)
+                        menuComponent("profil", context)
                       ],
                     ),
                   ),
-                ]),
               ),
             ),
-          );
-        }
-      }),
+          )
+      ),
     );
   }
 }

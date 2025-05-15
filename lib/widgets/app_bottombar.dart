@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/views/home/fragment/master/kustomer/master_kustomer_screen.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/views/home/home_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/coa/master_coa_screen.dart';
@@ -12,8 +13,7 @@ import 'package:xhalona_pos/views/home/fragment/master/karyawan/master_karyawan_
 import 'package:xhalona_pos/views/home/fragment/master/pengguna/master_pengguna_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/rekening/master_rekening_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/pekerjaan/master_pekerjaan_screen.dart';
-import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/supplier_kustomer_controller.dart';
-import 'package:xhalona_pos/views/home/fragment/master/kustomer/supplier/master_kustomer_supplier_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/master/supplier/master_supplier_screen.dart';
 
 class AppBottombar extends StatefulWidget {
   const AppBottombar({super.key});
@@ -30,7 +30,6 @@ class _AppBottombarState extends State<AppBottombar> {
 }
 
 final HomeController controllerHome = Get.put(HomeController());
-final KustomerController controllerKus = Get.put(KustomerController());
 
 void navigateToMenu(String menuName, BuildContext context) {
   switch (menuName.toLowerCase()) {
@@ -164,162 +163,6 @@ Widget mButton(VoidCallback onTap, String label, IconData icon, double? width) {
         ],
       ),
     ),
-  );
-}
-
-Widget buildFloatingActionButton(BuildContext context, screenWidth) {
-  return Obx(
-    () => Column(mainAxisSize: MainAxisSize.min, children: [
-      controllerHome.selectedMenuName.value.toLowerCase() == "master"
-          ? !controllerHome.isOpenMaster.value
-              ? Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Container(
-                    height: 47,
-                    width: double.infinity,
-                    color: Colors.white,
-                    padding: EdgeInsets.symmetric(vertical: 5),
-                    child: Scrollbar(
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          SizedBox(width: screenWidth * 0.02),
-                          mButton(() {
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                builder: (context) => MasterProductScreen(),
-                              ),
-                              (route) => false,
-                            );
-                          }, "Master Produk", Icons.shopping_bag, 170),
-                          SizedBox(
-                              width: screenWidth * 0.02), // Responsive spacing
-                          mButton(() {
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                builder: (context) => MasterKaryawanScreen(),
-                              ),
-                              (route) => false,
-                            );
-                          }, "Master Karyawan", Icons.account_circle, 170),
-                          SizedBox(width: screenWidth * 0.02),
-                          mButton(() {
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                builder: (context) => MasterCoaScreen(),
-                              ),
-                              (route) => false,
-                            );
-                          }, "Master Coa", Icons.account_balance, 170),
-                          SizedBox(width: screenWidth * 0.02),
-                          mButton(() {
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                builder: (context) => MasterPenggunaScreen(),
-                              ),
-                              (route) => false,
-                            );
-                          }, "Master Pengguna", Icons.person, 170),
-                          SizedBox(width: screenWidth * 0.02),
-                          mButton(() {
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                builder: (context) => MasterPekerjaanScreen(),
-                              ),
-                              (route) => false,
-                            );
-                          }, "Master Pekerjaan", Icons.work, 170),
-                          SizedBox(width: screenWidth * 0.02),
-                          mButton(() {
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                builder: (context) => MasterRekeningScreen(),
-                              ),
-                              (route) => false,
-                            );
-                          }, "Master Rekening", Icons.account_balance_wallet,
-                              170),
-                          SizedBox(width: screenWidth * 0.02),
-                          mButton(() {
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    MasterKustomerScreen(islabel: "Kustomer"),
-                              ),
-                              (route) => false,
-                            );
-                            controllerKus.isSuplier.value = "0";
-                            controllerKus.fetchProducts();
-                          }, "Master Kustomer", Icons.people, 170),
-                          SizedBox(width: screenWidth * 0.02),
-                          mButton(() {
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    MasterKustomerScreen(islabel: "Supplier"),
-                              ),
-                              (route) => false,
-                            );
-                            controllerKus.isSuplier.value = "1";
-                            controllerKus.fetchProducts();
-                          }, "Master Supplier", Icons.store, 170),
-                        ],
-                      ),
-                    ),
-                  ),
-                )
-              : SizedBox.shrink()
-          : SizedBox.shrink(),
-      controllerHome.selectedMenuName.value.toLowerCase() == "laporan"
-          ? !controllerHome.isOpenLaporan.value
-              ? Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Container(
-                    height: 47,
-                    width: double.infinity,
-                    color: Colors.white,
-                    padding: EdgeInsets.symmetric(vertical: 5),
-                    child: Scrollbar(
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          SizedBox(width: screenWidth * 0.02),
-                          mButton(() {
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                builder: (context) => LapPenjualanScreen(),
-                              ),
-                              (route) => false,
-                            );
-                          }, "Lap. Penjualan", Icons.graphic_eq_sharp, 170),
-                          SizedBox(width: screenWidth * 0.02),
-                          mButton(() {
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                builder: (context) => MonitorScreen(),
-                              ),
-                              (route) => false,
-                            );
-                          }, "Monitor Penjualan", Icons.monitor, 170),
-                          SizedBox(width: screenWidth * 0.02),
-                          mButton(() {}, "Lap. Stock", Icons.inventory, 170),
-                          SizedBox(width: screenWidth * 0.02),
-                          mButton(() {
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                builder: (context) => LapFinanceScreen(),
-                              ),
-                              (route) => false,
-                            );
-                          }, "Lap. Finance", Icons.monetization_on, 170),
-                        ],
-                      ),
-                    ),
-                  ),
-                )
-              : SizedBox.shrink()
-          : SizedBox.shrink(),
-    ]),
   );
 }
 

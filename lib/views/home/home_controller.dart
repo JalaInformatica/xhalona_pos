@@ -43,7 +43,9 @@ class HomeController extends GetxController {
 
   Future<void> fetchMenu() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();  
-    menuData.value = await _structureRepository.getMenus();
+    menuData.value = [
+      ...await _structureRepository.getMenus()
+    ];
     profileData.value = await _userRepository.getUserProfile()..companyId=prefs.getString(LocalStorageConst.companyId) ?? "";
     isMenuLoading.value = false;
   }
