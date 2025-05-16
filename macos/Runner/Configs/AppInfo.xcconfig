@@ -8,7 +8,7 @@
 PRODUCT_NAME = xhalona_pos
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.jalainformatica.xhalonaPos
+PRODUCT_BUNDLE_IDENTIFIER = com.jalainformatica.xhalona
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2025 com.jalainformatica. All rights reserved.

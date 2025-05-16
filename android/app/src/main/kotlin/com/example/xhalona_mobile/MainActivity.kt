@@ -1,4 +1,4 @@
-package com.jalainformatica.xhalona_mobile
+package com.jalainformatica.xhalona
 
 import io.flutter.embedding.android.FlutterActivity
 
