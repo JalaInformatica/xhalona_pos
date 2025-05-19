@@ -23,6 +23,7 @@ jobs:
 
       # Setup JDK 17 (Microsoft Distribution)
       - name: Siapkan JDK 17
+        if: matrix.platform == 'android'
         uses: actions/setup-java@v3.10.0
         with:
           distribution: 'microsoft'
@@ -100,19 +101,37 @@ jobs:
       - name: Sign iOS App
         if: matrix.platform == 'ios'
         run: |
+          echo "Creating Keychain..."
           security create-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" build.keychain
           security unlock-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" build.keychain
           security set-keychain-settings -t 3600 -l ~/Library/Keychains/build.keychain
-          
-          # Import the provisioning profile
-          echo "${{ secrets.IOS_PROVISIONING_PROFILE }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/my_profile.mobileprovision
-          
-          # Import the certificate
-          echo "${{ secrets.IOS_CERTIFICATE }}" | base64 --decode > certificate.p12
-          security import certificate.p12 -P "${{ secrets.IOS_CERTIFICATE_PASSWORD }}" -T /usr/bin/codesign
 
-          # Code signing
-          codesign -f -s "${{ secrets.IOS_CERTIFICATE_NAME }}" --deep --timestamp --options=runtime ${{ env.build_path }}/*.app
+          echo "Importing Provisioning Profile..."
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles/
+          echo "${{ secrets.IOS_PROVISIONING_PROFILE }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/my_profile.mobileprovision
+          if [ -f ~/Library/MobileDevice/Provisioning\ Profiles/my_profile.mobileprovision ]; then
+            echo "Provisioning profile imported successfully."
+          else
+            echo "Failed to import provisioning profile."
+            exit 1
+          fi
+
+          echo "Importing Certificate..."
+          echo "${{ secrets.IOS_CERTIFICATE }}" | base64 --decode > certificate.p12
+          if security import certificate.p12 -P "${{ secrets.IOS_CERTIFICATE_PASSWORD }}" -T /usr/bin/codesign; then
+            echo "Certificate imported successfully."
+          else
+            echo "Failed to import certificate."
+            exit 1
+          fi
+
+          echo "Signing App..."
+          if codesign -f -s "${{ secrets.IOS_CERTIFICATE_NAME }}" --deep --timestamp --options=runtime ${{ env.build_path }}/*.app; then
+            echo "Code signing succeeded."
+          else
+            echo "Code signing failed."
+            exit 1
+          fi
 
       # Upload Artifact
       - name: Upload to Bashupload
@@ -184,16 +203,17 @@ jobs:
           password: ${{ secrets.SMTP_PASSWORD }}
 
       # Kirim notifikasi email jika sukses
-      - name: Kirim notifikasi email
+      - name: Kirim notifikasi email jika sukses
+        if: success()
         uses: dawidd6/action-send-mail@v3
         with:
           from: ${{ secrets.SMTP_FROM }}
           to: ${{ vars.SMTP_RECIPIENT }}
-          subject: '${{ job.status }} - Build Status: ${{ github.repository }}'
+          subject: 'Build Sukses - ${{ github.repository }}'
           body: |
-            Build telah ${{ job.status }} untuk commit ${{ github.sha }} di branch ${{ github.ref }} oleh ${{ github.actor }}.
+            Build telah berhasil untuk commit ${{ github.sha }} di branch ${{ github.ref }} oleh ${{ github.actor }}.
             Deskripsi commit: ${{ github.event.head_commit.message }}
-            ${{ job.status == 'success' && format('Anda dapat mengunduh hasil build di: {0}', env.UPLOAD_URL) || 'Silakan cek log untuk detail kesalahan.' }}
+            Aplikasi telah dirilis. Silakan cek detailnya di ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}.
           server_address: ${{ secrets.SMTP_SERVER }}
           server_port: ${{ secrets.SMTP_PORT }}
           username: ${{ secrets.SMTP_USER }}
