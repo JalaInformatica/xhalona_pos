@@ -47,5 +47,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+  <key>NSPhotoLibraryUsageDescription</key>
+  <string>This app requires access to your photo library to upload or select images.</string>
+
+  
 </dict>
 </plist>
