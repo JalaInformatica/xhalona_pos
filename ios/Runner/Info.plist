@@ -49,7 +49,8 @@
 	<true/>
   <key>NSPhotoLibraryUsageDescription</key>
   <string>This app requires access to your photo library to upload or select images.</string>
-
+  <key>NSBluetoothAlwaysUsageDescription</key>
+  <string>This app uses Bluetooth to connect to printing devices.</string>
   
 </dict>
 </plist>
