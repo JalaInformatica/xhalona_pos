@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+import 'package:xhalona_pos/core/helper/date_helper.dart';
 import 'package:xhalona_pos/models/dao/report.dart';
 import 'package:xhalona_pos/models/dao/summary.dart';
 import 'package:xhalona_pos/repositories/app_repository.dart';
@@ -24,15 +26,15 @@ class ReportRepository extends AppRepository {
 
   Future<List<ReportDAO>> getReport({
     required String actionId,
-    String? startDate,
-    String? endDate,
+    DateTime? startDate,
+    DateTime? endDate,
     int? bulan,
     int? tahun,
   }) async {
     var result = await _service.getReport(
       actionId: actionId,
-      startDate: startDate,
-      endDate: endDate,
+      startDate: startDate != null? DateHelper.dateToAPIFormat(startDate) : "",
+      endDate: endDate != null? DateHelper.dateToAPIFormat(endDate) : "",
       bulan: bulan,
       tahun: tahun
     );

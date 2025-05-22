@@ -53,6 +53,7 @@ class ReportServices {
         "ACTION_ID": actionId,
         "IP": api.ip,
         "COMPANY_ID": api.companyId,
+        "DEF_COMPANY_ID": api.companyId,
         "USER_ID": api.userId,
         "SITE_ID": "",
         "SESSION_LOGIN_ID": api.sessionId,

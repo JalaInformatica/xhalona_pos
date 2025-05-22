@@ -68,23 +68,32 @@ class _LoginScreen extends State<LoginScreen> {
       backgroundColor: AppColor.whiteColor,
       body: ListView(
         children: [
-          SvgPicture.asset(
-            'assets/logo-only-pink.svg',
-            height: 280,
-            width: 280,
+          Container(
             color: AppColor.primaryColor,
-          ),
-          Center(
-            child: Text(
-              "Xhalona",
-              style: AppTextStyle.textTitleStyle(),
-            ),
-          ),
-          SvgPicture.asset(
-            'assets/logo_text.svg',
-          ),
-          const SizedBox(
-            height: 30,
+            child: Column(
+              children: [
+                SvgPicture.asset(
+                  'assets/logo-only-pink.svg',
+                  height: 280,
+                  width: 280,
+                  color: AppColor.whiteColor,
+                ),
+                Text(
+                  "Xhalona",
+                  style: AppTextStyle.textTitleStyle(color: AppColor.whiteColor),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                SvgPicture.asset(
+                  'assets/logo_text.svg',
+                  color: AppColor.whiteColor,
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+              ],
+            ),            
           ),
           Form(
             key: _formkey,

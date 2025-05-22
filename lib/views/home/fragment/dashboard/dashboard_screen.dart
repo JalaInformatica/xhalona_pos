@@ -2,12 +2,14 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:xhalona_pos/core/helper/date_helper.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/core/helper/global_helper.dart';
 import 'package:shimmer/shimmer.dart'; // Tambahkan package shimmer
 import 'package:xhalona_pos/views/home/fragment/dashboard/dashboard_controller.dart';
 import 'package:xhalona_pos/widgets/app_calendar_range.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
+import 'package:xhalona_pos/widgets/app_dropdown.dart';
 import 'package:xhalona_pos/widgets/app_normal_button.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -24,170 +26,204 @@ class DashboardScreen extends StatelessWidget {
             spacing: 10.h,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Ringkasan Hari Ini',
-                style: AppTextStyle.textSubtitleStyle(),
-              ),
-              Row(
+              _buildSummaryCard(
+                color: AppColor.primaryColor,
+                child: Obx(() => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Pendapatan Bersih Hari ini", style: AppTextStyle.textBodyStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColor.whiteColor),),
+                    Text(formatToRupiah(controller.nettoValDToday.value), style: AppTextStyle.textSubtitleStyle(
+                      color: AppColor.whiteColor
+                    ),),
+                    Text(
+                      "${controller.totalTrxToday.value.toString()} Transaksi",
+                      style: AppTextStyle.textBodyStyle(color: AppColor.whiteColor),
+                    ),
+                  ],
+                ),
+              )),
+              _buildSummaryCard(child: Row(
                 spacing: 5.w,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Obx(() => Expanded(
-                      child: _buildSummaryCard(
-                          'Pendapatan Bersih',
-                          formatToRupiah(controller.nettoValDToday.value),
-                          Colors.green))),
-                  Obx(() => Expanded(
-                      child: _buildSummaryCard(
-                          'Transaksi',
-                          controller.totalTrxToday.value.toString(),
-                          Colors.blue))),
-                ],
-              ),
-              SizedBox(
-                height: 5.h,
-              ),
-              Text(
-                'Ringkasan Bulan Ini',
-                style: AppTextStyle.textSubtitleStyle(),
-              ),
-              Row(
-                spacing: 5.w,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Obx(() => Expanded(
-                      child: _buildSummaryCard(
-                          'Pendapatan Bersih',
-                          formatToRupiah(controller.nettoValDThisMonth.value),
-                          Colors.green))),
-                  Obx(() => Expanded(
-                      child: _buildSummaryCard(
-                          'Transaksi',
-                          controller.totalTrxThisMonth.value.toString(),
-                          Colors.blue))),
-                ],
-              ),
-              SizedBox(
-                height: 5,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                spacing: 15.h,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Netto',
-                        style: AppTextStyle.textBodyStyle(),
+                  Obx(()=> AppTextDropdown<DashboardType>(
+                    value: controller.dashboardType.value,
+                    items: [
+                      DropdownMenuItem<DashboardType>(
+                        value: DashboardType.MONTHLY,
+                        child: Text("Monthy", style: AppTextStyle.textBodyStyle(),)
                       ),
-                      AppTextButton(
-                        onPressed: () {
-                          SmartDialog.show(builder: (context) {
-                            return AppDialog(
-                                content: SizedBox(
-                                    width: 100,
-                                    height: MediaQuery.of(context).size.height*0.5,
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Obx(()=> AppCalendarRange(
-                                          rangeStart: controller.nettoPerDayStartDate.value,
-                                          rangeEnd: controller.nettoPerDayEndDate.value,
-                                          focusedDay: DateTime.now(),
-                                          onRangeSelected: (DateTime? start, DateTime? end) {
-                                            controller.nettoPerDayStartDate.value = start;
-                                            controller.nettoPerDayEndDate.value = end;
-                                          },
-                                        )),
-                                      ])));
-                          });
-                        },
-                        child: Obx(()=> Text("${formatToDDMMYYYY(controller.nettoPerDayStartDate.value)} To ${formatToDDMMYYYY(controller.nettoPerDayEndDate.value)}")))
-                  ],),
-                  Obx(() => controller.dataNetPerMonthValue.isNotEmpty
-                      ? AspectRatio(
-                          aspectRatio: 3,
-                          child: LineChart(
-                            LineChartData(
-                              minY: 0,
-                              lineTouchData: LineTouchData(
-                                touchTooltipData: LineTouchTooltipData(
-                                  getTooltipColor: (_) {
-                                    return AppColor.primaryColor;
-                                  },
-                                  getTooltipItems:
-                                      (List<LineBarSpot> touchedSpots) {
-                                    return touchedSpots.map((spot) {
-                                      return LineTooltipItem(
-                                        formatToRupiah(spot.y.toInt()),
-                                        AppTextStyle.textBodyStyle(
-                                            color: AppColor.whiteColor),
-                                      );
-                                    }).toList();
-                                  },
-                                ),
-                                handleBuiltInTouches: true,
-                              ),
-                              gridData: FlGridData(show: true),
-                              titlesData: FlTitlesData(
-                                rightTitles:
-                                    AxisTitles(sideTitles: SideTitles()),
-                                topTitles: AxisTitles(sideTitles: SideTitles()),
-                                leftTitles: AxisTitles(
-                                  sideTitles: SideTitles(
-                                    showTitles: true,
-                                    reservedSize: 50,
-                                    getTitlesWidget: (value, meta) => Text(
-                                      formatToRupiah(value.toInt()),
-                                      textAlign: TextAlign.center,
-                                      style: AppTextStyle.textCaptionStyle(),
-                                    ),
-                                    maxIncluded: false,
-                                    minIncluded: false,
-                                  ),
-                                ),
-                                bottomTitles: AxisTitles(
-                                  sideTitles: SideTitles(
-                                    showTitles: true,
-                                    getTitlesWidget: (value, meta) {
-                                      return Text(controller
-                                          .dataPerMonthLabel[value.toInt()]
-                                          .toString());
-                                    },
-                                    interval: 1,
-                                  ),
-                                ),
-                              ),
-                              borderData: FlBorderData(
-                                show: true,
-                                border: Border(
-                                  bottom: BorderSide(),
-                                  left: BorderSide(),
-                                ),
-                              ),
-                              lineBarsData: [
-                                LineChartBarData(
-                                  spots: controller.dataNetPerMonthValue,
-                                  color: const Color(0xFF4BC0C0),
-                                  barWidth: 4,
-                                ),
-                              ],
-                            ),
-                          ),
-                        )
-                      : SizedBox.shrink()),
+                      DropdownMenuItem<DashboardType>(
+                        value: DashboardType.ANNUAL,
+                        child: Text("Annual", style: AppTextStyle.textBodyStyle())
+                      ),
+                    ], 
+                    onChanged: (val){
+                      controller.dashboardType.value = val!;
+                      controller.fetchData();
+                    })
+                  ),
+                  Obx(()=> Visibility(
+                    visible: controller.dashboardType.value == DashboardType.MONTHLY,
+                    child: AppTextDropdown<int>(
+                    value: controller.filterMonth.value,
+                    items: List.generate(12, (index){
+                      return DropdownMenuItem<int>(
+                        value: index+1,
+                        child: Text(DateHelper.listMonthIDN()[index], style: AppTextStyle.textBodyStyle(),)
+                      );
+                    }), 
+                    onChanged: (val){
+                      controller.filterMonth.value = val!;
+                      controller.fetchData();
+                    })
+                  )),
+                  Obx(()=> AppTextDropdown<int>(
+                    value: controller.filterYear.value,
+                    items: List.generate(20, (index){
+                      int startYear = 2015;
+                      return DropdownMenuItem<int>(
+                        value: startYear + index,
+                        child: Text("${startYear+index}", style: AppTextStyle.textBodyStyle(),)
+                      );
+                    }), 
+                    onChanged: (val){
+                      controller.filterYear.value = val!;
+                      controller.fetchData();
+                    })
+                  ),
                 ],
+              )),
+              _buildSummaryCard(
+                child: Obx(() => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Pendapatan Bersih", style: AppTextStyle.textBodyStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColor.primaryColor),),
+                    Text(formatToRupiah(controller.nettoValDThisMonth.value), style: AppTextStyle.textSubtitleStyle(),),
+                    Text(
+                      "${controller.totalTrxThisMonth.value.toString()} Transaksi",
+                      style: AppTextStyle.textBodyStyle(color: AppColor.blackColor),
+                    ),
+                  ],
+                ),
+              )),
+              // AppTextButton(
+              //   onPressed: () {
+              //     SmartDialog.show(builder: (context) {
+              //       return AppDialog(
+              //         content: SizedBox(
+              //           width: 100,
+              //           height: MediaQuery.of(context).size.height*0.5,
+              //           child: Column(
+              //             mainAxisSize: MainAxisSize.min,
+              //             children: [
+                            
+              //             ])));
+              //     });
+              //   },
+              // child: Obx(()=> Text("${formatToDDMMYYYY(controller.nettoPerDayStartDate.value)} To ${formatToDDMMYYYY(controller.nettoPerDayEndDate.value)}"))),
+              _buildSummaryCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 15.h,
+                  children: [
+                    Text(
+                      'Netto Penjualan',
+                      style: AppTextStyle.textBodyStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppColor.primaryColor
+                      ),
+                    ),                      
+                    Obx(() => controller.dataNetPerMonthValue.isNotEmpty
+                        ? AspectRatio(
+                            aspectRatio: 3,
+                            child: LineChart(
+                              LineChartData(
+                                minY: 0,
+                                lineTouchData: LineTouchData(
+                                  touchTooltipData: LineTouchTooltipData(
+                                    getTooltipColor: (_) {
+                                      return AppColor.primaryColor;
+                                    },
+                                    getTooltipItems:
+                                        (List<LineBarSpot> touchedSpots) {
+                                      return touchedSpots.map((spot) {
+                                        return LineTooltipItem(
+                                          formatToRupiah(spot.y.toInt()),
+                                          AppTextStyle.textBodyStyle(
+                                              color: AppColor.whiteColor),
+                                        );
+                                      }).toList();
+                                    },
+                                  ),
+                                  handleBuiltInTouches: true,
+                                ),
+                                gridData: FlGridData(show: true),
+                                titlesData: FlTitlesData(
+                                  rightTitles:
+                                      AxisTitles(sideTitles: SideTitles()),
+                                  topTitles: AxisTitles(sideTitles: SideTitles()),
+                                  leftTitles: AxisTitles(
+                                    // sideTitles: SideTitles(
+                                    //   showTitles: true,
+                                    //   reservedSize: 50,
+                                    //   getTitlesWidget: (value, meta) => Text(
+                                    //     formatToRupiah(value.toInt()),
+                                    //     textAlign: TextAlign.center,
+                                    //     style: AppTextStyle.textCaptionStyle(),
+                                    //   ),
+                                    //   maxIncluded: false,
+                                    //   minIncluded: false,
+                                    // ),
+                                  ),
+                                  bottomTitles: AxisTitles(
+                                    sideTitles: SideTitles(
+                                      showTitles: true,
+                                      getTitlesWidget: (value, meta) {
+                                        return Text(controller
+                                            .dataPerMonthLabel[value.toInt()]
+                                            .toString(), style: AppTextStyle.textBodyStyle(),);
+                                      },
+                                      interval: 1,
+                                    ),
+                                  ),
+                                ),
+                                borderData: FlBorderData(
+                                  show: true,
+                                  border: Border(
+                                    // bottom: BorderSide(),
+                                    // left: BorderSide(),
+                                  ),
+                                ),
+                                lineBarsData: [
+                                  LineChartBarData(
+                                    spots: controller.dataNetPerMonthValue,
+                                    color: const Color.fromARGB(255, 38, 208, 109),
+                                    barWidth: 4,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        : SizedBox.shrink()),
+                  ],
+                )
               ),
-              Column(
+              _buildSummaryCard(child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 spacing: 15.h,
                 children: [
                   Text(
-                    'Transaksi Bulan Ini',
-                    style: AppTextStyle.textBodyStyle(),
+                    'Transaksi',
+                    style: AppTextStyle.textBodyStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColor.primaryColor
+                    ),
                   ),
                   Obx(() => controller.dataTrxPerMonthValue.isNotEmpty
                       ? AspectRatio(
@@ -220,15 +256,15 @@ class DashboardScreen extends StatelessWidget {
                                 topTitles: AxisTitles(sideTitles: SideTitles()),
                                 leftTitles: AxisTitles(
                                   sideTitles: SideTitles(
-                                    showTitles: true,
-                                    reservedSize: 50,
-                                    getTitlesWidget: (value, meta) => Text(
-                                      value.toString(),
-                                      textAlign: TextAlign.center,
-                                      style: AppTextStyle.textCaptionStyle(),
-                                    ),
-                                    maxIncluded: false,
-                                    minIncluded: false,
+                                    // showTitles: true,
+                                    // reservedSize: 50,
+                                    // getTitlesWidget: (value, meta) => Text(
+                                    //   value.toString(),
+                                    //   textAlign: TextAlign.center,
+                                    //   style: AppTextStyle.textCaptionStyle(),
+                                    // ),
+                                    // maxIncluded: true,
+                                    // minIncluded: false,
                                   ),
                                 ),
                                 bottomTitles: AxisTitles(
@@ -237,7 +273,7 @@ class DashboardScreen extends StatelessWidget {
                                     getTitlesWidget: (value, meta) {
                                       return Text(controller
                                           .dataPerMonthLabel[value.toInt()]
-                                          .toString());
+                                          .toString(), style: AppTextStyle.textBodyStyle(),);
                                     },
                                     interval: 1,
                                   ),
@@ -246,8 +282,8 @@ class DashboardScreen extends StatelessWidget {
                               borderData: FlBorderData(
                                 show: true,
                                 border: Border(
-                                  bottom: BorderSide(),
-                                  left: BorderSide(),
+                                  // bottom: BorderSide(),
+                                  // left: BorderSide(),
                                 ),
                               ),
                               lineBarsData: [
@@ -262,17 +298,21 @@ class DashboardScreen extends StatelessWidget {
                         )
                       : SizedBox.shrink())
                 ],
-              ),
+              )),
 
               // TERAPIS
-              Column(
+              _buildSummaryCard(
+                child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 spacing: 15.h,
                 children: [
                   Text(
-                    'Netto Per Terapis (Bulan)',
-                    style: AppTextStyle.textBodyStyle(),
+                    'Netto Per Terapis',
+                    style: AppTextStyle.textBodyStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColor.primaryColor
+                    ),
                   ),
                   Obx(() => controller.dataTrxPerMonthValue.isNotEmpty
                       ? AspectRatio(
@@ -306,13 +346,13 @@ class DashboardScreen extends StatelessWidget {
                                 ),
                                 leftTitles: AxisTitles(
                                   sideTitles: SideTitles(
-                                    showTitles: true,
-                                    reservedSize: 50,
-                                    getTitlesWidget: (value, meta) => Text(
-                                      formatToRupiah(value.toInt()),
-                                      textAlign: TextAlign.center,
-                                      style: AppTextStyle.textCaptionStyle(),
-                                    ),
+                                    // showTitles: true,
+                                    // reservedSize: 50,
+                                    // getTitlesWidget: (value, meta) => Text(
+                                    //   formatToRupiah(value.toInt()),
+                                    //   textAlign: TextAlign.center,
+                                    //   style: AppTextStyle.textCaptionStyle(),
+                                    // ),
                                   ),
                                 ),
                                 bottomTitles: AxisTitles(
@@ -344,7 +384,7 @@ class DashboardScreen extends StatelessWidget {
                                   barRods: [
                                     BarChartRodData(
                                       toY: data.y,
-                                      color: const Color(0xFF4BC0C0),
+                                      color: const Color.fromARGB(255, 75, 98, 192),
                                       width: 15, // Adjust bar width
                                       borderRadius: BorderRadius.circular(4),
                                     ),
@@ -355,15 +395,19 @@ class DashboardScreen extends StatelessWidget {
                           ))
                       : SizedBox.shrink())
                 ],
-              ),
-              Column(
+              )),
+              
+              _buildSummaryCard(child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 spacing: 15.h,
                 children: [
                   Text(
-                    'Transaksi Per Terapis (Bulan)',
-                    style: AppTextStyle.textBodyStyle(),
+                    'Transaksi Per Terapis',
+                    style: AppTextStyle.textBodyStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColor.primaryColor
+                    ),
                   ),
                   Obx(() => controller.dataTrxPerMonthValue.isNotEmpty
                       ? AspectRatio(
@@ -397,13 +441,13 @@ class DashboardScreen extends StatelessWidget {
                                 ),
                                 leftTitles: AxisTitles(
                                   sideTitles: SideTitles(
-                                    showTitles: true,
-                                    reservedSize: 50,
-                                    getTitlesWidget: (value, meta) => Text(
-                                      value.toInt().toString(),
-                                      textAlign: TextAlign.center,
-                                      style: AppTextStyle.textCaptionStyle(),
-                                    ),
+                                    // showTitles: true,
+                                    // reservedSize: 50,
+                                    // getTitlesWidget: (value, meta) => Text(
+                                    //   value.toInt().toString(),
+                                    //   textAlign: TextAlign.center,
+                                    //   style: AppTextStyle.textCaptionStyle(),
+                                    // ),
                                   ),
                                 ),
                                 bottomTitles: AxisTitles(
@@ -435,7 +479,7 @@ class DashboardScreen extends StatelessWidget {
                                   barRods: [
                                     BarChartRodData(
                                       toY: data.y,
-                                      color: const Color(0xFF4BC0C0),
+                                      color: const Color.fromARGB(255, 191, 9, 201),
                                       width: 15, // Adjust bar width
                                       borderRadius: BorderRadius.circular(4),
                                     ),
@@ -446,17 +490,20 @@ class DashboardScreen extends StatelessWidget {
                           ))
                       : SizedBox.shrink())
                 ],
-              ),
+              )),
 
               //PRODUK
-              Column(
+              _buildSummaryCard(child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 spacing: 15.h,
                 children: [
                   Text(
-                    'Netto Per Produk (Bulan)',
-                    style: AppTextStyle.textBodyStyle(),
+                    'Netto Per Produk',
+                    style: AppTextStyle.textBodyStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColor.primaryColor
+                    ),
                   ),
                   Obx(() => controller.dataTrxPerMonthValue.isNotEmpty
                       ? AspectRatio(
@@ -490,13 +537,13 @@ class DashboardScreen extends StatelessWidget {
                                 ),
                                 leftTitles: AxisTitles(
                                   sideTitles: SideTitles(
-                                    showTitles: true,
-                                    reservedSize: 50,
-                                    getTitlesWidget: (value, meta) => Text(
-                                      formatToRupiah(value.toInt()),
-                                      textAlign: TextAlign.center,
-                                      style: AppTextStyle.textCaptionStyle(),
-                                    ),
+                                    // showTitles: true,
+                                    // reservedSize: 50,
+                                    // getTitlesWidget: (value, meta) => Text(
+                                    //   formatToRupiah(value.toInt()),
+                                    //   textAlign: TextAlign.center,
+                                    //   style: AppTextStyle.textCaptionStyle(),
+                                    // ),
                                   ),
                                 ),
                                 bottomTitles: AxisTitles(
@@ -532,7 +579,7 @@ class DashboardScreen extends StatelessWidget {
                                   barRods: [
                                     BarChartRodData(
                                       toY: data.y,
-                                      color: const Color(0xFF4BC0C0),
+                                      color: const Color.fromARGB(255, 255, 149, 35),
                                       width: 15, // Adjust bar width
                                       borderRadius: BorderRadius.circular(4),
                                     ),
@@ -543,7 +590,7 @@ class DashboardScreen extends StatelessWidget {
                           ))
                       : SizedBox.shrink())
                 ],
-              ),
+              )),
             ]),
       ),
     );
@@ -562,30 +609,22 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryCard(String title, String value, Color color) {
+  Widget _buildSummaryCard({Color? color = AppColor.whiteColor, required Widget child}) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.w),
+      width: double.maxFinite,
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 5.h),
       decoration: BoxDecoration(
-          color: AppColor.whiteColor,
-          borderRadius: BorderRadius.circular(5),
-          boxShadow: [
-            BoxShadow(
-                blurRadius: 1, offset: Offset(0, 1), color: AppColor.grey500)
-          ]),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: AppTextStyle.textBodyStyle(),
-          ),
-          SizedBox(height: 5),
-          Text(
-            value,
-            style: AppTextStyle.textSubtitleStyle(),
-          ),
-        ],
+        color: color,
+        borderRadius: BorderRadius.circular(5),
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 1, 
+            offset: Offset(0, 1),
+            color: AppColor.grey500
+          )
+        ]
       ),
+      child: child
     );
   }
 }

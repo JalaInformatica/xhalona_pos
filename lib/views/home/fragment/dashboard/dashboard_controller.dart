@@ -4,8 +4,13 @@ import 'package:xhalona_pos/models/dao/report.dart';
 import 'package:xhalona_pos/models/dao/summary.dart';
 import 'package:xhalona_pos/repositories/report/report_repository.dart';
 
+enum DashboardType {MONTHLY, ANNUAL}
+
 class DashboardController extends GetxController {
   ReportRepository _reportRepository = ReportRepository();
+
+  var filterMonth = DateTime.now().month.obs;
+  var filterYear = DateTime.now().year.obs;
 
   var summaryHeader = <SummaryDAO>[].obs;
   var isLoading = true.obs;
@@ -26,6 +31,8 @@ class DashboardController extends GetxController {
   late var trxPerDayStartDate = DateTime(now.year, now.month, 1).toString().obs;
   late var trxPerDayEndDate = DateTime(now.year, now.month + 1, 0).toString().obs;
 
+  var dashboardType = DashboardType.MONTHLY.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -35,11 +42,20 @@ class DashboardController extends GetxController {
   Future<void> fetchData() async {
     isLoading.value = true;
 
-    salesThisMonth = await _reportRepository.getReport(
-      actionId: "R_01",
-      startDate: DateTime(now.year, now.month, 1).toString(),
-      endDate: DateTime(now.year, now.month + 1, 0).toString(),
-    );
+    if(dashboardType.value == DashboardType.MONTHLY){
+      salesThisMonth = await _reportRepository.getReport(
+        actionId: "R_01",
+        startDate: DateTime(filterYear.value, filterMonth.value, 1),
+        endDate: DateTime(filterYear.value, filterMonth.value + 1, 0),
+      );
+    }
+    else {
+      salesThisMonth = await _reportRepository.getReport(
+        actionId: "R_01",
+        startDate: DateTime(filterYear.value, 1, 1),
+        endDate: DateTime(filterYear.value, 12, 31),
+      );
+    }
 
     nettoValDToday.value = salesThisMonth.where((sale) {
       DateTime saleDate = DateTime.parse(sale.salesDate);
@@ -48,10 +64,7 @@ class DashboardController extends GetxController {
           saleDate.day == now.day;
     }).fold(0, (acc, sale) => acc + sale.nettoValD);
 
-    nettoValDThisMonth.value = salesThisMonth.where((sale) {
-      DateTime saleDate = DateTime.parse(sale.salesDate);
-      return saleDate.year == now.year && saleDate.month == now.month;
-    }).fold(0, (acc, sale) => acc + sale.nettoValD);
+    nettoValDThisMonth.value = salesThisMonth.fold(0, (acc, sale) => acc + sale.nettoValD);
 
     totalTrxThisMonth.value = salesThisMonth.where((sale) {
       DateTime saleDate = DateTime.parse(sale.salesDate);
@@ -86,7 +99,13 @@ class DashboardController extends GetxController {
 
     for (var sale in salesThisMonth) {
       DateTime saleDate = DateTime.parse(sale.salesDate);
-      int dayNumber = saleDate.day;
+      int dayNumber = 0;
+      if(dashboardType.value==DashboardType.MONTHLY){
+        dayNumber = saleDate.day;
+      }
+      else {
+        dayNumber = saleDate.month;
+      }
 
       if (!dataNetPerMonth.containsKey(dayNumber)) {
         dataNetPerMonth[dayNumber] = 0;
