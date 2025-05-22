@@ -150,6 +150,7 @@ class DashboardController extends GetxController {
       if (!dataNetPerTerapis.containsKey(employeeName)) {
         dataNetPerTerapis[employeeName] = 0;
       }
+
       if (!dataTrxPerTerapis.containsKey(employeeName)) {
         dataTrxPerTerapis[employeeName] = 0;
       }
@@ -187,15 +188,15 @@ class DashboardController extends GetxController {
         .toList();
 
     dataTrxPerTerapisLabel.value =
-        dataTrxPerTerapis.entries.map((entry) => entry.key).toList();
+        sortedDataTrxPerTerapis.map((entry) => entry.key).toList();
 
     dataNetPerTerapisLabel.value =
-        dataNetPerTerapis.entries.map((entry) => entry.key).toList();
+        sortedDataNetPerTerapis.map((entry) => entry.key).toList();
 
     Map<String, double> dataNetPerProduk = {};
     for (var sale in salesThisMonth) {
       String partName = sale.partName;
-      if (partName.isEmpty) {
+      if (partName.isEmpty || sale.nettoValD <= 0) {
         continue;
       }
 
@@ -220,6 +221,6 @@ class DashboardController extends GetxController {
         .toList();
 
     dataNetPerProdukLabel.value =
-        dataNetPerProduk.entries.map((entry) => entry.key).toList();
+        sortedDataNetPerProduk.map((entry) => entry.key).toList();
   }
 }

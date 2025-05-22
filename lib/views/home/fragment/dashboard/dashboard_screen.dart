@@ -373,8 +373,8 @@ class DashboardScreen extends StatelessWidget {
                               borderData: FlBorderData(
                                 show: true,
                                 border: Border(
-                                  bottom: BorderSide(),
-                                  left: BorderSide(),
+                                  // bottom: BorderSide(),
+                                  // left: BorderSide(),
                                 ),
                               ),
                               barGroups:
@@ -468,8 +468,8 @@ class DashboardScreen extends StatelessWidget {
                               borderData: FlBorderData(
                                 show: true,
                                 border: Border(
-                                  bottom: BorderSide(),
-                                  left: BorderSide(),
+                                  // bottom: BorderSide(),
+                                  // left: BorderSide(),
                                 ),
                               ),
                               barGroups:
@@ -506,89 +506,140 @@ class DashboardScreen extends StatelessWidget {
                     ),
                   ),
                   Obx(() => controller.dataTrxPerMonthValue.isNotEmpty
-                      ? AspectRatio(
-                          aspectRatio: 3,
-                          child: BarChart(
-                            BarChartData(
-                              minY: 0,
-                              barTouchData: BarTouchData(
-                                touchTooltipData: BarTouchTooltipData(
-                                  getTooltipColor: (_) {
-                                    return AppColor.primaryColor;
-                                  },
-                                  getTooltipItem:
-                                      (group, groupIndex, rod, rodIndex) {
-                                    return BarTooltipItem(
-                                      formatToRupiah(rod.toY.toInt()),
-                                      AppTextStyle.textBodyStyle(
-                                          color: AppColor.whiteColor),
-                                    );
-                                  },
-                                ),
-                                handleBuiltInTouches: true,
-                              ),
-                              gridData: FlGridData(show: true),
-                              titlesData: FlTitlesData(
-                                rightTitles: AxisTitles(
-                                  sideTitles: SideTitles(showTitles: false),
-                                ),
-                                topTitles: AxisTitles(
-                                  sideTitles: SideTitles(showTitles: false),
-                                ),
-                                leftTitles: AxisTitles(
-                                  sideTitles: SideTitles(
-                                    // showTitles: true,
-                                    // reservedSize: 50,
-                                    // getTitlesWidget: (value, meta) => Text(
-                                    //   formatToRupiah(value.toInt()),
-                                    //   textAlign: TextAlign.center,
-                                    //   style: AppTextStyle.textCaptionStyle(),
-                                    // ),
-                                  ),
-                                ),
-                                bottomTitles: AxisTitles(
-                                  sideTitles: SideTitles(
-                                    showTitles: true,
-                                    getTitlesWidget: (value, meta) {
-                                      return Padding(
-                                        padding: const EdgeInsets.all(1.0),
-                                        child: Text(
-                                          controller.dataNetPerProdukLabel[
-                                                  value.toInt()]
-                                              .toString(),
-                                          style:
-                                              AppTextStyle.textCaptionStyle(),
-                                        ),
-                                      );
-                                    },
-                                    interval: 1,
-                                  ),
-                                ),
-                              ),
-                              borderData: FlBorderData(
-                                show: true,
-                                border: Border(
-                                  bottom: BorderSide(),
-                                  left: BorderSide(),
-                                ),
-                              ),
-                              barGroups:
-                                  controller.dataNetPerProdukValue.map((data) {
-                                return BarChartGroupData(
-                                  x: data.x.toInt(),
-                                  barRods: [
-                                    BarChartRodData(
-                                      toY: data.y,
-                                      color: const Color.fromARGB(255, 255, 149, 35),
-                                      width: 15, // Adjust bar width
-                                      borderRadius: BorderRadius.circular(4),
+                      ? Column(
+                          spacing: 5.h,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: List.generate(controller.dataNetPerProdukValue.length, (index) {
+                            final label = controller.dataNetPerProdukLabel[index].toString();
+                            final value = controller.dataNetPerProdukValue[index].y;
+
+                            final max = controller.dataNetPerProdukValue
+                                .map((e) => e.y)
+                                .reduce((a, b) => a > b ? a : b);
+
+                            final barWidth = (value / max) * 200;
+
+                            return Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: 80,
+                                    child: Text(
+                                      label,
+                                      style: AppTextStyle.textCaptionStyle(),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                  ],
-                                );
-                              }).toList(),
-                            ),
-                          ))
-                      : SizedBox.shrink())
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(bottom: 4),
+                                        child: Text(
+                                          formatToRupiah(value.toInt()),
+                                          style: AppTextStyle.textCaptionStyle(),
+                                        ),
+                                      ),
+                                      Container(
+                                        height: 20,
+                                        width: barWidth,
+                                        decoration: BoxDecoration(
+                                          color: const Color.fromARGB(255, 255, 149, 35),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                            );
+                          }),
+                        )
+
+
+                          // BarChart(
+                          //   BarChartData(
+                          //     minY: 0,
+                          //     barTouchData: BarTouchData(
+                          //       touchTooltipData: BarTouchTooltipData(
+                          //         getTooltipColor: (_) {
+                          //           return AppColor.primaryColor;
+                          //         },
+                          //         getTooltipItem:
+                          //             (group, groupIndex, rod, rodIndex) {
+                          //           return BarTooltipItem(
+                          //             formatToRupiah(rod.toY.toInt()),
+                          //             AppTextStyle.textBodyStyle(
+                          //                 color: AppColor.whiteColor),
+                          //           );
+                          //         },
+                          //       ),
+                          //       handleBuiltInTouches: true,
+                          //     ),
+                          //     gridData: FlGridData(show: true),
+                          //     titlesData: FlTitlesData(
+                          //       rightTitles: AxisTitles(
+                          //         sideTitles: SideTitles(showTitles: false),
+                          //       ),
+                          //       topTitles: AxisTitles(
+                          //         sideTitles: SideTitles(showTitles: false),
+                          //       ),
+                          //       leftTitles: AxisTitles(
+                          //         sideTitles: SideTitles(
+                          //           // showTitles: true,
+                          //           // reservedSize: 50,
+                          //           // getTitlesWidget: (value, meta) => Text(
+                          //           //   formatToRupiah(value.toInt()),
+                          //           //   textAlign: TextAlign.center,
+                          //           //   style: AppTextStyle.textCaptionStyle(),
+                          //           // ),
+                          //         ),
+                          //       ),
+                          //       bottomTitles: AxisTitles(
+                          //         sideTitles: SideTitles(
+                          //           showTitles: true,
+                          //           getTitlesWidget: (value, meta) {
+                          //             return Padding(
+                          //               padding: const EdgeInsets.all(1.0),
+                          //               child: Text(
+                          //                 controller.dataNetPerProdukLabel[
+                          //                         value.toInt()]
+                          //                     .toString(),
+                          //                 style:
+                          //                     AppTextStyle.textCaptionStyle(),
+                          //               ),
+                          //             );
+                          //           },
+                          //           interval: 1,
+                          //         ),
+                          //       ),
+                          //     ),
+                          //     borderData: FlBorderData(
+                          //       show: true,
+                          //       border: Border(
+                          //         // bottom: BorderSide(),
+                          //         // left: BorderSide(),
+                          //       ),
+                          //     ),
+                          //     barGroups:
+                          //         controller.dataNetPerProdukValue.map((data) {
+                          //       return BarChartGroupData(
+                          //         x: data.x.toInt(),
+                          //         barRods: [
+                          //           BarChartRodData(
+                          //             toY: data.y,
+                          //             color: const Color.fromARGB(255, 255, 149, 35),
+                          //             width: 15, // Adjust bar width
+                          //             borderRadius: BorderRadius.circular(4),
+                          //           ),
+                          //         ],
+                          //       );
+                          //     }).toList(),
+                          //   ),
+                          // )
+                        
+                      : SizedBox.shrink()),
+                    
                 ],
               )),
             ]),
