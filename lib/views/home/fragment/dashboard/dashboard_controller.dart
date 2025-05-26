@@ -92,6 +92,8 @@ class DashboardController extends GetxController {
 
   var dataNetPerProdukLabel = <String>[].obs;
   var dataNetPerProdukValue = <FlSpot>[].obs;
+  var dataQtyPerProdukLabel = <String>[].obs;
+  var dataQtyPerProdukValue = <FlSpot>[].obs;
 
   Future<void> fetchGraph() async {
     Map<int, double> dataNetPerMonth = {};
@@ -194,6 +196,8 @@ class DashboardController extends GetxController {
         sortedDataNetPerTerapis.map((entry) => entry.key).toList();
 
     Map<String, double> dataNetPerProduk = {};
+    Map<String, int> dataQtyPerProduk = {};
+
     for (var sale in salesThisMonth) {
       String partName = sale.partName;
       if (partName.isEmpty || sale.nettoValD <= 0) {
@@ -203,14 +207,25 @@ class DashboardController extends GetxController {
       if (!dataNetPerProduk.containsKey(partName)) {
         dataNetPerProduk[partName] = 0;
       }
+      
+      if (!dataQtyPerProduk.containsKey(partName)) {
+        dataQtyPerProduk[partName] = 0;
+      }
 
       dataNetPerProduk[partName] =
           (dataNetPerProduk[partName] ?? 0) + sale.nettoValD;
+      
+      dataQtyPerProduk[partName] =
+          (dataQtyPerProduk[partName] ?? 0) + sale.qty;
     }
 
     List<MapEntry<String, double>> sortedDataNetPerProduk =
         dataNetPerProduk.entries.toList();
     sortedDataNetPerProduk.sort((a, b) => b.value.compareTo(a.value));
+    
+    List<MapEntry<String, int>> sortedDataQtyPerProduk =
+        dataQtyPerProduk.entries.toList();
+    sortedDataQtyPerProduk.sort((a, b) => b.value.compareTo(a.value));
 
     dataNetPerProdukValue.value = sortedDataNetPerProduk
         .take(5)
@@ -222,5 +237,16 @@ class DashboardController extends GetxController {
 
     dataNetPerProdukLabel.value =
         sortedDataNetPerProduk.map((entry) => entry.key).toList();
+
+    dataQtyPerProdukValue.value = sortedDataQtyPerProduk
+        .take(5)
+        .toList()
+        .asMap()
+        .entries
+        .map((entry) => FlSpot(entry.key.toDouble(), entry.value.value.toDouble()))
+        .toList();
+
+    dataQtyPerProdukLabel.value =
+        sortedDataQtyPerProduk.map((entry) => entry.key).toList();
   }
 }

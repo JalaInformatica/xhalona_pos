@@ -48,7 +48,9 @@ class TransactionScreen extends StatelessWidget {
     List<AppTile> actionTiles = [
       // 0
       AppDialogList.editAppTile(
-        onTap: (){}
+        onTap: (){
+          
+        }
       ),
       // 1
       AppDialogList.deleteAppTile(
@@ -93,6 +95,18 @@ class TransactionScreen extends StatelessWidget {
           SmartDialog.dismiss();
         }
       ),
+      AppDialogList.defaultActionAppTile(
+        text: "Nota", 
+        icon: Icons.receipt, 
+        onTap: (){
+          controller.printNota(transaction.salesId).then(
+            (url) => Get.to(
+              ()=>AppPDFViewer(pdfUrl: url,)
+            )
+          );
+          SmartDialog.dismiss();
+        }
+      ),
       
     ];
     List<AppTile> activeActionTiles = [];
@@ -100,8 +114,10 @@ class TransactionScreen extends StatelessWidget {
     switch(transaction.statusIdDesc){
       case "NEW ORDER":
        activeActionTiles=[
+        actionTiles[2],
         actionTiles[0],
-        actionTiles[4]
+        actionTiles[4],
+        actionTiles[5],
        ]; 
       break;
     }

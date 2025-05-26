@@ -131,13 +131,18 @@ class DashboardScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   spacing: 15.h,
                   children: [
-                    Text(
-                      'Netto Penjualan',
-                      style: AppTextStyle.textBodyStyle(
-                        fontWeight: FontWeight.bold,
-                        color: AppColor.primaryColor
-                      ),
-                    ),                      
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                        'Netto Penjualan',
+                        style: AppTextStyle.textBodyStyle(
+                            fontWeight: FontWeight.bold,
+                            color: AppColor.primaryColor
+                          ),
+                        ),
+                        
+                    ]),                      
                     Obx(() => controller.dataNetPerMonthValue.isNotEmpty
                         ? AspectRatio(
                             aspectRatio: 3,
@@ -638,6 +643,72 @@ class DashboardScreen extends StatelessWidget {
                           //   ),
                           // )
                         
+                      : SizedBox.shrink()),
+                    
+                ],
+              )),
+              _buildSummaryCard(child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                spacing: 15.h,
+                children: [
+                  Text(
+                    'Kuantitas Per Produk',
+                    style: AppTextStyle.textBodyStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColor.primaryColor
+                    ),
+                  ),
+                  Obx(() => controller.dataTrxPerMonthValue.isNotEmpty
+                      ? Column(
+                          spacing: 5.h,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: List.generate(controller.dataQtyPerProdukValue.length, (index) {
+                            final label = controller.dataQtyPerProdukLabel[index].toString();
+                            final value = controller.dataQtyPerProdukValue[index].y;
+
+                            final max = controller.dataQtyPerProdukValue
+                                .map((e) => e.y)
+                                .reduce((a, b) => a > b ? a : b);
+
+                            final barWidth = (value / max) * 200;
+
+                            return Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: 80,
+                                    child: Text(
+                                      label,
+                                      style: AppTextStyle.textCaptionStyle(),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(bottom: 4),
+                                        child: Text(
+                                          "$value",
+                                          style: AppTextStyle.textCaptionStyle(),
+                                        ),
+                                      ),
+                                      Container(
+                                        height: 20,
+                                        width: barWidth,
+                                        decoration: BoxDecoration(
+                                          color: const Color.fromARGB(255, 255, 35, 145),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                            );
+                          }),
+                        )                        
                       : SizedBox.shrink()),
                     
                 ],
