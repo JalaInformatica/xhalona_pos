@@ -26,24 +26,48 @@ class DashboardScreen extends StatelessWidget {
             spacing: 10.h,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSummaryCard(
-                color: AppColor.primaryColor,
-                child: Obx(() => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Pendapatan Bersih Hari ini", style: AppTextStyle.textBodyStyle(
-                      fontWeight: FontWeight.bold,
-                      color: AppColor.whiteColor),),
-                    Text(formatToRupiah(controller.nettoValDToday.value), style: AppTextStyle.textSubtitleStyle(
-                      color: AppColor.whiteColor
-                    ),),
-                    Text(
-                      "${controller.totalTrxToday.value.toString()} Transaksi",
-                      style: AppTextStyle.textBodyStyle(color: AppColor.whiteColor),
+              Row(
+                spacing: 5.w,
+                children: [
+                  Expanded(child: _buildSummaryCard(
+                    color: AppColor.primaryColor,
+                    child: Obx(() => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Hari ini", style: AppTextStyle.textBodyStyle(
+                          fontWeight: FontWeight.bold,
+                          color: AppColor.whiteColor),),
+                        Text(formatToRupiah(controller.nettoValDToday.value), style: AppTextStyle.textSubtitleStyle(
+                          color: AppColor.whiteColor
+                        ),),
+                        Text(
+                          "${controller.totalTrxToday.value.toString()} Transaksi",
+                          style: AppTextStyle.textBodyStyle(color: AppColor.whiteColor),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              )),
+                  ))),
+                  Expanded(child: _buildSummaryCard(
+                    child: Obx(() => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          controller.dashboardType == DashboardType.MONTHLY?
+                          "Bulan ${DateHelper.listMonthIDN()[controller.filterMonth.value-1]} ${controller.filterYear.value}":
+                          "Tahun ${controller.filterYear.value}"
+                          , style: AppTextStyle.textBodyStyle(
+                          fontWeight: FontWeight.bold,
+                          color: AppColor.primaryColor),),
+                        Text(formatToRupiah(controller.nettoValDThisMonth.value), style: AppTextStyle.textSubtitleStyle(),),
+                        Text(
+                          "${controller.totalTrxThisMonth.value.toString()} Transaksi",
+                          style: AppTextStyle.textBodyStyle(color: AppColor.blackColor),
+                        ),
+                      ],
+                    ),
+                  ))),
+                ]
+              ),
               _buildSummaryCard(child: Row(
                 spacing: 5.w,
                 children: [
@@ -95,21 +119,6 @@ class DashboardScreen extends StatelessWidget {
                   ),
                 ],
               )),
-              _buildSummaryCard(
-                child: Obx(() => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Pendapatan Bersih", style: AppTextStyle.textBodyStyle(
-                      fontWeight: FontWeight.bold,
-                      color: AppColor.primaryColor),),
-                    Text(formatToRupiah(controller.nettoValDThisMonth.value), style: AppTextStyle.textSubtitleStyle(),),
-                    Text(
-                      "${controller.totalTrxThisMonth.value.toString()} Transaksi",
-                      style: AppTextStyle.textBodyStyle(color: AppColor.blackColor),
-                    ),
-                  ],
-                ),
-              )),
               // AppTextButton(
               //   onPressed: () {
               //     SmartDialog.show(builder: (context) {
@@ -135,7 +144,7 @@ class DashboardScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                        'Netto Penjualan',
+                        'Penjualan (Rp)',
                         style: AppTextStyle.textBodyStyle(
                             fontWeight: FontWeight.bold,
                             color: AppColor.primaryColor
@@ -218,92 +227,7 @@ class DashboardScreen extends StatelessWidget {
                   ],
                 )
               ),
-              _buildSummaryCard(child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                spacing: 15.h,
-                children: [
-                  Text(
-                    'Transaksi',
-                    style: AppTextStyle.textBodyStyle(
-                      fontWeight: FontWeight.bold,
-                      color: AppColor.primaryColor
-                    ),
-                  ),
-                  Obx(() => controller.dataTrxPerMonthValue.isNotEmpty
-                      ? AspectRatio(
-                          aspectRatio: 3,
-                          child: LineChart(
-                            LineChartData(
-                              minY: 0,
-                              lineTouchData: LineTouchData(
-                                touchTooltipData: LineTouchTooltipData(
-                                  getTooltipColor: (_) {
-                                    return AppColor.primaryColor;
-                                  },
-                                  getTooltipItems:
-                                      (List<LineBarSpot> touchedSpots) {
-                                    return touchedSpots.map((spot) {
-                                      return LineTooltipItem(
-                                        formatToRupiah(spot.y.toInt()),
-                                        AppTextStyle.textBodyStyle(
-                                            color: AppColor.whiteColor),
-                                      );
-                                    }).toList();
-                                  },
-                                ),
-                                handleBuiltInTouches: true,
-                              ),
-                              gridData: FlGridData(show: true),
-                              titlesData: FlTitlesData(
-                                rightTitles:
-                                    AxisTitles(sideTitles: SideTitles()),
-                                topTitles: AxisTitles(sideTitles: SideTitles()),
-                                leftTitles: AxisTitles(
-                                  sideTitles: SideTitles(
-                                    // showTitles: true,
-                                    // reservedSize: 50,
-                                    // getTitlesWidget: (value, meta) => Text(
-                                    //   value.toString(),
-                                    //   textAlign: TextAlign.center,
-                                    //   style: AppTextStyle.textCaptionStyle(),
-                                    // ),
-                                    // maxIncluded: true,
-                                    // minIncluded: false,
-                                  ),
-                                ),
-                                bottomTitles: AxisTitles(
-                                  sideTitles: SideTitles(
-                                    showTitles: true,
-                                    getTitlesWidget: (value, meta) {
-                                      return Text(controller
-                                          .dataPerMonthLabel[value.toInt()]
-                                          .toString(), style: AppTextStyle.textBodyStyle(),);
-                                    },
-                                    interval: 1,
-                                  ),
-                                ),
-                              ),
-                              borderData: FlBorderData(
-                                show: true,
-                                border: Border(
-                                  // bottom: BorderSide(),
-                                  // left: BorderSide(),
-                                ),
-                              ),
-                              lineBarsData: [
-                                LineChartBarData(
-                                  spots: controller.dataTrxPerMonthValue,
-                                  color: const Color(0xFF4BC0C0),
-                                  barWidth: 4,
-                                ),
-                              ],
-                            ),
-                          ),
-                        )
-                      : SizedBox.shrink())
-                ],
-              )),
+              // )),
 
               // TERAPIS
               _buildSummaryCard(
@@ -313,7 +237,7 @@ class DashboardScreen extends StatelessWidget {
                 spacing: 15.h,
                 children: [
                   Text(
-                    'Netto Per Terapis',
+                    'Terapis (Rp)',
                     style: AppTextStyle.textBodyStyle(
                       fontWeight: FontWeight.bold,
                       color: AppColor.primaryColor
@@ -408,7 +332,7 @@ class DashboardScreen extends StatelessWidget {
                 spacing: 15.h,
                 children: [
                   Text(
-                    'Transaksi Per Terapis',
+                    'Terapis (Qty)',
                     style: AppTextStyle.textBodyStyle(
                       fontWeight: FontWeight.bold,
                       color: AppColor.primaryColor
@@ -445,15 +369,7 @@ class DashboardScreen extends StatelessWidget {
                                   sideTitles: SideTitles(showTitles: false),
                                 ),
                                 leftTitles: AxisTitles(
-                                  sideTitles: SideTitles(
-                                    // showTitles: true,
-                                    // reservedSize: 50,
-                                    // getTitlesWidget: (value, meta) => Text(
-                                    //   value.toInt().toString(),
-                                    //   textAlign: TextAlign.center,
-                                    //   style: AppTextStyle.textCaptionStyle(),
-                                    // ),
-                                  ),
+                                  sideTitles: SideTitles(),
                                 ),
                                 bottomTitles: AxisTitles(
                                   sideTitles: SideTitles(
@@ -504,7 +420,7 @@ class DashboardScreen extends StatelessWidget {
                 spacing: 15.h,
                 children: [
                   Text(
-                    'Netto Per Produk',
+                    'Produk (Rp)',
                     style: AppTextStyle.textBodyStyle(
                       fontWeight: FontWeight.bold,
                       color: AppColor.primaryColor
@@ -560,89 +476,6 @@ class DashboardScreen extends StatelessWidget {
                             );
                           }),
                         )
-
-
-                          // BarChart(
-                          //   BarChartData(
-                          //     minY: 0,
-                          //     barTouchData: BarTouchData(
-                          //       touchTooltipData: BarTouchTooltipData(
-                          //         getTooltipColor: (_) {
-                          //           return AppColor.primaryColor;
-                          //         },
-                          //         getTooltipItem:
-                          //             (group, groupIndex, rod, rodIndex) {
-                          //           return BarTooltipItem(
-                          //             formatToRupiah(rod.toY.toInt()),
-                          //             AppTextStyle.textBodyStyle(
-                          //                 color: AppColor.whiteColor),
-                          //           );
-                          //         },
-                          //       ),
-                          //       handleBuiltInTouches: true,
-                          //     ),
-                          //     gridData: FlGridData(show: true),
-                          //     titlesData: FlTitlesData(
-                          //       rightTitles: AxisTitles(
-                          //         sideTitles: SideTitles(showTitles: false),
-                          //       ),
-                          //       topTitles: AxisTitles(
-                          //         sideTitles: SideTitles(showTitles: false),
-                          //       ),
-                          //       leftTitles: AxisTitles(
-                          //         sideTitles: SideTitles(
-                          //           // showTitles: true,
-                          //           // reservedSize: 50,
-                          //           // getTitlesWidget: (value, meta) => Text(
-                          //           //   formatToRupiah(value.toInt()),
-                          //           //   textAlign: TextAlign.center,
-                          //           //   style: AppTextStyle.textCaptionStyle(),
-                          //           // ),
-                          //         ),
-                          //       ),
-                          //       bottomTitles: AxisTitles(
-                          //         sideTitles: SideTitles(
-                          //           showTitles: true,
-                          //           getTitlesWidget: (value, meta) {
-                          //             return Padding(
-                          //               padding: const EdgeInsets.all(1.0),
-                          //               child: Text(
-                          //                 controller.dataNetPerProdukLabel[
-                          //                         value.toInt()]
-                          //                     .toString(),
-                          //                 style:
-                          //                     AppTextStyle.textCaptionStyle(),
-                          //               ),
-                          //             );
-                          //           },
-                          //           interval: 1,
-                          //         ),
-                          //       ),
-                          //     ),
-                          //     borderData: FlBorderData(
-                          //       show: true,
-                          //       border: Border(
-                          //         // bottom: BorderSide(),
-                          //         // left: BorderSide(),
-                          //       ),
-                          //     ),
-                          //     barGroups:
-                          //         controller.dataNetPerProdukValue.map((data) {
-                          //       return BarChartGroupData(
-                          //         x: data.x.toInt(),
-                          //         barRods: [
-                          //           BarChartRodData(
-                          //             toY: data.y,
-                          //             color: const Color.fromARGB(255, 255, 149, 35),
-                          //             width: 15, // Adjust bar width
-                          //             borderRadius: BorderRadius.circular(4),
-                          //           ),
-                          //         ],
-                          //       );
-                          //     }).toList(),
-                          //   ),
-                          // )
-                        
                       : SizedBox.shrink()),
                     
                 ],
@@ -653,7 +486,7 @@ class DashboardScreen extends StatelessWidget {
                 spacing: 15.h,
                 children: [
                   Text(
-                    'Kuantitas Per Produk',
+                    'Produk (Qty)',
                     style: AppTextStyle.textBodyStyle(
                       fontWeight: FontWeight.bold,
                       color: AppColor.primaryColor
@@ -709,8 +542,8 @@ class DashboardScreen extends StatelessWidget {
                             );
                           }),
                         )                        
-                      : SizedBox.shrink()),
-                    
+                      : SizedBox.shrink()
+                    )
                 ],
               )),
             ]),
@@ -746,7 +579,15 @@ class DashboardScreen extends StatelessWidget {
           )
         ]
       ),
-      child: child
-    );
+      child: Obx(()=> !controller.isLoading.value? child : Shimmer.fromColors(
+        baseColor: Color.fromARGB(94, 193, 193, 193),
+        highlightColor: Colors.grey[100]!,
+        child:  Container(
+          color: AppColor.whiteColor,
+          height: 50.h, 
+          width: double.maxFinite,
+        ), 
+      )
+    ));
   }
 }

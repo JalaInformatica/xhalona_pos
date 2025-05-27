@@ -248,5 +248,6 @@ class DashboardController extends GetxController {
 
     dataQtyPerProdukLabel.value =
         sortedDataQtyPerProduk.map((entry) => entry.key).toList();
+    isLoading.value = false;
   }
 }
