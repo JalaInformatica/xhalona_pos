@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/widgets/app_text_field.dart';
 import 'package:xhalona_pos/widgets/app_icon_button.dart';
 
@@ -10,8 +9,7 @@ import 'package:xhalona_pos/widgets/app_icon_button.dart';
 class AppTable3 extends StatefulWidget {
   final List<AppTableTitle3> titles;
   final List<List<AppTableCell3>> data;
-  final List<AppTableColumn> columns;
-  final List<AppTableCell3>?footer;
+  final List<AppTableFooter>?footer;
   final VoidCallback onRefresh;
   final bool isRefreshing;
   final Function(String) onSearch;
@@ -24,7 +22,6 @@ class AppTable3 extends StatefulWidget {
     super.key,
     required this.titles,
     required this.data,
-    required this.columns,
     required this.onRefresh,
     required this.isRefreshing,
     required this.onSearch,
@@ -103,14 +100,14 @@ class _AppTableState extends State<AppTable3> {
         // Sticky Header
         Row(
           children: [
-            widget.columns.first.title,
+            titles.first,
             Flexible(
               child: SingleChildScrollView(
                 physics: ScrollPhysics(),
                 controller: headerScrollController,
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: widget.columns.skip(1).map((column)=>column.title).toList(),
+                  children: titles.skip(1).toList(),
                 ),
               ),
             ),
@@ -133,59 +130,55 @@ class _AppTableState extends State<AppTable3> {
                         ? Colors.white
                         : AppColor.tertiaryColor,
                       height: 40,
-                      child: widget.columns.first.data[index]);}
+                      child: data[index].first);}
                   )
                 ),
-                // Flexible(
-                //   child: Scrollbar(
-                //     thumbVisibility: true,
-                //     controller: bodyScrollController,
-                //     child: SingleChildScrollView(
-                //       physics: ScrollPhysics(),
-                //       controller: bodyScrollController,
-                //       scrollDirection: Axis.horizontal,
-                //       child: Column(children: 
-                //         List.generate(itemCount, (index) {
-                //           return Container(
-                //             height: 40,
-                //             alignment: Alignment.center,
-                //             color: index % 2 == 0
-                //                   ? Colors.white
-                //                   : AppColor.tertiaryColor,
-                //             child: Row(
-                //               children: widget.columns.first.cell(widget.columns.data[index]
-                //                 .skip(1)
-                //                 .toList()
-                //             ),
-                //           );
-                //         }),
-                //       ),
-                //     ),
-                //   ),
-                // ),
+                Flexible(
+                  child: Scrollbar(
+                    thumbVisibility: true,
+                    controller: bodyScrollController,
+                    child: SingleChildScrollView(
+                      physics: ScrollPhysics(),
+                      controller: bodyScrollController,
+                      scrollDirection: Axis.horizontal,
+                      child: Column(children: 
+                        List.generate(itemCount, (index) {
+                          return Container(
+                            height: 40,
+                            alignment: Alignment.center,
+                            color: index % 2 == 0
+                                  ? Colors.white
+                                  : AppColor.tertiaryColor,
+                            child: Row(
+                              children: data[index]
+                                .skip(1)
+                                .toList()
+                            ),
+                          );
+                        }),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
         )),
-        // if(widget.footer!=null)
-        // Container(
-        //   color: AppColor.grey300,
-        //   alignment: Alignment.center,
-        //   height: 40,
-        //   child: Row(
-        //   children: [
-        //     widget.footer!.first,
-        //     Flexible(
-        //       child: SingleChildScrollView(
-        //         controller: footerScrollController,
-        //         scrollDirection: Axis.horizontal,
-        //         child: Row(
-        //           children: widget.footer!.skip(1).toList(),
-        //         ),
-        //       ),
-        //     ),
-        //   ],
-        // )),
+        if(widget.footer!=null)
+        Row(
+          children: [
+            widget.footer!.first,
+            Flexible(
+              child: SingleChildScrollView(
+                controller: footerScrollController,
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: widget.footer!.skip(1).toList(),
+                ),
+              ),
+            ),
+          ],
+        ),
       ],
     ),
   );
@@ -315,14 +308,7 @@ class _AppTableState extends State<AppTable3> {
   }
 }
 
-class AppTableColumn<T> {
-  final AppTableTitle3 title;
-  final List<AppTableCell3> data;
-  const AppTableColumn({
-    required this.title, 
-    required this.data
-  });
-}
+
 
 class AppTableCell3 extends StatelessWidget {
   final String? value;
@@ -359,7 +345,6 @@ class AppTableCell3 extends StatelessWidget {
 
 class AppTableTitle3 extends Container {
   final String value;
-  final TextAlign? textAlign;
 
   AppTableTitle3({
     super.key, 
@@ -367,15 +352,36 @@ class AppTableTitle3 extends Container {
     super.width = 100, 
     super.height = 40,
     super.color = AppColor.primaryColor,
-    this.textAlign = TextAlign.center
+    super.alignment = Alignment.center,
   }) : super(
-      alignment: Alignment.center,
       child: Text(
         value.isNotEmpty? value : "-",
-        textAlign: textAlign,
         style: AppTextStyle.textSubtitleStyle(
           color: Colors.white,
         ),
     ),
+  );
+}
+
+class AppTableFooter extends Container {
+  final String? value;
+  final Widget? customWidget;
+
+  AppTableFooter({
+    super.key, 
+    this.value, 
+    super.width = 100, 
+    super.height = 40,
+    super.color = AppColor.purpleColor,
+    super.alignment = Alignment.center,
+    this.customWidget
+  }) : super(
+      child: value!=null? 
+      Text(
+        value,
+        style: AppTextStyle.textBodyStyle(
+          color: Colors.white,
+        ),
+      ):customWidget,
   );
 }

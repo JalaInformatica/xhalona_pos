@@ -25,6 +25,7 @@ import 'package:xhalona_pos/views/home/fragment/transaction/form/ubah_terapis.da
 import 'package:xhalona_pos/views/home/fragment/transaction/transaction_widget.dart';
 import 'package:xhalona_pos/views/home/fragment/transaction/transaction_controller.dart';
 import 'package:xhalona_pos/widgets/app_table2.dart';
+import 'package:xhalona_pos/widgets/app_table3.dart';
 import 'package:xhalona_pos/widgets/app_tile.dart';
 
 // ignore: must_be_immutable
@@ -110,7 +111,7 @@ class TransactionScreen extends StatelessWidget {
       
     ];
     List<AppTile> activeActionTiles = [];
-    print(transaction.statusIdDesc);
+    
     switch(transaction.statusIdDesc){
       case "NEW ORDER":
        activeActionTiles=[
@@ -201,7 +202,7 @@ class TransactionScreen extends StatelessWidget {
                                         SmartDialog.dismiss();
                                         controller.updateFilterTrxDate(
                                           dateType: dateType.value,
-                                          day: dateType.value == DateType.DATE? day.value : null,
+                                          day: dateType.value == DateType.DATE? (day.value ?? DateTime.now().day) : null,
                                           month: month.value,
                                           year: year.value
                                         );
@@ -250,7 +251,6 @@ class TransactionScreen extends StatelessWidget {
                                               selectedMonth: month.value ??
                                                   controller.dateNow.month,
                                               onMonthSelected: (val) {
-                                                day.value = null;
                                                 month.value = val.month;
                                                 year.value = val.year;
                                               }),
@@ -281,7 +281,7 @@ class TransactionScreen extends StatelessWidget {
                                 Row(mainAxisSize: MainAxisSize.min, children: [
                               Obx(() => Text(
                                     controller.filterDateType.value == DateType.DATE
-                                        ? "${controller.filterDay.value}/${controller.filterMonth}/${controller.filterYear}"
+                                        ? "${controller.filterDay}/${controller.filterMonth}/${controller.filterYear}"
                                         : controller.filterDateType.value ==
                                                 DateType.MONTH
                                             ? "${controller.filterMonth}/${controller.filterYear}"
@@ -357,7 +357,7 @@ class TransactionScreen extends StatelessWidget {
                   height: 5.h,
                 ),
                 Obx(() => Expanded(
-                        child: AppTable2(
+                        child: AppTable3(
                       onSearch: (filterValue) =>
                           controller.updateFilterValue(filterValue),
                       onChangePageNo: (pageNo) =>
@@ -366,84 +366,84 @@ class TransactionScreen extends StatelessWidget {
                           controller.updatePageRow(pageRow),
                       pageNo: controller.pageNo.value,
                       pageRow: controller.pageRow.value,
+                      // Urutannya tlg atur: Trx, Nama, Total, Pembayaran, Total Bayar, Antrian, Kasir, Status, Keterangan, Pemesanan, Hutang, Aksi.
                       titles: [
-                        AppTableTitle2(value: "Trx"),
-                        AppTableTitle2(value: "Tanggal"),
-                        AppTableTitle2(value: "Kasir"),
-                        AppTableTitle2(value: "Nama"),
-                        AppTableTitle2(value: "Antrian"),
-                        AppTableTitle2(value: "Status"),
-                        AppTableTitle2(value: "Keterangan"),
-                        AppTableTitle2(value: "Pemesanan"),
-                        AppTableTitle2(
-                            textAlign: TextAlign.end, value: "Total"),
-                        AppTableTitle2(value: "Pembayaran"),
-                        AppTableTitle2(
-                            textAlign: TextAlign.end, value: "Total Bayar"),
-                        AppTableTitle2(
-                            textAlign: TextAlign.end, value: "Hutang"),
-                        AppTableTitle2(width: 200, value: "Aksi")
+                        AppTableTitle3(value: "Trx"),
+                        if(controller.filterDateType.value != DateType.DATE)
+                        AppTableTitle3(value: "Tanggal"),
+                        AppTableTitle3(value: "Nama"),
+                        AppTableTitle3(alignment: Alignment.centerRight, value: "Total"),
+                        AppTableTitle3(value: "Pembayaran"),
+                        AppTableTitle3(alignment: Alignment.centerRight, value: "Total Bayar"),
+                        AppTableTitle3(value: "Antrian"),
+                        AppTableTitle3(value: "Kasir"),
+                        AppTableTitle3(value: "Status"),
+                        AppTableTitle3(value: "Keterangan"),
+                        AppTableTitle3(value: "Pemesanan"),
+                        AppTableTitle3(alignment: Alignment.centerRight, value: "Hutang"),
+                        AppTableTitle3(width: 200, value: "Aksi")
                       ],
                       data: List.generate(controller.transactionHeader.length,
                           (int i) {
                         var transaction = controller.transactionHeader[i];
                         return [
-                          AppTableCell2(
+                          AppTableCell3(
                             action: () => actions(context, transaction),
                             value: transaction.salesId
                                 .substring(transaction.salesId.length - 4),
                           ),
-                          AppTableCell2(
+                          if(controller.filterDateType.value != DateType.DATE)
+                          AppTableCell3(
                             action: () => actions(context, transaction),
                             value: transaction.salesDate.split("T")[0],
                           ),
-                          AppTableCell2(
-                            action: () => actions(context,transaction),
-                            value: transaction.cashierBy,
-                          ),
-                          AppTableCell2(
+                          AppTableCell3(
                             action: () => actions(context,transaction),
                             value: transaction.supplierName,
                           ),
-                          AppTableCell2(
-                            action: () => actions(context,transaction),
-                            value: transaction.queueNumber.toString(),
-                          ),
-                          AppTableCell2(
-                            action: () => actions(context,transaction),
-                            value: transaction.sourceId,
-                          ),
-                          AppTableCell2(
-                            action: () => actions(context,transaction),
-                            value: transaction.statusDesc,
-                          ),
-                          AppTableCell2(
-                            action: () => actions(context,transaction),
-                            value: transaction.bookingType,
-                          ),
-                          AppTableCell2(
+                          AppTableCell3(
                             action: () => actions(context,transaction),
                             textAlign: TextAlign.end,
                             value: formatThousands(
                                 transaction.nettoVal.toString()),
                           ),
-                          AppTableCell2(
+                          AppTableCell3(
                             action: () => actions(context,transaction),
                             value: transaction.settlePaymentMethod,
                           ),
-                          AppTableCell2(
+                          AppTableCell3(
                             action: () => actions(context,transaction),
                             textAlign: TextAlign.end,
                             value: formatThousands(
                                 transaction.paymentVal.toString()),
                           ),
-                          AppTableCell2(
+                          AppTableCell3(
+                            action: () => actions(context,transaction),
+                            value: transaction.queueNumber.toString(),
+                          ),
+                          AppTableCell3(
+                            action: () => actions(context,transaction),
+                            value: transaction.cashierBy,
+                          ),
+                          AppTableCell3(
+                            action: () => actions(context,transaction),
+                            value: transaction.sourceId,
+                          ),
+                          AppTableCell3(
+                            action: () => actions(context,transaction),
+                            value: transaction.statusDesc,
+                          ),
+                          AppTableCell3(
+                            action: () => actions(context,transaction),
+                            value: transaction.bookingType,
+                          ),                          
+                          AppTableCell3(
                             action: () => actions(context,transaction),
                             textAlign: TextAlign.end,
                             value: formatThousands(
                                 transaction.totalHutang.toString()),
                           ),
-                          AppTableCell2(
+                          AppTableCell3(
                             width: 200,
                             customWidget: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -481,46 +481,48 @@ class TransactionScreen extends StatelessWidget {
                         ];
                       }),
                       footer: [
-                        AppTableCell2(
+                        AppTableFooter(
                           value: "Total",
                         ),
-                        AppTableCell2(
+                        if(controller.filterDateType.value != DateType.DATE)
+                        AppTableFooter(
                           customWidget: SizedBox.shrink(),
                         ),
-                        AppTableCell2(
+                        AppTableFooter(
                           customWidget: SizedBox.shrink(),
                         ),
-                        AppTableCell2(
-                          customWidget: SizedBox.shrink(),
-                        ),
-                        AppTableCell2(
-                          customWidget: SizedBox.shrink(),
-                        ),
-                        AppTableCell2(
-                          customWidget: SizedBox.shrink(),
-                        ),
-                        AppTableCell2(
-                          customWidget: SizedBox.shrink(),
-                        ),
-                        AppTableCell2(
-                          customWidget: SizedBox.shrink(),
-                        ),
-                        AppTableCell2(
+                        AppTableFooter(
                             value: formatThousands(
                                 controller.sumNetto.value.toString()),
-                            textAlign: TextAlign.right),
-                        AppTableCell2(
+                            alignment: Alignment.centerRight),
+                        AppTableFooter(
                           customWidget: SizedBox.shrink(),
                         ),
-                        AppTableCell2(
-                            value: formatThousands(
-                                controller.sumPayment.value.toString()),
-                            textAlign: TextAlign.right),
-                        AppTableCell2(
+                        AppTableFooter(
+                          value: formatThousands(
+                              controller.sumPayment.value.toString()),
+                          alignment: Alignment.centerRight
+                        ),
+                        AppTableFooter(
+                          customWidget: SizedBox.shrink(),
+                        ),
+                        AppTableFooter(
+                          customWidget: SizedBox.shrink(),
+                        ),
+                        AppTableFooter(
+                          customWidget: SizedBox.shrink(),
+                        ),
+                        AppTableFooter(
+                          customWidget: SizedBox.shrink(),
+                        ),
+                        AppTableFooter(
+                          customWidget: SizedBox.shrink(),
+                        ),
+                        AppTableFooter(
                             value: formatThousands(
                                 controller.sumDebt.value.toString()),
-                            textAlign: TextAlign.right),
-                        AppTableCell2(
+                            alignment: Alignment.centerRight),
+                        AppTableFooter(
                           width: 200,
                           customWidget: SizedBox.shrink(),
                         ),

@@ -79,6 +79,7 @@ class AppRepository {
     if (result['RESULT_CODE'].toString().contains("01")) {
       try {
         List data = result['DATA'] ?? [];
+        
         return data;
       } catch (e) {
         return [];

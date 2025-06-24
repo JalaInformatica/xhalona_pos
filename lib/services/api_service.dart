@@ -50,10 +50,10 @@ Future<http.Response> post(String url,
   logger.i(body);
 
   var baseUrl = await getBaseUrl();
-
   try {
     var response = await http.Client()
         .post(Uri.parse(baseUrl! + url), headers: headers, body: body);
+    Logger().i(response.body);
     return response;
   } on SocketException {
     return await showRetryDialog(url, headers: headers, body: body);
