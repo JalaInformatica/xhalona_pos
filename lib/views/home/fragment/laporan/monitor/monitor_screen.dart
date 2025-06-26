@@ -513,22 +513,22 @@ class MonitorScreen extends StatelessWidget {
                                 ),
                               ),
                               SizedBox(width: 8.0),
-                              // Expanded(
-                              //   child: DropdownButtonFormField<String>(
-                              //     decoration: InputDecoration(labelText: 'Shift'),
-                              //     value: controller.shift.value,
-                              //     items: ['SEMUA', 'PAGI', 'SIANG']
-                              //         .map((shift) => DropdownMenuItem(
-                              //               value: shift,
-                              //               child: Text(shift,
-                              //                   style: AppTextStyle.textBodyStyle()),
-                              //             ))
-                              //         .toList(),
-                              //     onChanged: (value) {
-                              //         controller.shift.value = value!;
-                              //     },
-                              //   ),
-                              // ),
+                              Expanded(
+                                child: DropdownButtonFormField<String>(
+                                  decoration: InputDecoration(labelText: 'Shift'),
+                                  value: controller.shift.value,
+                                  items: ['SEMUA', 'PAGI', 'SIANG']
+                                      .map((shift) => DropdownMenuItem(
+                                            value: shift,
+                                            child: Text(shift,
+                                                style: AppTextStyle.textBodyStyle()),
+                                          ))
+                                      .toList(),
+                                  onChanged: (value) {
+                                      controller.shift.value = value!;
+                                  },
+                                ),
+                              ),
                             ],
                           ),
                           Text('Format Penjualan By:',

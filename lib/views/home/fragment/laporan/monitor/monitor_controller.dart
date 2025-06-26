@@ -81,7 +81,7 @@ class MonitorController extends GetxController {
   var monitorHeader = <MonitorDAO>[].obs;
   var isLoading = true.obs;
 
-  var shift = "".obs;
+  var shift = "SEMUA".obs;
 
   var type = "Detail".obs;
   var formatId = <String>[].obs;
@@ -130,6 +130,7 @@ class MonitorController extends GetxController {
   }
 
   List<List<MonitorTableCell>> groupingData(List<MonitorDAO> monitors){
+      print('a ${sortBy.value}');
     switch(sortBy.value){
       case 'SALES_DATE':
         return groupingDataBy(
@@ -1060,7 +1061,6 @@ class MonitorController extends GetxController {
         fDateTo: DateFormat("yyyy-MM-dd").format(DateFormat("dd-MM-yyyy").parse(endDate.value)),
         format: sortBy.value,
       );
-      print(filterTableByCustomer);
       monitorHeader.value = result
       .where((monitor) =>
         (filterTableByKategori.value.isEmpty || monitor.ketAnalisa == filterTableByKategori.value) &&

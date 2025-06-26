@@ -405,7 +405,8 @@ class TransactionScreen extends StatelessWidget {
                             action: () => actions(context,transaction),
                             textAlign: TextAlign.end,
                             value: formatThousands(
-                                transaction.nettoVal.toString()),
+                              transaction.nettoVal.toString()
+                            ),
                           ),
                           AppTableCell3(
                             action: () => actions(context,transaction),
@@ -415,7 +416,8 @@ class TransactionScreen extends StatelessWidget {
                             action: () => actions(context,transaction),
                             textAlign: TextAlign.end,
                             value: formatThousands(
-                                transaction.paymentVal.toString()),
+                              transaction.paymentVal.toString()
+                            ),
                           ),
                           AppTableCell3(
                             action: () => actions(context,transaction),
@@ -441,7 +443,8 @@ class TransactionScreen extends StatelessWidget {
                             action: () => actions(context,transaction),
                             textAlign: TextAlign.end,
                             value: formatThousands(
-                                transaction.totalHutang.toString()),
+                              transaction.hutangVal.toString()
+                            ),
                           ),
                           AppTableCell3(
                             width: 200,
@@ -451,7 +454,7 @@ class TransactionScreen extends StatelessWidget {
                               children: [
                                 AppIconButton(
                                     onPressed: () {
-                                      print("b");
+
                                     },
                                     icon: Icon(
                                       Icons.edit,

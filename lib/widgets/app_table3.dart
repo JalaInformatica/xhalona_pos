@@ -86,6 +86,7 @@ class _AppTableState extends State<AppTable3> {
     _debounce?.cancel();
     super.dispose();
   }
+  
 
 
   Widget customTable({
@@ -308,7 +309,15 @@ class _AppTableState extends State<AppTable3> {
   }
 }
 
+class AppColumn {
+  final AppTableTitle3 title;
+  final List<AppTableCell3> data;
 
+  AppColumn({
+    required this.title,
+    required this.data,
+  });
+}
 
 class AppTableCell3 extends StatelessWidget {
   final String? value;

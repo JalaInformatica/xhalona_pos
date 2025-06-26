@@ -59,6 +59,7 @@ class TransactionHeaderDAO {
   int totalNonCash;
   int totalCompliment;
   int totalHutang;
+  int hutangVal;
   int kembalian;
   String companyAddress;
   String companyKecamatanId;
@@ -133,6 +134,7 @@ class TransactionHeaderDAO {
     this.totalNonCash = 0,
     this.totalCompliment = 0,
     this.totalHutang = 0,
+    this.hutangVal = 0,
     this.kembalian = 0,
     this.companyAddress = "",
     this.companyKecamatanId = "",
@@ -208,6 +210,7 @@ class TransactionHeaderDAO {
         totalNonCash = json['TOTAL_NON_CASH'] ?? 0,
         totalCompliment = json['TOTAL_COMPLIMENT'] ?? 0,
         totalHutang = json['TOTAL_HUTANG'] ?? 0,
+        hutangVal = json['HUTANG_VAL'] ?? 0,
         kembalian = json['KEMBALIAN'] ?? 0,
         companyAddress = json['COMPANY_ADDRESS'] ?? "",
         companyKecamatanId = json['COMPANY_KECAMATAN_ID'] ?? "",
