@@ -57,7 +57,7 @@ jobs:
             ${{ runner.os }}-pub-
 
       # Install dependensi flutter
-      - name: Install dependensi
+      - name: Install dependencies
         run: flutter pub get
 
       # Manage Versioning
