@@ -165,36 +165,3 @@ jobs:
           else
             rm -rf build/ios/iphoneos/*.app
           fi
-
-      # Kirim notifikasi email jika gagal
-      - name: Kirim notifikasi email jika gagal
-        if: failure()
-        uses: dawidd6/action-send-mail@v3
-        with:
-          from: ${{ secrets.SMTP_FROM }}
-          to: ${{ vars.SMTP_RECIPIENT }}
-          subject: 'Build Gagal - ${{ github.repository }}'
-          body: |
-            Build telah gagal untuk commit ${{ github.sha }} di branch ${{ github.ref }} oleh ${{ github.actor }}.
-            Deskripsi commit: ${{ github.event.head_commit.message }}
-            Silakan cek detailnya di ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}.
-          server_address: ${{ secrets.SMTP_SERVER }}
-          server_port: ${{ secrets.SMTP_PORT }}
-          username: ${{ secrets.SMTP_USER }}
-          password: ${{ secrets.SMTP_PASSWORD }}
-
-      # Kirim notifikasi email jika sukses
-      - name: Kirim notifikasi email
-        uses: dawidd6/action-send-mail@v3
-        with:
-          from: ${{ secrets.SMTP_FROM }}
-          to: ${{ vars.SMTP_RECIPIENT }}
-          subject: '${{ job.status }} - Build Status: ${{ github.repository }}'
-          body: |
-            Build telah ${{ job.status }} untuk commit ${{ github.sha }} di branch ${{ github.ref }} oleh ${{ github.actor }}.
-            Deskripsi commit: ${{ github.event.head_commit.message }}
-            ${{ job.status == 'success' && format('Anda dapat mengunduh hasil build di: {0}', env.UPLOAD_URL) || 'Silakan cek log untuk detail kesalahan.' }}
-          server_address: ${{ secrets.SMTP_SERVER }}
-          server_port: ${{ secrets.SMTP_PORT }}
-          username: ${{ secrets.SMTP_USER }}
-          password: ${{ secrets.SMTP_PASSWORD }}
