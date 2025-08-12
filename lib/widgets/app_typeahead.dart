@@ -9,16 +9,26 @@ class AppTypeahead<T> extends TypeAheadField<T> {
     super.key,
     required String label,
      TextEditingController? controller,
-    required ValueChanged<String?> onSelected,
+    required ValueChanged<String> onSelected,
     required Future<List<T>> Function(String newFilterValue) updateFilterValue,
     required String Function(T) displayText,
     required String Function(T) getId,
     // required Widget icon,
     required Function(bool forceClear) onClear,
+    super.emptyBuilder,
+    super.debounceDuration,
   }) : super(
        controller: controller,
+       
        suggestionsCallback: (pattern) {
           return updateFilterValue(pattern);
+        },
+        decorationBuilder: (context, child) {
+          return Material(
+            elevation: 2,
+            color: AppColor.whiteColor,
+            child: child,
+          );
         },
         builder: (context, textEditingController, focusNode) {
           return AppTextField(
@@ -29,7 +39,9 @@ class AppTypeahead<T> extends TypeAheadField<T> {
               onClear(false);
             },
             labelText: label,
-            suffixIcon: AppIconButton(
+            suffixIcon: textEditingController.text.isEmpty? 
+            Icon(Icons.search, color: AppColor.grey400,):
+            AppIconButton(
               onPressed: (){
                 onClear(true);
               },
@@ -42,8 +54,24 @@ class AppTypeahead<T> extends TypeAheadField<T> {
         },
         itemBuilder: (context, T suggestion) {
           return ListTile(
+            dense: true,
+            visualDensity: VisualDensity.compact,
+            splashColor: AppColor.grey200,
             tileColor: AppColor.whiteColor,
             title: Text(displayText(suggestion), style: AppTextStyle.textBodyStyle(),),
+          );
+        },
+        
+        loadingBuilder: (context){
+          return ListTile(
+            tileColor: AppColor.whiteColor,
+            leading: SizedBox(
+              width: 20, height: 20,
+              child: CircularProgressIndicator(
+                color: AppColor.primaryColor,
+              ),
+            ),
+            title: Text("Memuat...", style: AppTextStyle.textBodyStyle(),)
           );
         },
         

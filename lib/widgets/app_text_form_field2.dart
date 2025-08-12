@@ -24,15 +24,21 @@ class AppTextField2 extends Column{
     bool disabled = false,
     bool unfocusWhenTapOutside = true,
     Function(PointerDownEvent)? onTapOutside,
+    Function()? onTap,
     String? errorText,
+    bool? autofocus,
+    TextInputType? keyboardType
   }) : super(
     spacing: 3.h,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       TextField(
+        keyboardType: keyboardType,
         textAlign: textAlign,
         maxLines: maxLines,
         onSubmitted: onSubmitted,
+        autofocus: autofocus ?? false,
+        onTap: onTap,
         onTapOutside: unfocusWhenTapOutside? (e) {
           onTapOutside?.call(e);
           FocusScope.of(context).unfocus();

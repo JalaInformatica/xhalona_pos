@@ -1,14 +1,12 @@
+import 'package:flutter_widgets/flutter_widgets.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/views/home/fragment/master/kustomer/master_kustomer_screen.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/widgets/nav_sidebar.dart';
 import 'fragment/laporan/monitor/monitor_screen.dart';
-import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:xhalona_pos/views/home/home_controller.dart';
-import 'package:xhalona_pos/widgets/app_elevated_button.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
 import 'package:xhalona_pos/views/authentication/login/login_screen.dart';
@@ -116,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
         screen = LapFinanceScreen();
         break;
       default:
-        return TransactionScreen();
+        return SizedBox();
     }
 
     if (screen != widget.previousScreen && screen != null) {
@@ -154,6 +152,9 @@ class _HomeScreenState extends State<HomeScreen> {
       case "transaksi":
         iconPath += "bag_buy_cart_market_shop_shopping_tote_icon_123191.png";
         break;
+      case "logistik":
+        iconPath += "bag_buy_cart_market_shop_shopping_tote_icon_123191.png";
+        break;
       case "finance":
         iconPath +=
             "business_cash_coin_dollar_finance_money_payment_icon_123244.png";
@@ -178,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
             SmartDialog.show(builder: (context) {
               return AppDialog(
                 content: Column(
-                  spacing: 10.h,
+                  spacing: 10,
                   children: [
                     subMenuButton(
                       value: "master_product",
@@ -228,7 +229,7 @@ class _HomeScreenState extends State<HomeScreen> {
             SmartDialog.show(builder: (context) {
               return AppDialog(
                 content: Column(
-                  spacing: 10.h,
+                  spacing: 10,
                   children: [
                     subMenuButton(
                       value: "laporan_penjualan",
@@ -263,7 +264,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               Container(
-                  padding: EdgeInsets.all(3.w),
+                  padding: EdgeInsets.all(3),
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: AppColor.whiteColor,
@@ -281,7 +282,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 menuName != "pos"
                     ? menuName[0].toUpperCase() + menuName.substring(1)
                     : menuName.toUpperCase(),
-                style: AppTextStyle.textCaptionStyle(
+                style: AppTextStyle.textXsStyle(
                     color: !controller.selectedMenuName.value.contains(menuName)
                         ? AppColor.blackColor
                         : AppColor.primaryColor,
@@ -297,9 +298,9 @@ class _HomeScreenState extends State<HomeScreen> {
       BuildContext context, GlobalKey<ScaffoldState> scaffoldKey) {
     return Obx(() => Container(
           width: double.infinity,
-          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10.w),
+          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
           decoration: BoxDecoration(
-            color: AppColor.primaryColor,
+            color: AppColor.whiteColor,
           ),
           child: Row(
             children: [
@@ -308,32 +309,32 @@ class _HomeScreenState extends State<HomeScreen> {
                   scaffoldKey.currentState?.openDrawer();
                 },
                 icon: Icon(Icons.menu),
-                foregroundColor: AppColor.whiteColor,
+                foregroundColor: AppColor.grey800,
               ),
               Text(
                 controller.subMenuName.value,
                 style:
-                    AppTextStyle.textSubtitleStyle(color: AppColor.whiteColor),
+                    AppTextStyle.textLgStyle(color: AppColor.grey800),
               ),
               Spacer(),
               AppIconButton(
-                foregroundColor: AppColor.whiteColor,
+                foregroundColor: AppColor.grey800,
                 onPressed: () {
                   controller.selectedMenuName.value = "transaksi";
                 },
                 icon: Badge.count(
-                  textStyle: AppTextStyle.textCaptionStyle(
+                  textStyle: AppTextStyle.textXsStyle(
                       fontWeight: FontWeight.bold),
                   textColor: AppColor.blackColor,
                   backgroundColor: AppColor.warningColor,
                   count: controller.todayTrx.value,
-                  child: Icon(Icons.shopping_bag),
+                  child: Icon(Icons.shopping_bag_outlined),
                 ),
               ),
               AppIconButton(
-                foregroundColor: AppColor.whiteColor,
+                foregroundColor: AppColor.grey800,
                 onPressed: () {},
-                icon: Icon(Icons.notifications),
+                icon: Icon(Icons.notifications_outlined),
               ),
               GestureDetector(
                 onTap: () {
@@ -382,14 +383,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Text(
                       controller.profileData.value.companyId,
-                      style: AppTextStyle.textBodyStyle(
-                        color: AppColor.whiteColor,
+                      style: AppTextStyle.textNStyle(
+                        color: AppColor.grey800,
                       ),
                     ),
                     Text(
                       controller.profileData.value.userName,
-                      style: AppTextStyle.textCaptionStyle(
-                        color: AppColor.whiteColor,
+                      style: AppTextStyle.textXsStyle(
+                        color: AppColor.grey500,
                       ),
                     ),
                   ],
@@ -410,7 +411,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: controller.selectedMenuName.value != value
           ? AppColor.whiteColor
           : AppColor.secondaryColor,
-      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 15.h),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
       child: Row(
         children: [
           Icon(
@@ -422,7 +423,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           SizedBox(width: 8),
           Text(label,
-              style: AppTextStyle.textSubtitleStyle(
+              style: AppTextStyle.textLgStyle(
                 fontWeight: FontWeight.normal,
                 color: controller.selectedMenuName.value != value
                     ? AppColor.primaryColor
@@ -462,7 +463,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      spacing: 10.w,
+                      spacing: 10,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         ...controller.menuData.map((menuItem) {

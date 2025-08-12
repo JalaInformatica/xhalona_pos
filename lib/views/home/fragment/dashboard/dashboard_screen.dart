@@ -2,6 +2,7 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:xhalona_pos/core/helper/date_helper.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/core/helper/global_helper.dart';
@@ -11,12 +12,18 @@ import 'package:xhalona_pos/widgets/app_calendar_range.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
 import 'package:xhalona_pos/widgets/app_dropdown.dart';
 import 'package:xhalona_pos/widgets/app_normal_button.dart';
+import 'package:xhalona_pos/widgets/app_table_xs.dart';
 
-class DashboardScreen extends StatelessWidget {
+import 'viewmodels/dashboard_viewmodel.dart';
+
+class DashboardScreen extends HookConsumerWidget {
   final DashboardController controller = Get.put(DashboardController());
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(dashboardViewModelProvider);
+    final notifier = ref.read(dashboardViewModelProvider.notifier);
+
     controller.fetchData();
     return Scaffold(
       backgroundColor: AppColor.whiteColor,
@@ -26,6 +33,82 @@ class DashboardScreen extends StatelessWidget {
             spacing: 10.h,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text("Transaksi Terbaru Hari ini (Top 5)", style: AppTextStyle.textBodyStyle(color: AppColor.primaryColor, fontWeight: FontWeight.bold)),
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height*0.25
+                ),
+                child: AppTableXs(
+                isPaginated: false,
+                tableSize: TableSize.small,
+                isLoading: state.isLoadingTodayTransaction,
+                columnDefs: [
+                  ColumnDef(
+                    field: 'trx', 
+                    headerName: 'Trx', 
+                    width: 60,
+                    textFormatter: (val)=>val.toString().substring(val.toString().length-4)
+                  ),
+                  ColumnDef(
+                    field: 'pelanggan', 
+                    headerName: 'Pelanggan', 
+                    width: 100, 
+                    alignment: ColumAlignment.left
+                  ),
+                  ColumnDef(field: 'settle_payment_method', headerName: 'Pembayaran', width: 110),
+                  ColumnDef(
+                    field: 'payment_val', 
+                    headerName: 'Total Bayar', 
+                    width: 100,
+                    alignment: ColumAlignment.right,
+                    textFormatter: (val)=>formatThousands(val.toString())
+                  ),
+                  ColumnDef(field: 'queue', headerName: 'Antrian', width: 90),
+                  ColumnDef(field: 'create_by', headerName: 'Kasir', width: 90),
+                  ColumnDef(field: 'status', headerName: 'Status', width: 90),
+                  ColumnDef(field: 'keterangan', headerName: 'Keterangan', width: 90),
+                  ColumnDef(
+                    field: 'total', 
+                    headerName: 'Total', 
+                    width: 90, 
+                    alignment: ColumAlignment.right,
+                    textFormatter: (val)=>formatThousands(val.toString())
+                  ),
+                ],
+                onRowClicked: (transaction){
+                  // AppNavigator.navigatePush(context, TransactionPosScreen(salesId: transaction['trx']));
+                },
+                rowData: state.todayTransaction.map((item){
+                  return 
+                    {
+                      'trx': item.salesId,
+                      'pelanggan': item.supplierName,
+                      'settle_payment_method': item.settlePaymentMethod,
+                      'payment_val': item.paymentVal,
+                      'queue': item.queueNumber,
+                      'create_by': item.createBy,
+                      'status': item.sourceId,
+                      'keterangan': item.statusDesc,
+                      'total': item.nettoVal,
+                      'aksi': '',
+                    };
+                  }).toList(),
+                  footerDefs: [
+                    FooterDef(
+                      field: 'trx',
+                      value: 'Total', 
+                    ),
+                    FooterDef(
+                      field: 'payment_val',
+                      value: formatThousands(state.todayTransaction.fold(0, (sum, c)=>sum+c.paymentVal).toString()),
+                      columAlignment: ColumAlignment.right
+                    ),
+                    FooterDef(
+                      field: 'total',
+                      value: formatThousands(state.todayTransaction.fold(0, (sum, c)=>sum+c.nettoVal).toString()),
+                    ),]
+              ),
+              ),
               Row(
                 spacing: 5.w,
                 children: [
@@ -37,7 +120,7 @@ class DashboardScreen extends StatelessWidget {
                         Text("Hari ini", style: AppTextStyle.textBodyStyle(
                           fontWeight: FontWeight.bold,
                           color: AppColor.whiteColor),),
-                        Text(formatToRupiah(controller.nettoValDToday.value), style: AppTextStyle.textSubtitleStyle(
+                        Text(formatToRupiahShort(controller.nettoValDToday.value), style: AppTextStyle.textSubtitleStyle(
                           color: AppColor.whiteColor
                         ),),
                         Text(
@@ -58,7 +141,7 @@ class DashboardScreen extends StatelessWidget {
                           , style: AppTextStyle.textBodyStyle(
                           fontWeight: FontWeight.bold,
                           color: AppColor.primaryColor),),
-                        Text(formatToRupiah(controller.nettoValDThisMonth.value), style: AppTextStyle.textSubtitleStyle(),),
+                        Text(formatToRupiahShort(controller.nettoValDThisMonth.value), style: AppTextStyle.textSubtitleStyle(),),
                         Text(
                           "${controller.totalTrxThisMonth.value.toString()} Transaksi",
                           style: AppTextStyle.textBodyStyle(color: AppColor.blackColor),

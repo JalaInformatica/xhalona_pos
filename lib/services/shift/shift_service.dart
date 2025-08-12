@@ -3,7 +3,11 @@ import 'package:xhalona_pos/services/api_service.dart' as api;
 import 'package:xhalona_pos/services/response_handler.dart';
 
 class ShiftService {
-  Future<String> getShifts() async {
+  Future<String> getShifts({
+    int? pageNo,
+    int? pageRow,
+    String? filterValue
+  }) async {
     await api.fetchUserSessionInfo();
     var url = '/SALES/m_shift';
     var body = jsonEncode({
@@ -16,9 +20,9 @@ class ShiftService {
         "COMPANY_ID":api.companyId,
         "SITE_ID":"",
         "FILTER_FIELD":"",
-        "FILTER_VALUE":"",
-        "PAGE_NO":"1",
-        "PAGE_ROW":"10",
+        "FILTER_VALUE": filterValue ?? "",
+        "PAGE_NO": pageNo ?? "1",
+        "PAGE_ROW": pageRow ?? "10",
         "SORT_ORDER_BY":"SHIFT_ID_ACTIVE",
         "SORT_ORDER_TYPE":"DESC",
         "PART_ID":"",

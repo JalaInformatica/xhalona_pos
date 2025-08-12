@@ -39,6 +39,8 @@ class DashboardController extends GetxController {
     fetchData();
   }
 
+  
+
   Future<void> fetchData() async {
     isLoading.value = true;
 

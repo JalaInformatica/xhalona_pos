@@ -57,15 +57,15 @@ class KustomerServices {
         "COMPANY_ID": api.companyId,
         "USER_ID": api.userId,
         "SESSION_LOGIN_ID": api.sessionId,
-        "SUPPLIER_ID": suplierId!=null && suplierId.isNotEmpty? suplierId : telp,
-        "SUPPLIER_NAME": suplierName,
-        "ADDRESS1": adress1,
-        "ADDRESS2": adress2,
-        "TELP": telp,
-        "EMAIL_ADDRESS": emailAdress,
-        "IS_PAYABLE": isPayable,
-        "IS_COMPLIMENT": isCompliment,
-        "IS_SUPPLIER": isSuplier
+        "SUPPLIER_ID": suplierId!=null && suplierId.isNotEmpty? suplierId : telp ?? "",
+        "SUPPLIER_NAME": suplierName ?? "",
+        "ADDRESS1": adress1 ?? "",
+        "ADDRESS2": adress2 ?? "",
+        "TELP": telp ?? "",
+        "EMAIL_ADDRESS": emailAdress ?? "",
+        "IS_PAYABLE": isPayable ?? "",
+        "IS_COMPLIMENT": isCompliment ?? "",
+        "IS_SUPPLIER": isSuplier ?? "0"
       }
     });
     var response =

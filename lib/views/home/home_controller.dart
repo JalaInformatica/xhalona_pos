@@ -17,7 +17,7 @@ class HomeController extends GetxController {
   var menuData = <MenuDAO>[].obs;
   var profileData = UserDAO().obs;
   var todayTrx = 0.obs;
-  var selectedMenuName = "pos".obs;
+  var selectedMenuName = "".obs;
   var isOpenMaster = false.obs;
   var isOpenLaporan = false.obs;
 
@@ -46,6 +46,7 @@ class HomeController extends GetxController {
     menuData.value = [
       ...await _structureRepository.getMenus()
     ];
+    selectedMenuName.value = menuData.first.dataSubMenu.first.subMenuDesc;
     profileData.value = await _userRepository.getUserProfile()..companyId=prefs.getString(LocalStorageConst.companyId) ?? "";
     isMenuLoading.value = false;
   }

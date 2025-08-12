@@ -9,6 +9,22 @@ String formatToRupiah(int number) {
   return formatter.format(number);
 }
 
+String formatToRupiahShort(int number) {
+  if (number >= 1000000000) {
+    double result = number / 1000000000;
+    return 'Rp${result.toStringAsFixed(result.truncateToDouble() == result ? 0 : 1)}M';
+  } else if (number >= 1000000) {
+    double result = number / 1000000;
+    return 'Rp${result.toStringAsFixed(result.truncateToDouble() == result ? 0 : 1)}jt';
+  } else if (number >= 1000) {
+    double result = number / 1000;
+    return 'Rp${result.toStringAsFixed(result.truncateToDouble() == result ? 0 : 1)}rb';
+  } else {
+    return 'Rp$number';
+  }
+}
+
+
 String formatThousands(String text){
   try {
     int number = int.parse(text);

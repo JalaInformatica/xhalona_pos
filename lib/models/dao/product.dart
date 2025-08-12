@@ -40,6 +40,8 @@ class ProductDAO {
   String groupAnalisaId;
   bool isNonSales;
   bool isPublish;
+  String parentPartId;
+  String parentPartName;
 
   ProductSortBy productSortBy = ProductSortBy();
 
@@ -66,6 +68,8 @@ class ProductDAO {
     this.pathImage = "",
     this.mainImage = "",
     this.thumbImage = "",
+    this.parentPartId = "",
+    this.parentPartName = "",
     this.isFixQty = false,
     this.isFixPrice = true,
     this.isFree = false,
@@ -100,6 +104,8 @@ class ProductDAO {
         ketAnalisaGlobal = json['KET_ANALISA_GLOBAL'] ?? "",
         unit1 = json['UNIT_1'] ?? "",
         unit2 = json['UNIT_2'] ?? "",
+        parentPartId = json['PARENT_PART_ID']??"",
+        parentPartName = json['PARENT_PART_NAME']??"",
         qtyPerUnit1 = json['QTY_PER_UNIT_1'] ?? 0,
         qtyMax = json['QTY_MAX'] ?? 0,
         qtyMin = json['QTY_MIN'] ?? 0,

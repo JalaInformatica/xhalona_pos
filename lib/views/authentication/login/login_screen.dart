@@ -1,14 +1,12 @@
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
-import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:flutter_widgets/flutter_widgets.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xhalona_pos/models/dao/authentication.dart';
-import 'package:xhalona_pos/widgets/app_loading_button.dart';
 import 'package:xhalona_pos/core/constant/local_storage.dart';
-import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 import 'package:xhalona_pos/repositories/authentication/authentication_repository.dart';
-import 'package:xhalona_pos/views/authentication/register_main/register_main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -80,7 +78,7 @@ class _LoginScreen extends State<LoginScreen> {
                 ),
                 Text(
                   "Xhalona",
-                  style: AppTextStyle.textTitleStyle(color: AppColor.whiteColor),
+                  style: AppTextStyle.textXlStyle(color: AppColor.whiteColor),
                 ),
                 const SizedBox(
                   height: 10,
@@ -136,7 +134,7 @@ class _LoginScreen extends State<LoginScreen> {
                     context: context,
                     textEditingController: passwordController,
                     suffixIcon: tooglePass(),
-                    isScurePass: isScurePass,
+                    obscureText: isScurePass,
                     validator: (value) {
                       if (value == '') {
                         return "Password harus diisi!";
@@ -158,7 +156,7 @@ class _LoginScreen extends State<LoginScreen> {
                       child: Text(
                         "Lupa Password",
                         style:
-                            AppTextStyle.textBodyStyle(color: AppColor.grey500),
+                            AppTextStyle.textNStyle(color: AppColor.grey500),
                       ),
                     ),
                   ),
@@ -170,26 +168,28 @@ class _LoginScreen extends State<LoginScreen> {
                         backgroundColor: AppColor.primaryColor,
                         foregroundColor: AppColor.whiteColor,
                         size: AppLoadingButtonSize.big,
-                        text: Text(
+                        child: Text(
                           "Masuk",
-                          style: AppTextStyle.textSubtitleStyle(),
+                          style: AppTextStyle.textMdStyle(),
                         ),
                       )),
+                  SizedBox(height: 8,),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    spacing: 5,
                     children: [
-                      Text("Belum Punya Akun?",
-                          style: AppTextStyle.textBodyStyle()),
-                      TextButton(
+                      Text("Atau",
+                          style: AppTextStyle.textNStyle()),
+                      AppClickableText(
                         onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => RegisterMainScreen()));
+                          launchUrl(Uri.parse('https://xhalona.com'));
                         },
                         child: Text(
-                          "Daftar Baru",
-                          style: AppTextStyle.textBodyStyle(
-                              fontWeight: FontWeight.bold,
-                              color: AppColor.blackColor),
+                          "Daftarkan Salonmu",
+                          style: AppTextStyle.textNStyle(
+                            fontWeight: FontWeight.bold,
+                            color: AppColor.secondaryColor
+                          ),
                         ),
                       )
                     ],
