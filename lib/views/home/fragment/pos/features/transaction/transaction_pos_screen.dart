@@ -323,253 +323,293 @@ class TransactionPosScreen extends HookConsumerWidget {
                         if(!detail.isPacket)
                         Column(children: [
                         SizedBox(height: 8,),
-                        TextButton(
-                          style: TextButton.styleFrom(
-                            visualDensity: VisualDensity.compact,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            padding: EdgeInsets.zero,
-                            shape: BeveledRectangleBorder()
-                          ),
-                          onPressed: (){
-                            if(state.transactionHeader.statusCategory != "PROGRESS"){
-                              return;
-                            }
-                            SmartDialog.show(builder: (context){
-                              return AppDialog2(
-                                title: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text("Tambah Terapis", style: AppTextStyle.textNStyle(fontWeight: FontWeight.bold),),
-                                      Text("Cari Terapis Untuk ${detail.partName}", style: AppTextStyle.textXsStyle(color: AppColor.grey500),)
-                                    ])
-                                  ),
-                                child: Column(
-                                  spacing: 8,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    if(terapisList.isNotEmpty)
-                                    Wrap(
-                                      spacing: 5,
-                                      runSpacing: 5,
-                                      children: List.generate(terapisList.length, (indexTerapis) {
-                                        return IntrinsicWidth( 
-                                          child: AppTextButton(
-                                            borderColor: AppColor.transparentColor,
-                                            backgroundColor: AppColor.grey100,
-                                            foregroundColor: AppColor.blackColor,
-                                            onPressed: () {
-                                              switch (terapisList[indexTerapis].index) {
-                                                case 1:
-                                                  notifier.editTransactionDetail(
-                                                      detail: detail,
-                                                      partId: detail.partId,
-                                                      rowId: detail.rowId,
-                                                      employeId: '');
-                                                  break;
-                                                case 2:
-                                                  notifier.editTransactionDetail(
-                                                      detail: detail,
-                                                      partId: detail.partId,
-                                                      rowId: detail.rowId,
-                                                      employeId2: '');
-                                                  break;
-                                                case 3:
-                                                  notifier.editTransactionDetail(
-                                                      detail: detail,
-                                                      partId: detail.partId,
-                                                      rowId: detail.rowId,
-                                                      employeId3: '');
-                                                  break;
-                                                case 4:
-                                                  notifier.editTransactionDetail(
-                                                      detail: detail,
-                                                      partId: detail.partId,
-                                                      rowId: detail.rowId,
-                                                      employeId4: '');
-                                                  break;
-                                              }
-                                              SmartDialog.dismiss();
-                                              notifier.getTransactionDetail();
-                                            },
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Text(
-                                                  terapisList[indexTerapis].name,
-                                                  style: AppTextStyle.textSmStyle(),
-                                                ),
-                                                Icon(Icons.close, color: AppColor.blackColor),
-                                              ],
-                                            ),
-                                          ),
-                                        );
-                                      }),
-                                    ),
-                                    AppTypeahead2<EmployeeDAO>(
-                                      label: "Terapis", 
-                                      autofocus: true,
-                                      updateFilterValue: (val) async {
-                                        return val.isNotEmpty? await notifier.getEmployeeList(filter: val) : [];
-                                      }, 
-                                      onSelected: (val){
-                                        if(terapisList.any((item)=> item.id == (val.empId))){
-                                          return;
-                                        }
-                                        switch(terapisList.length){
-                                          case 0:
-                                            notifier.editTransactionDetail(
-                                            detail: detail,
-                                            partId: detail.partId,
-                                            rowId: detail.rowId,
-                                            employeId: val.empId
-                                            );
-                                          break;
-                                          case 1:
-                                            notifier.editTransactionDetail(
-                                            detail: detail,
-                                            partId: detail.partId,
-                                            rowId: detail.rowId,
-                                            employeId2: val.empId
-                                            );
-                                          break;
-                                          case 2:
-                                            notifier.editTransactionDetail(
-                                            detail: detail,
-                                            partId: detail.partId,
-                                            rowId: detail.rowId,
-                                            employeId3: val.empId
-                                            );
-                                          break;
-                                          case 3:
-                                            notifier.editTransactionDetail(
-                                            detail: detail,
-                                            partId: detail.partId,
-                                            rowId: detail.rowId,
-                                            employeId4: val.empId
-                                            );
-                                          break;
-                                          case 4:
-                                            notifier.editTransactionDetail(
-                                            detail: detail,
-                                            partId: detail.partId,
-                                            rowId: detail.rowId,
-                                            employeId4: val.empId
-                                            );
-                                          break;
-                                        }
-                                        notifier.getTransactionDetail();
-                                        SmartDialog.dismiss();
-                                      },
-                                      displayWidget: (val){
-                                        return Column(
+                        Row(
+                          children: [
+                            Expanded(child:TextButton(
+                              style: TextButton.styleFrom(
+                                visualDensity: VisualDensity.compact,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                padding: EdgeInsets.zero,
+                                shape: BeveledRectangleBorder()
+                              ),
+                              onPressed: (){
+                                if(state.transactionHeader.statusCategory != "PROGRESS"){
+                                  return;
+                                }
+                                SmartDialog.show(builder: (context){
+                                  return AppDialog2(
+                                    title: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text(val.fullName, style: AppTextStyle.textNStyle(),)
-                                        ]);
-                                      },
-                                      onClear: (val){},
-                                      emptyBuilder: (context){
-                                        return SizedBox.shrink();
-                                      },
-                                    )
-                                  ],
-                                ),
-                              );
-                            });
-                          },
-                          child: InputDecorator(
-                          decoration: InputDecoration(
-                            labelText: terapisList.isNotEmpty? 'Terapis' : null,
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: AppColor.grey300),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: AppColor.grey300),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(color: AppColor.grey300),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                          ),
-                          child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            if (terapisList.isNotEmpty)
-                              Expanded(
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Wrap(
-                                    spacing: 5,
-                                    runSpacing: 5,
-                                    children: List.generate(terapisList.length, (indexTerapis) {
-                                      return IntrinsicWidth( 
-                                        child: AppTextButton(
-                                          borderColor: AppColor.transparentColor,
-                                          backgroundColor: AppColor.grey100,
-                                          foregroundColor: AppColor.blackColor,
-                                          onPressed: () {
-                                            switch (terapisList[indexTerapis].index) {
+                                          Text("Tambah Terapis", style: AppTextStyle.textNStyle(fontWeight: FontWeight.bold),),
+                                          Text("Cari Terapis Untuk ${detail.partName}", style: AppTextStyle.textXsStyle(color: AppColor.grey500),)
+                                        ])
+                                      ),
+                                    child: Column(
+                                      spacing: 8,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        if(terapisList.isNotEmpty)
+                                        Wrap(
+                                          spacing: 5,
+                                          runSpacing: 5,
+                                          children: List.generate(terapisList.length, (indexTerapis) {
+                                            return IntrinsicWidth( 
+                                              child: AppTextButton(
+                                                borderColor: AppColor.transparentColor,
+                                                backgroundColor: AppColor.grey100,
+                                                foregroundColor: AppColor.blackColor,
+                                                onPressed: () {
+                                                  switch (terapisList[indexTerapis].index) {
+                                                    case 1:
+                                                      notifier.editTransactionDetail(
+                                                          detail: detail,
+                                                          partId: detail.partId,
+                                                          rowId: detail.rowId,
+                                                          employeId: '');
+                                                      break;
+                                                    case 2:
+                                                      notifier.editTransactionDetail(
+                                                          detail: detail,
+                                                          partId: detail.partId,
+                                                          rowId: detail.rowId,
+                                                          employeId2: '');
+                                                      break;
+                                                    case 3:
+                                                      notifier.editTransactionDetail(
+                                                          detail: detail,
+                                                          partId: detail.partId,
+                                                          rowId: detail.rowId,
+                                                          employeId3: '');
+                                                      break;
+                                                    case 4:
+                                                      notifier.editTransactionDetail(
+                                                          detail: detail,
+                                                          partId: detail.partId,
+                                                          rowId: detail.rowId,
+                                                          employeId4: '');
+                                                      break;
+                                                  }
+                                                  SmartDialog.dismiss();
+                                                  notifier.getTransactionDetail();
+                                                },
+                                                child: Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    Text(
+                                                      terapisList[indexTerapis].name,
+                                                      style: AppTextStyle.textSmStyle(),
+                                                    ),
+                                                    Icon(Icons.close, color: AppColor.blackColor),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          }),
+                                        ),
+                                        AppTypeahead2<EmployeeDAO>(
+                                          label: "Terapis", 
+                                          autofocus: true,
+                                          updateFilterValue: (val) async {
+                                            return val.isNotEmpty? await notifier.getEmployeeList(filter: val) : [];
+                                          }, 
+                                          onSelected: (val){
+                                            if(terapisList.any((item)=> item.id == (val.empId))){
+                                              return;
+                                            }
+                                            switch(terapisList.length){
+                                              case 0:
+                                                notifier.editTransactionDetail(
+                                                detail: detail,
+                                                partId: detail.partId,
+                                                rowId: detail.rowId,
+                                                employeId: val.empId
+                                                );
+                                              break;
                                               case 1:
                                                 notifier.editTransactionDetail(
-                                                    detail: detail,
-                                                    partId: detail.partId,
-                                                    rowId: detail.rowId,
-                                                    employeId: '');
-                                                break;
+                                                detail: detail,
+                                                partId: detail.partId,
+                                                rowId: detail.rowId,
+                                                employeId2: val.empId
+                                                );
+                                              break;
                                               case 2:
                                                 notifier.editTransactionDetail(
-                                                    detail: detail,
-                                                    partId: detail.partId,
-                                                    rowId: detail.rowId,
-                                                    employeId2: '');
-                                                break;
+                                                detail: detail,
+                                                partId: detail.partId,
+                                                rowId: detail.rowId,
+                                                employeId3: val.empId
+                                                );
+                                              break;
                                               case 3:
                                                 notifier.editTransactionDetail(
-                                                    detail: detail,
-                                                    partId: detail.partId,
-                                                    rowId: detail.rowId,
-                                                    employeId3: '');
-                                                break;
+                                                detail: detail,
+                                                partId: detail.partId,
+                                                rowId: detail.rowId,
+                                                employeId4: val.empId
+                                                );
+                                              break;
                                               case 4:
                                                 notifier.editTransactionDetail(
-                                                    detail: detail,
-                                                    partId: detail.partId,
-                                                    rowId: detail.rowId,
-                                                    employeId4: '');
-                                                break;
+                                                detail: detail,
+                                                partId: detail.partId,
+                                                rowId: detail.rowId,
+                                                employeId4: val.empId
+                                                );
+                                              break;
                                             }
                                             notifier.getTransactionDetail();
+                                            SmartDialog.dismiss();
                                           },
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
+                                          displayWidget: (val){
+                                            return Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                terapisList[indexTerapis].name,
-                                                style: AppTextStyle.textSmStyle(),
-                                              ),
-                                              Icon(Icons.close, color: AppColor.blackColor),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    }),
-                                  ),
+                                              Text(val.fullName, style: AppTextStyle.textNStyle(),)
+                                            ]);
+                                          },
+                                          onClear: (val){},
+                                          emptyBuilder: (context){
+                                            return SizedBox.shrink();
+                                          },
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                });
+                              },
+                              child: InputDecorator(
+                              decoration: InputDecoration(
+                                labelText: terapisList.isNotEmpty? 'Terapis' : null,
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: AppColor.grey300),
+                                  borderRadius: BorderRadius.circular(5),
                                 ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: AppColor.grey300),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(color: AppColor.grey300),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                               ),
-                            if (terapisList.isEmpty)
-                              Text("Terapis", style: AppTextStyle.textNStyle(color: AppColor.grey500)),
-                            Icon(Icons.search, color: AppColor.grey500),
-                          ],
-                        )
+                              child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                if (terapisList.isNotEmpty)
+                                  Expanded(
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Wrap(
+                                        spacing: 5,
+                                        runSpacing: 5,
+                                        children: List.generate(terapisList.length, (indexTerapis) {
+                                          return IntrinsicWidth( 
+                                            child: AppTextButton(
+                                              borderColor: AppColor.transparentColor,
+                                              backgroundColor: AppColor.grey100,
+                                              foregroundColor: AppColor.blackColor,
+                                              onPressed: () {
+                                                switch (terapisList[indexTerapis].index) {
+                                                  case 1:
+                                                    notifier.editTransactionDetail(
+                                                        detail: detail,
+                                                        partId: detail.partId,
+                                                        rowId: detail.rowId,
+                                                        employeId: '');
+                                                    break;
+                                                  case 2:
+                                                    notifier.editTransactionDetail(
+                                                        detail: detail,
+                                                        partId: detail.partId,
+                                                        rowId: detail.rowId,
+                                                        employeId2: '');
+                                                    break;
+                                                  case 3:
+                                                    notifier.editTransactionDetail(
+                                                        detail: detail,
+                                                        partId: detail.partId,
+                                                        rowId: detail.rowId,
+                                                        employeId3: '');
+                                                    break;
+                                                  case 4:
+                                                    notifier.editTransactionDetail(
+                                                        detail: detail,
+                                                        partId: detail.partId,
+                                                        rowId: detail.rowId,
+                                                        employeId4: '');
+                                                    break;
+                                                }
+                                                notifier.getTransactionDetail();
+                                              },
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Text(
+                                                    terapisList[indexTerapis].name,
+                                                    style: AppTextStyle.textSmStyle(),
+                                                  ),
+                                                  Icon(Icons.close, color: AppColor.blackColor),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        }),
+                                      ),
+                                    ),
+                                  ),
+                                if (terapisList.isEmpty)
+                                  Text("Terapis", style: AppTextStyle.textNStyle(color: AppColor.grey500)),
+                                Icon(Icons.search, color: AppColor.grey500),
+                              ],
+                            )
 
+                              ),
+                            )),                          
+                          if(!detail.isFixQty)
+                          Row(
+                            children: [
+                              AppIconButton(
+                                onPressed: () async {
+                                  await notifier.editTransactionDetail(
+                                    detail: detail, 
+                                    partId: detail.partId, 
+                                    rowId: detail.rowId,
+                                    qty: detail.qty - 1
+                                  );
+                                  await notifier.initialize();
+                                }, 
+                                icon: Icon(Icons.remove)
+                              ),
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: AppColor.grey300),
+                                  borderRadius: BorderRadius.circular(5)
+                                ),
+                                child: Text("${detail.qty}", style: AppTextStyle.textNStyle(),)
+                              ),
+                              AppIconButton(
+                                onPressed: () async {
+                                  await notifier.editTransactionDetail(
+                                    detail: detail, 
+                                    partId: detail.partId, 
+                                    rowId: detail.rowId,
+                                    qty: detail.qty + 1
+                                  );
+                                  await notifier.initialize();
+                                }, 
+                                icon: Icon(Icons.add)
+                              ),
+                            ],
                           ),
-                        ),
+                        ]),
                         SizedBox(height: 8,),
                         Row(
                           spacing: 5,
