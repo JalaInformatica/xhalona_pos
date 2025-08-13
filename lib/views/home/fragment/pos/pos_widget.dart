@@ -4,7 +4,7 @@ import 'package:flutter_widgets/flutter_widgets.dart';
 import 'package:xhalona_pos/core/helper/global_helper.dart';
 import 'package:xhalona_pos/core/utils/app_navigator.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/features/transaction/transaction_pos_screen.dart';
-import 'package:xhalona_pos/widgets/app_dropdown.dart';
+import 'package:xhalona_pos/widgets/app_dropdown.dart' as t;
 import 'package:xhalona_pos/widgets/app_loading_indicator.dart';
 import 'package:xhalona_pos/widgets/app_table_xs.dart';
 import 'states/pos_state.dart';
@@ -26,7 +26,7 @@ class PosWidget {
       spacing: 5,
       children: [ 
         Text("Status:", style: AppTextStyle.textNStyle(fontWeight: FontWeight.w500),),
-        AppTextDropdown(
+        t.AppTextDropdown(
         value: state.filterTransactionCategory, 
         backgroundColor: AppColor.tertiaryColor,
         borderColor: AppColor.primaryColor,
