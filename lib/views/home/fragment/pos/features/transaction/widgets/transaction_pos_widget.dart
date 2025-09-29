@@ -3,8 +3,10 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:flutter_widgets/flutter_widgets.dart';
 import 'package:intl/intl.dart';
-import 'package:xhalona_pos/models/dao/kustomer.dart';
-import 'package:xhalona_pos/models/dao/shift.dart';
+import 'package:xhalona_pos/models/response/kustomer.dart';
+import 'package:xhalona_pos/models/response/shift.dart';
+import 'package:xhalona_pos/widgets/app_dialog2.dart';
+import 'package:xhalona_pos/widgets/app_normal_button.dart';
 import 'package:xhalona_pos/widgets/app_text_form_field2.dart';
 import 'package:xhalona_pos/widgets/app_typeahead2.dart';
 

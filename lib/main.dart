@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_widgets/flutter_widgets.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:xhalona_pos/views/launcher/splash_screen.dart';
+import 'package:xhalona_pos/views/splash/splash_screen.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'core/theme/theme.dart' as theme;
@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
           ),
           debugShowCheckedModeBanner: false,
           builder: FlutterSmartDialog.init(),
-          home: SplashScreen(),
+          home: SplashPage(),
         );
       },
     );

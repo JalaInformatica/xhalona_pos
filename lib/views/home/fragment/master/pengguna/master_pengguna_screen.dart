@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
-import 'package:xhalona_pos/models/dao/pengguna.dart';
+import 'package:xhalona_pos/models/response/pengguna.dart';
 import 'package:xhalona_pos/widgets/app_bottombar.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';

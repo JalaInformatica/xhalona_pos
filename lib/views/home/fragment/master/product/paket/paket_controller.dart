@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:xhalona_pos/models/dao/paket.dart';
+import 'package:xhalona_pos/models/response/paket.dart';
 import 'package:xhalona_pos/repositories/paket_repository.dart';
 
 class PaketController extends GetxController {

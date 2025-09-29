@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
-import 'package:xhalona_pos/models/dao/metodebayar.dart';
+import 'package:xhalona_pos/models/response/metodebayar.dart';
 import 'package:xhalona_pos/models/dto/paymentTransaction.dart';
-import 'package:xhalona_pos/repositories/crystal_report/transaction_crystal_report_repository.dart';
+import 'package:xhalona_pos/globals/crystal_report/transaction_crystal_report_repository.dart';
 import 'package:xhalona_pos/repositories/metodebayar/metodebayar_repository.dart';
-import 'package:xhalona_pos/repositories/transaction/transaction_repository.dart';
+import 'package:xhalona_pos/globals/transaction/repositories/transaction_repository.dart';
 
 class CheckoutController extends GetxController{
   

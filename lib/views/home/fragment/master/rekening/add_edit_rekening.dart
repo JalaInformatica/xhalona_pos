@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:xhalona_pos/models/dao/coa.dart';
+import 'package:xhalona_pos/models/response/coa.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/models/dao/rekening.dart';
+import 'package:xhalona_pos/models/response/rekening.dart';
 import 'package:xhalona_pos/widgets/app_typeahead.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
@@ -90,7 +90,7 @@ class _AddEditRekeningState extends State<AddEditRekening> {
           setState(() {});
         } else {
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => HomePage()),
             (route) => false,
           );
           controller.fetchProducts();
@@ -104,7 +104,7 @@ class _AddEditRekeningState extends State<AddEditRekening> {
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => HomePage()),
             (route) => false); // Navigasi kembali ke halaman sebelumnya
         return false; // Mencegah navigasi bawaan
       },
@@ -316,7 +316,7 @@ class _AddEditRekeningState extends State<AddEditRekening> {
                           masterButton(() {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (context) => HomeScreen()),
+                                    builder: (context) => HomePage()),
                                 (route) => false);
                           }, "Batal", Icons.refresh),
                         ],

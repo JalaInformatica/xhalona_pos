@@ -3,15 +3,15 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
-import 'package:xhalona_pos/models/dao/karyawan.dart';
+import 'package:xhalona_pos/models/response/karyawan.dart';
 import 'package:xhalona_pos/widgets/app_calendar.dart';
-import 'package:xhalona_pos/models/dao/departemen.dart';
+import 'package:xhalona_pos/models/response/departemen.dart';
 import 'package:xhalona_pos/widgets/app_typeahead.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:xhalona_pos/repositories/karyawan/karyawan_repository.dart';
+import 'package:xhalona_pos/globals/karyawan/karyawan_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/karyawan_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/departemen_controller.dart';
 
@@ -108,7 +108,7 @@ class _AddEditKaryawanState extends State<AddEditKaryawan> {
           setState(() {});
         } else {
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => HomePage()),
             (route) => false,
           );
           controllerKar.fetchProducts();
@@ -122,7 +122,7 @@ class _AddEditKaryawanState extends State<AddEditKaryawan> {
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => HomePage()),
             (route) => false); // Navigasi kembali ke halaman sebelumnya
         return false; // Mencegah navigasi bawaan
       },
@@ -491,7 +491,7 @@ class _AddEditKaryawanState extends State<AddEditKaryawan> {
                           masterButton(() {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (context) => HomeScreen()),
+                                    builder: (context) => HomePage()),
                                 (route) => false);
                           }, "Batal", Icons.refresh),
                         ],

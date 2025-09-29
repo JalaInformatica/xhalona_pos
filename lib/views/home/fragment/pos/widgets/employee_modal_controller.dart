@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:xhalona_pos/models/dao/employee.dart';
+import 'package:xhalona_pos/models/response/employee.dart';
 import 'package:xhalona_pos/repositories/employee/employee_repository.dart';
 
 class EmployeeModalController extends GetxController{

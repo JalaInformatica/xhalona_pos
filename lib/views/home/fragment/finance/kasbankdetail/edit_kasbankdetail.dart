@@ -1,11 +1,11 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:xhalona_pos/models/dao/coa.dart';
+import 'package:xhalona_pos/models/response/coa.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_typeahead.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:xhalona_pos/models/dao/kasbankdetail.dart';
+import 'package:xhalona_pos/models/response/kasbankdetail.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/widgets/app_text_form_field.dart';
 import 'package:xhalona_pos/views/home/fragment/master/coa/coa_controller.dart';
@@ -92,7 +92,7 @@ class _AddEditKasBankDetailState extends State<AddEditKasBankDetail> {
           setState(() {});
         } else {
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => HomePage()),
             (route) => false,
           );
           controllerFi.fetchProducts();
@@ -106,7 +106,7 @@ class _AddEditKasBankDetailState extends State<AddEditKasBankDetail> {
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => HomePage()),
             (route) => false); // Navigasi kembali ke halaman sebelumnya
         return false; // Mencegah navigasi bawaan
       },
@@ -275,7 +275,7 @@ class _AddEditKasBankDetailState extends State<AddEditKasBankDetail> {
                           masterButton(() {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (context) => HomeScreen()),
+                                    builder: (context) => HomePage()),
                                 (route) => false);
                           }, "Batal", Icons.refresh),
                         ],

@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:xhalona_pos/models/dao/shift.dart';
-import 'package:xhalona_pos/repositories/shift/shift_repository.dart';
+import 'package:xhalona_pos/globals/shift/shift_repository.dart';
+import 'package:xhalona_pos/models/response/shift.dart';
 
 class ShiftModalController extends GetxController{
   final ShiftRepository _shiftRepository = ShiftRepository();

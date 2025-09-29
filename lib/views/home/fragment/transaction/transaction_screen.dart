@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/helper/global_helper.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/models/dao/transaction.dart';
+import 'package:xhalona_pos/globals/transaction/models/transaction_response.dart';
 import 'package:xhalona_pos/widgets/app_dialog2.dart';
 import 'package:xhalona_pos/widgets/app_dialog_list.dart';
 import 'package:xhalona_pos/widgets/app_elevated_button.dart';
@@ -20,7 +20,7 @@ import 'package:xhalona_pos/views/home/home_controller.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/transaction/form/trx_form.dart';
-import 'package:xhalona_pos/repositories/transaction/transaction_repository.dart';
+import 'package:xhalona_pos/globals/transaction/repositories/transaction_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/transaction/form/ubah_terapis.dart';
 import 'package:xhalona_pos/views/home/fragment/transaction/transaction_widget.dart';
 import 'package:xhalona_pos/views/home/fragment/transaction/transaction_controller.dart';
@@ -45,7 +45,7 @@ class TransactionScreen extends StatelessWidget {
   bool toHome = false;
   bool newOrder = false;
 
-  void actions(BuildContext context, TransactionHeaderDAO transaction) {
+  void actions(BuildContext context, TransactionResponse transaction) {
     List<AppTile> actionTiles = [
       // 0
       AppDialogList.editAppTile(
@@ -62,12 +62,12 @@ class TransactionScreen extends StatelessWidget {
         text: "Buka di POS", 
         icon: Icons.open_in_new, 
         onTap: (){
-          var controller = Get.find<PosController>();
-          var homeController = Get.find<HomeController>();
-          controller.reinitTransaction(transaction).then(
-              (_) => homeController.selectedMenuName.value =
-                  "pos");
-          SmartDialog.dismiss();
+          // var controller = Get.find<PosController>();
+          // var homeController = Get.find<HomeController>();
+          // controller.reinitTransaction(transaction).then(
+          //     (_) => homeController.selectedMenuName.value =
+          //         "pos");
+          // SmartDialog.dismiss();
         }
       ),
       //3
@@ -466,14 +466,14 @@ class TransactionScreen extends StatelessWidget {
                                     icon: Icon(Icons.delete)),
                                 AppIconButton(
                                     onPressed: () {
-                                      var controller =
-                                          Get.find<PosController>();
-                                      var homeController =
-                                          Get.find<HomeController>();
-                                      controller
-                                          .reinitTransaction(transaction)
-                                          .then((_) => homeController
-                                              .selectedMenuName.value = "pos");
+                                      // var controller =
+                                      //     Get.find<PosController>();
+                                      // var homeController =
+                                      //     Get.find<HomeController>();
+                                      // controller
+                                      //     .reinitTransaction(transaction)
+                                      //     .then((_) => homeController
+                                      //         .selectedMenuName.value = "pos");
                                     },
                                     icon: Icon(Icons.open_in_new)),
                                 AppIconButton(

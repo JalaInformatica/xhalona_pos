@@ -1,4 +1,4 @@
-import 'package:xhalona_pos/models/dao/varian.dart';
+import 'package:xhalona_pos/models/response/varian.dart';
 import 'package:xhalona_pos/repositories/app_repository.dart';
 import 'package:xhalona_pos/services/varian/varian_services.dart';
 

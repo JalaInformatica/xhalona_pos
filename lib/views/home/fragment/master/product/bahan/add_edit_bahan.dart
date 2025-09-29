@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/models/dao/bahan.dart';
-import 'package:xhalona_pos/models/dao/product.dart';
-import 'package:xhalona_pos/models/dao/masterall.dart';
+import 'package:xhalona_pos/models/response/bahan.dart';
+import 'package:xhalona_pos/globals/product/models/product.dart';
+import 'package:xhalona_pos/models/response/masterall.dart';
 import 'package:xhalona_pos/widgets/app_typeahead.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/repositories/bahan/bahan_repository.dart';

@@ -35,23 +35,23 @@ void navigateToMenu(String menuName, BuildContext context) {
   switch (menuName.toLowerCase()) {
     case "pos":
       Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => HomeScreen()));
+          .push(MaterialPageRoute(builder: (context) => HomePage()));
       break;
     case "dashboard":
       Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => HomeScreen()));
+          .push(MaterialPageRoute(builder: (context) => HomePage()));
       break;
     case "transaksi":
       Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => HomeScreen()));
+          .push(MaterialPageRoute(builder: (context) => HomePage()));
       break;
     case "finance":
       Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => HomeScreen()));
+          .push(MaterialPageRoute(builder: (context) => HomePage()));
       break;
     case "profil":
       Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => HomeScreen()),
+          MaterialPageRoute(builder: (context) => HomePage()),
           (route) => false);
       break;
     default:

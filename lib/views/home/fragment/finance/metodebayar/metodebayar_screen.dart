@@ -5,7 +5,7 @@ import 'package:xhalona_pos/widgets/app_elevated_button.dart';
 import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
-import 'package:xhalona_pos/models/dao/metodebayar.dart';
+import 'package:xhalona_pos/models/response/metodebayar.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/repositories/metodebayar/metodebayar_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/finance/metodebayar/add_edit_metodebayar.dart';

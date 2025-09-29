@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pdf/pdf.dart';
-import 'package:xhalona_pos/models/dao/employee.dart';
-import 'package:xhalona_pos/models/dao/kustomer.dart';
-import 'package:xhalona_pos/models/dao/product.dart';
-import 'package:xhalona_pos/models/dao/shift.dart';
-import 'package:xhalona_pos/models/dao/transaction.dart';
+import 'package:xhalona_pos/models/response/employee.dart';
+import 'package:xhalona_pos/models/response/kustomer.dart';
+import 'package:xhalona_pos/globals/product/models/product.dart';
+import 'package:xhalona_pos/models/response/shift.dart';
+import 'package:xhalona_pos/globals/transaction/models/transaction_response.dart';
 import 'package:xhalona_pos/models/dto/transaction.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/features/transaction/repositories/transaction_pos_repositories.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/features/transaction/state/transaction_pos_state.dart';
@@ -123,7 +123,7 @@ class TransactionPosViewmodel extends StateNotifier<TransactionPosState>{
   }
 
   Future<void> editTransactionEmployee({
-    required TransactionDetailDAO detail,
+    required TransactionDetailResponse detail,
     required String partId,
     required String rowId,
     String? detNote,
@@ -148,7 +148,7 @@ class TransactionPosViewmodel extends StateNotifier<TransactionPosState>{
   }
 
   Future<void> editTransactionDetail({
-    required TransactionDetailDAO detail,
+    required TransactionDetailResponse detail,
     required String partId,
     required String rowId,
     int? qty,
@@ -248,7 +248,7 @@ Future<pw.Document> generateQueuePDF() async {
                     ...List.generate(
                       state.transactionDetailList.length,
                       (index) {
-                        TransactionDetailDAO detail =
+                        TransactionDetailResponse detail =
                             state.transactionDetailList[index];
                         return pw.TableRow(
                           children: [

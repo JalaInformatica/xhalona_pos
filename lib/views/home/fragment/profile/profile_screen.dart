@@ -258,7 +258,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         setState(() {});
       } else {
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => HomeScreen()),
+          MaterialPageRoute(builder: (context) => HomePage()),
           (route) => false,
         );
         controller.fetchMenu();
@@ -271,7 +271,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => HomePage()),
             (route) => false); // Navigasi kembali ke halaman sebelumnya
         return false; // Mencegah navigasi bawaan
       },

@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:xhalona_pos/models/dao/coa.dart';
+import 'package:xhalona_pos/models/response/coa.dart';
 import 'package:xhalona_pos/repositories/coa/coa_repository.dart';
 
 class CoaController extends GetxController {

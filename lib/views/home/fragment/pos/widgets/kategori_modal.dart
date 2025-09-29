@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/models/dao/kategori.dart';
+import 'package:xhalona_pos/models/response/kategori.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/widgets/kategori_modal_controller.dart';
 import 'package:xhalona_pos/widgets/app_normal_button.dart';
 import 'package:xhalona_pos/widgets/app_text_field.dart';

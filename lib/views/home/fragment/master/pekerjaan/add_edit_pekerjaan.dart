@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/models/dao/pekerjaan.dart';
+import 'package:xhalona_pos/models/response/pekerjaan.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/widgets/app_text_form_field.dart';
@@ -60,7 +60,7 @@ class _AddEditPekerjaanState extends State<AddEditPekerjaan> {
           setState(() {});
         } else {
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => HomePage()),
             (route) => false,
           );
           controller.fetchProducts();
@@ -74,7 +74,7 @@ class _AddEditPekerjaanState extends State<AddEditPekerjaan> {
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => HomePage()),
             (route) => false); // Navigasi kembali ke halaman sebelumnya
         return false; // Mencegah navigasi bawaan
       },
@@ -134,7 +134,7 @@ class _AddEditPekerjaanState extends State<AddEditPekerjaan> {
                           masterButton(() {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (context) => HomeScreen()),
+                                    builder: (context) => HomePage()),
                                 (route) => false);
                           }, "Batal", Icons.refresh),
                         ],

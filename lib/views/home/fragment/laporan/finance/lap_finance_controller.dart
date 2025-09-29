@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:xhalona_pos/repositories/crystal_report/lap_penjualan_repository.dart';
+import 'package:xhalona_pos/globals/crystal_report/lap_penjualan_repository.dart';
 
 class LapFinanceController extends GetxController {
   var startDate = DateFormat("dd-MM-yyyy").format(DateTime.now()).obs;

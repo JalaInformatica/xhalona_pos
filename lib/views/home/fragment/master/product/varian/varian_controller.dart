@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:xhalona_pos/models/dao/varian.dart';
+import 'package:xhalona_pos/models/response/varian.dart';
 import 'package:xhalona_pos/repositories/varian/varian_repositorty.dart';
 
 class VarianController extends GetxController {

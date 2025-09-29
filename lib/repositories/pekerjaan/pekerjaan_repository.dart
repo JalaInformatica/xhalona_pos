@@ -1,4 +1,4 @@
-import 'package:xhalona_pos/models/dao/pekerjaan.dart';
+import 'package:xhalona_pos/models/response/pekerjaan.dart';
 import 'package:xhalona_pos/repositories/app_repository.dart';
 import 'package:xhalona_pos/services/pekerjaan/pekerjaan_services.dart';
 

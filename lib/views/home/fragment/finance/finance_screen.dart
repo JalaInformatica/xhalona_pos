@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_elevated_button.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
-import 'package:xhalona_pos/models/dao/kasbank.dart';
+import 'package:xhalona_pos/models/response/kasbank.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/repositories/kasbank/kasbank_repository.dart';

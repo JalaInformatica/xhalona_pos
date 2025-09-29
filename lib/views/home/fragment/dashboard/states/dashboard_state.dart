@@ -1,21 +1,39 @@
-import 'package:xhalona_pos/models/dao/transaction.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:xhalona_pos/globals/transaction/models/transaction_response.dart';
+
 
 class DashboardState {
-  final bool isLoadingTodayTransaction;
-  final List<TransactionHeaderDAO> todayTransaction;
+  final AsyncValue<List<TransactionResponse>> todayTransaction;
+  final AsyncValue<double> nettoToday;
+  final AsyncValue<double> trxToday;
 
-  DashboardState({
-    this.todayTransaction = const [],
-    this.isLoadingTodayTransaction = false,
+  const DashboardState({
+    required this.todayTransaction,
+    required this.nettoToday,
+    required this.trxToday,    
   });
 
-   DashboardState copyWith({
-    List<TransactionHeaderDAO>? todayTransaction,
-    bool? isLoadingTodayTransaction
-  }){
-    return  DashboardState(
+  DashboardState copyWith({
+    AsyncValue<List<TransactionResponse>>? todayTransaction,
+    AsyncValue<double>? nettoToday,
+    AsyncValue<double>? trxToday,
+    
+    
+  }) {
+    return DashboardState(
       todayTransaction: todayTransaction ?? this.todayTransaction,
-      isLoadingTodayTransaction: isLoadingTodayTransaction ?? this.isLoadingTodayTransaction
+      nettoToday: nettoToday ?? this.nettoToday,
+      trxToday: trxToday ?? this.trxToday,
+      
+      
     );
-  }  
+  }
+
+  factory DashboardState.initial() => const DashboardState(
+    todayTransaction: AsyncValue.loading(),
+    nettoToday: AsyncValue.loading(),
+    trxToday: AsyncValue.loading(),
+    
+    
+  );
 }

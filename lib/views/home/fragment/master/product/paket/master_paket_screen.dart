@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/models/dao/paket.dart';
+import 'package:xhalona_pos/models/response/paket.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/repositories/paket_repository.dart';
@@ -56,7 +56,7 @@ class MasterPaketScreen extends StatelessWidget {
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => HomePage()),
             (route) => false); // Navigasi kembali ke halaman sebelumnya
         controllerPro.filterValue.value = "";
         controllerPro.fetchProducts();
@@ -72,7 +72,7 @@ class MasterPaketScreen extends StatelessWidget {
             icon: Icon(Icons.arrow_back),
             onPressed: () {
               Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => HomeScreen()),
+                  MaterialPageRoute(builder: (context) => HomePage()),
                   (route) => false); // Jika tidak, gunakan navigator default
               controllerPro.fetchProducts();
             }, // Navigasi kembali ke halaman sebelumnya

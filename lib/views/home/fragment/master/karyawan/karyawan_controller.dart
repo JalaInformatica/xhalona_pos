@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:xhalona_pos/models/dao/karyawan.dart';
-import 'package:xhalona_pos/repositories/karyawan/karyawan_repository.dart';
+import 'package:xhalona_pos/models/response/karyawan.dart';
+import 'package:xhalona_pos/globals/karyawan/karyawan_repository.dart';
 
 class KaryawanController extends GetxController {
   KaryawanRepository _karyawanRepository = KaryawanRepository();

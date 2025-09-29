@@ -1,13 +1,13 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
+import 'package:xhalona_pos/views/authentication/signin/views/sign_in_page.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xhalona_pos/views/home/home_controller.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
-import 'package:xhalona_pos/views/authentication/login/login_screen.dart';
-import 'package:xhalona_pos/views/home/fragment/dashboard/dashboard_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/dashboard/views/dashboard_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/supplier/supplier_controller.dart';
 
 // ignore_for_file: unnecessary_null_comparison
@@ -186,7 +186,7 @@ class _NavSideBarState extends State<NavSideBar> {
   void navigateFromOtherWidget(BuildContext context, Widget? newScreen) {
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(
-        builder: (context) => HomeScreen(),
+        builder: (context) => HomePage(),
       ),
       (route) => false,
     );
@@ -394,7 +394,7 @@ class _NavSideBarState extends State<NavSideBar> {
             controller.logout();
             Get.reset();
             Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => LoginScreen()),
+                MaterialPageRoute(builder: (context) => SignInPage()),
                 (route) => false);
           }, 'Logout', Icons.logout),
         ),

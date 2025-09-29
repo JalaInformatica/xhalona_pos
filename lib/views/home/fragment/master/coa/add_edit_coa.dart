@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:xhalona_pos/models/dao/coa.dart';
+import 'package:xhalona_pos/models/response/coa.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_typeahead.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
@@ -79,7 +79,7 @@ class _AddEditCoaState extends State<AddEditCoa> {
           setState(() {});
         } else {
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => HomePage()),
             (route) => false,
           );
           controllerKar.fetchProducts();
@@ -93,7 +93,7 @@ class _AddEditCoaState extends State<AddEditCoa> {
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => HomePage()),
             (route) => false); // Navigasi kembali ke halaman sebelumnya
         return false; // Mencegah navigasi bawaan
       },
@@ -295,7 +295,7 @@ class _AddEditCoaState extends State<AddEditCoa> {
                           masterButton(() {
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                    builder: (context) => HomeScreen()),
+                                    builder: (context) => HomePage()),
                                 (route) => false);
                           }, "Batal", Icons.refresh),
                         ],

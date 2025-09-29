@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/models/dao/shift.dart';
+import 'package:xhalona_pos/models/response/shift.dart';
 import 'package:xhalona_pos/widgets/app_normal_button.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/widgets/shift_modal_controller.dart';
 

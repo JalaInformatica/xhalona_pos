@@ -1,4 +1,4 @@
-import 'package:xhalona_pos/models/dao/user.dart';
+import 'package:xhalona_pos/models/response/user.dart';
 import 'package:xhalona_pos/services/user/user_service.dart';
 import 'package:xhalona_pos/repositories/app_repository.dart';
 

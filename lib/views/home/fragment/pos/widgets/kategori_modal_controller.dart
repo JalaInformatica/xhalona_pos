@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:xhalona_pos/models/dao/kategori.dart';
+import 'package:xhalona_pos/models/response/kategori.dart';
 import 'package:xhalona_pos/repositories/kategori_repository.dart';
 
 class KategoriModalController extends GetxController{

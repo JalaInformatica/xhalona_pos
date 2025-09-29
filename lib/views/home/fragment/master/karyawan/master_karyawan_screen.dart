@@ -3,10 +3,10 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
-import 'package:xhalona_pos/models/dao/karyawan.dart';
+import 'package:xhalona_pos/models/response/karyawan.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:xhalona_pos/repositories/karyawan/karyawan_repository.dart';
+import 'package:xhalona_pos/globals/karyawan/karyawan_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/add_edit_karyawan.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/karyawan_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/karyawan/departemen/master_departemen_screen.dart';
@@ -57,7 +57,7 @@ class MasterKaryawanScreen extends StatelessWidget {
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => HomePage()),
             (route) => false); // Navigasi kembali ke halaman sebelumnya
         return false; // Mencegah navigasi bawaan
       },

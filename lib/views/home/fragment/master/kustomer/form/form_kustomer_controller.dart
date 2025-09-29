@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:xhalona_pos/models/dao/kustomer.dart';
+import 'package:xhalona_pos/models/response/kustomer.dart';
 import 'package:xhalona_pos/repositories/kustomer/kustomer_repository.dart';
 
 class KustomerFormController extends GetxController {

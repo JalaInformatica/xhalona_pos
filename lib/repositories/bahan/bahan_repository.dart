@@ -1,4 +1,4 @@
-import 'package:xhalona_pos/models/dao/bahan.dart';
+import 'package:xhalona_pos/models/response/bahan.dart';
 import 'package:xhalona_pos/repositories/app_repository.dart';
 import 'package:xhalona_pos/services/bahan/bahan_services.dart';
 

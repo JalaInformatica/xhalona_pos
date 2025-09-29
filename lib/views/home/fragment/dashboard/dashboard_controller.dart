@@ -1,8 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:get/get.dart';
-import 'package:xhalona_pos/models/dao/report.dart';
-import 'package:xhalona_pos/models/dao/summary.dart';
-import 'package:xhalona_pos/repositories/report/report_repository.dart';
+import 'package:xhalona_pos/globals/report/report_repository.dart';
+import 'package:xhalona_pos/models/response/report.dart';
+import 'package:xhalona_pos/models/response/summary.dart';
 
 enum DashboardType {MONTHLY, ANNUAL}
 
@@ -171,7 +171,7 @@ class DashboardController extends GetxController {
     sortedDataNetPerTerapis.sort((a, b) => b.value.compareTo(a.value));
 
     dataNetPerTerapisValue.value = sortedDataNetPerTerapis
-        .take(5)
+        .take(10)
         .toList()
         .asMap()
         .entries

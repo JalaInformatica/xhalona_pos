@@ -1,4 +1,4 @@
-import 'package:xhalona_pos/models/dao/rekening.dart';
+import 'package:xhalona_pos/models/response/rekening.dart';
 import 'package:xhalona_pos/repositories/app_repository.dart';
 import 'package:xhalona_pos/services/rekening/rekening_services.dart';
 

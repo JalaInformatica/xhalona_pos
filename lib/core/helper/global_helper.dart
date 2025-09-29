@@ -9,16 +9,16 @@ String formatToRupiah(int number) {
   return formatter.format(number);
 }
 
-String formatToRupiahShort(int number) {
+String formatToRupiahShort({required int number, int places=2}) {
   if (number >= 1000000000) {
     double result = number / 1000000000;
-    return 'Rp${result.toStringAsFixed(result.truncateToDouble() == result ? 0 : 1)}M';
+    return 'Rp${result.toStringAsFixed(places)}M';
   } else if (number >= 1000000) {
     double result = number / 1000000;
-    return 'Rp${result.toStringAsFixed(result.truncateToDouble() == result ? 0 : 1)}jt';
+    return 'Rp${result.toStringAsFixed(places)}jt';
   } else if (number >= 1000) {
     double result = number / 1000;
-    return 'Rp${result.toStringAsFixed(result.truncateToDouble() == result ? 0 : 1)}rb';
+    return 'Rp${result.toStringAsFixed(places)}rb';
   } else {
     return 'Rp$number';
   }

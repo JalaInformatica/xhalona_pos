@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:xhalona_pos/models/dao/bahan.dart';
+import 'package:xhalona_pos/models/response/bahan.dart';
 import 'package:xhalona_pos/repositories/bahan/bahan_repository.dart';
 
 class BahanController extends GetxController {

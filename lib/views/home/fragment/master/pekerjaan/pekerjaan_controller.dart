@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:xhalona_pos/models/dao/pekerjaan.dart';
+import 'package:xhalona_pos/models/response/pekerjaan.dart';
 import 'package:xhalona_pos/repositories/pekerjaan/pekerjaan_repository.dart';
 
 class PekerjaanController extends GetxController {

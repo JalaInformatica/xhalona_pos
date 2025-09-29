@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:xhalona_pos/models/dao/product.dart';
-import 'package:xhalona_pos/repositories/product/product_repository.dart';
+import 'package:xhalona_pos/globals/product/models/product.dart';
+import 'package:xhalona_pos/globals/product/repositories/product_repository.dart';
 
 class ProductController extends GetxController {
   ProductRepository _productRepository = ProductRepository();

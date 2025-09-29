@@ -1,4 +1,4 @@
-import 'package:xhalona_pos/models/dao/transaction.dart';
+import 'package:xhalona_pos/globals/transaction/models/transaction_response.dart';
 
 enum CustomerType {member, tamu}
 
@@ -6,20 +6,20 @@ class TransactionPosState {
   final bool isLoadingTransaction;
   final bool isLoadingTransactionDetail;
   final CustomerType customerType;
-  final TransactionHeaderDAO transactionHeader;
-  final List<TransactionDetailDAO> transactionDetailList; 
+  final TransactionResponse transactionHeader;
+  final List<TransactionDetailResponse> transactionDetailList; 
   
   TransactionPosState({
-    TransactionHeaderDAO? transactionHeader,
+    TransactionResponse? transactionHeader,
     this.transactionDetailList = const [],
     this.isLoadingTransaction = false,
     this.isLoadingTransactionDetail = false,
     this.customerType = CustomerType.member
-  })  : transactionHeader = transactionHeader ?? TransactionHeaderDAO();
+  })  : transactionHeader = transactionHeader ?? TransactionResponse();
 
   TransactionPosState copyWith({
-    TransactionHeaderDAO? transactionHeader,
-    List<TransactionDetailDAO>? transactionDetailList,
+    TransactionResponse? transactionHeader,
+    List<TransactionDetailResponse>? transactionDetailList,
     bool? isLoadingTransaction,
     bool? isLoadingTransactionDetail,
     CustomerType? customerType

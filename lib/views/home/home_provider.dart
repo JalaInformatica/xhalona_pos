@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:xhalona_pos/models/dao/structure.dart';
-import 'package:xhalona_pos/models/dao/user.dart';
+import 'package:xhalona_pos/models/response/structure.dart';
+import 'package:xhalona_pos/models/response/user.dart';
 import 'package:xhalona_pos/repositories/structure/structure_repository.dart';
 import 'package:xhalona_pos/repositories/user/user_repository.dart';
 

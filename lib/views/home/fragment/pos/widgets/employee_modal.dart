@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/models/dao/employee.dart';
+import 'package:xhalona_pos/models/response/employee.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/widgets/employee_modal_controller.dart';
 import 'package:xhalona_pos/widgets/app_normal_button.dart';
 import 'package:xhalona_pos/widgets/app_text_field.dart';

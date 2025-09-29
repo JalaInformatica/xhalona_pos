@@ -2,19 +2,21 @@ import 'package:flutter_widgets/flutter_widgets.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:xhalona_pos/views/authentication/signin/views/sign_in_page.dart';
 import 'package:xhalona_pos/views/home/fragment/master/kustomer/master_kustomer_screen.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
+import 'package:xhalona_pos/widgets/app_elevated_button.dart';
+import 'package:xhalona_pos/widgets/app_icon_button.dart';
 import 'package:xhalona_pos/widgets/nav_sidebar.dart';
 import 'fragment/laporan/monitor/monitor_screen.dart';
 import 'package:xhalona_pos/views/home/home_controller.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
-import 'package:xhalona_pos/views/authentication/login/login_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/profile/profile_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/finance/finance_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/profile/settings_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/profile/change_password.dart';
-import 'package:xhalona_pos/views/home/fragment/dashboard/dashboard_screen.dart';
+import 'package:xhalona_pos/views/home/fragment/dashboard/views/dashboard_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/profile/profile_page_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/master/coa/master_coa_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/transaction/transaction_screen.dart';
@@ -29,15 +31,15 @@ import 'package:xhalona_pos/views/home/fragment/master/supplier/master_supplier_
 // ignore_for_file: use_build_context_synchronously
 
 // ignore: must_be_immutable
-class HomeScreen extends StatefulWidget {
+class HomePage extends StatefulWidget {
   Widget? previousScreen;
-  HomeScreen({this.previousScreen});
+  HomePage({this.previousScreen});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomePageState extends State<HomePage> {
   final HomeController controller = Get.put(HomeController());
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -362,7 +364,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Get.reset();
                       Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(
-                              builder: (context) => LoginScreen()),
+                              builder: (context) => SignInPage()),
                           (route) => false);
                     } else if (value == "settings") {
                       Navigator.of(context).pushAndRemoveUntil(

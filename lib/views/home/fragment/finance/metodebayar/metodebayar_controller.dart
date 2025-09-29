@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:xhalona_pos/models/dao/metodebayar.dart';
+import 'package:xhalona_pos/models/response/metodebayar.dart';
 import 'package:xhalona_pos/repositories/metodebayar/metodebayar_repository.dart';
 
 class MetodeBayarController extends GetxController {

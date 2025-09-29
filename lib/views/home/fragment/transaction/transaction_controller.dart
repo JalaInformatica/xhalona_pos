@@ -1,16 +1,16 @@
 import 'package:get/get.dart';
-import 'package:xhalona_pos/models/dao/transaction.dart';
+import 'package:xhalona_pos/globals/transaction/models/transaction_response.dart';
 import 'package:xhalona_pos/core/constant/transaction.dart';
-import 'package:xhalona_pos/repositories/crystal_report/transaction_crystal_report_repository.dart';
-import 'package:xhalona_pos/repositories/transaction/transaction_repository.dart';
+import 'package:xhalona_pos/globals/crystal_report/transaction_crystal_report_repository.dart';
+import 'package:xhalona_pos/globals/transaction/repositories/transaction_repository.dart';
 
 enum DateType {DATE, MONTH, NONE}
 
 class TransactionController extends GetxController {
   TransactionRepository _transactionRepository = TransactionRepository();
 
-  var transactionHeader = <TransactionHeaderDAO>[].obs;
-  var transactionDetail = <TransactionDetailDAO>[].obs;
+  var transactionHeader = <TransactionResponse>[].obs;
+  var transactionDetail = <TransactionDetailResponse>[].obs;
   var isLoading = true.obs;
   var trxStatusCategory = TransactionStatusCategory.progress.obs;
   var isOnline = false.obs;
@@ -107,21 +107,21 @@ class TransactionController extends GetxController {
 
   Future<void> fetchTransactions() async {
     try {
-      isLoading.value = true;
-      final result = await _transactionRepository.getTransactionHeader(
-          statusCategory:
-              getTransactionStatusCategoryStr(trxStatusCategory.value),
-          sourceId: isOnline.value ? "ONLINE" : "",
-          filterDay: filterDay.value,
-          filterMonth: filterMonth.value,
-          filterYear: filterYear.value,
-          filterValue: filterValue.value,
-          pageNo: pageNo.value,
-          pageRow: pageRow.value);
-      transactionHeader.value = result;
-      sumNetto.value = result.fold(0, (sum, item) => sum + (item.nettoVal));
-      sumPayment.value = result.fold(0, (sum, item) => sum + (item.paymentVal));
-      sumDebt.value = result.fold(0, (sum, item) => sum + (item.totalHutang));
+      // isLoading.value = true;
+      // final result = await _transactionRepository.getTransactionHeader(
+      //     statusCategory:
+      //         getTransactionStatusCategoryStr(trxStatusCategory.value),
+      //     sourceId: isOnline.value ? "ONLINE" : "",
+      //     filterDay: filterDay.value,
+      //     filterMonth: filterMonth.value,
+      //     filterYear: filterYear.value,
+      //     filterValue: filterValue.value,
+      //     pageNo: pageNo.value,
+      //     pageRow: pageRow.value);
+      // transactionHeader.value = result;
+      // sumNetto.value = result.fold(0, (sum, item) => sum + (item.nettoVal));
+      // sumPayment.value = result.fold(0, (sum, item) => sum + (item.paymentVal));
+      // sumDebt.value = result.fold(0, (sum, item) => sum + (item.totalHutang));
     } finally {
       isLoading.value = false;
     }
@@ -133,14 +133,14 @@ class TransactionController extends GetxController {
   }
 
   Future<void> fetchGetDetailTransactions() async {
-    try {
-      isLoading.value = true;
-      final result = await _transactionRepository.getTransactionDetail(
-        transactionId: salesId.value,
-      );
-      transactionDetail.value = result;
-    } finally {
-      isLoading.value = false;
-    }
+    // try {
+    //   isLoading.value = true;
+    //   final result = await _transactionRepository.getTransactionDetail(
+    //     transactionId: salesId.value,
+    //   );
+    //   transactionDetail.value = result;
+    // } finally {
+    //   isLoading.value = false;
+    // }
   }
 }

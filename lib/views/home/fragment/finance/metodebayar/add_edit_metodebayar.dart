@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/models/dao/metodebayar.dart';
+import 'package:xhalona_pos/models/response/metodebayar.dart';
 import 'package:xhalona_pos/widgets/app_input_formatter.dart';
 import 'package:xhalona_pos/repositories/metodebayar/metodebayar_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/finance/metodebayar/metodebayar_screen.dart';

@@ -1,12 +1,12 @@
 import 'package:get/get.dart';
-import 'package:xhalona_pos/models/dao/user.dart';
-import 'package:xhalona_pos/models/dao/structure.dart';
-import 'package:xhalona_pos/models/dao/transaction.dart';
+import 'package:xhalona_pos/models/response/user.dart';
+import 'package:xhalona_pos/models/response/structure.dart';
+import 'package:xhalona_pos/globals/transaction/models/transaction_response.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xhalona_pos/core/constant/local_storage.dart';
 import 'package:xhalona_pos/repositories/user/user_repository.dart';
 import 'package:xhalona_pos/repositories/structure/structure_repository.dart';
-import 'package:xhalona_pos/repositories/transaction/transaction_repository.dart';
+import 'package:xhalona_pos/globals/transaction/repositories/transaction_repository.dart';
 
 class HomeController extends GetxController {
   final StructureRepository _structureRepository = StructureRepository();
@@ -53,14 +53,14 @@ class HomeController extends GetxController {
 
   Future<void> fetchTodayTransaction() async {
     DateTime now = DateTime.now();
-    List<TransactionStatusDAO> statusTransactions =
-        await _transactionRepository.statusTransaction(
-            filterDay: now.day,
-            filterMonth: now.month,
-            filterYear: now.year,
-            statusCategory: "PROGRESS",
-            statusClosed: "OPEN");
-    todayTrx.value =
-        statusTransactions.fold(0, (sum, item) => sum + item.total);
+    // List<TransactionStatusResponse> statusTransactions =
+    //     await _transactionRepository.statusTransaction(
+    //         filterDay: now.day,
+    //         filterMonth: now.month,
+    //         filterYear: now.year,
+    //         statusCategory: "PROGRESS",
+    //         statusClosed: "OPEN");
+    // todayTrx.value =
+    //     statusTransactions.fold(0, (sum, item) => sum + item.total);
   }
 }

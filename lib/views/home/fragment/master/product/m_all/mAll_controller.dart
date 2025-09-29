@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:xhalona_pos/models/dao/masterall.dart';
+import 'package:xhalona_pos/models/response/masterall.dart';
 import 'package:xhalona_pos/repositories/m_all/mAll_repository.dart';
 
 class MasAllController extends GetxController {

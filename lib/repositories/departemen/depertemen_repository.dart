@@ -1,4 +1,4 @@
-import 'package:xhalona_pos/models/dao/departemen.dart';
+import 'package:xhalona_pos/models/response/departemen.dart';
 import 'package:xhalona_pos/repositories/app_repository.dart';
 import 'package:xhalona_pos/services/departemen/departemen_services.dart';
 

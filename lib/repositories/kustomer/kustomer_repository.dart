@@ -1,4 +1,4 @@
-import 'package:xhalona_pos/models/dao/kustomer.dart';
+import 'package:xhalona_pos/models/response/kustomer.dart';
 import 'package:xhalona_pos/repositories/app_repository.dart';
 import 'package:xhalona_pos/services/kustomer/kustomer_services.dart';
 

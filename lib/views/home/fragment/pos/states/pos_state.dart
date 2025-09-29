@@ -1,8 +1,8 @@
-import 'package:xhalona_pos/models/dao/transaction.dart';
+import 'package:xhalona_pos/globals/transaction/models/transaction_response.dart';
 
 class PosState {
   bool isLoadingTodayTransaction;
-  List<TransactionHeaderDAO> todayTransaction;
+  List<TransactionResponse> todayTransaction;
   String filterTransactionCategory;
   int pageNo;
 
@@ -14,7 +14,7 @@ class PosState {
   });
 
   PosState copyWith({
-    List<TransactionHeaderDAO>? todayTransaction,
+    List<TransactionResponse>? todayTransaction,
     bool? isLoadingTodayTransaction,
     String? filterTransactionCategory,
     int? pageNo

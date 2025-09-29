@@ -1,4 +1,4 @@
-import 'package:xhalona_pos/models/dao/kasbank.dart';
+import 'package:xhalona_pos/models/response/kasbank.dart';
 import 'package:xhalona_pos/repositories/app_repository.dart';
 import 'package:xhalona_pos/services/kasbank/kasbank_services.dart';
 

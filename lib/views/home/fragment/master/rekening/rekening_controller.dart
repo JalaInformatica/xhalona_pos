@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:xhalona_pos/models/dao/rekening.dart';
+import 'package:xhalona_pos/models/response/rekening.dart';
 import 'package:xhalona_pos/repositories/rekening/rekening_repository.dart';
 
 class RekeningController extends GetxController {

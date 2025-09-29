@@ -1,4 +1,4 @@
-import 'package:xhalona_pos/models/dao/masterall.dart';
+import 'package:xhalona_pos/models/response/masterall.dart';
 import 'package:xhalona_pos/repositories/app_repository.dart';
 import 'package:xhalona_pos/services/m_all/mAll_services.dart';
 

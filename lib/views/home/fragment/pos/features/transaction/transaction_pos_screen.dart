@@ -5,20 +5,25 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:xhalona_pos/core/helper/global_helper.dart';
 import 'package:xhalona_pos/core/utils/app_navigator.dart';
-import 'package:xhalona_pos/models/dao/employee.dart';
-import 'package:xhalona_pos/models/dao/kustomer.dart';
-import 'package:xhalona_pos/models/dao/product.dart';
+import 'package:xhalona_pos/models/response/employee.dart';
+import 'package:xhalona_pos/models/response/kustomer.dart';
+import 'package:xhalona_pos/globals/product/models/product.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/checkout_screen.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/features/transaction/state/transaction_pos_state.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/features/transaction/viewmodel/transaction_pos_viewmodel.dart';
 import 'package:xhalona_pos/views/home/fragment/pos/pos_screen.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
+import 'package:xhalona_pos/widgets/app_dialog2.dart';
 import 'package:xhalona_pos/widgets/app_dropdown.dart';
+import 'package:xhalona_pos/widgets/app_icon_button.dart';
+import 'package:xhalona_pos/widgets/app_normal_button.dart';
 import 'package:xhalona_pos/widgets/app_pdf_viewer.dart';
+import 'package:xhalona_pos/widgets/app_text_field.dart';
 import 'package:xhalona_pos/widgets/app_text_form_field2.dart';
 import 'package:xhalona_pos/widgets/app_typeahead.dart';
 import 'package:xhalona_pos/widgets/app_typeahead2.dart';
 import 'package:xhalona_pos/widgets/app_typeahead_custom.dart';
+import 'package:flutter_widgets/widget/app_shimmer.dart';
 
 import 'widgets/transaction_pos_widget.dart';
 
@@ -575,7 +580,9 @@ class TransactionPosScreen extends HookConsumerWidget {
                           if(!detail.isFixQty)
                           Row(
                             children: [
+                              
                               AppIconButton(
+                                // disabled: detail.qty<=1,
                                 onPressed: () async {
                                   await notifier.editTransactionDetail(
                                     detail: detail, 
@@ -773,7 +780,7 @@ class TransactionPosScreen extends HookConsumerWidget {
                                   await notifier.cancelTransaction();
                                   SmartDialog.dismiss();
                                   if(context.mounted){
-                                    AppNavigator.navigatePushReplace(context, HomeScreen());
+                                    AppNavigator.navigatePushReplace(context, HomePage());
                                   }
                                 }, 
                                 child: Text("Ya", style: AppTextStyle.textNStyle(),)

@@ -590,8 +590,8 @@ class _CheckoutScreen extends State<CheckoutScreen> {
                                                 AppPDFViewer(pdfUrl: url),
                                           ),
                                         ).then((_) {
-                                          PosController controller = Get.find<PosController>();
-                                          controller.resetTransaction();
+                                          // PosController controller = Get.find<PosController>();
+                                          // controller.resetTransaction();
                                 }));
                               });
                             },

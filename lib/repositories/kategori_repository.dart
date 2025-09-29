@@ -1,4 +1,4 @@
-import 'package:xhalona_pos/models/dao/kategori.dart';
+import 'package:xhalona_pos/models/response/kategori.dart';
 import 'package:xhalona_pos/services/kategori_services.dart';
 import 'package:xhalona_pos/repositories/app_repository.dart';
 

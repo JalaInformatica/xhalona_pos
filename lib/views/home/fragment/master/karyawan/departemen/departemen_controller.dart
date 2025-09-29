@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:xhalona_pos/models/dao/departemen.dart';
+import 'package:xhalona_pos/models/response/departemen.dart';
 import 'package:xhalona_pos/repositories/departemen/depertemen_repository.dart';
 
 class DepartemenController extends GetxController {

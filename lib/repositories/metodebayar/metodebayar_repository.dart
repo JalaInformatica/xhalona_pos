@@ -1,4 +1,4 @@
-import 'package:xhalona_pos/models/dao/metodebayar.dart';
+import 'package:xhalona_pos/models/response/metodebayar.dart';
 import 'package:xhalona_pos/repositories/app_repository.dart';
 import 'package:xhalona_pos/services/metodebayar/metodebayar_services.dart';
 

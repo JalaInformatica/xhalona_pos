@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:xhalona_pos/models/dao/pengguna.dart';
+import 'package:xhalona_pos/models/response/pengguna.dart';
 import 'package:xhalona_pos/repositories/pengguna/pengguna_repository.dart';
 
 class PenggunaController extends GetxController {

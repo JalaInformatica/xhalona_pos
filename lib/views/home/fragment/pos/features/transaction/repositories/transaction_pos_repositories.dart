@@ -1,15 +1,15 @@
-import 'package:xhalona_pos/models/dao/employee.dart';
-import 'package:xhalona_pos/models/dao/kustomer.dart';
-import 'package:xhalona_pos/models/dao/product.dart';
-import 'package:xhalona_pos/models/dao/shift.dart';
-import 'package:xhalona_pos/models/dao/transaction.dart';
+import 'package:xhalona_pos/models/response/employee.dart';
+import 'package:xhalona_pos/models/response/kustomer.dart';
+import 'package:xhalona_pos/globals/product/models/product.dart';
+import 'package:xhalona_pos/models/response/shift.dart';
+import 'package:xhalona_pos/globals/transaction/models/transaction_response.dart';
 import 'package:xhalona_pos/models/dto/transaction.dart';
-import 'package:xhalona_pos/repositories/crystal_report/transaction_crystal_report_repository.dart';
+import 'package:xhalona_pos/globals/crystal_report/transaction_crystal_report_repository.dart';
 import 'package:xhalona_pos/repositories/employee/employee_repository.dart';
 import 'package:xhalona_pos/repositories/kustomer/kustomer_repository.dart';
-import 'package:xhalona_pos/repositories/product/product_repository.dart';
-import 'package:xhalona_pos/repositories/shift/shift_repository.dart';
-import 'package:xhalona_pos/repositories/transaction/transaction_repository.dart';
+import 'package:xhalona_pos/globals/product/repositories/product_repository.dart';
+// import 'package:xhalona_pos/repositories/shift/shift_repository.dart';
+import 'package:xhalona_pos/globals/transaction/repositories/transaction_repository.dart';
 
 class TransactionPosRepository {
   final KustomerRepository _customerRepository = KustomerRepository();
@@ -17,7 +17,7 @@ class TransactionPosRepository {
   final EmployeeRepository _employeeRepository = EmployeeRepository();
   final TransactionRepository _transactionRepository = TransactionRepository();
   final TransactionCrystalReportRepository _transactionCrystalReportRepository = TransactionCrystalReportRepository();
-  final ShiftRepository _shiftRepository = ShiftRepository();
+  // final ShiftRepository _shiftRepository = ShiftRepository();
 
   Future<List<KustomerDAO>> getKustomer({
     int? pageNo,
@@ -66,14 +66,14 @@ class TransactionPosRepository {
     );
   }
 
-  Future<TransactionHeaderDAO> getTransactionHeader({
+  Future<TransactionResponse> getTransactionHeader({
     required String salesId
   }) async {
     final data = await _transactionRepository.getTransactionHeader(transactionId: salesId);
-    if(data.isNotEmpty){
-      return data.first;
-    }
-    return TransactionHeaderDAO();
+    // if(data.isNotEmpty){
+    //   return data.first;
+    // }
+    return TransactionResponse();
   }
 
   Future<void> editTransactionHeader({
@@ -94,10 +94,11 @@ class TransactionPosRepository {
     await _transactionRepository.editTransactionDetail(transactionDetail);
   }
 
-  Future<List<TransactionDetailDAO>> getTransactionDetail({
+  Future<List<TransactionDetailResponse>> getTransactionDetail({
     required String salesId
   }) async {
-    return await _transactionRepository.getTransactionDetail(transactionId: salesId);
+    return [];
+    // await _transactionRepository.getTransactionDetail(transactionId: salesId);
   }
 
   Future<String> printNota({required String salesId}) async {
@@ -106,11 +107,12 @@ class TransactionPosRepository {
   }
 
   Future<List<ShiftDAO>> getShift({required String filterValue}) async {
-    return await _shiftRepository.getShifts(
-      pageNo: 1,
-      pageRow: 5,
-      filterValue: filterValue
-    );
+    return []; 
+    // await _shiftRepository.getShifts(
+    //   pageNo: 1,
+    //   pageRow: 5,
+    //   filterValue: filterValue
+    // );
   }
 
   Future<void> cancelTransaction({required String salesId}) async {
@@ -119,9 +121,10 @@ class TransactionPosRepository {
 
   Future<String> createTransactionHeader() async {
     TransactionDTO transaction = TransactionDTO();
-    return await _transactionRepository.addTransactionHeader(
-      transaction
-    );
+    return ""; 
+    // await _transactionRepository.addTransactionHeader(
+    //   transaction
+    // );
   }
 
   Future<void> deleteTransactionDetail({required String salesId, required String rowId}) async {

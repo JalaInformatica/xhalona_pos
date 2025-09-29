@@ -2,11 +2,11 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/models/dao/kasbank.dart';
+import 'package:xhalona_pos/models/response/kasbank.dart';
 import 'package:xhalona_pos/views/home/fragment/master/kustomer/kustomer_controller.dart';
 import 'package:xhalona_pos/widgets/app_dialog.dart';
-import 'package:xhalona_pos/models/dao/kustomer.dart';
-import 'package:xhalona_pos/models/dao/rekening.dart';
+import 'package:xhalona_pos/models/response/kustomer.dart';
+import 'package:xhalona_pos/models/response/rekening.dart';
 import 'package:xhalona_pos/widgets/app_calendar.dart';
 import 'package:xhalona_pos/widgets/app_elevated_button.dart';
 import 'package:xhalona_pos/widgets/app_icon_button.dart';
@@ -101,7 +101,7 @@ class _AddEditFinanceState extends State<AddEditFinance> {
           setState(() {});
         } else {
           Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => HomePage()),
           );
           controllerFi.fetchProducts();
           ScaffoldMessenger.of(context).showSnackBar(
@@ -139,7 +139,7 @@ class _AddEditFinanceState extends State<AddEditFinance> {
         setState(() {});
       } else {
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => HomeScreen()),
+          MaterialPageRoute(builder: (context) => HomePage()),
         );
         controllerFi.fetchProducts();
         ScaffoldMessenger.of(context).showSnackBar(

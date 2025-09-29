@@ -2,12 +2,12 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
 import 'package:xhalona_pos/widgets/app_table.dart';
-import 'package:xhalona_pos/models/dao/product.dart';
+import 'package:xhalona_pos/globals/product/models/product.dart';
 import 'package:xhalona_pos/widgets/app_bottombar.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
 import 'package:xhalona_pos/widgets/app_elevated_button.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:xhalona_pos/repositories/product/product_repository.dart';
+import 'package:xhalona_pos/globals/product/repositories/product_repository.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/add_edit_product.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/produk_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/product/bahan/bahan_controller.dart';
@@ -76,7 +76,7 @@ class MasterProductScreen extends StatelessWidget {
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => HomePage()),
             (route) => false); // Navigasi kembali ke halaman sebelumnya
         return false; // Mencegah navigasi bawaan
       },

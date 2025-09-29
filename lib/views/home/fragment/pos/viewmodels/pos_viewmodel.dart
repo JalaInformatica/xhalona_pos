@@ -25,10 +25,10 @@ class PosViewmodel extends StateNotifier<PosState>{
       pageNo: state.pageNo,
       pageRow: pageRow ?? 10
     );
-    state = state.copyWith(
-      todayTransaction: todayTransaction,
-      isLoadingTodayTransaction: false
-    );
+    // state = state.copyWith(
+    //   todayTransaction: todayTransaction,
+    //   isLoadingTodayTransaction: false
+    // );
   }
 
   Future<void> onPageNoChanged(int pageNo) async {
@@ -39,10 +39,10 @@ class PosViewmodel extends StateNotifier<PosState>{
       statusCategory: state.filterTransactionCategory,
       pageNo: state.pageNo
     );
-    state = state.copyWith(
-      todayTransaction: todayTransaction,
-      isLoadingTodayTransaction: false
-    );
+    // state = state.copyWith(
+    //   todayTransaction: todayTransaction,
+    //   isLoadingTodayTransaction: false
+    // );
   }
 
   Future<void> onPageRowChanged(int pageRow) async {
@@ -57,6 +57,6 @@ class PosViewmodel extends StateNotifier<PosState>{
   }
 
   Future<String> createTransaction() async {
-    return await repository.createTransactionHeader();
+    return ""; //await repository.createTransactionHeader();
   }
 }

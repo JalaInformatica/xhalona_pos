@@ -74,7 +74,7 @@ dependencies:
   flutter_widgets:
     git:
       url: https://github.com/JalaInformatica/flutter_widgets.git
-      ref: main
+      tag: 0.0.10+2
   font_awesome_flutter: ^10.9.0
   
 

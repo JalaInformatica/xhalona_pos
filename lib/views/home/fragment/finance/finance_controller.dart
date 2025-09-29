@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:xhalona_pos/models/dao/kasbank.dart';
+import 'package:xhalona_pos/models/response/kasbank.dart';
 import 'package:xhalona_pos/repositories/kasbank/kasbank_repository.dart';
 
 class FinanceController extends GetxController {

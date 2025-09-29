@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:xhalona_pos/core/theme/theme.dart';
-import 'package:xhalona_pos/models/dao/kustomer.dart';
+import 'package:xhalona_pos/models/response/kustomer.dart';
 import 'package:xhalona_pos/views/home/fragment/master/kustomer/form/form_kustomer_controller.dart';
 import 'package:xhalona_pos/views/home/fragment/master/kustomer/kustomer_controller.dart';
 import 'package:xhalona_pos/views/home/home_screen.dart';
