@@ -10,7 +10,7 @@
     <key>provisioningProfiles</key>
     <dict>
         <key>$(PRODUCT_BUNDLE_IDENTIFIER)</key>
-        <string>xhalona_pos</string>
+        <string>xhalona pos</string>
     </dict>
 </dict>
 </plist>
