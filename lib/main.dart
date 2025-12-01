@@ -9,7 +9,6 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'core/theme/theme.dart' as theme;
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id_ID', null);
