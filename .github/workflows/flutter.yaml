@@ -23,6 +23,7 @@ jobs:
 
       # Setup JDK 17 (Microsoft Distribution)
       - name: Siapkan JDK 17
+        if: matrix.platform == 'android'
         uses: actions/setup-java@v3.10.0
         with:
           distribution: 'microsoft'
@@ -57,7 +58,7 @@ jobs:
             ${{ runner.os }}-pub-
 
       # Install dependensi flutter
-      - name: Install dependencies
+      - name: Install dependensi
         run: flutter pub get
 
       # Manage Versioning
@@ -100,44 +101,45 @@ jobs:
       - name: Sign iOS App
         if: matrix.platform == 'ios'
         run: |
+          echo "Creating Keychain..."
           security create-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" build.keychain
           security unlock-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" build.keychain
           security set-keychain-settings -t 3600 -l ~/Library/Keychains/build.keychain
-          
-          # Import the provisioning profile
-          echo "${{ secrets.IOS_PROVISIONING_PROFILE }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/my_profile.mobileprovision
-          
-          # Import the certificate
-          echo "${{ secrets.IOS_CERTIFICATE }}" | base64 --decode > certificate.p12
-          security import certificate.p12 -P "${{ secrets.IOS_CERTIFICATE_PASSWORD }}" -T /usr/bin/codesign
 
-          # Code signing
-          codesign -f -s "${{ secrets.IOS_CERTIFICATE_NAME }}" --deep --timestamp --options=runtime ${{ env.build_path }}/*.app
+          echo "Importing Provisioning Profile..."
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles/
+          echo "${{ secrets.IOS_PROVISIONING_PROFILE }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/my_profile.mobileprovision
+          if [ -f ~/Library/MobileDevice/Provisioning\ Profiles/my_profile.mobileprovision ]; then
+            echo "Provisioning profile imported successfully."
+          else
+            echo "Failed to import provisioning profile."
+            exit 1
+          fi
+
+          echo "Importing Certificate..."
+          echo "${{ secrets.IOS_CERTIFICATE }}" | base64 --decode > certificate.p12
+          if security import certificate.p12 -P "${{ secrets.IOS_CERTIFICATE_PASSWORD }}" -T /usr/bin/codesign; then
+            echo "Certificate imported successfully."
+          else
+            echo "Failed to import certificate."
+            exit 1
+          fi
+
+          echo "Signing App..."
+          if codesign -f -s "${{ secrets.IOS_CERTIFICATE_NAME }}" --deep --timestamp --options=runtime ${{ env.build_path }}/*.app; then
+            echo "Code signing succeeded."
+          else
+            echo "Code signing failed."
+            exit 1
+          fi
 
       # Upload Artifact
-      - name: Upload to Bashupload
-        id: upload_bashupload
-        run: |
-          RESPONSE=$(curl --retry 3 --retry-delay 5 -T ${{ env.artifact_path }} https://bashupload.com/)
-      
-          echo "==== Response from Bashupload ===="
-          
-          # 1. Print normally (masked)
-          echo "Upload URL (Normal): $RESPONSE"
-      
-          # 2. Split URL to avoid masking
-          echo "Upload URL (Split): $(echo $RESPONSE | sed 's/\(http[s]*:\/\/\)/\1 /')"
-      
-          # 3. Encode URL in Base64 to bypass masking
-          echo "Upload URL (Base64): $(echo -n "$RESPONSE" | base64)"
-      
-          # 4. Add a fake prefix (masking won't apply)
-          echo "Upload URL (Fake Prefix): X$RESPONSE"
-      
-          # 5. Enable debug mode temporarily
-          set -x
-          echo "Upload URL (Debug Mode): $RESPONSE"
-          set +x
+      - name: Upload Artifact
+        id: upload_artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform == 'android' && 'bundel-aplikasi-android' || 'aplikasi-ios' }}
+          path: ${{ env.artifact_path }}
 
       # Rilis Aplikasi
       - name: Rilis Aplikasi
