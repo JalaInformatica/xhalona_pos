@@ -61,6 +61,14 @@ jobs:
       - name: Install dependensi
         run: flutter pub get
 
+      # Install dependensi flutter
+      - name: Install dependensi
+        run: flutter pub upgrade --major-versions
+
+      # Install dependensi flutter
+      - name: Install dependensi
+        run: flutter clean
+
       # Manage Versioning
       - name: Manage Versioning
         id: version
