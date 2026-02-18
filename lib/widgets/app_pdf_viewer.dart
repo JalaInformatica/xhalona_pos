@@ -288,26 +288,26 @@ class _AppPDFViewerState extends State<AppPDFViewer> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor.grey100,
-      appBar: AppBar(
-        backgroundColor: AppColor.whiteColor,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.print),
-            onPressed: () => _print(context),
-            tooltip: "Print to Bluetooth Thermal Printer",
-          ),
-          IconButton(
-            icon: Icon(Icons.open_in_new),
-            onPressed: _openPdfExternally,
-            tooltip: "Open with External PDF Viewer",
-          ),
-          IconButton(
-            icon: Icon(Icons.download),
-            onPressed: _savePdfToDevice,
-            tooltip: "Save PDF",
-          ),
-        ],
-      ),
+      // appBar: AppBar(
+      //   backgroundColor: AppColor.whiteColor,
+      //   actions: [
+      //     IconButton(
+      //       icon: Icon(Icons.print),
+      //       onPressed: () => _print(context),
+      //       tooltip: "Print to Bluetooth Thermal Printer",
+      //     ),
+      //     IconButton(
+      //       icon: Icon(Icons.open_in_new),
+      //       onPressed: _openPdfExternally,
+      //       tooltip: "Open with External PDF Viewer",
+      //     ),
+      //     IconButton(
+      //       icon: Icon(Icons.download),
+      //       onPressed: _savePdfToDevice,
+      //       tooltip: "Save PDF",
+      //     ),
+      //   ],
+      // ),
       body: 
       // !(imageBytes != null)
       //     ? 
