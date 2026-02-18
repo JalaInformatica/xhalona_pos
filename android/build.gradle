@@ -8,9 +8,15 @@ allprojects {
 rootProject.buildDir = "../build"
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
     project.evaluationDependsOn(":app")
+
+    afterEvaluate { project ->
+        if (project.hasProperty("android")) {
+            project.android {
+                ndkVersion "26.3.11579264"
+            }
+        }
+    }
 }
 
 tasks.register("clean", Delete) {
