@@ -50,7 +50,6 @@ dependencies:
   multi_split_view: ^3.6.0
   resizable_widget: ^1.0.5
   flutter_pdfview: ^1.4.0
-  permission_handler: ^11.3.1
   image_picker: ^1.1.2
   flutter_inappwebview: ^6.0.0
   dio: ^5.8.0+1
@@ -60,8 +59,9 @@ dependencies:
   path_provider: ^2.1.5
   # pdfx: ^3.0.0
   open_filex: ^4.6.0
-  file_picker: ^8.3.5
-  fl_chart: ^0.70.2
+  permission_handler: ^12.0.1
+  file_picker: ^10.3.10
+  fl_chart: ^0.71.0
   print_bluetooth_thermal: ^1.1.5
   esc_pos_utils: ^1.1.0
   image: ^3.3.0
